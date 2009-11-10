@@ -1,0 +1,14 @@
+{% extends "root.html" %}
+{% block doctype_html %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">{% endblock %}
+{% block style-reset %}
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/fluid960gs/reset.css"/>{% if layout960 %}
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/fluid960gs/960.css"/>{% else %}
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/fluid960gs/grid.css"/>{% endif %}
+<!--[if IE 6]><link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/fluid960gs/ie6.css" media="screen" /><![endif]-->
+<!--[if IE 7]><link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/fluid960gs/ie.css" media="screen" /><![endif]-->{% endblock %}
+{% block style-block %}{{ block.super }}
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/djpcms.css"/>{% endblock %}
+{% block body-container-bits %}class="{{ grid.container_class }}"{% endblock %}
+
+

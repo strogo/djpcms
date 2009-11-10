@@ -1,0 +1,8 @@
+<div class="{{ HTML_CLASSES.accordion }}">{% for r in html %}
+ <div>
+  <h3><a href="{{ r.url }}">{{ r.title }}</a></h3>
+  <div>
+   {{ r.content }}
+  </div>
+ </div>{% endfor %}
+</div>

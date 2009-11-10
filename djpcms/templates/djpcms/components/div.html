@@ -1,0 +1,4 @@
+{% if html.div_wrap %}
+<div {% if html.class_name %}class="{{ html.class_name }}"{% endif %} {% if html.id %}id="{{ html.id }}"{% endif %}>
+{% endif %}{% block inner-component %}{% endblock %}
+{% if html.div_wrap %}</div>{% endif %}

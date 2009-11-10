@@ -1,0 +1,30 @@
+
+
+================================
+Post responses
+================================
+djpcms views can handle two types of POST response:
+ * Standard POST
+ * AJAX POST
+ 
+AJAX POST reponses
+--------------------------------
+As mentioned above there can be several different types of AJAX POST responses, these are implemented by
+defining functions with the **ajax__** prefix.
+
+	class myview:
+		
+		def ajax__custom_response(self, request):
+			return obj
+
+================================
+Other View Methods
+================================
+
+
+bodybits
+---------------------------------
+Function that returns attributes to insert into the ``body`` tag of the HTML template.
+
+has_permission
+---------------------------------

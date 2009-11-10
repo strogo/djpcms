@@ -1,0 +1,17 @@
+<h2>Leave a Comment</h2>
+ {{ html.handle.content_type.field }}
+ {{ html.handle.object_pk.field }}
+ {{ html.handle.timestamp.field }}
+ {{ html.handle.security_hash.field }}
+ <div style="display: none;">
+ {{ html.handle.honeypot.as_divs }}
+ </div>
+<table>
+ <tbody>{% if not html.request.user.is_authenticated %}
+ {{ html.handle.name.as_tablerow2 }}
+ {{ html.handle.email.as_tablerow2 }}
+ {{ html.handle.url.as_tablerow2 }}{% endif %}
+ {{ html.handle.comment.as_tablerow12 }}
+ </tbody>
+ </table>
+ {{ html.publish_comment }}

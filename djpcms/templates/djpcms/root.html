@@ -1,0 +1,50 @@
+{% block doctype_html %}{% load djpcmstags %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">{% endblock %}
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>{% block title-block %}{% endblock %}</title>
+ <!-- Global IE fix to avoid layout crash when single word size wider than column width -->
+ <!--[if IE]><style type="text/css"> body {word-wrap: break-word;}</style><![endif]-->{% block meta-content %}
+ <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />{% endblock %}{% block meta-language %}
+ <meta http-equiv="Content-Language" content="en-uk" />{% endblock %}{% block meta-robots %}
+<meta name="ROBOTS" content="ALL" />{% endblock %}
+<meta name="keywords" content="{% block site-keywords %}{% endblock %}"/>
+<meta name="description" content="{% block site-description %}{% endblock %}"/>{% block style-reset %}{% endblock %}{% block style-block %}
+{% styling %}{% endblock %}
+<style type="text/css">{% block body-extra-style %}{% endblock %}
+</style>{% block script-block %}{% endblock %}{% block extra-head %}{% endblock %}
+</head>
+
+<body {% block bodybits %}{{ cl.bodybits }}{% endblock %}>{% block pre-body %}{% if prebody %}
+<!-- PRE-BODY SCRIPTS -->
+{{ prebody }}{% endif %}{% endblock %}
+
+<!-- BODY CONTAINER -->
+<div{% block body-container-id %} id="body-container" {% endblock %}{% block body-container-bits %}{% endblock %}>{% block html-container %}{% endblock %}
+</div>
+<!-- END OF BODY CONTAINER -->
+
+<!-- START END-BODY SCRIPTS -->{% block end-page-scripts %}
+<script type="text/javascript" src="{{ MEDIA_URL }}djpcms/jquery-1.3.2.min.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}djpcms/jquery-ui-1.7.2.custom.min.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}djpcms/form.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}djpcms/djpcms.js"></script>{% endblock %}
+{% block body-scripts %}
+<script type="text/javascript">
+  $(document).ready(function() {
+	var options = {{ css.tojson }};
+	options.media_url = "{{ MEDIA_URL }}";
+	options.debug     = {{ jsdebug }};
+	$.djpcms.set_options(options);
+	$().djpcms();{% block body-extra-scripts %}{% endblock %}
+	});
+</script>{% endblock %}
+<!-- END END-BODY SCRIPTS -->
+
+{% block ads-scripts %}{% endblock %}
+
+{% block analytics-scripts %}
+{% google_analytics %}{% endblock %} 
+
+</body>
+</html>

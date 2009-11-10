@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block page-body %}
+<div class="{{ grid.container_class }}">
+<div class="{{ grid.column_2_3 }}">
+  <h2 class="deck">
+  {% ifequal version "dev" %}
+    This document is for djpcms's SVN release. Currently there are no
+    official releases.
+  {% else %}
+    This document describes {{ cl.name }} version {{ version }}. For development documentation, 
+    <a href="">go here</a>.
+  {% endifequal %}
+  </h2>
+  {{ doc.body|safe }}
+</div>
+<div class="{{ grid.column_1_3 }}">
+  {% block toc-wrapper %}
+    <h2>Contents</h2>
+    {% block toc %}
+      {{ doc.toc|safe }}
+    {% endblock %}
+  {% endblock %}
+  
+  {% block search %}
+    <h2>Search</h2>
+    {% load docs %}
+    {% search_form %}
+  {% endblock %}
+  
+  {% block browse-wrapper %}
+    <h2>Browse</h2>
+    <ul>
+      {% block browse %}
+        {% if doc.prev %}
+          <li>Prev: <a href="{{ doc.prev.link }}">{{ doc.prev.title|safe }}</a></li>
+        {% endif %}
+        {% if doc.next %}
+          <li>Next: <a href="{{ doc.next.link }}">{{ doc.next.title|safe }}</a></li>
+        {% endif %}
+        <li><a href="{{ cl.table_of_content_url }}">Table of contents</a></li>
+        {% for doc, title, accesskey, shorttitle in env.rellinks %}
+          <li><a href="{{ cl.table_of_content_url }}">{{ title }}</a></li>
+        {% endfor %}
+      {% endblock %}
+    </ul>
+  {% endblock %}
+  
+  {% block breadcrumbs-wrapper %}
+    <h2>You are here:</h2>
+    <ul>
+      {% block breadcrumbs %}
+        <li>
+          <a href="{{ cl.doc_index_url }}">Django {{ version }} documentation</a>
+          {% for p in doc.parents %}
+            <ul><li><a href="{{ p.link }}">{{ p.title|safe }}</a>
+          {% endfor %}
+          <ul><li>{% block current-page-title %}{{ doc.title|safe }}{% endblock %}</li></ul>
+          {% for p in doc.parents %}</li></ul>{% endfor %}
+        </li>
+      {% endblock %}
+    </ul>
+  {% endblock %}
+  
+  {% block last-update-wrapper %}
+    <h3>Last update:</h3>
+    <div>{{ update_date|date:"F j, Y, P" }} (<a href="http://www.timeanddate.com/worldclock/city.html?n=136" target="_blank">CDT</a>)</div>
+  {% endblock %}
+</div>
+</div>
+{% endblock %}

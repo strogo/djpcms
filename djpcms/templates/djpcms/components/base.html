@@ -1,0 +1,8 @@
+{% if html.isform %}
+<form {% if html.class_name %}class="{{ html.class_name }}"{% endif %} {% if html.id %}id="{{ html.id }}"{% endif %} method="{{ html.method }}" action="{{ html.url }}">{% else %}{% if html.div_wrap %}
+<div {% if html.class_name %}class="{{ html.class_name }}"{% endif %} {% if html.id %}id="{{ html.id }}"{% endif %}>
+{% endif %}{% endif %}{% block inner-component %}{% if html.isform %}
+<div class="{{ html.keys.formerrors }} {{ html.keys.errorlist }}"></div>
+<div {% if html.id %}id="{{ html.message_id }}" {% endif %}class="{{ html.keys.formmessages }}"></div>
+{% endif %}{% endblock %}{% if html.isform %}</form>{% else %}
+{% if html.div_wrap %}</div>{% endif %}{% endif %}

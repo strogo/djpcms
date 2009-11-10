@@ -1,0 +1,10 @@
+.. _intro-install:
+ 	
+Quick install guide
+===================
+ 	
+Before you can use djpcms in your Django project, you'll need to get it installed. We have a
+:ref:`complete installation guide <topics-install>` that covers all the
+possibilities; this guide will guide you to a simple, minimal installation
+that'll work while you walk through the introduction.
+ 	

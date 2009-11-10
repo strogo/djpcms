@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block page-body %}{% block pre-columns %}{% endblock %}
+<div class="{{ grid.column_3_4 }}">{% block page-body-columns-1 %}{% for c in content10 %}
+{{ c.render }}{% endfor %}{% endblock %}
+</div>
+<div class="{{ grid.column_1_4 }}">{% block page-body-columns-2 %}{% for c in content11 %}
+{{ c.render }}{% endfor %}{% endblock %}
+</div>{% block post-columns %}{% endblock %}
+{{ grid.clear }}
+{% endblock %}

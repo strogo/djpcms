@@ -1,0 +1,9 @@
+
+.. _plugin-model:
+
+================================
+Plugins
+================================
+
+Plugins are models which specify single html components to position into the inner page template.
+They are subclasses of DJPplugin, an abstract model with a specialized metaclass.

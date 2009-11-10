@@ -1,0 +1,15 @@
+.. _topics-views-index:
+
+============================
+URLs and View handlers
+============================
+
+djpcms handles views using objects rather than functions. Each view is an instance of a class
+derived from `djpcmsview`.
+
+
+.. toctree::
+   :maxdepth: 2
+   
+   overview
+   content

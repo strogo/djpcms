@@ -1,0 +1,16 @@
+{% extends "djpcms/layouts/divcolumns2.html" %}{% load gridwrap %}
+
+{% block content11 %}
+ <div class="f-wrap">{% block content11-new %}{% for c in content11 %}
+  {{ c.render_as_widget }}{% endfor %}{% endblock %}
+ </div>
+ <div class="f-wrap">
+  <div class="yui-g">
+   <div class="yui-u first">{% block content21 %}{% for c in content21 %}
+    {{ c.render_as_widget }}{% endfor %}{% endblock %}
+   </div>
+   <div class="yui-u">{% block content22 %}{% for c in content22 %}
+    {{ c.render_as_widget }}{% endfor %}{% endblock %}
+   </div>
+  </div>
+ </div>{% endblock %}

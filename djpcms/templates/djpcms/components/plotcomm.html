@@ -1,0 +1,18 @@
+<div {{ html.flatatt }}>
+<div{% if html.hidecommand %} class="hidden-element"{% endif %}>
+{{ html.form.command }}
+</div>
+<div>
+  <div class="float-left inline-form-element">
+  	<b> Range </b>
+  	<c> {{ html.form.start }} - {{ html.form.end }} </c>
+  </div>
+  <div class={% if html.hideperiod %}"hidden-element"{% else %}"float-left"{% endif %}>
+  	<b> {{ html.form.period.label_tag }} </b>
+  	<c> {{ html.form.period }} </c>
+  </div>
+  <div class="submit-plot-button">
+  	{{ html.plot_data }}
+  </div>
+</div>
+</div>

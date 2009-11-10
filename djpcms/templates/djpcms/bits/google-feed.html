@@ -1,0 +1,14 @@
+<!-- include Google Feed API - Make sure you include the style sheet in the header --> 
+<script type="text/javascript" src="http://www.google.com/jsapi?key={{ api_key }}"></script>{% if dynamic %}
+<script type="text/javascript" src="http://www.google.com/uds/solutions/dynamicfeed/gfdynamicfeedcontrol.js"></script>{% endif %}
+<script type="text/javascript">
+google.load("feeds", "1");
+</script>
+<script type="text/javascript" src="{{ media_url }}djpcms/feeds/jquery.gfeed.js"></script>
+<script type="text/javascript">
+ $(document).ready(function() {
+	 $('div.{{ feed_class }}').gFeed({% if dynamic %}{dynamic: true}{% else %}{tabs: true}{% endif %});
+ });
+</script>
+
+ 

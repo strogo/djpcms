@@ -1,0 +1,15 @@
+<div class="{% block entry-class %}search-result-item{% endblock %}">
+ <div class="g-wrap">
+ <div class="hd">
+  <h3>
+   <a{% if html.viewurl %} href="{{ html.viewurl }}"{% endif %}>{{ html.header }}</a>
+  </h3>{% if html.editurl %}
+  <a class="editbox" title = "edit" href = "{{ html.editurl }}"></a>{% endif %}
+  {% if html.deleteurl %}
+  <a class="deletebox" title = "delete" href = "{{ html.deleteurl }}"></a>{% endif %}
+ </div>{% block pre-content %}{% endblock %}
+  <div class="search-result-content">
+   {{ html.description }}
+  </div>
+ </div>
+</div>

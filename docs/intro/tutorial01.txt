@@ -1,0 +1,71 @@
+.. _intro-tutorial01:
+
+=====================================
+Writing your first djpcms site, part 1
+=====================================
+
+Following django documentation, let's learn by example.
+Throughout this tutorial, we'll walk you through the creation of a basic
+poll application.
+
+It'll consist of two parts:
+
+    * A public site that lets people view polls and vote in them.
+    * An admin site that lets you add, change and delete polls.
+
+We'll assume you have :ref:`djpcms installed <intro-install>` already. You can
+tell djpcms is installed by running the Python interactive interpreter and
+typing ``import djpcms``. If that command runs successfully, with no errors,
+djpcms is installed.
+
+.. admonition:: Where to get help:
+
+    If you're having trouble going through this tutorial, please post a message
+    to `djpcms-users`__.
+
+__ http://groups.google.co.uk/group/djpcms-users
+
+Creating a project
+==================
+
+First thing is to create a new Django project.
+
+From the command line, ``cd`` into a directory where you'd like to store your
+code, then run the command ``django-admin.py startproject mysite``. This will
+create a ``mysite`` directory in your current directory.
+
+Refer to Django documentation http://docs.djangoproject.com/en/dev/intro/tutorial01/#intro-tutorial01
+
+Setting up djpcms
+----------------------
+
+Change into the :file:`mysite` directory and edit the :file:`setting.py` file and add the following applications to
+INSTALLED_APPS_::
+
+	INSTALLED_APPS = (
+		...,
+		'djpcms',
+		'djpcms.plugins.text',
+		'djpcms.plugins.snippet'
+	)
+	
+.. _installed_apps: http://docs.djangoproject.com/en/dev/ref/settings/#setting-INSTALLED_APPS
+	
+Let's verify this worked. From within the :file:`mysite` directory
+run the command ``python manage.py validate``. You'll see
+the following output on the command line::
+
+    Validating models...
+    0 errors found.
+
+Next step is to create the databse tables required by djpcms. To do this simply type the django
+command ``python manage.py syncdb``.
+Everything is ready for running the configuration script
+
+	.. code-block:: bash
+
+        python manage.py makedjpcms
+
+
+When you're comfortable with the API, read :ref:`part 2 of this tutorial
+<intro-tutorial02>` to get Django's automatic admin working.

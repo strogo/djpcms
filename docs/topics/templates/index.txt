@@ -1,0 +1,115 @@
+.. _topics-templates-index:
+
+============================
+Djpcms template structure
+============================
+   
+
+To use the template structure you need to insert the djpcms template directory into the
+`TEMPLATE_DIRS <http://docs.djangoproject.com/en/dev/ref/settings/#template-dirs>`_ tuple.
+
+One quick way of doing this in your ``settings.py`` file is::
+
+	import os
+	import djpcms
+	
+	TEMPLATE_DIRS = (
+		os.path.join(os.path.dirname(__file__),'relative/path/toyoursite/templates'),
+		other_templates,
+		os.path.join(djpcms.__path__[0], 'templates')
+		)
+
+And create a ``root.html`` file at the root directory in your site template directory structure::
+
+	{% extends "djpcms/root.html" %}
+  	{% block site-keywords %}your,site,keywords{% endblock %}
+	{% block site-description %}your site description{% endblock %}
+  	
+
+
+----------------------------
+The Root Template
+----------------------------
+
+At the top of the tree there is the ``root.html`` file which lays out the main tags of the html page: the ``head`` and the ``body``.
+A new django site using ``djpcms`` templating system need to define a new ``root.html`` template which extends ``djpcms\root.html``.
+
+
+
+Head block tags
+-------------------
+Here we list the django block tags for customizing the ``head``.
+
+
+
+Body block tags
+------------------
+
+The body is defined has follow::
+
+	<body{% block bodybits %}{% endblock %}>
+	
+		<div {% block body-container-bits %}id="container"{% endblock %}>{% block html-container %}{% endblock %}
+		</div>
+	
+		{% block end-page-scripts %}{% endblock %}
+	
+		{% block analytics-scripts %}{% if GOOGLE_ANALYTICS_ID %}
+		<script type="text/javascript"> 
+			var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+			document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+		</script> 
+		<script type="text/javascript"> 
+			var pageTracker = _gat._getTracker("{{ GOOGLE_ANALYTICS_ID }}");
+			pageTracker._initData();
+			pageTracker._trackPageview();
+		</script>{% endif %}{% endblock %}
+
+	</body>
+
+There are two important django block tags:
+
+	* ``html-container``: to wrap all the html in the page.
+	* ``end-page-scripts``: to insert all your end-of-page javascript files.
+	
+
+----------------------------------
+Grid 960 css templates
+----------------------------------
+
+The ``djpcms/960gs/standard.html`` specializes your root template by creating inside the ``html-container`` tag three
+subtags::
+
+	{% block html-container %}
+		<div id="branding-banner">{% block page-branding %}{% endblock %}
+		</div>
+		{{ grid.clear }}
+		
+		<div id="site-navigation-banner">
+			<div class="{{ grid.column1 }}">{% block site-navigation %}{% endblock %}
+			</div>
+		</div>
+		{{ grid.clear }}
+		
+		<div id="main-body">
+		
+			{% if cl.title %}{% block page-headings %}
+			<div class="{{ grid.column1 }}">
+			<h2 id="page-heading">
+				{{ cl.title }}
+			</h2>
+			</div>
+			{{ grid.clear }}{% endblock %}{% endif %}
+			
+			{% block page-prebody %}{% endblock %}
+			
+			{% block page-body %}{% endblock %}
+			
+			{% block page-postbody %}{% endblock %}
+		</div>
+		
+		<div id="footer">{% block page-footer %}{% endblock %}
+		</div>
+	{% endblock %}
+		
+		

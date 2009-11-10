@@ -1,0 +1,17 @@
+{% extends "home.html" %}{% load gridwrap %}
+
+{% block content-table %}
+<div class="twocolumns-{% block twocolumns-type %}250{% endblock %}">
+ <div class="twocolumns second">{% block content12 %}{% for c in content12 %}
+ {{ c.render_as_widget }}{% endfor %}{% endblock %}
+ </div> <!-- End of twocolumn second -->
+ 
+ <div class="twocolumns first">
+  <div class="sfe-break-right">
+   <div class="g-wrap">{% block content11 %}{% for c in content11 %}
+   {{ c.render_as_widget }}{% endfor %}{% endblock %}
+   </div>
+  </div>
+ </div> <!-- End of twocolumn first -->
+</div>
+{% endblock %}

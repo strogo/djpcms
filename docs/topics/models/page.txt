@@ -1,0 +1,18 @@
+
+.. _page-model:
+
+================================
+Pages
+================================
+
+At the hart of the Content Management System lays the Page models. Page models derived form `PageBase` abstract Model.
+There are two of them: `Page` and `AppPage`
+
+
+PageBase
+==============================================
+
+
+
+
+The content editing views is controlled by the setting :ref:`content-inline-editing`.

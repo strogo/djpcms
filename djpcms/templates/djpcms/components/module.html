@@ -1,0 +1,8 @@
+{% extends "djcms/components/base.html" %}{% block inner-component %}
+{% if html.title %}<div class="hd">
+{{ html.title }}
+</div>{% endif %}
+<div class="bd">
+{{ html.body.render }}
+</div>
+{% if html.footer %}<div class="ft">{{ html.footer.render }}</div>{% endif %}{% endblock %}

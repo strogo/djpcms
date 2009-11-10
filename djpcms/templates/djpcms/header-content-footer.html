@@ -1,0 +1,26 @@
+{% extends "root.html" %}{% block html-container %}
+<div id="header">{% block header %}{% endblock %}</div>{% block extra-header %}{% endblock %}
+
+<!-- Start of content block -->
+<div id="content">
+<div class="{{ cl.keys.ajax_server_error }} {{ cl.keys.errorlist }}"></div>
+{% block pre-content %}{% endblock %}
+<div id="content-main">{% block content-main %}
+<div id="factory-title">
+{% block content-main-pre-title %}{% endblock %}
+{% if cl.title %}<h1>{{ cl.title }}</h1>{% endif %}
+</div>
+{% block content-main-post-title %}
+{{ cl.content_main }}{% endblock %}{% endblock %}
+</div>
+{% block post-content %}{% endblock %}
+</div> <!-- End of Content block -->
+
+<!-- Start of footer block -->
+<div id="footer">{% block pre-footer %}{% endblock %}
+<div id="footer-main">{% block footer-main %}
+<p>{% if site.company_name %}&copy; {% block before-company-footer %}{% endblock %} {{ site.company_name }} - {% endif %}
+<a href="/">home</a>{% if site.legal %} - <a href="{{ site.legal.absolute_url }}">legal</a>{% endif %}</p>{% endblock %}
+</div>{% block post-footer %}{% endblock %}
+</div><!-- End of Footer block -->
+{% endblock %}

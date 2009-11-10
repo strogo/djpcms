@@ -1,0 +1,47 @@
+.. _topics-templates-overview:
+
+============================
+The Root Template
+============================
+
+At the top of the tree there is the ``root.html`` file which lays out the main tags of the html page: the ``head`` and the ``body``.
+A new django site using ``djpcms`` templating system need to define a new ``root.html`` template which extends ``djpcms\root.html``.
+
+
+
+Head block tags
+=================
+Here we list the django block tags for customizing the ``head``.
+
+
+
+Body block tags
+================
+
+The body is defined has follow::
+
+	<body {% block bodybits %}{{ cl.bodybits }}{% endblock %}>
+	
+		<div {% block body-container-bits %}id="container"{% endblock %}>{% block html-container %}{% endblock %}
+		</div>
+	
+		{% block end-page-scripts %}{% endblock %}
+	
+		{% block analytics-scripts %}{% if GOOGLE_ANALYTICS_ID %}
+		<script type="text/javascript"> 
+			var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+			document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+		</script> 
+		<script type="text/javascript"> 
+			var pageTracker = _gat._getTracker("{{ GOOGLE_ANALYTICS_ID }}");
+			pageTracker._initData();
+			pageTracker._trackPageview();
+		</script>{% endif %}{% endblock %}
+
+	</body>
+
+There are two important django block tags:
+
+	* ``html-container``: to wrap all the html in the page.
+	* ``end-page-scripts``: to insert all your end-of-page javascript files.
+	

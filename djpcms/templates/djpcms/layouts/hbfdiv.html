@@ -1,0 +1,17 @@
+{# HEADER-BODY-FOOTER DIV LAYOUT #}
+{% extends "root.html" %}
+
+{% block html-container %}
+<div id="header-row"> <!-- START OF HEADER ROW -->{% block header-row %}{% endblock %}
+</div> <!-- END OF HEADER ROW -->
+
+<div id="body-row"> <!-- START OF BODY ROW -->
+<div id="body-row-safe">
+<div class="g-wrap">{% block body-row %}{% endblock %}
+</div>
+</div>
+</div> <!-- END OF BODY ROW -->
+
+<div id="footer-row"> <!-- START OF FOOTER ROW -->{% block footer-row %}{% endblock %}
+</div> <!-- END OF FOOTER ROW -->
+{% endblock %}

@@ -1,0 +1,8 @@
+{% extends "djpcms/form/basetable.html" %}{% block core-table %}
+  <tr>{% for field in html %}{% block label-tag %}
+  	<td align="left"> {{field.label_tag }} </td>{% endblock %}
+  	<td>{{ field.field }}</td>{% endfor %}{% for sb in html.children %}
+  	<td align="left">
+  	  {{ sb }}
+	</td>{% endfor %}
+  </tr>{% endblock %}

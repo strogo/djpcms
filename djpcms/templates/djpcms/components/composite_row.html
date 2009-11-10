@@ -1,0 +1,12 @@
+{% extends "djcms/components/base.html" %}{% block inner-component %}
+{{ block.super }}
+<table>
+<tbody>
+<tr>{% for co in html.components %}
+  <td valign="top">
+  {{ co.render }}
+  </td>{% endfor %}
+</tr>
+</tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,3 @@
+{% extends "djcms/components/base.html" %}{% block inner-component %}
+{{ block.super }}{% for co in html.components %}{{ co.render }}{% endfor %}
+{% endblock %}
