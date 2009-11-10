@@ -1,6 +1,7 @@
 from django.conf import settings
 from djpcms.ajax import classes as default_html_classes
 
+
 LANGUAGE_REDIRECT      = getattr(settings, 'LANGUAGE_REDIRECT', False)
 DEFAULT_TEMPLATE_NAME  = getattr(settings, 'DEFAULT_TEMPLATE_NAME', 'djpcms/base.html')
 COMPRESSED_MEDIA       = getattr(settings, 'COMPRESSED_MEDIA', True)

@@ -5,7 +5,7 @@ from django.db import models
 from djpcms.models import DJPplugin, SiteContent
 from djpcms.djutils import form_kwargs
 from djpcms.djutils.fields import SlugField
-from djpcms.markups import markup_choices, default_markup
+from djpcms.utils.markups import markup_choices, default_markup
 
 __all__ = ['TextEditor']
 

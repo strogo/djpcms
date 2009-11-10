@@ -8,6 +8,9 @@ body {
 	font-weight:normal;
 	line-height:1.4em;
 }
+strong {
+	font-weight: bold;
+}
 a, a.link {
 	text-decoration: none;
 }
@@ -16,7 +19,6 @@ h1 {
 	font-size:218%;
 	line-height:1.1em;
 	margin-bottom:0.6em;
-	margin-top:0.6em;
 }
 h2 {
 	color:#092E20;

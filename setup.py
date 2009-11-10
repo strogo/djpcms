@@ -27,7 +27,6 @@ setup(
         description = 'Django-jQuery dynamic Content Management System',
         packages = packages,
         data_files = data_files,
-        install_requires = [ "django" ],
         keywords = 'django, cms',
         classifiers = [
             'Development Status :: 4 - Beta',
@@ -38,6 +37,8 @@ setup(
             'Framework :: Django',
             'Programming Language :: Python',
             'Topic :: Software Development :: Utilities'
-        ]
+        ],
+        install_requires=['django',
+                          'python-openid'],
     )
 

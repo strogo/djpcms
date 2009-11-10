@@ -57,7 +57,7 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'sitedjpcms.urls'
 
-
+TEMPLATE_DIRS     = (os.path.join(PSETTINGS.LOCDIR, 'templates'))
 
 INSTALLED_APPS = ['django.contrib.auth',
                   'django.contrib.sites',
@@ -66,8 +66,7 @@ INSTALLED_APPS = ['django.contrib.auth',
                   'django.contrib.admin',
                   'djpcms',
                   'djpcms.plugins.text',
-                  'djpcms.plugins.snippet',
-                  'sitedjpcms']
+                  'djpcms.plugins.snippet']
 
 # djpcms settings
 DEFAULT_TEMPLATE_NAME = 'base.html'
@@ -75,4 +74,5 @@ CONTENT_INLINE_EDITING = {'available':      True,
                           'pagecontent':    '/site-content/',
                           'width':          600,
                           'height':         500}
-import djpcmsconfig
+APPLICATION_MODULE     = 'sitedjpcms.appurls'
+import djpcms.utils.markups.install

@@ -11,6 +11,10 @@ from djpcms.plugins.wrapper import content_wrapper_tuple
 from djpcms.djutils.fields import LazyChoiceField
 
 
+EDIT_BLOCK_TEMPLATES = ["content/edit_block.html",
+                        "djpcms/content/edit_block.html"]
+
+
 class LazyAjaxChoice(LazyChoiceField):
     
     def __init__(self, *args, **kwargs):
@@ -111,13 +115,16 @@ class BlockContentGen(UnicodeObject):
     A page is associated with a given url and a page has a certain number
     of blocks depending on the template chosen for the pages: anything between 1 and 10 is highly possible.
     Within each block there may be one or more contents.
+    
+    The edit mode block elements are rendered using the EDIT_BLOCK_TEMPLATES templates (see at top of file)
     '''
     def __init__(self, request, view, b, page):
         '''
-        Initialize 
+        Initialize
         @param request: django request instance
         @param view:    instance of djpcmsview
         @param b:       integer indicating the block number in the page
+        @param page:    instance of Page or AppPage
         '''
         self.request = request
         self.view    = view
@@ -133,6 +140,10 @@ class BlockContentGen(UnicodeObject):
         self.b       = b
         
     def render(self):
+        '''
+        Render the Block.
+        @return: HTML safe unicode for the block
+        '''
         html = [u'<div id="%s" class="djpcms-block">' % self.htmlid()]
         for ht in self.blocks():
             html.append(ht)
@@ -181,7 +192,7 @@ class BlockContentGen(UnicodeObject):
                  'contentblock': b,
                  'form': self.form(instance = b),
                  'plugin_edit_block': b.plugin_edit_block(self.request)}
-            yield loader.render_to_string('djpcms/content/edit_block.html',
+            yield loader.render_to_string(EDIT_BLOCK_TEMPLATES,
                                           context_instance = RequestContext(self.request,c))
         return
 

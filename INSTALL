@@ -6,3 +6,8 @@ this command from the command prompt:
     python setup.py install
     
 Note this requires a working Internet connection for all dependencies to be installed.
+
+
+Additional Packages not installed by default
+
+* django-openid

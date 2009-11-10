@@ -6,7 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 from djpcms.djutils.models import TimeStampUser
 from djpcms.html import htmlPlugin
 from djpcms.uploads import upload_function, site_image_storage
-from djpcms.markups import markup_choices, MARKUP_HANDLERS, default_markup
+from djpcms.utils.markups import markup_choices, MARKUP_HANDLERS, default_markup
 from djpcms.settings import *
 
 from base import *
