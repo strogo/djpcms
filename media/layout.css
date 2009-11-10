@@ -1,0 +1,86 @@
+body {
+	font-family:Verdana,sans-serif;
+	font-size:12px;
+	font-size-adjust:none;
+	font-stretch:normal;
+	font-style:normal;
+	font-variant:normal;
+	font-weight:normal;
+	line-height:1.4em;
+}
+a, a.link {
+	text-decoration: none;
+}
+h1 {
+	color:#092E20;
+	font-size:218%;
+	line-height:1.1em;
+	margin-bottom:0.6em;
+	margin-top:0.6em;
+}
+h2 {
+	color:#092E20;
+	font-size:150%;
+	line-height:1.2em;
+	margin-bottom:0.2em;
+}
+#branding-banner {
+	background: #3F3C29;
+}
+#site-navigation-banner {
+	background: #BCDD5A;
+}
+#main-body {
+	min-height: 600px;
+	margin-top: 20px;
+	margin-bottom: 40px;
+	overflow: hidden;
+}
+#footer {
+	color: #BED661;
+	background: #3F3C29;
+	height: 100px;
+}
+#documentation h2, #documentation h3, #documentation h4 {
+	margin-top:1.4em;
+}
+.site-logo {
+	font-family:Georgia,"Times New Roman","Bitstream Charter",Times,serif;
+	font-weight: bold;
+	font-size: 40px;
+	line-height: 80px;
+	padding: 0 20px;
+	color: #BED661;
+}
+#tag-line {
+	font-size: 20px;
+	line-height: 50px;
+	font-style: italic;
+	font-family:Georgia,"Times New Roman","Bitstream Charter",Times,serif;
+	padding: 0 20px;
+}
+h2.deck {
+	font-weight: normal;
+	color:#487858;
+	margin-top: 1.4em;
+	margin-bottom:0.6em;
+}
+.user-box {
+	float: right;
+}
+.user-box a, a.link {
+	color: #D9FFCC;
+}
+.user-box a:hover {
+	color: #D2FF4D;
+}
+ul.user-nav {
+	display: inline;
+}
+ul.user-nav li {
+	display: inline;
+	list-style-type:none;
+	margin:0;
+	padding:0 0 0 15px;
+}
+

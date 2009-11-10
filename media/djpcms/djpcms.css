@@ -1,0 +1,262 @@
+
+pre {
+	margin:1em 1.75em;
+	overflow:auto;
+	padding:0.25em;
+}
+
+strong {
+	font-weight: bold;
+}
+
+
+/**	TABLE
+-----------------------------------------------------------*/
+table.plain td,
+table.plain th {padding: 3px 15px 3px 0; text-align: left;}
+
+/*		BOX and CONTENT BLOCKS
+-------------------------------------------------*/
+
+.djpcms-contentblock {
+	margin-bottom: 20px;
+}
+	
+.djpcms-html-box .hd {
+	color:rgb(10,10,10);
+	margin:-10px -10px 0 -10px;
+	padding:6px 12px;
+	overflow:hidden;
+}
+.djpcms-html-box .hd  h2 {
+	color: #464646;
+	font-size: 12px;
+	font-weight: bold;
+	line-height: 1;
+	padding: 0;
+	margin:0;
+}
+
+div.intro {
+	background: transparent;
+}
+.intro p {
+	text-align: justify;
+}
+.intro h1, .intro h2, .intro h3 {
+ 	text-align: center;
+}
+
+
+
+/**  MENU AND ACCORDION MENU
+-----------------------------------------------------------*/
+ul.menu {
+	list-style:none;
+}
+ul.menu li a {
+	padding:4px 10px;
+}
+ul.menu li {text-transform: uppercase;}
+ul.menu li ul li {text-transform: lowercase;}
+
+ul.accordionmenu {
+	filter:alpha(opacity=0);
+  	opacity:0;
+}
+ul.accordionmenu .ui-icon {display: none;}
+.ui-accordion .ui-accordion-content {
+border-top:0 none;
+margin-top: 0;
+margin-bottom: 0;
+padding: 0;
+}
+ul.menu li.selected a {
+	background: transparent url("jquery-ui-css/redmond/images/ui-bg_glass_75_d0e5f5_1x400.png") repeat-x scroll 50% 50%;
+}
+ul.menu li.selected ul li a {background: rgb(255,255,255);}
+ul.menu li.selected ul li.selected a {background: rgb(245,245,245);}
+
+
+
+/** INLINE CONTENT EDITING WITH DEFAULT STYLE
+-----------------------------------------------------------*/
+body.edit {
+	background: rgb(9,46,32);
+}
+body.edit #body-container,
+body.edit #branding-banner {
+	background: rgb(134,182,150);
+}
+.edit-contentblock {border: 1px solid rgb(150,150,150); margin-bottom: 20px;}
+.edit-contentblock .actions {
+	background: rgb(9,46,32);
+	overflow:hidden;
+	width: 100%;
+	height: 20px;
+}
+.edit-contentblock .hd {
+	background: rgb(35,79,50);
+	color: rgb(255,255,255);
+	padding: 2px 10px;
+}
+.edit-contentblock .bd {padding: 0; overflow: hidden;}
+.edit-contentblock .bd .control {
+	padding: 5px 10px;
+	background: rgb(50,99,66);
+	color: rgb(255,255,255);
+	border-top: 1px solid rgb(150,150,150);
+	border-bottom: 1px solid rgb(150,150,150);
+}
+.edit-contentblock .bd .preview {padding: 5px 10px; background: rgb(255,255,255);}
+.edit-contentblock input[type="submit"] {
+	background: transparent url(img/images/download_bg-left.gif) no-repeat;
+	color: rgb(255,255,255);
+}
+.edit-contentblock table {width: 100%;}
+.edit-contentblock .actions ul {float: right;}
+form.edit-block-form select {width: 100%;}
+form.content-select table {margin:0; float: left;}
+
+.content-edit-body {width: 100%; height: 100%;}
+.djpcontent form {height: 100%;}
+.content-edit-body textarea {width: 98%; height: 98%;}
+
+
+
+/* FORM classes
+-------------------------------------------------------------*/
+form .onecolumn input[type="text"] {
+	width: 98%;
+	padding: 2px 2px;
+}
+form .onecolumn textarea {
+	padding: 2px 2px;
+	width: 98%;
+	height: 40px;
+}
+form .field-separator {
+	height: 0.3em;
+}
+form .errorlist {
+	margin: 0;
+}
+
+
+
+/* GENERAL CLASSES FOR Tags 
+-------------------------------------------------------------*/
+.form-messages {
+	font-weight: bold;
+	color: rgb(0,77,38);
+	margin: 5px 0;
+	filter:alpha(opacity=70);
+  	opacity:0.7;
+}
+.center-element {
+	display:block;
+	margin-left:auto;
+	margin-right:auto; 
+}
+
+a.editable {
+	float: right;
+	background:transparent url("img/famicons/pencil.png") no-repeat;
+	display:block;
+	padding:10px 12px;
+	margin:0;
+	border:none;
+}
+a.deletable {
+	float: right;
+	background:transparent url("img/famicons/cross.png") no-repeat;
+	display:block;
+	padding:10px 12px;
+	margin:0;
+	border:none;
+}
+
+div.tag-cloud {
+	letter-spacing:normal;
+	line-height:1.6em;
+	text-align:justify;
+	text-decoration:none;
+	text-indent:0;
+	text-transform:none;
+	word-spacing:normal;
+}
+
+.djp-simple ul {
+	list-style-type:none;
+	list-style:disc outside;
+	padding-left:20px;
+	margin:0px;
+	margin-bottom:0.3em;
+}
+.djp-simple ul li {
+	margin-bottom: 0.5em;
+}
+.djp-simple ul li ul li {
+	margin-bottom: 0.3em;
+}
+
+blockquote div.body-quote {
+	margin-bottom: 0.7em;
+}
+
+input.search-box {padding: 4px 2px;}
+
+/* CONTENT CLASSES
+------------------------------------------------------------------*/
+
+div.djp-simple {
+	margin-bottom: 30px;
+}
+.djp-simple img {
+	margin: 20px 20px;
+}
+
+/* Comments */
+div.djpcms-comment.djpcms-html-box {
+	margin-top: 30px;
+	border: none;
+}
+div.djpcms-comment.djpcms-html-box .bd {
+	margin-top: 20px;
+}
+.djpcms-comment {
+	float: left;
+	width: 100%;
+	padding: 10px 0;
+	border-bottom: 1px solid rgb(180,180,180);
+}
+.djpcms-comment .head {
+	width: 100%;
+	margin-bottom: 10px;
+}
+.djpcms-comment .head span {
+	color: rgb(120,120,120);
+}
+
+/* SEARCH Results classes
+----------------------------------------------------------------------*/
+.search-item {margin-bottom: 20px;}
+.list-item {overflow: hidden; margin-bottom: 20px;}
+.list-item .hd {overflow: hidden; margin-bottom:5px;}
+.list-item .hd h3 {float: left; margin: 0;}
+
+/* Documentation
+-----------------------------------------------------------------------*/
+.documentation h2, .documentation h3, .documentation h4 {
+	margin-top:1.4em;
+}
+.documentation :hover > a.headerlink {
+	visibility:visible;
+}
+.documentation a.headerlink {
+	color:#C60F0F;
+	font-size:0.8em;
+	padding:0 4px;
+	text-decoration:none;
+	visibility:hidden;
+}
