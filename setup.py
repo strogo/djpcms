@@ -1,4 +1,4 @@
-version = (0, 2, 'beta')
+version = (0, 4, 'pre')
 
 import os
 from quickutils import packages_in_dirs, get_version

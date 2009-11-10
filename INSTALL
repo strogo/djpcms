@@ -1,0 +1,8 @@
+Thanks for downloading djpcms.
+
+To install it, make sure you have Python 2.5 or greater installed. Then run
+this command from the command prompt:
+
+    python setup.py install
+    
+Note this requires a working Internet connection for all dependencies to be installed.
