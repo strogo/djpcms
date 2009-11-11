@@ -6,7 +6,7 @@ from djpcms.views.docview import DocView
 from djpcms.urls import site_urls
 
 
-# Create the documentation view handler
+#_________________________________________________ Create the documentation view handler
 class DjpcmsDoc(DocView):
     name = 'djpcms'
     baseurl = '/docs/'
@@ -15,8 +15,6 @@ class DjpcmsDoc(DocView):
     def get_path_args(self, lang, version):
         return ("_build", "json")
 djpcms_view = DjpcmsDoc()
-
-# Add user account support
 
 
 

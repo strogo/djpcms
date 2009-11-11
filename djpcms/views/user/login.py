@@ -19,7 +19,7 @@ class LogoutApp(appsite.AppView):
     '''
     _methods = ('get',)
     
-    def __init__(self, url, parent = None):
+    def __init__(self, url = 'logout', parent = None):
         super(LogoutApp,self).__init__(url,parent,isapp = False)
         
     def preget(self, request):
@@ -37,8 +37,8 @@ class LoginApp(appsite.AppView):
     A Battery included Login view.
     This object can be used to login users
     '''
-    def __init__(self, *args, **kwargs):
-        super(LoginApp,self).__init__(*args, **kwargs)
+    def __init__(self, url = 'login', parent = None, **kwargs):
+        super(LoginApp,self).__init__(url, parent, **kwargs)
         
     def title(self):
         return 'Sign in to %s' % self.page.site.name
@@ -51,9 +51,9 @@ class LoginApp(appsite.AppView):
         if request.user.is_authenticated():
             return http.HttpResponseRedirect('/')
     
-    def update_content(self, request, c):
+    def inner_content(self, request):
         data = request.GET.copy()
-        c['content'] = self.get_form(request, initial = data)
+        return self.get_form(request, initial = data)
         
     def render(self, request, prefix, wrapper):
         '''

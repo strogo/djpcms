@@ -9,7 +9,7 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext, loader
 from django.core.exceptions import PermissionDenied
 
-from djpcms.settings import HTML_CLASSES, GRID960_DEFAULT_FIXED
+from djpcms.settings import HTML_CLASSES, GRID960_DEFAULT_FIXED, DEFAULT_TEMPLATE_NAME
 from djpcms.ajax import jservererror
 from djpcms.extracontent import extra_content
 from djpcms.views.contentgenerator import BlockContentGen
@@ -121,7 +121,7 @@ class djpcmsview(UnicodeObject):
             if page:
                 return page.get_template()
             else:
-                raise ValueError('Page and template_name not defined in %s' % self)
+                return DEFAULT_TEMPLATE_NAME
         
     def title(self, request, pagetitle):
         return pagetitle
@@ -214,7 +214,7 @@ class djpcmsview(UnicodeObject):
             for b in range(0,blocks):
                 c['content%s' % b] = BlockContentGen(request, self, b, page)
                     
-            c['inner'] = page.inner_template.render(RequestContext(request, c))
+            inner = page.inner_template.render(RequestContext(request, c))
             
             if self.editurl:
                 b = urlbits(request.path)[1:]
@@ -223,9 +223,10 @@ class djpcmsview(UnicodeObject):
                 c['edit_content_url'] = inline_editing(request,self)
              
         else:
-            # No page or no inner_template. Call the get_content method
-            self.update_content(request, c)
+            # No page or no inner_template. Get the inner content directly
+            inner = self.inner_content(request)
             
+        c['inner'] = inner
         return self.render_to_response(template_name = cl.template,
                                        context_instance = RequestContext(request, c))
     

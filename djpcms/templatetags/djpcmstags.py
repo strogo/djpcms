@@ -6,22 +6,24 @@ from django.conf import settings
 
 register = template.Library()
 
-ganalytics = u'''<script type="text/javascript"> 
-var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-</script> 
-<script type="text/javascript"> 
-var pageTracker = _gat._getTracker("%s");
-pageTracker._initData();
-pageTracker._trackPageview();
-</script>'''
-
 
 def google_analytics():
-    if not GOOGLE_ANALYTICS_ID:
+    if GOOGLE_ANALYTICS_ID:
+        an = """
+    <script type="text/javascript">
+        var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+        document.write(unescape("%%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%%3E%%3C/script%%3E"));
+    </script>
+    <script type="text/javascript">
+        var pageTracker = _gat._getTracker("%s");
+        pageTracker._initData();
+        pageTracker._trackPageview();
+    </script>
+        """ % GOOGLE_ANALYTICS_ID
+        return mark_safe(an)
+    else:
         return u''
-    return mark_safe(ganalytics % GOOGLE_ANALYTICS_ID)
-google_analytics = register.simple_tag(google_analytics)
+register.simple_tag(google_analytics)
 
 def styling():
     murl = settings.MEDIA_URL
