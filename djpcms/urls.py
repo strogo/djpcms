@@ -2,7 +2,9 @@ from django.conf import settings
 from django.contrib import admin
 from django.conf.urls.defaults import include, url
 
-from djpcms.settings import SERVE_STATIC_FILES, CONTENT_INLINE_EDITING, APPLICATION_URL_PREFIX
+import djpcms
+from djpcms.settings import SERVE_STATIC_FILES, CONTENT_INLINE_EDITING, \
+                            APPLICATION_URL_PREFIX
 from djpcms.plugins.application import appsite
 
 admin.autodiscover()
@@ -22,11 +24,20 @@ if appsite.site.count():
 
 # MEDIA FILES ONLY IF REQUESTED
 if SERVE_STATIC_FILES:
-    site_urls += (
-         r'^%s(?P<path>.*)$' % settings.MEDIA_URL.lstrip("/"),
-          'django.views.static.serve',
-         {'document_root': settings.MEDIA_ROOT, 'show_indexes': True}
-        ),
+    import djpcms
+    import os
+    djpcms_media_root = os.path.join(djpcms.__path__[0],'media')
+    murl = settings.MEDIA_URL.lstrip("/")
+    site_urls += (r'^%sdjpcms/(?P<path>.*)$' % murl,
+                  'django.views.static.serve',
+                  {'document_root': djpcms_media_root, 'show_indexes': True}
+                  ),
+    site_urls += (r'^%ssite/(?P<path>.*)$' % murl,
+                  'django.views.static.serve',
+                  {'document_root': settings.MEDIA_ROOT, 'show_indexes': True}
+                  ),
+                 
+        
 
 # if inline editing add url
 if CONTENT_INLINE_EDITING.get('available',False):

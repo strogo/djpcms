@@ -127,8 +127,8 @@ class AppView(djpcmsview):
         '''
         pass
     
-    def update_content(self, request, c):
-        c['content'] = self.render(request,None,None)
+    def inner_content(self, request):
+        return self.render(request,None,None)
     
     def __deepcopy__(self, memo):
         result = copy.copy(self)

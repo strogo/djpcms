@@ -64,9 +64,9 @@ class ModelApplicationBase(ajaxbase):
     Each one of the class attributes are optionals
     '''
     # Name for this application. Optional (the model name will be used if None)
-    name             = None
+    name             = 'NoName'
     # Base URL for the application including trailing slashes. Optional
-    baseurl          = None
+    baseurl          = '/'
     # Does require authenticated user?
     autheinticated   = True
     # Form used for adding/editing objects.

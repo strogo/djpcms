@@ -78,7 +78,8 @@ class HeaderBody(jsonbase):
 class jservererror(HeaderBody):
     
     def __init__(self, err, url = None):
-        self.html = loader.render_to_string('djpcms/bits/post-error.html',
+        self.html = loader.render_to_string(['bits/post-error.html',
+                                             'djpcms/bits/post-error.html'],
                                             {'error':mark_safe(err),
                                              'url': url})
     

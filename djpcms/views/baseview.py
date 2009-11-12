@@ -54,7 +54,7 @@ class ResponseBase(UnicodeObject):
         if self.page:
             return self.page.href_name
         else:
-            return self.view.title(self.request)
+            return self.title()
         
     def title(self):
         if self.page:
@@ -62,7 +62,13 @@ class ResponseBase(UnicodeObject):
         else:
             title = None
         return self.view.title(self.request, title)
-        
+    
+    def in_navigation(self):
+        if self.page:
+            return self.page.in_navigation
+        else:
+            return 1
+    
     def __getattr__(self, name):
         global _Custom_response_methods
         attr = getattr(self.view,name,None)

@@ -1,10 +1,9 @@
 from django.conf import settings
 from djpcms.ajax import classes as default_html_classes
 
-
+# Not available yet. For future releases
 LANGUAGE_REDIRECT      = getattr(settings, 'LANGUAGE_REDIRECT', False)
-DEFAULT_TEMPLATE_NAME  = getattr(settings, 'DEFAULT_TEMPLATE_NAME', 'djpcms/base.html')
-COMPRESSED_MEDIA       = getattr(settings, 'COMPRESSED_MEDIA', True)
+DEFAULT_TEMPLATE_NAME  = getattr(settings, 'DEFAULT_TEMPLATE_NAME', ['base.html','djpcms/base.html'])
 DEFAULT_VIEW_MODULE    = getattr(settings, 'DEFAULT_VIEW_MODULE', 'djpcms.views.pageview.pageview')
 USE_TINYMCE            = getattr(settings, 'USE_TINYMCE', False)
 HTML_CLASSES           = getattr(settings, 'HTML_CLASSES', default_html_classes)
@@ -14,20 +13,13 @@ CACHE_VIEW_OBJECTS     = getattr(settings, 'CACHE_VIEW_OBJECTS', True)
 
 DJPCMS_IMAGE_UPLOAD_FUNCTION = getattr(settings, 'DJPCMS_IMAGE_UPLOAD_FUNCTION', None)
 
-
-AJAX_POST_ERROR_TEMPLATE    = getattr(settings,
-                                     'AJAX_POST_ERROR_TEMPLATE',
-                                     'djpcms/bits/post-error.html')
-#TODO: remove in version 0.4
-POST_ERROR_TEMPLATE = AJAX_POST_ERROR_TEMPLATE
-
 SERVE_STATIC_FILES     = getattr(settings, 'SERVE_STATIC_FILES', False)
 
 PERMISSION_DENIED_MODULE = getattr(settings, 'PERMISSION_DENIED_MODULE', 'djpcms.views.permission_denied')
 
 
 # Root page for user account urls
-USER_ACCOUNT_HOME_URL    = getattr(settings, 'USER_ACCOUNT_HOME_URL', '/account/')
+USER_ACCOUNT_HOME_URL    = getattr(settings, 'USER_ACCOUNT_HOME_URL', '/accounts/')
 
 
 JS_START_END_PAGE        = getattr(settings, 'JS_START_END_PAGE', 101)

@@ -98,12 +98,10 @@ class lazynavigator(object):
         children = self.get_children()
     
         for view in children:
-            cl   = view.requestview(self.request)
-            if not cl.page:
-                continue
+            cl  = view.requestview(self.request)
             url = view.get_url(self.request)
             classes = []
-            if cl.page.in_navigation > secondary_after:
+            if cl.in_navigation() > secondary_after:
                 classes.append(scn)
             if url in urlselects:
                 classes.append(HTML_CLASSES.link_selected)

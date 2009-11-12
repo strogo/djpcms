@@ -29,7 +29,7 @@ def styling():
     murl = settings.MEDIA_URL
     css = ['<link rel="stylesheet" type="text/css" href="%sdjpcms/jquery-ui-css/%s.css"/>' % (murl,DJPCMS_SITE_STYLE),
            '<link rel="stylesheet" type="text/css" href="%sdjpcms/djpcms.css"/>' % murl,
-           '<link rel="stylesheet" type="text/css" href="%slayout.css"/>' % murl,
-           '<link rel="stylesheet" type="text/css" href="%s%s.css"/>' % (murl,DJPCMS_SITE_STYLE)]
+           '<link rel="stylesheet" type="text/css" href="%ssite/layout.css"/>' % murl,
+           '<link rel="stylesheet" type="text/css" href="%ssite/%s.css"/>' % (murl,DJPCMS_SITE_STYLE)]
     return mark_safe(u'\n'.join(css))
 styling = register.simple_tag(styling)
