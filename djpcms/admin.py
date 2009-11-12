@@ -1,21 +1,19 @@
+from django import forms
 from django.contrib import admin
 
 from djpcms import models
+from djpcms.plugins.snippet.models import Snippet
 from djpcms.forms import PageForm, AppPageForm
 
+
+class BlockContentAdmin(admin.ModelAdmin):
+    list_display = ('page','block','position','plugin_name','plugin','container_type')
+    
 class SiteContentAdmin(admin.ModelAdmin):
     list_display = ('code','last_modified','user_last','markup')
-admin.site.register(models.SiteContent, SiteContentAdmin)
-
+    
 class SiteImageAdmin(admin.ModelAdmin):
     list_display = ('image','code','path','description','url')
-admin.site.register(models.SiteImage, SiteImageAdmin)
-    
-class TemplateAdmin(admin.ModelAdmin):
-    list_display = ('name','image','blocks')
-admin.site.register(models.Template, TemplateAdmin)
-
-admin.site.register(models.CssPageInfo, list_display=['id','body_class_name','conteiner_class','fixed'])
 
 class PageAdmin(admin.ModelAdmin):
     list_display        = ('site','code','level','in_navigation',
@@ -42,17 +40,6 @@ class PageAdmin(admin.ModelAdmin):
         )
     
     search_fields = ('code',)
-    
-    #def save_model(self, request, obj, form, change):
-    #    url = obj.url_pattern
-    #    m = models.CommonUrl(code = url)
-    #    try:
-    #        m.save()
-    #    except:
-    #        pass
-    #    obj.save()
-
-admin.site.register(models.Page, PageAdmin)
 
 class AppPageAdmin(admin.ModelAdmin):
     list_display = ('site', 'code', 'in_navigation','href_name','title',
@@ -66,5 +53,15 @@ class AppPageAdmin(admin.ModelAdmin):
         }),
         )
     form = AppPageForm
+    
+    
+admin.site.register(models.SiteContent, SiteContentAdmin)
+admin.site.register(models.SiteImage, SiteImageAdmin)
+admin.site.register(models.Template, list_display = ['name','image','blocks'])
+admin.site.register(models.CssPageInfo, list_display=['id','body_class_name','conteiner_class','fixed'])
+admin.site.register(models.Page, PageAdmin)    
 admin.site.register(models.AppPage,AppPageAdmin)
+admin.site.register(models.BlockContent,    BlockContentAdmin)
+admin.site.register(models.AppBlockContent, BlockContentAdmin)
 
+admin.site.register(Snippet)
