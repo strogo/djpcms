@@ -1,8 +1,8 @@
 from django.utils.encoding import force_unicode
 from django import forms
 
-from djpcms.ajax import jhtmls, jerrors, jredirect
-from djpcms.djutils.func import slugify, isforminstance
+from djpcms.utils.ajax import jhtmls, jerrors, jredirect
+from djpcms.utils.func import slugify, isforminstance
 
 from base import htmlPlugin, compactTag, TemplatePlugin, div
 from shortcuts import submit

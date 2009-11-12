@@ -10,8 +10,8 @@ from django.template import loader
 from djpcms.plugins import content_wrapper_tuple, CONTENT_WRAP_HANDLERS
 from djpcms.settings import CONTENT_INLINE_EDITING, HTML_CLASSES
 from djpcms.html import formlet, submit
-from djpcms.ajax import jhtmls
-from djpcms.djutils import requestwrap
+from djpcms.utils.ajax import jhtmls
+from djpcms.utils import requestwrap
 
 from page import Page
 from apppage import AppPage
@@ -163,12 +163,22 @@ class BlockContentBase(models.Model):
         plugin.delete()
         self.save()
         
-    def plugin_edit_block(self, request = None):
+    def plugin_edit_block(self, cl):
+        '''
+        Render the edit element for this block
+        @param cl: instance of djpcms.views.baseview.ResponseBase
+        '''
         if not self.plugin:
             return u''
-        req = requestwrap(self,request)
-        return loader.render_to_string('djpcms/content/edit_content_plugin.html', {'contentblock':req,
-                                                                                   'css': HTML_CLASSES})
+        request = cl.request
+        view    = cl.view
+        return loader.render_to_string(['content/edit_content_plugin.html',
+                                        'djpcms/content/edit_content_plugin.html'],
+                                        {'html':self.render(request,view),
+                                         'changeform': self.changeform(request),
+                                         'url': self.url(),
+                                         'contentblock': self,
+                                         'cl': cl})
         
     def changeform(self, request = None):
         f = self.plugin.changeform(request = request, prefix = 'cf_%s' % self.pluginid())

@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.sites.models import Site
 
-from djpcms.models import Page, AppPage, application_types
+from djpcms.models import Page, AppPage
 from djpcms.utils import lazyattr
 from djpcms.plugins.application import appsite
 from djpcms.djutils.fields import LazyChoiceField
@@ -16,7 +16,6 @@ class PageForm(forms.ModelForm):
     site        = forms.ModelChoiceField(queryset = Site.objects.all(), required = False)
     code        = forms.CharField(max_length=32, required = False)
     url_pattern = forms.CharField(required = False)
-    app_type    = forms.ChoiceField(choices = application_types, required = False)
     
     class Meta:
         model = Page

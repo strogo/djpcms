@@ -15,7 +15,6 @@ from django.utils.translation import ugettext_lazy as _
 from django.template import Template as DjangoTemplate
 
 #from djcms.middleware.threadlocals import get_current_user
-from djpcms.tools import markdown, util
 from djpcms.utils import lazyattr, function_module
 from djpcms.uploads import upload_function, site_image_storage
 from djpcms.settings import *

@@ -15,7 +15,7 @@ class CloudApp(AppView):
         args     = self.args or args
         
 
-class TagApplication(appsite.ModelApplicationBase):
+class TagApplication(appsite.ModelApplication):
     name    = 'tags'
     baseurl = '/tags/'
     cloud   = CloudApp()

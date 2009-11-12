@@ -1,3 +1,4 @@
+from django.utils.encoding import smart_str, force_unicode, smart_unicode
 
 class NoAjaxKeyError(Exception):
     
@@ -40,18 +41,6 @@ def setlazyattr(obj,name,value):
     setattr(obj,name,value)
     
     
-def slugify(value, rtx = '-'):
-    """
-    Normalizes string, converts to lowercase, removes non-alpha characters,
-    and converts spaces to hyphens.
-    """
-    import unicodedata
-    value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
-    value = unicode(re.sub('[^\w\s-]', '', value).strip().lower())
-    return mark_safe(re.sub('[-\s]+', rtx, value))
-
-
-
 def urlbits(url):
     if url.endswith('/'):
         url = url[:-1]
@@ -66,3 +55,39 @@ def urlfrombits(bits):
     else:
         return '/'
     
+
+
+class UnicodeObject(object):
+    
+    def __repr__(self):
+        try:
+            u = unicode(self)
+        except (UnicodeEncodeError, UnicodeDecodeError):
+            u = '[Bad Unicode data]'
+        return smart_str(u'<%s: %s>' % (self.__class__.__name__, u))
+
+    def __str__(self):
+        if hasattr(self, '__unicode__'):
+            return force_unicode(self).encode('utf-8')
+        return '%s object' % self.__class__.__name__
+
+    
+class requestwrap(UnicodeObject):
+    
+    def __init__(self, obj, request):
+        self.request = request
+        self.obj = obj
+        
+    def __unicode__(self):
+        return unicode(self.obj)
+        
+    def __getattr__(self, name):
+        attr = getattr(self.obj,name,None)
+        if attr and callable(attr):
+            # First we try using request as argument
+            try:
+                return attr(self.request)
+            except:
+                return attr()
+        else:
+            return attr

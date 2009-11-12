@@ -10,11 +10,11 @@ from django.template import RequestContext, loader
 from django.core.exceptions import PermissionDenied
 
 from djpcms.settings import HTML_CLASSES, GRID960_DEFAULT_FIXED, DEFAULT_TEMPLATE_NAME
-from djpcms.ajax import jservererror
+from djpcms.utils.ajax import jservererror
 from djpcms.extracontent import extra_content
 from djpcms.views.contentgenerator import BlockContentGen
 from djpcms.html import TemplatePlugin, breadcrumbs, grid960
-from djpcms.djutils import UnicodeObject
+from djpcms.utils import UnicodeObject
 from djpcms.views.navigation import default_navigation_constructor
 from djpcms.permissions import inline_editing
 from djpcms.utils import urlbits, urlfrombits
@@ -40,6 +40,7 @@ class ResponseBase(UnicodeObject):
         self.view     = view
         self.page     = view.get_page()
         self.template = view.get_template(self.page)
+        self.css      = HTML_CLASSES
         try:
             self.object = view.object
         except:
@@ -218,7 +219,7 @@ class djpcmsview(UnicodeObject):
         if page and page.inner_template:            
             blocks = page.inner_template.numblocks()
             for b in range(0,blocks):
-                c['content%s' % b] = BlockContentGen(request, self, b, page)
+                c['content%s' % b] = BlockContentGen(cl, b)
                     
             inner = page.inner_template.render(RequestContext(request, c))
             

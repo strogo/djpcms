@@ -6,7 +6,7 @@ from djpcms.settings import HTML_CLASSES
 from djpcms.models import BlockContent, AppBlockContent, Page, AppPage
 from djpcms.views.baseview import djpcmsview
 from djpcms.views.contentgenerator import ContentBlockForm, AppContentBlockForm
-from djpcms.ajax import jhtmls
+from djpcms.utils.ajax import jhtmls
     
     
     

@@ -5,7 +5,7 @@ from djpcms.settings import HTML_CLASSES
 from djpcms.plugins.application import appsite
 
 from djpcms.html import quickform, link
-from djpcms.ajax import jredirect
+from djpcms.utils.ajax import jredirect
 
 from forms import LoginForm
 #from tools import BaseUser

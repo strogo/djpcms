@@ -1,5 +1,5 @@
 from django.conf import settings
-from djpcms.ajax import classes as default_html_classes
+from djpcms.utils.ajax import classes as default_html_classes
 
 # Not available yet. For future releases
 LANGUAGE_REDIRECT      = getattr(settings, 'LANGUAGE_REDIRECT', False)
@@ -14,9 +14,6 @@ CACHE_VIEW_OBJECTS     = getattr(settings, 'CACHE_VIEW_OBJECTS', True)
 DJPCMS_IMAGE_UPLOAD_FUNCTION = getattr(settings, 'DJPCMS_IMAGE_UPLOAD_FUNCTION', None)
 
 SERVE_STATIC_FILES     = getattr(settings, 'SERVE_STATIC_FILES', False)
-
-PERMISSION_DENIED_MODULE = getattr(settings, 'PERMISSION_DENIED_MODULE', 'djpcms.views.permission_denied')
-
 
 # Root page for user account urls
 USER_ACCOUNT_HOME_URL    = getattr(settings, 'USER_ACCOUNT_HOME_URL', '/accounts/')
@@ -57,7 +54,6 @@ CONTENT_INLINE_EDITING = getattr(settings, 'CONTENT_INLINE_EDITING',  {'availabl
                                                                        'pagecontent': '/content/',
                                                                        'width': 600,
                                                                        'height': 400,})
-EDIT_BLOCK_TEMPLATE = 'djpcms/content/edit_block.html'
 EDIT_CONTENTBLOCK_TEMPLATE = 'djpcms/content/edit_content_block.html'
 
 

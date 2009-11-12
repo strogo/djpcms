@@ -7,8 +7,7 @@ def djpcms(request):
     djdeb = 'false'
     if settings.DEBUG:
         djdeb = 'true'
-    return {'css': HTML_CLASSES,
-            'jsdebug': djdeb,
+    return {'jsdebug': djdeb,
             'debug': settings.DEBUG,
             'now': now,
             'site_admin_url': settings.ADMIN_URL_PREFIX,

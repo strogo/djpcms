@@ -118,18 +118,18 @@ class BlockContentGen(UnicodeObject):
     
     The edit mode block elements are rendered using the EDIT_BLOCK_TEMPLATES templates (see at top of file)
     '''
-    def __init__(self, request, view, b, page):
+    def __init__(self, cl, b):
         '''
         Initialize
-        @param request: django request instance
-        @param view:    instance of djpcmsview
+        @param cl:      instance of djpcms.views.baseview.ResponseBase
         @param b:       integer indicating the block number in the page
         @param page:    instance of Page or AppPage
         '''
-        self.request = request
-        self.view    = view
-        self.page    = page
-        if isinstance(page, AppPage):
+        self.cl      = cl
+        self.page    = cl.page
+        self.view    = cl.view
+        self.request = cl.request
+        if isinstance(cl.page, AppPage):
             self.isapp      = True
             self.blockClass = AppBlockContent
             self.form       = AppContentBlockForm
@@ -188,10 +188,10 @@ class BlockContentGen(UnicodeObject):
         Equivalent to self._blocks but in editing mode
         '''
         for b in blockcontents:
-            c = {'css': HTML_CLASSES,
+            c = {'cl': self.cl,
                  'contentblock': b,
                  'form': self.form(instance = b),
-                 'plugin_edit_block': b.plugin_edit_block(self.request)}
+                 'plugin_edit_block': b.plugin_edit_block(self.cl)}
             yield loader.render_to_string(EDIT_BLOCK_TEMPLATES,
                                           context_instance = RequestContext(self.request,c))
         return
