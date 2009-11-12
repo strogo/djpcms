@@ -47,6 +47,11 @@ class AppView(djpcmsview):
     def edit_rurl(self, edit):
         return r'^%s/%s$' % (edit,self.curl)
     
+    def handle_reponse_arguments(self, request, *args, **kwargs):
+        view = copy.copy(self)
+        view.args = args
+        return view
+    
     def get_prefix(self, data):
         '''
         Get form prefix from data.

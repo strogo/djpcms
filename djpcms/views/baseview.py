@@ -11,7 +11,6 @@ from django.core.exceptions import PermissionDenied
 
 from djpcms.settings import HTML_CLASSES, GRID960_DEFAULT_FIXED, DEFAULT_TEMPLATE_NAME
 from djpcms.utils.ajax import jservererror
-from djpcms.extracontent import extra_content
 from djpcms.views.contentgenerator import BlockContentGen
 from djpcms.html import TemplatePlugin, breadcrumbs, grid960
 from djpcms.utils import UnicodeObject
@@ -212,16 +211,16 @@ class djpcmsview(UnicodeObject):
              'sitenav':          self.get_main_nav(request),
              'grid':             self.grid960()}
         
-        extra_content(request,c,self)
-        
         # Inner template available, fill the context dictionary
         # with has many content keys as the number of blocks in the page
-        if page and page.inner_template:            
+        if page and page.inner_template:
+            cb = {'cl': cl,
+                  'grid': self.grid960()}
             blocks = page.inner_template.numblocks()
             for b in range(0,blocks):
-                c['content%s' % b] = BlockContentGen(cl, b)
+                cb['content%s' % b] = BlockContentGen(cl, b)
                     
-            inner = page.inner_template.render(RequestContext(request, c))
+            inner = page.inner_template.render(RequestContext(request, cb))
             
             if self.editurl:
                 b = urlbits(request.path)[1:]
