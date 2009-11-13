@@ -6,7 +6,7 @@ from djpcms.plugins.application.appsite.options import ModelApplication, \
     ArchiveApplication, TaggedApplication, ArchiveTaggedApplication
 from djpcms.plugins.application.appsite.appsites import ApplicationSite, site
 from djpcms.plugins.application.models import DynamicApplication
-from djpcms.djutils.fields import LazyChoiceField
+from djpcms.forms import LazyChoiceField
 
 
 def load():

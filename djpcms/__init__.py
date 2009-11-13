@@ -10,6 +10,23 @@ def get_version():
         v = '%s.%s' % VERSION[:2]
     return v
 
+_Custom_response_methods = {}
+siteapp_choices = [('','---------------'),('this','THIS')]
+
+def functiongenerator():
+    for k in _Custom_response_methods:
+        yield (k,k)
+
+def register_view_method(func, name = None):
+    global _Custom_response_methods
+    name = name or func.__name__
+    if not _Custom_response_methods.has_key(name):
+        _Custom_response_methods[name] = func
+
+def custom_response(name):
+    global _Custom_response_methods
+    return _Custom_response_methods.get(name,None)
+        
 
 def install():
     pp = os.path.join(os.path.dirname(__file__),'plugins')

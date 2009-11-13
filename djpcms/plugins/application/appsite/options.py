@@ -15,7 +15,8 @@ from djpcms.djutils import form_kwargs, UnicodeObject
 from djpcms.djutils.forms import addhiddenfield
 from djpcms.html import formlet, submit, form, div, ajaxbase, Paginator
 from djpcms.views.baseview import editview
-from djpcms.plugins.application.appsite import AppView, ArchiveApp, TagApp, SearchApp
+from djpcms.plugins.application.appsite import AppView, TagApp
+from djpcms.views.appview import SearchApp, ArchiveApp
 
 
 

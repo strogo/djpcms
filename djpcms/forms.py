@@ -3,8 +3,26 @@ from django.contrib.sites.models import Site
 
 from djpcms.models import Page, AppPage
 from djpcms.utils import lazyattr
-from djpcms.plugins.application import appsite
-from djpcms.djutils.fields import LazyChoiceField
+from djpcms import siteapp_choices
+
+
+class LazyChoiceField(forms.ChoiceField):
+    '''
+    A Lazy ChoiceField.
+    This ChoiceField does not unwind choices until a deepcopy is called on it.
+    This allows for dynamic choices generation every time an instance of a Form is created.
+    '''
+    def __init__(self, *args, **kwargs):
+        # remove choices from kwargs.
+        # choices should be an iterable
+        choices = kwargs.pop('choices',())
+        super(LazyChoiceField,self).__init__(*args, **kwargs)
+        self._lazy_choices = choices
+        
+    def __deepcopy__(self, memo):
+        result = super(LazyChoiceField,self).__deepcopy__(memo)
+        result.choices = self._lazy_choices
+        return result
 
 
 class PageForm(forms.ModelForm):
@@ -89,7 +107,7 @@ class PageForm(forms.ModelForm):
         
         
 class AppPageForm(forms.ModelForm):
-    code = LazyChoiceField(choices = appsite.site.choices, required = True, label = 'application')
+    code = LazyChoiceField(choices = siteapp_choices, required = True, label = 'application')
     
     class Meta:
         model = AppPage
@@ -105,3 +123,5 @@ AS_Q_CHOICES = (
 class SearchForm(forms.Form):
     q = forms.CharField(widget=forms.TextInput({'class': 'query'}))
     as_q = forms.ChoiceField(choices=AS_Q_CHOICES, widget=forms.RadioSelect, initial='more:dev_docs')
+
+

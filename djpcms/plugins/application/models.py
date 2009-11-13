@@ -6,7 +6,35 @@ from djpcms.models import DJPplugin, Page
 from djpcms.djutils.fields import LazyChoiceField
 from djpcms.html import formlet, submit
 from djpcms.djutils import form_kwargs
+from djpcms.forms import LazyChoiceField
+from djpcms import functiongenerator, custom_response
+    
 
+        
+class IntenalFunction(DJPplugin):
+    application = models.CharField(max_length = 200, blank = True)
+    arguments   = models.CharField(blank = True, max_length = 200, help_text = 'Comma separated list of arguments for the applications') 
+    
+    def __unicode__(self):
+        b = super(DynamicApplication,self).__unicode__()
+        return u'%s: %s' % (b,self.application or '')
+    
+    def get_arguments(self):
+        if self.arguments:
+            return tuple(self.arguments.replace(' ','').split(','))
+        else:
+            return ()
+    
+    def render(self, cl, prefix, wrapper):
+        attr = custom_response(self.application)
+        args = self.get_arguments()
+        return attr(cl,*args)
+    
+    def changeform(self, request = None, prefix = None):
+        from djpcms.plugins.application import appsite
+        return IntenalFunctionForm(**form_kwargs(request, instance = self, prefix = prefix))    
+    
+    
 
 class DynamicApplication(DJPplugin):
     '''
@@ -23,16 +51,12 @@ class DynamicApplication(DJPplugin):
         return u'%s: %s' % (b,self.application or '')
     
     def get_arguments(self):
-        return tuple(self.arguments.replace(' ','').split(','))
-    
-    def get_appview(self, view):
-        from djpcms.plugins.application import appsite
-        try:
-            return appsite.site.getapp(self.application)
-        except:
-            return view
+        if self.arguments:
+            return tuple(self.arguments.replace(' ','').split(','))
+        else:
+            return ()
         
-    def render(self, request, prefix, wrapper, view = None):
+    def render(self, cl, prefix, wrapper):
         '''
         Rendering the dynamic application
         @param request: HttpRequest instance
@@ -44,7 +68,7 @@ class DynamicApplication(DJPplugin):
         if not self.application:
             return u''
         try:
-            app = self.get_appview(view)
+            app = self.get_appview(cl.view)
             if app:
                 # get url arguments if provided
                 args = self.get_arguments()
@@ -63,5 +87,12 @@ class DynamicApplication(DJPplugin):
     def changeform(self, request = None, prefix = None):
         from djpcms.plugins.application import appsite
         return appsite.ChangeForm(**form_kwargs(request, instance = self, prefix = prefix))    
+
+
+class IntenalFunctionForm(forms.ModelForm):
+    function = LazyChoiceField(choices = functiongenerator)
     
-    
+    class Meta:
+        model = IntenalFunction
+        
+        

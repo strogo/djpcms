@@ -2,8 +2,10 @@ import copy
 
 from django import http
 from django.core.exceptions import ObjectDoesNotExist
+from django.template import loader, RequestContext
 
 from djpcms.models import AppPage
+from djpcms.utils.html import Paginator
 from djpcms.views.baseview import djpcmsview
 from djpcms.views.site import get_view_from_url
 
@@ -176,3 +178,81 @@ class ObjectView(AppView):
         view.object = obj
         return view
     
+
+class SearchApp(AppView):
+    '''
+    Base class for searching objects in model
+    '''
+    def __init__(self, *args, **kwargs):
+        super(SearchApp,self).__init__(*args,**kwargs)
+    
+    def handle_reponse_arguments(self, request, *args, **kwargs):
+        view = copy.copy(self)
+        view.args   = args
+        view.kwargs = kwargs
+        return view
+    
+    def basequery(self, request):
+        return self.appmodel.basequery(request)
+    
+    def myquery(self, query, request, *args, **kwargs):
+        return query
+    
+    def get_item_template(self, obj):
+        opts = obj._meta
+        template_name_0 = '%s_search_item.html' % opts.module_name
+        template_name_1 = '%s/%s' % (opts.app_label,template_name_0)
+        return [template_name_0,template_name_1]
+    
+    def render(self, request, prefix, wrapper, *args):
+        '''
+        Render the application child.
+        '''
+        args     = self.args or args
+        #url      = self.get_url(*args)
+        url = '.'
+        query    = self.basequery(request)
+        if query:
+            query = self.myquery(query, request, *args, **self.kwargs)
+        f  = self.appmodel.get_searchform(request, prefix, wrapper, url)
+        p  = Paginator(request, query)
+        return loader.render_to_string(['content/pagination.html',
+                                        'djpcms/content/pagination.html'],
+                                        {'form':f,
+                                         'paginator': p,
+                                         'data': self.data_generator(request, prefix, wrapper, p.qs)})
+    
+    def data_generator(self, request, prefix, wrapper, data):
+        app = self.appmodel
+        for obj in data:
+            content = app.object_content(request, prefix, wrapper, obj)
+            content.update({'item': obj,
+                            'editurl': app.editurl(request, obj),
+                            'viewurl': app.viewurl(request, obj),
+                            'deleteurl': app.deleteurl(request, obj)})
+            yield loader.render_to_string(template_name    = self.get_item_template(obj),
+                                          context_instance = RequestContext(request, content))
+
+class ArchiveApp(SearchApp):
+    '''
+    Search view with archive subviews
+    '''
+    def __init__(self, *args, **kwargs):
+        super(ArchiveApp,self).__init__(*args,**kwargs)
+    
+    def _date_code(self):
+        return self.appmodel.date_code
+    
+    def myquery(self, query, request, year = None, month = None, day = None):
+        '''
+        Override myquery for handling year, month and day
+        '''
+        if year:
+            date_code = self._date_code()
+            kwargs = {'%s__year' % date_code: int(year)}
+            if month:
+                kwargs['%s__month' % date_code] = int(month)
+                if day:
+                    kwargs['%s__day' % date_code] = int(day)
+            query = query.filter(**kwargs)
+        return query

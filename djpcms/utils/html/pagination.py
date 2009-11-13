@@ -1,21 +1,18 @@
-from djpcms.djutils import data2url
+from djpcms.utils.func import data2url
 
-from base import htmlPlugin
-from list import linklist
+from base import htmlbase
 
 __all__ = ['Paginator']
 
 
-class Paginator(htmlPlugin):
+class Paginator(object):
     '''
     List pagination
     It contains Information about the items displayed and a list of links to
     navigate through the search.
     '''
     
-    def __init__(self, data = None, page = 1,
-                 per_page = 20, maxentries = 15,
-                 template_item = None, **kwargs):
+    def __init__(self, request, data = None, per_page = 20, maxentries = 15):
         '''
         @param data:       queryset
         @param page:       page to display
@@ -29,19 +26,30 @@ class Paginator(htmlPlugin):
         if self.per_page*tp < self.total:
             tp += 1
         self.pages      = tp
-        self.page       = max(min(page,self.pages),1)
+        self.page       = self.pagenumber(request)
         end             = self.page*self.per_page
         start           = end - self.per_page
         end             = min(end,self.total)
-        #template_item = template_item or 'djpcms/bits/object_list.html' 
         self.qs = data[start:end]
         
-        if self.pages:
-            self.append(self.navigation())
-        self.append(self.resultlist())
+    def render(self):
+        return self.navigation()
         
+    def pagenumber(self, request):
+        '''
+        Get information form request
+        '''
+        if request.method == 'GET':
+            data = dict(request.GET.items())
+        else:
+            data = dict(request.POST.items())
+        page = data.get('page',1)
+        return max(min(page,self.pages),1) 
         
     def navigation(self):
+        if self.pages == 1:
+            return u''
+        return u''
         ul   = linklist()
         
         # Left links
@@ -56,10 +64,7 @@ class Paginator(htmlPlugin):
             while p <= self.pages:
                 self._pagination_entry(ul, p)
                 p += 1
-        return ul
-    
-    def resultlist(self):
-        return u''
+        return ul            
     
     def _pagination_entry(self, ul, p, cn = None):
         data['_page'] = p

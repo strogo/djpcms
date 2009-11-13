@@ -170,15 +170,13 @@ class BlockContentBase(models.Model):
         '''
         if not self.plugin:
             return u''
-        request = cl.request
-        view    = cl.view
         return loader.render_to_string(['content/edit_content_plugin.html',
                                         'djpcms/content/edit_content_plugin.html'],
-                                        {'html':self.render(request,view),
-                                         'changeform': self.changeform(request),
-                                         'url': self.url(),
+                                        {'html':         self.render(cl),
+                                         'changeform':   self.changeform(cl.request),
+                                         'url':          self.url(),
                                          'contentblock': self,
-                                         'cl': cl})
+                                         'cl':           cl})
         
     def changeform(self, request = None):
         f = self.plugin.changeform(request = request, prefix = 'cf_%s' % self.pluginid())
@@ -187,16 +185,17 @@ class BlockContentBase(models.Model):
                        submit = submit(value = 'Change',
                                        name  = 'change_plugin_content'))
     
-    def render(self, request = None, view = None):
+    def render(self, cl):
         '''
+        @param cl: instance of djpcms.views.baseview.ResponseBase
+         
         Render the plugin.
         This function is called when the plugin needs to be rendered
         This function call the plugin render function passing three arguments
         '''
-        return self.plugin.render(request = request,
+        return self.plugin.render(cl,
                                   prefix  = 'bd_%s' % self.pluginid(),
-                                  wrapper = self.wrapper().handler,
-                                  view    = view)
+                                  wrapper = self.wrapper().handler)
     
     def change_plugin_content(self, request):
         '''

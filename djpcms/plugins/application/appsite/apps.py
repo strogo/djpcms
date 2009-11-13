@@ -2,7 +2,7 @@ import copy
 
 from django.http import Http404
 
-from djpcms.views.appview import AppView, ObjectView
+from djpcms.views.appview import AppView, ObjectView, SearchApp
 from djpcms.views.site import get_view_from_url
 from djpcms.html import htmlPlugin
     
@@ -76,67 +76,7 @@ class AddApp(AppView):
                 return f.errorpost('%s' % e)
             return f.messagepost('%s added' % instance)
         else:
-            return f.jerrors
-    
-
-class SearchApp(AppView):
-    '''
-    Base class for searching objects in model
-    '''
-    def __init__(self, *args, **kwargs):
-        super(SearchApp,self).__init__(*args,**kwargs)
-    
-    def basequery(self, request):
-        return self.appmodel.basequery(request)
-    
-    def myquery(self, query, request, *args):
-        return query
-    
-    def render(self, request, prefix, wrapper, *args):
-        '''
-        Render the application child.
-        '''
-        args     = self.args or args
-        url      = self.get_url(*args)
-        query    = self.basequery(request)
-        if query:
-            query = self.myquery(query, request, *args)
-        f  = self.appmodel.get_searchform(request, prefix, wrapper, url)
-        pa = self.appmodel.paginate(request, query, prefix, wrapper)
-        f = htmlPlugin(inner = f)
-        for p in pa:
-            f = f.append(p)
-        return f.render()
-    
-
-class ArchiveApp(SearchApp):
-    '''
-    Search view with archive subviews
-    '''
-    def __init__(self, *args, **kwargs):
-        super(ArchiveApp,self).__init__(*args,**kwargs)
-    
-    def handle_reponse_arguments(self, request, *args, **kwargs):
-        view = copy.copy(self)
-        view.args = args
-        return view
-    
-    def _date_code(self):
-        return self.appmodel.date_code
-    
-    def myquery(self, query, request, year = None, month = None, day = None):
-        '''
-        Override myquery for handling year, month and day
-        '''
-        if year:
-            date_code = self._date_code()
-            kwargs = {'%s__year' % date_code: int(year)}
-            if month:
-                kwargs['%s__month' % date_code] = int(month)
-                if day:
-                    kwargs['%s__day' % date_code] = int(day)
-            query = query.filter(**kwargs)
-        return query            
+            return f.jerrors       
     
 
 class ArchiveidApp(AppView):

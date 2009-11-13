@@ -2,6 +2,7 @@ from django.db.models.base import ModelBase
 from django import http
 
 from djpcms.plugins.application.appsite.options import ModelApplication
+from djpcms import siteapp_choices
 
 
 class ApplicationSite(object):
@@ -16,7 +17,7 @@ class ApplicationSite(object):
         self._registry     = {}
         self._nameregistry = {}
         self.parent_pages  = {}
-        self.choices       = [('','---------------'),('this','THIS')]
+        self.choices       = siteapp_choices
         
     def count(self):
         return len(self._registry)

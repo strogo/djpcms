@@ -21,15 +21,6 @@ from djpcms.utils import urlbits, urlfrombits
 from djpcms.views.load import *
 
 
-_Custom_response_methods = {}
-
-def register_view_method(func, name = None):
-    global _Custom_response_methods
-    name = name or func.__name__
-    if not _Custom_response_methods.has_key(name):
-        _Custom_response_methods[name] = func
-
-
 class ResponseBase(UnicodeObject):
     '''
     Generic response based on djpcms view objects
