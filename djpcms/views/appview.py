@@ -126,7 +126,7 @@ class AppView(djpcmsview):
         else:
             return None
         
-    def render(self, request, prefix, wrapper, *args):
+    def render(self, request, prefix, wrapper, *args, **kwargs):
         '''
         Render the application child.
         This method is reimplemented by subclasses.
@@ -204,11 +204,11 @@ class SearchApp(AppView):
         template_name_1 = '%s/%s' % (opts.app_label,template_name_0)
         return [template_name_0,template_name_1]
     
-    def render(self, request, prefix, wrapper, *args):
+    def render(self, request, prefix, wrapper, *args, **kwargs):
         '''
         Render the application child.
         '''
-        args     = self.args or args
+        #args     = self.args or args
         #url      = self.get_url(*args)
         url = '.'
         query    = self.basequery(request)
@@ -243,7 +243,7 @@ class ArchiveApp(SearchApp):
     def _date_code(self):
         return self.appmodel.date_code
     
-    def myquery(self, query, request, year = None, month = None, day = None):
+    def myquery(self, query, request, year = None, month = None, day = None, **kwargs):
         '''
         Override myquery for handling year, month and day
         '''

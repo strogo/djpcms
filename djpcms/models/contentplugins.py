@@ -143,7 +143,8 @@ class BlockContentBase(models.Model):
         return '%s%s/%s/%s/%s/' % (baseurl,self.typenum,self.page.id,self.block,self.position)
         
     def wrapper(self):
-        return CONTENT_WRAP_HANDLERS[self.container_type]
+        ct = int(self.container_type)
+        return CONTENT_WRAP_HANDLERS[ct]
     
     def plugin_class(self):
         '''
@@ -216,6 +217,8 @@ class BlockContent(BlockContentBase):
     objects = BlockContentManager()
     
     class Meta:
+        verbose_name = 'Block content for Page'
+        verbose_name_plural = 'Block contents for Pages'
         app_label = current_app_label
         unique_together = (('page','block','position'),)
         ordering  = ('page','block','position',)
@@ -227,6 +230,8 @@ class AppBlockContent(BlockContentBase):
     objects = BlockContentManager()
     
     class Meta:
+        verbose_name = 'Block contents for AppPage'
+        verbose_name_plural = 'Block contents for AppPages'
         app_label = current_app_label
         unique_together = (('page','block','position'),)
         ordering  = ('page','block','position',)

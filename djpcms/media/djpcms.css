@@ -80,6 +80,10 @@ ul.menu li.selected ul li.selected a {background: rgb(245,245,245);}
 body.edit {
 	background: rgb(9,46,32);
 }
+.edit-contentblock .control,
+.edit-contentblock .hd {
+	font-size: 11px;
+}
 body.edit #body-container,
 body.edit #branding-banner {
 	background: rgb(134,182,150);
@@ -104,7 +108,11 @@ body.edit #branding-banner {
 	border-top: 1px solid rgb(150,150,150);
 	border-bottom: 1px solid rgb(150,150,150);
 }
-.edit-contentblock .bd .preview {padding: 5px 10px; background: rgb(255,255,255);}
+.edit-contentblock .bd .preview {
+	padding: 5px 10px;
+	background: rgb(255,255,255);
+	overflow: hidden;
+}
 .edit-contentblock input[type="submit"] {
 	background: transparent url(img/images/download_bg-left.gif) no-repeat;
 	color: rgb(255,255,255);
@@ -205,6 +213,9 @@ input.search-box {padding: 4px 2px;}
 /* CONTENT CLASSES
 ------------------------------------------------------------------*/
 
+.djpcms-block {
+	overflow: hidden;
+}
 div.djp-simple {
 	margin-bottom: 30px;
 }

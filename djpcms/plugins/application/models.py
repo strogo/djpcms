@@ -16,7 +16,7 @@ class IntenalFunction(DJPplugin):
     arguments   = models.CharField(blank = True, max_length = 200, help_text = 'Comma separated list of arguments for the applications') 
     
     def __unicode__(self):
-        b = super(DynamicApplication,self).__unicode__()
+        b = super(IntenalFunction,self).__unicode__()
         return u'%s: %s' % (b,self.application or '')
     
     def get_arguments(self):
@@ -27,11 +27,13 @@ class IntenalFunction(DJPplugin):
     
     def render(self, cl, prefix, wrapper):
         attr = custom_response(self.application)
-        args = self.get_arguments()
-        return attr(cl,*args)
+        if attr:
+            args = self.get_arguments()
+            return attr(cl,*args)
+        else:
+            return u''
     
     def changeform(self, request = None, prefix = None):
-        from djpcms.plugins.application import appsite
         return IntenalFunctionForm(**form_kwargs(request, instance = self, prefix = prefix))    
     
     
@@ -52,9 +54,25 @@ class DynamicApplication(DJPplugin):
     
     def get_arguments(self):
         if self.arguments:
-            return tuple(self.arguments.replace(' ','').split(','))
+            args = self.arguments.replace(' ','').split(',')
+            nargs  = []
+            kwargs = {}
+            for a in args:
+                ca = a.split('=')
+                if len(ca) == 2:
+                    kwargs[str(ca[0])] = ca[1]
+                else:
+                    nargs.append(a)
+            return tuple(nargs),kwargs
         else:
-            return ()
+            return (),{}
+        
+    def get_appview(self, view):
+        from djpcms.plugins.application import appsite
+        try:
+            return appsite.site.getapp(self.application)
+        except:
+            return view
         
     def render(self, cl, prefix, wrapper):
         '''
@@ -71,8 +89,8 @@ class DynamicApplication(DJPplugin):
             app = self.get_appview(cl.view)
             if app:
                 # get url arguments if provided
-                args = self.get_arguments()
-                return app.render(request, prefix, wrapper, *args)
+                args, kwargs = self.get_arguments()
+                return app.render(cl.request, prefix, wrapper, *args, **kwargs)
             else:
                 if settings.DEBUG:
                     return u'Could not find application %s' % self.application
@@ -90,7 +108,7 @@ class DynamicApplication(DJPplugin):
 
 
 class IntenalFunctionForm(forms.ModelForm):
-    function = LazyChoiceField(choices = functiongenerator)
+    application = LazyChoiceField(choices = functiongenerator)
     
     class Meta:
         model = IntenalFunction

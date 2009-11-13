@@ -8,6 +8,7 @@ from djpcms.forms import PageForm, AppPageForm
 
 class BlockContentAdmin(admin.ModelAdmin):
     list_display = ('page','block','position','plugin_name','plugin','container_type')
+    list_filter = ('page', 'block')
     
 class SiteContentAdmin(admin.ModelAdmin):
     list_display = ('code','last_modified','user_last','markup')

@@ -15,13 +15,15 @@ class LazyChoiceField(forms.ChoiceField):
     def __init__(self, *args, **kwargs):
         # remove choices from kwargs.
         # choices should be an iterable
-        choices = kwargs.pop('choices',())
+        self._lazy_choices = kwargs.pop('choices',())
         super(LazyChoiceField,self).__init__(*args, **kwargs)
-        self._lazy_choices = choices
         
     def __deepcopy__(self, memo):
         result = super(LazyChoiceField,self).__deepcopy__(memo)
-        result.choices = self._lazy_choices
+        lz = self._lazy_choices
+        if callable(lz):
+            lz = lz()
+        result.choices = lz
         return result
 
 

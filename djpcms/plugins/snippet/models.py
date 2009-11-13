@@ -43,13 +43,13 @@ class SnippetPtr(DJPplugin):
         else:
             return ''
         
-    def render(self, request, prefix, wrapper, view):
+    def render(self, cl, prefix, wrapper):
         '''
         Handle a request
         '''
         if self.snippet:
             t = Template(self.snippet.template)
-            c = {'cl': view.requestview(request),
+            c = {'cl': cl,
                  'prefix':prefix}
             return t.render(RequestContext(request,c))
         else:

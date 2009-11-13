@@ -69,12 +69,6 @@ class ResponseBase(UnicodeObject):
                 return self.get_view_attr(attr)
             except:
                 return attr()
-        elif attr is None:
-            attr = _Custom_response_methods.get(name,None)
-            if attr:
-                return attr(self)
-            else:
-                return None
         else:
             return attr
         

@@ -98,9 +98,10 @@ class ContentSite(djpcmsview):
         '''        
         form = self.blockform(instance = self.instance, data = request.POST)
         if form.is_valid():
-            self.instance = form.save()     
+            self.instance = form.save()
+            cl = self.requestview(request)
             return jhtmls(identifier = '#%s' % self.instance.pluginid(),
-                          html = self.instance.plugin_edit_block(request))
+                          html = self.instance.plugin_edit_block(cl))
         else:
             pass
         
@@ -126,7 +127,16 @@ class ContentSite(djpcmsview):
         @param request: django HttpRequest instance
         @return JSON serializable object 
         '''
-        return self.instance.change_plugin_content(request)
+        b = self.instance
+        form = b.changeform(request = request)
+        if form.is_valid():
+            b.plugin = form.save()
+            cl = self.requestview(request)
+            return jhtmls(identifier = '#preview-%s' % b.htmlid(),
+                          html = b.render(cl)) 
+        else:
+            return form.jerrors
+        #return self.instance.change_plugin_content(request)
     
     
     def default_ajax_view(self, request):

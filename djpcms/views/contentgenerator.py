@@ -51,7 +51,7 @@ class ContentBlockFormBase(forms.ModelForm):
     '''
     # This is a subclass of forms.ChoiceField with the class attribute
     # set to ajax.
-    plugin_name    = PluginChoice(label = _('plug-in'), choices = all_plugins())
+    plugin_name    = PluginChoice(label = _('content'), choices = all_plugins())
     container_type = LazyAjaxChoice(choices = content_wrapper_tuple(),
                                     label=_('container'))
         
@@ -180,7 +180,7 @@ class BlockContentGen(UnicodeObject):
             if not plugin:
                 continue
             # Return a wrapped plugin html
-            yield wrapper.wrap(b, self.request, self.view)
+            yield wrapper.wrap(b, self.cl)
         return
 
     def _editblocks(self, blockcontents):
