@@ -25,7 +25,8 @@ class AppView(djpcmsview):
                  isapp  = True,
                  template_name = None,
                  in_navigation = False):
-        self.args     = None
+        # number of positional arguments in the url
+        self.num_args = 0
         self.urlbit   = regex or u''
         self.parent   = parent
         self.name     = name
@@ -84,7 +85,7 @@ class AppView(djpcmsview):
         if self.parent:
             baseurl = self.parent._regex
             purl    = self.parent.purl
-            nargs   = self.parent.nargs
+            nargs   = self.parent.num_args
         else:
             baseurl = self.appmodel.baseurl[1:]
             purl    = self.appmodel.baseurl
@@ -95,26 +96,25 @@ class AppView(djpcmsview):
             for bit in bits:
                 if bit:
                     if bit.startswith('('):
-                        purl  += '%s/'
-                        nargs += 1
+                        st = bit.find('<') + 1
+                        en = bit.find('>')
+                        if st and en:
+                            name = bit[st:en]
+                        else:
+                            nargs += 1
+                            name   = 'arg_no_key_%s' % nargs
+                        purl += '%(' + name + ')s/'
                     else:
                         purl += '%s/' % bit
             self._regex = '%s%s/' % (baseurl,self.urlbit)
         else:
             self._regex = baseurl
                         
-        self.purl  = purl
-        self.nargs = nargs
+        self.purl     = purl
+        self.num_args = nargs
         
-    def get_url(self, *args):
-        '''
-        get application url
-        '''
-        args = self.args or args
-        if self.nargs:
-            return self.purl % args[:self.nargs]
-        else:
-            return self.purl
+    def get_url(self, request):
+        raise NotImplementedError
     
     def parentview(self, request):
         '''
@@ -180,13 +180,38 @@ class SearchApp(AppView):
     Base class for searching objects in model
     '''
     def __init__(self, *args, **kwargs):
+        self.kwargs   = None
+        self.nargs    = 0
         super(SearchApp,self).__init__(*args,**kwargs)
     
     def handle_reponse_arguments(self, request, *args, **kwargs):
-        view = copy.copy(self)
-        view.args   = args
-        view.kwargs = kwargs
+        view        = copy.copy(self)
+        view.nargs  = 0
+        view.handle_arguments(*args, **kwargs)
         return view
+    
+    def get_url(self, request):
+        '''
+        get application url
+        '''
+        if self.urlargs:
+            return self.purl % self.urlargs
+        else:
+            return self.purl
+        
+    def handle_arguments(self,  *args, **kwargs):
+        i = self.nargs
+        urlargs = copy.copy(kwargs)
+        for arg in args:
+            i += 1
+            urlargs['arg_no_key_%s' % i] = arg
+        self.args    = args
+        self.kwargs  = kwargs
+        self.urlargs = urlargs
+        self.nargs   = i
+        
+    def content_dict(self):
+        return self.urlargs
     
     def get_item_template(self, obj):
         opts = obj._meta
@@ -199,17 +224,19 @@ class SearchApp(AppView):
         Render the application child.
         '''
         kwargs.update(self.kwargs)
-        self.args  += args + self.flattattr_url(**kwargs)
-        self.kwargs = kwargs
-        url      = self.get_url()
+        args = self.args + args
+        self.handle_arguments(*args, **kwargs)
+        url      = self.get_url(request)
         query    = self.appquery(request, *self.args, **self.kwargs)
         f  = self.appmodel.get_searchform(request, prefix, wrapper, url)
         p  = Paginator(request, query)
+        c  = self.content_dict()
+        c.update({'form':f,
+                  'paginator': p,
+                  'tems': self.data_generator(request, prefix, wrapper, p.qs)})
         return loader.render_to_string(['content/pagination.html',
                                         'djpcms/content/pagination.html'],
-                                        {'form':f,
-                                         'paginator': p,
-                                         'data': self.data_generator(request, prefix, wrapper, p.qs)})
+                                        self.urlargs)
     
     def data_generator(self, request, prefix, wrapper, data):
         app = self.appmodel
@@ -233,11 +260,26 @@ class ArchiveApp(SearchApp):
     def _date_code(self):
         return self.appmodel.date_code
     
+    def content_dict(self):
+        c = self.urlargs
+        month = c.get('month',None)
+        if month:
+            try:
+                c['month'] = int(month)
+            except:
+                c['month'] = MONTHS_3_REV.get(month,None)
+        year = c.get('year',None)
+        day  = c.get('day',None)
+        if year:
+            c['year'] = int(year)
+        if day:
+            c['day'] = int(day)
+        return c
+    
     def appquery(self, request, year = None, month = None, day = None, **kwargs):
         dt       = self._date_code()
         dateargs = {}
         if year:
-            qs = self.basequery(request)
             dateargs['%s__year' % dt] = int(year)
         
         if month:

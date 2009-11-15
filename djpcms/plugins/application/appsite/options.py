@@ -34,15 +34,17 @@ def get_declared_applications(bases, attrs):
     Create a list of ModelApplication children instances from the passed in 'attrs', plus any
     similar fields on the base classes (in 'bases').
     """
+    inherit = attrs.pop('inherit',False)
     apps = [(app_name, attrs.pop(app_name)) for app_name, obj in attrs.items() if isinstance(obj, AppView)]      
     apps.sort(lambda x, y: cmp(x[1].creation_counter, y[1].creation_counter))
 
-    # If this class is subclassing another Form, add that Form's fields.
+    # If this class is subclassing another Application, and inherit is True add that Application's views.
     # Note that we loop over the bases in *reverse*. This is necessary in
     # order to preserve the correct order of fields.
-    #for base in bases[::-1]:
-    #    if hasattr(base, 'base_applications'):
-    #        apps = base.base_applications.items() + apps
+    if inherit:
+        for base in bases[::-1]:
+            if hasattr(base, 'base_applications'):
+                apps = base.base_applications.items() + apps
 
     return SortedDict(apps)
 
@@ -89,6 +91,8 @@ class ModelApplicationBase(ajaxbase):
     num_obj_args     = 1
     # True if applications can go into navigation
     in_navigation    = True
+    # If set to True, base class views will be available
+    inherit          = False
     
     def __init__(self, model, application_site):
         self.model = model

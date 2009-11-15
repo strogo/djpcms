@@ -26,7 +26,7 @@ GOOGLE_ANALYTICS_ID      = getattr(settings, 'GOOGLE_ANALYTICS_ID', None)
 
 ENABLE_BREADCRUMBS       = getattr(settings, 'ENABLE_BREADCRUMBS', True)
 
-APPLICATION_MODULE       = getattr(settings, 'APPLICATION_MODULE', None)
+APPLICATION_URL_MODULE   = getattr(settings, 'APPLICATION_URL_MODULE', None)
 APPLICATION_URL_PREFIX   = getattr(settings, 'APPLICATION_URL_PREFIX', '/apps/')
 
 
@@ -54,7 +54,6 @@ CONTENT_INLINE_EDITING = getattr(settings, 'CONTENT_INLINE_EDITING',  {'availabl
                                                                        'pagecontent': '/content/',
                                                                        'width': 600,
                                                                        'height': 400,})
-EDIT_CONTENTBLOCK_TEMPLATE = 'djpcms/content/edit_content_block.html'
 
 
 

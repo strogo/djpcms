@@ -8,9 +8,9 @@ from djpcms.forms import LazyChoiceField
 
 
 def load():
-    from djpcms.settings import APPLICATION_MODULE
-    if APPLICATION_MODULE:
-        app_module = import_module(APPLICATION_MODULE)
+    from djpcms.settings import APPLICATION_URL_MODULE
+    if APPLICATION_URL_MODULE:
+        app_module = import_module(APPLICATION_URL_MODULE)
         
         
 

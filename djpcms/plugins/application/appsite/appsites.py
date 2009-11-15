@@ -75,7 +75,6 @@ class ApplicationSite(object):
         return len(self._registry)
             
     def get_urls(self):
-        from django.conf.urls.defaults import patterns, url, include
         aurls = []
         # Add in each model's views.
         for appmodel in self._registry.values():

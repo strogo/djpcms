@@ -1,0 +1,14 @@
+[
+    {
+        "pk": 1, 
+        "model": "djpcms.template", 
+        "fields": {
+            "blocks": "content", 
+            "name": "flat", 
+            "created": "2009-11-15 09:14:59", 
+            "image": "", 
+            "last_modified": "2009-11-15 09:14:59", 
+            "template": "{{ content0 }}"
+        }
+    }
+]

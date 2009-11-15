@@ -1,0 +1,26 @@
+[
+    {
+        "pk": 1, 
+        "model": "djpcms.page", 
+        "fields": {
+            "code": "root", 
+            "level": 0, 
+            "in_navigation": 1, 
+            "parent": null, 
+            "cssinfo": null, 
+            "href_name": "root", 
+            "title": "root", 
+            "redirect_to": null, 
+            "site": 1, 
+            "soft_root": false, 
+            "created": "2009-11-15 09:15:20", 
+            "last_modified": "2009-11-15 09:15:20", 
+            "requires_login": false, 
+            "template": "", 
+            "url_pattern": "root", 
+            "code_object": "", 
+            "inner_template": 1, 
+            "is_published": true
+        }
+    }
+]
