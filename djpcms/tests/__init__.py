@@ -1,0 +1,1 @@
+from djpcms.tests.test_views import *

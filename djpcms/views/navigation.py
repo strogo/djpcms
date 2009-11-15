@@ -57,9 +57,9 @@ class default_navigation_constructor(object):
         children   = self.children
         if parentview:
             if children:
-                children.append(view)
+                children.append(view.get_url())
             else:
-                children = [view]
+                children = [view.get_url()]
             func = getattr(parentview, self.nav_func)
             return func(self.request, children = children)
         else:

@@ -43,10 +43,10 @@ class ApplicationSite(object):
         for model in model_or_iterable:
             # Instantiate the admin class to save in the registry
             if model in self._registry:
-                raise valueError('Model %s already registered as application' % model)
+                raise ValueError('Model %s already registered as application' % model)
             appmodel = application_class(model, self)
             if appmodel.name in self._nameregistry:
-                raise valueError('Model %s already registered as application' % model)
+                raise ValueError('Model %s already registered as application' % model)
             self._registry[model] = appmodel
             self._nameregistry[appmodel.name] = appmodel
             

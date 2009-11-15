@@ -42,6 +42,9 @@ class ResponseBase(UnicodeObject):
         return unicode(self.view)
     
     def urlname(self):
+        '''
+        String to display as text in a link tag
+        '''
         if self.page:
             return self.page.href_name
         else:

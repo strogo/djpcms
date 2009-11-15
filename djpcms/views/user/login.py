@@ -2,7 +2,7 @@ from django.contrib.auth import authenticate, login, logout
 from django import http
 
 from djpcms.settings import HTML_CLASSES
-from djpcms.plugins.application import appsite
+from djpcms.views import appview
 
 from djpcms.html import quickform, link
 from djpcms.utils.ajax import jredirect
@@ -13,7 +13,7 @@ from forms import LoginForm
 __all__ = ['LogoutApp','LoginApp']
 
 
-class LogoutApp(appsite.AppView):
+class LogoutApp(appview.AppView):
     '''
     Logs out a user, if there is an authenticated user :)
     '''
@@ -32,7 +32,7 @@ class LogoutApp(appsite.AppView):
 
 
 
-class LoginApp(appsite.AppView):
+class LoginApp(appview.AppView):
     '''
     A Battery included Login view.
     This object can be used to login users

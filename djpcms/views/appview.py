@@ -3,6 +3,7 @@ import copy
 from django import http
 from django.core.exceptions import ObjectDoesNotExist
 from django.template import loader, RequestContext
+from django.utils.dates import MONTHS_3_REV
 
 from djpcms.models import AppPage
 from djpcms.utils.html import Paginator
@@ -17,12 +18,18 @@ class AppView(djpcmsview):
     creation_counter = 0
     page_model       = AppPage
     
-    def __init__(self, url = None, parent = None, name = None, isapp = True, template_name = None, in_navigation = True):
+    def __init__(self,
+                 regex  = None,
+                 parent = None,
+                 name   = None,
+                 isapp  = True,
+                 template_name = None,
+                 in_navigation = False):
         self.args     = None
-        self.urlbit   = url or u''
+        self.urlbit   = regex or u''
         self.parent   = parent
         self.name     = name
-        self.curl     = ''
+        self._regex   = ''
         self.isapp    = isapp
         self.func     = None
         self.appmodel = None
@@ -36,18 +43,24 @@ class AppView(djpcmsview):
         AppView.creation_counter += 1
         
     def __unicode__(self):
-        return u'%s: %s' % (self.name,self.rurl)
+        return u'%s: %s' % (self.name,self.regex)
     
-    def __get_rurl(self):
-        return r'^%s$' % self.curl
-    rurl = property(fget = __get_rurl)
+    def __get_regex(self):
+        return '^%s$' % self._regex
+    regex = property(fget = __get_regex)
     
     def __get_model(self):
         return self.appmodel.model
     model = property(fget = __get_model)
     
-    def edit_rurl(self, edit):
-        return r'^%s/%s$' % (edit,self.curl)
+    def title(self, request, pagetitle):
+        if not pagetitle:
+            return self.appmodel.name
+        else:
+            return pagetitle
+    
+    def edit_regex(self, edit):
+        return r'^%s/%s$' % (edit,self.regex)
     
     def handle_reponse_arguments(self, request, *args, **kwargs):
         view = copy.copy(self)
@@ -65,12 +78,11 @@ class AppView(djpcmsview):
     
     def processurlbits(self, appmodel):
         '''
-        Process urlbit to create the clean url resolver self.curl
-        and the url parser self.purl
+        Process url bits
         '''
         self.appmodel = appmodel
         if self.parent:
-            baseurl = self.parent.curl
+            baseurl = self.parent._regex
             purl    = self.parent.purl
             nargs   = self.parent.nargs
         else:
@@ -87,9 +99,9 @@ class AppView(djpcmsview):
                         nargs += 1
                     else:
                         purl += '%s/' % bit
-            self.curl = '%s%s/' % (baseurl,self.urlbit)
+            self._regex = '%s%s/' % (baseurl,self.urlbit)
         else:
-            self.curl = baseurl
+            self._regex = baseurl
                         
         self.purl  = purl
         self.nargs = nargs
@@ -125,7 +137,29 @@ class AppView(djpcmsview):
                     return None
         else:
             return None
-        
+    
+    def basequery(self, request, **kwargs):
+        '''
+        Base query for application
+        If this is the root view (no parents) it returns the default
+        basequery
+        '''
+        if self.parent:
+            return self.parent.appquery(request)
+        else:
+            return self.appmodel.basequery(request)
+    
+    def appquery(self, request, *args, **kwargs):
+        '''
+        This function implements the application query.
+        By default return the input basequery (usually all items of a model)
+        @param request: HttpRequest
+        @param *args: Extra positional arguments coming from the database
+        @param *kwargs: Extra key-valued arguments coming from the database
+        @return: a queryset
+        '''
+        return self.basequery(request)
+    
     def render(self, request, prefix, wrapper, *args, **kwargs):
         '''
         Render the application child.
@@ -138,19 +172,137 @@ class AppView(djpcmsview):
         return self.render(request,None,None)
     
     def __deepcopy__(self, memo):
-        result = copy.copy(self)
-        return result
+        return copy.copy(self)
+
+
+class SearchApp(AppView):
+    '''
+    Base class for searching objects in model
+    '''
+    def __init__(self, *args, **kwargs):
+        super(SearchApp,self).__init__(*args,**kwargs)
     
+    def handle_reponse_arguments(self, request, *args, **kwargs):
+        view = copy.copy(self)
+        view.args   = args
+        view.kwargs = kwargs
+        return view
     
+    def get_item_template(self, obj):
+        opts = obj._meta
+        template_name_0 = '%s_search_item.html' % opts.module_name
+        template_name_1 = '%s/%s' % (opts.app_label,template_name_0)
+        return [template_name_0,template_name_1]
+    
+    def render(self, request, prefix, wrapper, *args, **kwargs):
+        '''
+        Render the application child.
+        '''
+        kwargs.update(self.kwargs)
+        self.args  += args + self.flattattr_url(**kwargs)
+        self.kwargs = kwargs
+        url      = self.get_url()
+        query    = self.appquery(request, *self.args, **self.kwargs)
+        f  = self.appmodel.get_searchform(request, prefix, wrapper, url)
+        p  = Paginator(request, query)
+        return loader.render_to_string(['content/pagination.html',
+                                        'djpcms/content/pagination.html'],
+                                        {'form':f,
+                                         'paginator': p,
+                                         'data': self.data_generator(request, prefix, wrapper, p.qs)})
+    
+    def data_generator(self, request, prefix, wrapper, data):
+        app = self.appmodel
+        for obj in data:
+            content = app.object_content(request, prefix, wrapper, obj)
+            content.update({'item': obj,
+                            'editurl': app.editurl(request, obj),
+                            'viewurl': app.viewurl(request, obj),
+                            'deleteurl': app.deleteurl(request, obj)})
+            yield loader.render_to_string(template_name    = self.get_item_template(obj),
+                                          context_instance = RequestContext(request, content))
+
+
+class ArchiveApp(SearchApp):
+    '''
+    Search view with archive subviews
+    '''
+    def __init__(self, *args, **kwargs):
+        super(ArchiveApp,self).__init__(*args,**kwargs)
+    
+    def _date_code(self):
+        return self.appmodel.date_code
+    
+    def appquery(self, request, year = None, month = None, day = None, **kwargs):
+        dt       = self._date_code()
+        dateargs = {}
+        if year:
+            qs = self.basequery(request)
+            dateargs['%s__year' % dt] = int(year)
+        
+        if month:
+            try:
+                month = int(month)
+            except:
+                month = MONTHS_3_REV.get(str(month),None)
+            if month:
+                dateargs['%s__month' % dt] = month
+    
+        if day:
+            dateargs['%s__day' % dt] = int(day)
+            
+        qs = self.basequery(request, **kwargs)
+        if dateargs:
+            return qs.filter(**dateargs)
+        else:
+            return qs 
+        
+        
+
+class AddApp(AppView):
+    '''
+    Standard Add method
+    '''
+    def __init__(self, regex = 'add', parent = None,
+                 name = 'add', isapp = True, **kwargs):
+        '''
+        Set some default values for add application
+        '''
+        super(AddApp,self).__init__(regex  = regex,
+                                    parent = parent,
+                                    name   = name,
+                                    isapp  = isapp,
+                                    **kwargs)
+    
+    def render(self, request, prefix, wrapper, *args):
+        '''
+        Render the add view
+        '''
+        url = self.get_url(request, *args)
+        f = self.appmodel.get_form(request, prefix, wrapper, url)
+        return f.render()
+    
+    def default_ajax_view(self, request):
+        prefix = self.get_prefix(dict(request.POST.items()))
+        f = self.appmodel.get_form(request, prefix = prefix)
+        if f.is_valid():
+            try:
+                instance = f.save()
+            except Exception, e:
+                return f.errorpost('%s' % e)
+            return f.messagepost('%s added' % instance)
+        else:
+            return f.jerrors 
+        
+        
+# Application views which requires an object
 class ObjectView(AppView):
     '''
     Application view for objects
     '''
-    def __init__(self, url = None, parent = None,
-                name = None, isapp = True, **kwargs):
+    def __init__(self, *args, **kwargs):
         self.object = None
-        super(ObjectView,self).__init__(url = url, parent = parent,
-                                        name = name, isapp = isapp, **kwargs)
+        super(ObjectView,self).__init__(*args, **kwargs)
         
     def handle_reponse_arguments(self, request, *args, **kwargs):
         try:
@@ -179,80 +331,90 @@ class ObjectView(AppView):
         return view
     
 
-class SearchApp(AppView):
-    '''
-    Base class for searching objects in model
-    '''
-    def __init__(self, *args, **kwargs):
-        super(SearchApp,self).__init__(*args,**kwargs)
+# View and object
+class ViewApp(ObjectView):
     
-    def handle_reponse_arguments(self, request, *args, **kwargs):
-        view = copy.copy(self)
-        view.args   = args
-        view.kwargs = kwargs
-        return view
-    
-    def basequery(self, request):
-        return self.appmodel.basequery(request)
-    
-    def myquery(self, query, request, *args, **kwargs):
-        return query
-    
-    def get_item_template(self, obj):
-        opts = obj._meta
-        template_name_0 = '%s_search_item.html' % opts.module_name
-        template_name_1 = '%s/%s' % (opts.app_label,template_name_0)
-        return [template_name_0,template_name_1]
-    
-    def render(self, request, prefix, wrapper, *args, **kwargs):
+    def __init__(self, regex = '(\d+)', parent = None, name = 'view', **kwargs):
         '''
-        Render the application child.
+        By default the relative url is given by the databse id number
         '''
-        #args     = self.args or args
-        #url      = self.get_url(*args)
-        url = '.'
-        query    = self.basequery(request)
-        if query:
-            query = self.myquery(query, request, *args, **self.kwargs)
-        f  = self.appmodel.get_searchform(request, prefix, wrapper, url)
-        p  = Paginator(request, query)
-        return loader.render_to_string(['content/pagination.html',
-                                        'djpcms/content/pagination.html'],
-                                        {'form':f,
-                                         'paginator': p,
-                                         'data': self.data_generator(request, prefix, wrapper, p.qs)})
+        super(ViewApp,self).__init__(regex = regex, parent = parent,
+                                     name = name, **kwargs)
+        
+    def render(self, request, prefix, wrapper, *args):
+        '''
+        Render the add view
+        '''
+        return self.appmodel.render_object(request, prefix, wrapper, self.object)
     
-    def data_generator(self, request, prefix, wrapper, data):
-        app = self.appmodel
-        for obj in data:
-            content = app.object_content(request, prefix, wrapper, obj)
-            content.update({'item': obj,
-                            'editurl': app.editurl(request, obj),
-                            'viewurl': app.viewurl(request, obj),
-                            'deleteurl': app.deleteurl(request, obj)})
-            yield loader.render_to_string(template_name    = self.get_item_template(obj),
-                                          context_instance = RequestContext(request, content))
+    
+# Delete an object. POST method only. not GET method should modify databse
+class DeleteApp(ObjectView):
+    _methods      = ('post',) 
+    def __init__(self, regex = 'delete', parent = 'view', name = 'delete', **kwargs):
+        super(DeleteApp,self).__init__(regex = regex, parent = parent, name = name, **kwargs)
+      
 
-class ArchiveApp(SearchApp):
+# Edit/Change an object
+class EditApp(ObjectView):
+    '''
+    Edit view
+    '''
+    def __init__(self, regex = 'edit', parent = 'view', name = 'edit',  **kwargs):
+        super(EditApp,self).__init__(regex = regex, parent = parent, name = name, **kwargs)
+    
+    def render(self, request, prefix, wrapper, *args):
+        '''
+        Render the edit view
+        '''
+        url = self.get_url(request, *args)
+        f = self.appmodel.get_form(request, prefix, wrapper, url, instance = self.object)
+        return f.render()
+    
+    def default_ajax_view(self, request):
+        prefix = self.get_prefix(dict(request.POST.items()))
+        f = self.appmodel.get_form(request, prefix = prefix, instance = self.object)
+        if f.is_valid():
+            try:
+                instance = f.save()
+            except Exception, e:
+                return f.errorpost('%s' % e)
+            return f.messagepost('%s modified' % instance)
+        else:
+            return f.jerrors          
+    
+
+class ArchiveidApp(AppView):
     '''
     Search view with archive subviews
     '''
     def __init__(self, *args, **kwargs):
-        super(ArchiveApp,self).__init__(*args,**kwargs)
+        super(ArchiveidApp,self).__init__(*args,**kwargs)
     
-    def _date_code(self):
-        return self.appmodel.date_code
+    def render(self, request, prefix, wrapper, *args):
+        '''
+        Render the application child.
+        This method is reimplemented by subclasses.
+        By default it renders the search application
+        '''
+        url  = self.get_url(*args)
+        data = self.appmodel.get_archive(*args).order_by('-%s' % self.appmodel.date_code)
+        return self.appmodel.paginate(request, data)
+
+
+class TagApp(SearchApp):
     
-    def myquery(self, query, request, year = None, month = None, day = None, **kwargs):
-        '''
-        Override myquery for handling year, month and day
-        '''
-        if year:
-            date_code = self._date_code()
-            kwargs = {'%s__year' % date_code: int(year)}
-            if month:
-                kwargs['%s__month' % date_code] = int(month)
-                if day:
-                    kwargs['%s__day' % date_code] = int(day)
-            query = query.filter(**kwargs)
-        return query
+    def __init__(self, *args, **kwargs):
+        self.tags = None
+        super(TagApp,self).__init__(*args,**kwargs)
+    
+    def title(self, request):
+        return self.breadcrumbs()
+
+    def handle_reponse_arguments(self, request, *args, **kwargs):
+        view = copy.copy(self)
+        view.args = args
+        return view
+        
+    def myquery(self, query, request, *tags):
+        return self.model.objects.with_all(tags, queryset = query)

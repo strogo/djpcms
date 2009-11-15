@@ -51,7 +51,11 @@ class TagArchiveApp(ArchiveApp):
     def basequery(self, request):
         return self.formodel.objects.all()
     
-    def myquery(self, query, request, tag = None, **kwargs):
+    def myquery(self, query, request, *tags, **kwargs):
+        '''
+        Here we assume the args tuple are tags, while kwargs contains
+        date infomation (year,month,day) as in the Archive application
+        '''
         query = super(TagArchiveApp,self).myquery(query, request, **kwargs)
-        return TaggedItem.objects.get_by_model(query, tag)
+        return TaggedItem.objects.get_by_model(query, *tags)
 

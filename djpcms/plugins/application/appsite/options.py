@@ -13,11 +13,9 @@ from django.template import loader, Template, RequestContext
 
 from djpcms.djutils import form_kwargs, UnicodeObject
 from djpcms.djutils.forms import addhiddenfield
-from djpcms.html import formlet, submit, form, div, ajaxbase, Paginator
+from djpcms.html import formlet, submit, form, div, ajaxbase
 from djpcms.views.baseview import editview
-from djpcms.plugins.application.appsite import AppView, TagApp
-from djpcms.views.appview import SearchApp, ArchiveApp
-
+from djpcms.views.appview import AppView
 
 
 class SearchForm(forms.Form):
@@ -42,9 +40,9 @@ def get_declared_applications(bases, attrs):
     # If this class is subclassing another Form, add that Form's fields.
     # Note that we loop over the bases in *reverse*. This is necessary in
     # order to preserve the correct order of fields.
-    for base in bases[::-1]:
-        if hasattr(base, 'base_applications'):
-            apps = base.base_applications.items() + apps
+    #for base in bases[::-1]:
+    #    if hasattr(base, 'base_applications'):
+    #        apps = base.base_applications.items() + apps
 
     return SortedDict(apps)
 
@@ -71,6 +69,7 @@ class ModelApplicationBase(ajaxbase):
     # Does require authenticated user?
     autheinticated   = True
     # Form used for adding/editing objects.
+    # This can be overritten with a function
     form             = forms.ModelForm
     # Form layout.
     form_layout      = None
@@ -187,7 +186,12 @@ class ModelApplicationBase(ajaxbase):
         @param wrapper: instance of djpcms.plugins.wrapper.ContentWrapperHandler with information on layout
         @param url: action url in the form     
         '''
-        mform = mform = addhiddenfield(modelform_factory(self.model, self.form),'prefix')
+        if callable(self.form):
+            mform = self.form(instance = instance)
+        else:
+            mform = modelform_factory(self.model, self.form)
+            
+        mform = addhiddenfield(mform,'prefix')
         initial = None
         if prefix:
             initial = {'prefix':prefix}
@@ -248,15 +252,20 @@ class ModelApplicationBase(ajaxbase):
             edit = None
             
         urls  = []
+        # Loop over childre application to form the urls
         for child in self.applications.values():
-            #func = child.func
-            #child.func = func(child)
             view_name  = self.get_view_name(child.name)
-            urls.append(url(child.rurl, child.response, name = view_name))
+            nurl = url(regex = child.regex,
+                       view  = child.response,
+                       name  = view_name)
+            urls.append(nurl)
             if edit:
                 eview = editview(child,edit)
                 self.edits.append(eview)
-                urls.append(url(child.edit_rurl(edit), eview.response, name = '%s_%s' % (edit,view_name)))
+                nurl = url(regex = child.edit_regex(edit),
+                           view  = eview.response,
+                           name  = '%s_%s' % (edit,view_name))
+                urls.append(nurl)
                 
         return tuple(urls)
     urls = property(fget = make_urls)
@@ -353,54 +362,4 @@ class ModelApplicationBase(ajaxbase):
 
 class ModelApplication(ModelApplicationBase):
     __metaclass__ = ModelAppMetaClass
-    
-    
-class ArchiveApplication(ModelApplication):
-    search        = SearchApp()
-    year_archive  = ArchiveApp('(?P<year>\d{4})',  in_navigation = False)
-    month_archive = ArchiveApp('(?P<month>\d{2})', 'year_archive', in_navigation = False)
-    day_archive   = ArchiveApp('(?P<day>\d{2})',   'month_archive', in_navigation = False)
-
-class TaggedApplication(ArchiveApplication):
-    search         = SearchApp()
-    tags1          = TagApp('tags1/(\w+)', in_navigation = False)
-    tags2          = TagApp('tags2/(\w+)/(\w+)', in_navigation = False)
-    tags3          = TagApp('tags3/(\w+)/(\w+)/(\w+)', in_navigation = False)
-    tags4          = TagApp('tags4/(\w+)/(\w+)/(\w+)/(\w+)', in_navigation = False)
-    
-    def tagurl(self, request, *tags):
-        N = len(tags)
-        view = self.getapp('tags%s' % N)
-        if view:
-            return view.get_url(*tags)    
-    
-    def object_content(self, request, prefix, wrapper, obj):
-        tagurls = []
-        tagview = self.getapp('tags1')
-        if obj.tags and tagview:
-            tags = obj.tags.split(u' ')
-            for tag in tags:
-                tagurls.append({'url':tagview.get_url(tag),'name':tag})
-        return {'tagurls': tagurls}
-    
-class ArchiveTaggedApplication(ArchiveApplication):
-    tags1          = TagApp('tags1/(\w+)', in_navigation = False)
-    tags2          = TagApp('tags2/(\w+)/(\w+)', in_navigation = False)
-    tags3          = TagApp('tags3/(\w+)/(\w+)/(\w+)', in_navigation = False)
-    tags4          = TagApp('tags4/(\w+)/(\w+)/(\w+)/(\w+)', in_navigation = False)
-    
-    def tagurl(self, request, *tags):
-        N = len(tags)
-        view = self.getapp('tags%s' % N)
-        if view:
-            return view.get_url(*tags)
-    
-    def object_content(self, request, prefix, wrapper, obj):
-        tagurls = []
-        tagview = self.getapp('tags1')
-        if obj.tags and tagview:
-            tags = obj.tags.split(u' ')
-            for tag in tags:
-                tagurls.append({'url':tagview.get_url(tag),'name':tag})
-        return {'tagurls': tagurls}
     

@@ -1,9 +1,7 @@
 from django import forms
 from django.utils.importlib import import_module
 
-from djpcms.plugins.application.appsite.apps import *
-from djpcms.plugins.application.appsite.options import ModelApplication, \
-    ArchiveApplication, TaggedApplication, ArchiveTaggedApplication
+from djpcms.plugins.application.appsite.options import ModelApplication
 from djpcms.plugins.application.appsite.appsites import ApplicationSite, site
 from djpcms.plugins.application.models import DynamicApplication
 from djpcms.forms import LazyChoiceField
