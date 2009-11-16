@@ -90,7 +90,7 @@ class DynamicApplication(DJPplugin):
             if app:
                 # get url arguments if provided
                 args, kwargs = self.get_arguments()
-                return app.render(cl.request, prefix, wrapper, *args, **kwargs)
+                return app.render(cl, prefix, wrapper, *args, **kwargs)
             else:
                 if settings.DEBUG:
                     return u'Could not find application %s' % self.application

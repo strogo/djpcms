@@ -11,39 +11,45 @@ from djpcms.views.appview import AppView, ArchiveApp, TagApp, SearchApp
 
 
 class CloudApp(AppView):
-    
+    '''
+    Application to display a tag cloud
+    '''
     def __init__(self, *args, **kwargs):
         self.steps     = kwargs.pop('steps',4)
         self.min_count = kwargs.pop('min_count',None)
         self.formodel  = kwargs.pop('formodel',None)
         super(CloudApp,self).__init__(*args, **kwargs)
     
-    def render(self, request, prefix, wrapper, *args, **kwargs):
+    def render(self, cl, prefix, wrapper, *args, **kwargs):
         '''
         Render a tag cloud
         '''
-        args      = self.args or args
+        request   = cl.request
+        formodel  = self.appmodel.formodel
+        args      = cl.args or args
         steps     = int(kwargs.get('steps',self.steps))
         min_count = kwargs.get('min_count',self.min_count)
         if min_count:
             min_count = int(min_count)
-        if args and args[0]:
-            query = TaggedItem.objects.get_by_model(self.formodel,args)
+            
+        if args:
+            query = TaggedItem.objects.get_by_model(formodel,args)
             query = self.model.objects.usage_for_queryset(query, counts=True)
             tags  = calculate_cloud(query)
         else:
-            tags = self.model.objects.cloud_for_model(self.formodel,
+            tags = self.model.objects.cloud_for_model(formodel,
                                                       steps = steps,
                                                       min_count = min_count)
         for tag in tags:
-            tag.url = self.appmodel.tagurl(request,tag.name)
+            tag.url = self.appmodel.tagurl(request, tag.name)
             if tag.count == 1:
                 tag.times = 'time'
             else:
                 tag.times = 'times'
-        c = {'tags': tags}
-        return loader.render_to_string(['content/tag_cloud.html',
-                                        'djpcms/content/tag_cloud.html'],
+        c = self.content_dict(cl)
+        c['tags'] = tags
+        return loader.render_to_string(['bits/tag_cloud.html',
+                                        'djpcms/bits/tag_cloud.html'],
                                         RequestContext(request, c))
         
 class TagArchiveApp(ArchiveApp):
@@ -51,13 +57,12 @@ class TagArchiveApp(ArchiveApp):
     def __init__(self, *args, **kwargs):
         super(TagArchiveApp,self).__init__(*args, **kwargs)
         
-    def myquery(self, query, request, *tags, **kwargs):
-        '''
-        Here we assume the args tuple are tags, while kwargs contains
-        date infomation (year,month,day) as in the Archive application
-        '''
-        query = super(TagArchiveApp,self).myquery(query, request, **kwargs)
-        return TaggedItem.objects.get_by_model(query, *tags)
+    def appquery(self, request, year = None, month = None, day = None, **tags):
+        query = super(TagArchiveApp,self).appquery(request, year = year, month = month, day = day)
+        if tags:
+            return TaggedItem.objects.get_by_model(query, tags.values())
+        else:
+            return query
 
 
 class ArchiveTaggedApplication(ArchiveApplication):
@@ -66,7 +71,7 @@ class ArchiveTaggedApplication(ArchiveApplication):
     '''
     formodel      = None
     cloud         = CloudApp(in_navigation = True)
-    tag           = TagApp(regex = '(\w+)', parent = 'cloud')
+    tag           = TagApp(regex = '(?P<tag>\w+)', parent = 'cloud')
     year_archive  = TagArchiveApp(regex = '(?P<year>\d{4})',  parent = 'tag')
     month_archive = TagArchiveApp(regex = '(?P<month>\w{3})', parent = 'year_archive', in_navigation = False)
     day_archive   = TagArchiveApp(regex = '(?P<day>\d{2})',   parent = 'month_archive', in_navigation = False)
@@ -77,8 +82,7 @@ class ArchiveTaggedApplication(ArchiveApplication):
     def tagurl(self, request, tag):
         view = self.getapp('tag')
         if view:
-            view = view.handle_reponse_arguments(request,tag)
-            return view.get_url()
+            return view.requestview(request, tag = tag).get_url()
     
     def object_content(self, request, prefix, wrapper, obj):
         tagurls = []
@@ -86,7 +90,7 @@ class ArchiveTaggedApplication(ArchiveApplication):
         if obj.tags and tagview:
             tags = obj.tags.split(u' ')
             for tag in tags:
-                tagurls.append({'url':tagview.get_url(tag),'name':tag})
+                tagurls.append({'url':tagview.get_url(request, tag = tag),'name':tag})
         return {'tagurls': tagurls}
     
     

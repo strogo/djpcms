@@ -159,9 +159,9 @@ class ModelApplicationBase(ajaxbase):
         Get arguments from model instance used to construct url
         By default it is the object id
         @param obj: instance of self.model
-        @return: tuple of url bits 
+        @return: dictionary of url bits 
         '''
-        return (obj.id,)
+        return {'id': obj.id}
     
     def get_object(self, *args, **kwargs):
         '''
@@ -278,18 +278,18 @@ class ModelApplicationBase(ajaxbase):
         #TODO: change this so that we are not tide up with name
         view = self.getapp('delete')
         if view and self.has_delete_permission(request, obj):
-            view = view(obj)
-            return view.get_url()
+            cl = view.requestview(request, instance = obj)
+            return cl.get_url()
         
     def editurl(self, request, obj):
         '''
         Get the edit url if available
         '''
         #TODO: change this so that we are not tide up with name
-        edit = self.getapp('edit')
-        if edit and self.has_edit_permission(request, obj):
-            editview = edit(obj)
-            return editview.get_url()
+        view = self.getapp('edit')
+        if view and self.has_edit_permission(request, obj):
+            cl = view.requestview(request, instance = obj)
+            return cl.get_url()
     
     def viewurl(self, request, obj):
         '''
@@ -298,8 +298,8 @@ class ModelApplicationBase(ajaxbase):
         #TODO: change this so that we are not tide up with name
         view = self.getapp('view')
         if view and self.has_view_permission(request, obj):
-            view = view(obj)
-            return view.get_url()
+            cl = view.requestview(request, instance = obj)
+            return cl.get_url()
         
     def tagurl(self, request, tag):
         return None

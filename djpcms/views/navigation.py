@@ -57,9 +57,9 @@ class default_navigation_constructor(object):
         children   = self.children
         if parentview:
             if children:
-                children.append(view.get_url())
+                children.append(view.get_url(self.request))
             else:
-                children = [view.get_url()]
+                children = [view.get_url(self.request)]
             func = getattr(parentview, self.nav_func)
             return func(self.request, children = children)
         else:
@@ -72,6 +72,29 @@ class default_navigation_constructor(object):
     def elems(self):
         return self.get_navigator().elems()
 
+
+
+class lazycounter(object):
+    
+    def __init__(self, cl, **kwargs):
+        self.cl     = cl
+        self.kwargs = kwargs
+
+    def count(self):
+        return len(self.elems())
+
+    @lazyattr
+    def elems(self):
+        return self._items()
+    
+    def items(self):
+        '''
+        This must be implemented by derived classes
+        '''
+        elems = self.elems()
+        for elem in elems:
+            yield elem
+    
 
 
 class lazynavigator(object):
@@ -112,4 +135,31 @@ class lazynavigator(object):
                                             view, 
                                             urlselects = urlselects,
                                             secondary_after = secondary_after)}
+        
+class breadcrumbs(lazycounter):
+    '''
+    Breadcrumbs for current page
+    '''
+    def __init__(self, cl):
+        super(breadcrumbs,self).__init__(cl)
+        
+    def _items(self):
+        first   = True
+        cl      = self.cl
+        request = cl.request
+        parent  = cl.view.parentview(request)
+        crumbs  = []
+        while parent:
+            if first:
+                val = {'name': cl.urlname()}
+                first = False
+            else:
+                val = {'name': cl.urlname(),
+                       'url': cl.get_url()}
+            crumbs.insert(0,val)
+            cl     = parent.requestview(request, *cl.args, **cl.kwargs)
+            parent = parent.parentview(request)
+            
+        return crumbs
+        
         

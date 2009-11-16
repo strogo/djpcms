@@ -8,7 +8,7 @@ from djpcms.html import quickform, link
 from djpcms.utils.ajax import jredirect
 
 from forms import LoginForm
-#from tools import BaseUser
+
 
 __all__ = ['LogoutApp','LoginApp']
 

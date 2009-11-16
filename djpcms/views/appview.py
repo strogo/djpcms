@@ -54,19 +54,23 @@ class AppView(djpcmsview):
         return self.appmodel.model
     model = property(fget = __get_model)
     
-    def title(self, request, pagetitle):
-        if not pagetitle:
+    def urlname(self, cl):
+        if not self.breadcrumbs:
+            if not cl.page:
+                return self.appmodel.name
+            else:
+                return cl.page.href_name
+        else:
+            return ' '.join(self.breadcrumbs) % cl.urlargs
+        
+    def title(self, cl):
+        if not cl.page:
             return self.appmodel.name
         else:
-            return pagetitle
+            return cl.page.title
     
     def edit_regex(self, edit):
-        return r'^%s/%s$' % (edit,self.regex)
-    
-    def handle_reponse_arguments(self, request, *args, **kwargs):
-        view = copy.copy(self)
-        view.args = args
-        return view
+        return r'^%s/%s$' % (edit,self._regex)
     
     def get_prefix(self, data):
         '''
@@ -79,7 +83,7 @@ class AppView(djpcmsview):
     
     def processurlbits(self, appmodel):
         '''
-        Process url bits
+        Process url bits and store information for navigation and urls
         '''
         self.appmodel = appmodel
         if self.parent:
@@ -91,6 +95,7 @@ class AppView(djpcmsview):
             purl    = self.appmodel.baseurl
             nargs   = 0
         
+        breadcrumbs = []
         if self.urlbit:
             bits = self.urlbit.split('/')
             for bit in bits:
@@ -103,18 +108,32 @@ class AppView(djpcmsview):
                         else:
                             nargs += 1
                             name   = 'arg_no_key_%s' % nargs
-                        purl += '%(' + name + ')s/'
+                            
+                        name  = '%(' + name + ')s'
+                        purl += name + '/'
+                        breadcrumbs.append(name)
                     else:
+                        breadcrumbs.append(bit)
                         purl += '%s/' % bit
             self._regex = '%s%s/' % (baseurl,self.urlbit)
         else:
             self._regex = baseurl
-                        
+        
+        self.breadcrumbs = breadcrumbs
         self.purl     = purl
         self.num_args = nargs
         
-    def get_url(self, request):
-        raise NotImplementedError
+    def content_dict(self, cl):
+        return copy.copy(cl.urlargs)
+        
+    def get_url(self, request, **kwargs):
+        '''
+        get application url
+        '''
+        if kwargs:
+            return self.purl % kwargs
+        else:
+            return self.purl
     
     def parentview(self, request):
         '''
@@ -180,38 +199,7 @@ class SearchApp(AppView):
     Base class for searching objects in model
     '''
     def __init__(self, *args, **kwargs):
-        self.kwargs   = None
-        self.nargs    = 0
         super(SearchApp,self).__init__(*args,**kwargs)
-    
-    def handle_reponse_arguments(self, request, *args, **kwargs):
-        view        = copy.copy(self)
-        view.nargs  = 0
-        view.handle_arguments(*args, **kwargs)
-        return view
-    
-    def get_url(self, request):
-        '''
-        get application url
-        '''
-        if self.urlargs:
-            return self.purl % self.urlargs
-        else:
-            return self.purl
-        
-    def handle_arguments(self,  *args, **kwargs):
-        i = self.nargs
-        urlargs = copy.copy(kwargs)
-        for arg in args:
-            i += 1
-            urlargs['arg_no_key_%s' % i] = arg
-        self.args    = args
-        self.kwargs  = kwargs
-        self.urlargs = urlargs
-        self.nargs   = i
-        
-    def content_dict(self):
-        return self.urlargs
     
     def get_item_template(self, obj):
         opts = obj._meta
@@ -219,26 +207,35 @@ class SearchApp(AppView):
         template_name_1 = '%s/%s' % (opts.app_label,template_name_0)
         return [template_name_0,template_name_1]
     
-    def render(self, request, prefix, wrapper, *args, **kwargs):
+    def render(self, cl, prefix, wrapper, *args, **kwargs):
         '''
-        Render the application child.
+        Perform the custom query over the model objects and return a paginated result
+        @param request: HttpRequest
+        @param prefix: prefix for forms
+        @param wrapper: html wrapper object
+        @see: djpcms.utils.html.pagination for pagination
         '''
-        kwargs.update(self.kwargs)
-        args = self.args + args
-        self.handle_arguments(*args, **kwargs)
-        url      = self.get_url(request)
-        query    = self.appquery(request, *self.args, **self.kwargs)
-        f  = self.appmodel.get_searchform(request, prefix, wrapper, url)
+        request = cl.request
+        kwargs.update(cl.kwargs)
+        args  = cl.args + args
+        cl    = self.requestview(request, *args, **kwargs)
+        query = self.appquery(request, *cl.args, **cl.kwargs)
+        f  = self.appmodel.get_searchform(request, prefix, wrapper, cl.get_url())
         p  = Paginator(request, query)
-        c  = self.content_dict()
+        c  = self.content_dict(cl)
         c.update({'form':f,
                   'paginator': p,
-                  'tems': self.data_generator(request, prefix, wrapper, p.qs)})
-        return loader.render_to_string(['content/pagination.html',
-                                        'djpcms/content/pagination.html'],
-                                        self.urlargs)
+                  'items': self.data_generator(cl, prefix, wrapper, p.qs)})
+        return loader.render_to_string(['bits/pagination.html',
+                                        'djpcms/bits/pagination.html'],
+                                        c)
     
-    def data_generator(self, request, prefix, wrapper, data):
+    def data_generator(self, cl, prefix, wrapper, data):
+        '''
+        Return a generator for the query.
+        This function can be overritten by derived classes
+        '''
+        request = cl.request
         app = self.appmodel
         for obj in data:
             content = app.object_content(request, prefix, wrapper, obj)
@@ -260,8 +257,8 @@ class ArchiveApp(SearchApp):
     def _date_code(self):
         return self.appmodel.date_code
     
-    def content_dict(self):
-        c = self.urlargs
+    def content_dict(self, cl):
+        c = super(ArchiveApp,self).content_dict(cl)
         month = c.get('month',None)
         if month:
             try:
@@ -340,37 +337,27 @@ class AddApp(AppView):
 # Application views which requires an object
 class ObjectView(AppView):
     '''
-    Application view for objects
+    Application view for objects.
+    A view of this type has an embedded object available.
+    URL is generated by the object
     '''
     def __init__(self, *args, **kwargs):
-        self.object = None
         super(ObjectView,self).__init__(*args, **kwargs)
-        
-    def handle_reponse_arguments(self, request, *args, **kwargs):
-        try:
-            return self(self.appmodel.get_object(*args,**kwargs))
-        except ObjectDoesNotExist, e:
-            raise http.Http404(str(e))
     
-    def get_url(self, *args):
+    def get_url(self, request, instance = None, **urlargs):
         '''
         get object application url
         '''
-        if self.object:
-            return self.purl % self.appmodel.objectbits(self.object)
+        if instance:
+            return self.purl % self.appmodel.objectbits(instance)
         else:
-            return self.purl % args
+            return self.purl % urlargs
     
     def title(self, request, pagetitle):
         try:
             return pagetitle % self.object
         except:
             return pagetitle
-    
-    def __call__(self, obj):
-        view = copy.copy(self)
-        view.object = obj
-        return view
     
 
 # View and object

@@ -1,0 +1,3 @@
+<div class="tagindex">{% for tag in tags %}
+<a class="size-{{ tag.font_size }}"{% if tag.url %} href="{{ tag.url }}"{% endif %} title="{{ tag.name }}: {{ tag.count }} {{ tag.times }}">{{ tag.name }}</a>{% endfor %}
+</div>

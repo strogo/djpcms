@@ -31,11 +31,8 @@ class pageview(djpcmsview):
     def __unicode__(self):
         return self.url
     
-    def get_url(self, request, *args):
+    def get_url(self, request, **urlargs):
         return self.url
-    
-    def urlname(self):
-        return self.page.href_name
     
     def get_page(self):
         return self.page
@@ -49,9 +46,6 @@ class pageview(djpcmsview):
     def grid960(self):
         #return grid960(self.gridcolumns,self.grid_fixed)
         return grid960()
-
-    def urldisplay(self):
-        return self.page.href_name
         
     def has_permission(self, request):
         if self.page.requires_login:

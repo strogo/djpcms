@@ -1,0 +1,33 @@
+<div class='powered-by'>
+{% block header %}{% endblock %}{% block powered-list %}
+<table>
+<tbody>
+<tr>
+<td>
+<a href="http://www.python.org/" title = "Python {{ python }}" target="_blank">
+<img src="http://www.python.org/community/logos/python-powered-w-70x28.png" alt="Python" title="Python powered" /></a>
+</td>
+<td>
+{{ python }}
+</td>
+</tr>
+<tr>
+<td>
+<a href="http://www.djangoproject.com/" target="_blank">
+<img src="http://media.djangoproject.com/img/badges/djangomade124x25_grey.gif" border="0" alt="Django." title="Made with Django." /></a>
+</td>
+<td>
+{{ django }}
+</td>
+</tr>{% for c in other %}
+<tr>
+<td>
+<a{% if c.url %} href="{{ c.url }}"{% endif %} title="{{ c.name }}" target="_blank">{{ c.name }}</a>
+</td>
+<td>
+{{ c.version }}
+</td>
+</tr>{% endfor %}
+</tbody>
+</table>{% endblock %}
+</div>

@@ -94,7 +94,7 @@ def _get_view_from_url(request, url):
     cache  = getcache(request)
     view   = cache.url(url)
     if view:
-        return view
+        return view, None
     
     url    = clean_url(url)
     if isinstance(url,HttpResponseRedirect):
