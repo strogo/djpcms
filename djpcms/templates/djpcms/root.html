@@ -15,7 +15,7 @@
 </style>{% block script-block %}{% endblock %}{% block extra-head %}{% endblock %}
 </head>
 
-<body {% block bodybits %}{{ cl.bodybits }}{% endblock %}>{% block pre-body %}{% if prebody %}
+<body {% block bodybits %}{{ djp.bodybits }}{% endblock %}>{% block pre-body %}{% if prebody %}
 <!-- PRE-BODY SCRIPTS -->
 {{ prebody }}{% endif %}{% endblock %}
 
@@ -32,7 +32,7 @@
 {% block body-scripts %}
 <script type="text/javascript">
   $(document).ready(function() {
-	var options = {{ cl.css.tojson }};
+	var options = {{ djp.css.tojson }};
 	options.media_url = "{{ MEDIA_URL }}";
 	options.debug     = {{ jsdebug }};
 	$.djpcms.set_options(options);

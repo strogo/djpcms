@@ -9,6 +9,7 @@ from djpcms.models import AppPage
 from djpcms.utils.html import Paginator
 from djpcms.views.baseview import djpcmsview
 from djpcms.views.site import get_view_from_url
+from djpcms.utils import form_kwargs
 
 
 class AppView(djpcmsview):
@@ -179,7 +180,7 @@ class AppView(djpcmsview):
         '''
         return self.basequery(request)
     
-    def render(self, request, prefix, wrapper, *args, **kwargs):
+    def render(self, djp, **kwargs):
         '''
         Render the application child.
         This method is reimplemented by subclasses.
@@ -201,13 +202,7 @@ class SearchApp(AppView):
     def __init__(self, *args, **kwargs):
         super(SearchApp,self).__init__(*args,**kwargs)
     
-    def get_item_template(self, obj):
-        opts = obj._meta
-        template_name_0 = '%s_search_item.html' % opts.module_name
-        template_name_1 = '%s/%s' % (opts.app_label,template_name_0)
-        return [template_name_0,template_name_1]
-    
-    def render(self, cl, prefix, wrapper, *args, **kwargs):
+    def render(self, djp, **kwargs):
         '''
         Perform the custom query over the model objects and return a paginated result
         @param request: HttpRequest
@@ -215,9 +210,8 @@ class SearchApp(AppView):
         @param wrapper: html wrapper object
         @see: djpcms.utils.html.pagination for pagination
         '''
-        request = cl.request
-        kwargs.update(cl.kwargs)
-        args  = cl.args + args
+        request = djp.request
+        djp.update(**kwargs)
         cl    = self.requestview(request, *args, **kwargs)
         query = self.appquery(request, *cl.args, **cl.kwargs)
         f  = self.appmodel.get_searchform(request, prefix, wrapper, cl.get_url())
@@ -225,26 +219,10 @@ class SearchApp(AppView):
         c  = self.content_dict(cl)
         c.update({'form':f,
                   'paginator': p,
-                  'items': self.data_generator(cl, prefix, wrapper, p.qs)})
+                  'items': self.appmodel.data_generator(cl, prefix, wrapper, p.qs)})
         return loader.render_to_string(['bits/pagination.html',
                                         'djpcms/bits/pagination.html'],
                                         c)
-    
-    def data_generator(self, cl, prefix, wrapper, data):
-        '''
-        Return a generator for the query.
-        This function can be overritten by derived classes
-        '''
-        request = cl.request
-        app = self.appmodel
-        for obj in data:
-            content = app.object_content(request, prefix, wrapper, obj)
-            content.update({'item': obj,
-                            'editurl': app.editurl(request, obj),
-                            'viewurl': app.viewurl(request, obj),
-                            'deleteurl': app.deleteurl(request, obj)})
-            yield loader.render_to_string(template_name    = self.get_item_template(obj),
-                                          context_instance = RequestContext(request, content))
 
 
 class ArchiveApp(SearchApp):
@@ -344,14 +322,17 @@ class ObjectView(AppView):
     def __init__(self, *args, **kwargs):
         super(ObjectView,self).__init__(*args, **kwargs)
     
-    def get_url(self, request, instance = None, **urlargs):
+    def get_url(self, djp, instance = None, **urlargs):
         '''
         get object application url
         '''
         if instance:
             return self.purl % self.appmodel.objectbits(instance)
         else:
-            return self.purl % urlargs
+            instance = self.appmodel.get_object(**urlargs)
+            url = self.purl % urlargs
+            djp.instance = instance
+            return url
     
     def title(self, request, pagetitle):
         try:
@@ -392,15 +373,12 @@ class EditApp(ObjectView):
     def __init__(self, regex = 'edit', parent = 'view', name = 'edit',  **kwargs):
         super(EditApp,self).__init__(regex = regex, parent = parent, name = name, **kwargs)
     
-    def render(self, request, prefix, wrapper, *args):
-        '''
-        Render the edit view
-        '''
-        url = self.get_url(request, *args)
-        f = self.appmodel.get_form(request, prefix, wrapper, url, instance = self.object)
+    def render(self, djp):
+        f = self.appmodel.get_form(djp)
         return f.render()
     
-    def default_ajax_view(self, request):
+    def default_ajax_view(self, djp):
+        request = djp.request
         prefix = self.get_prefix(dict(request.POST.items()))
         f = self.appmodel.get_form(request, prefix = prefix, instance = self.object)
         if f.is_valid():

@@ -1,6 +1,7 @@
 from django import forms
 from django.db import models
 
+from djpcms.utils import json
 from djpcms.utils import NoAjaxKeyError
 from djpcms.models import DJPplugin, Page
 from djpcms.djutils.fields import LazyChoiceField
@@ -9,27 +10,39 @@ from djpcms.djutils import form_kwargs
 from djpcms.forms import LazyChoiceField
 from djpcms import functiongenerator, custom_response
     
+    
+    
+def get_arguments(arguments):
+    '''
+    Only keyworded arguments are allowed
+    '''
+    if arguments:
+        try:
+            d = json.loads(arguments)
+            if isinstance(d,dict):
+                return d
+        except:
+            pass
 
         
 class IntenalFunction(DJPplugin):
+    '''
+    Internal Function plugin
+    '''
     application = models.CharField(max_length = 200, blank = True)
-    arguments   = models.CharField(blank = True, max_length = 200, help_text = 'Comma separated list of arguments for the applications') 
+    arguments   = models.CharField(blank = True, max_length = 200) 
     
     def __unicode__(self):
         b = super(IntenalFunction,self).__unicode__()
         return u'%s: %s' % (b,self.application or '')
     
-    def get_arguments(self):
-        if self.arguments:
-            return tuple(self.arguments.replace(' ','').split(','))
-        else:
-            return ()
-    
-    def render(self, cl, prefix, wrapper):
+    def render(self, djp):
         attr = custom_response(self.application)
         if attr:
-            args = self.get_arguments()
-            return attr(cl,*args)
+            kwargs = get_arguments(self.arguments)
+            if kwargs:
+                djp.update(**kwargs)
+            return attr(djp)
         else:
             return u''
     
@@ -74,7 +87,7 @@ class DynamicApplication(DJPplugin):
         except:
             return view
         
-    def render(self, cl, prefix, wrapper):
+    def render(self, djp):
         '''
         Rendering the dynamic application
         @param request: HttpRequest instance
@@ -86,11 +99,12 @@ class DynamicApplication(DJPplugin):
         if not self.application:
             return u''
         try:
-            app = self.get_appview(cl.view)
+            app = self.get_appview(djp.view)
             if app:
-                # get url arguments if provided
-                args, kwargs = self.get_arguments()
-                return app.render(cl, prefix, wrapper, *args, **kwargs)
+                kwargs = get_arguments(self.arguments)
+                if kwargs:
+                    djp.update(**kwargs)
+                return app.render(djp)
             else:
                 if settings.DEBUG:
                     return u'Could not find application %s' % self.application

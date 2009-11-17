@@ -29,8 +29,8 @@ class ContentWrapper(object):
     def __repr__(self):
         return self.__str__()
     
-    def wrap(self, cblock, cl):
-        return mark_safe(self.handler.wrap(cblock, cl))
+    def wrap(self, djp, cblock):
+        return mark_safe(self.handler.wrap(djp, cblock))
         
     def __eq__(self, other):
         if isinstance(other,ContentWrapper) and other.name == self.name:
@@ -45,20 +45,20 @@ class ContentWrapperHandler(object):
     '''
     form_layout = None
     
-    def inner(self, cblock, cl):
+    def inner(self, djp, cblock):
         '''
         Render the inner block
         '''
-        return cblock.render(cl)
+        return cblock.render(djp)
     
-    def wrap(self, cblock, cl):
+    def wrap(self, djp, cblock):
         '''
         Wrap content for block cblock
         @param param: cblock instance or BlockContent or AppBlockContent
         @param request: HttpRequest instance
         @param view: instance of djpcmsview  
         '''
-        return self.inner(cblock, cl)
+        return self.inner(djp, cblock)
 
 
 def add_content_wrapper(name, handler, description = None):

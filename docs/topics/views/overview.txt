@@ -12,9 +12,9 @@ AJAX POST reponses
 As mentioned above there can be several different types of AJAX POST responses, these are implemented by
 defining functions with the **ajax__** prefix.
 
-	class myview:
+	class myview(baseview)
 		
-		def ajax__custom_response(self, request):
+		def ajax__custom_response(self, djp):
 			return obj
 
 ================================

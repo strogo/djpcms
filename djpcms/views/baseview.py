@@ -22,7 +22,7 @@ from djpcms.utils import urlbits, urlfrombits
 
 from djpcms.views.load import *
 
-class RequestWrap(UnicodeObject):
+class DjpRequestWrap(UnicodeObject):
     '''
     Generic response based on djpcms view objects
     '''
@@ -34,7 +34,26 @@ class RequestWrap(UnicodeObject):
         self._urlargs = None
         self.args     = args
         self.kwargs   = kwargs
-        
+        self.wrapper  = None
+        self.prefix   = None
+    
+    def __call__(self, prefix = None, wrapper = None):
+        djp = copy.copy(self)
+        djp.prefix  = prefix
+        djp.wrapper = wrapper
+        return djp
+    
+    def _get_instance(self):
+        instance = self.urlargs.get('instance',None)
+        if not instance:
+            self.url
+            return self.urlargs.get('instance',None)
+        else:
+            return instance
+    def _set_instance(self, instance):
+        self.urlargs['instance'] = instance
+    instance = property(fget = _get_instance, fset = _set_instance)
+    
     def handle_arguments(self):
         if self._urlargs is None:
             i = 0
@@ -55,8 +74,9 @@ class RequestWrap(UnicodeObject):
         Build the url for this application view
         '''
         if self._url is None:
-            self._url = self.view.get_url(self.request,**self.urlargs)
+            self._url = self.view.get_url(self, **self.urlargs)
         return self._url
+    url = property(get_url)
         
     def __get_page(self):
         if not hasattr(self,'_page'):
@@ -80,6 +100,9 @@ class RequestWrap(UnicodeObject):
             return self.page.in_navigation
         else:
             return 1
+    
+    def bodybits(self):
+        return self.view.bodybits()
 
 
 class djpcmsview(UnicodeObject):
@@ -92,9 +115,9 @@ class djpcmsview(UnicodeObject):
     '''
     
     def requestview(self, request, *args, **kwargs):
-        return RequestWrap(request, self, *args, **kwargs)
+        return DjpRequestWrap(request, self, *args, **kwargs)
     
-    def get_url(self, request, **kwargs):
+    def get_url(self, djp, **urlargs):
         return None
     
     def get_page(self):
@@ -162,21 +185,21 @@ class djpcmsview(UnicodeObject):
         if method not in (method.lower() for method in methods):
             return http.HttpResponseNotAllowed(methods)
         
-        cl = self.requestview(request,*args,**kwargs)
-        view = cl.view
+        djp = self.requestview(request,*args,**kwargs)
+        view = djp.view
         func = getattr(view,'%s_response' % method,None)
         if not func:
             raise ValueError("Allowed view method %s does not exist in %s." % (method,view))
         
-        return func(cl)
+        return func(djp)
     
-    def preget(self, request):
+    def preget(self, djp):
         pass
     
     def update_content(self, request, c):
         pass
     
-    def get_response(self, cl):
+    def get_response(self, djp):
         '''
         Handle the Get view.
         This function SHOULD NOT be overwritten.
@@ -185,33 +208,33 @@ class djpcmsview(UnicodeObject):
             - 'preget' for some sort of preprocessing (and redirect)
             - 'update_content' - for creating content when there is no inner_template
         '''
-        request = cl.request
         #First check for redirect
-        re = self.preget(request)
+        re = self.preget(djp)
         if isinstance(re,http.HttpResponse):
             return re
         
         # Get page object and template_name
-        page = cl.page
+        request = djp.request
+        page    = djp.page
         inner_template  = None
+        grid    = self.grid960()
         
         # If user not authenticated set a test cookie  
         if not request.user.is_authenticated():
             request.session.set_test_cookie()
                
-        c = {'cl':               cl,
+        c = {'djp':              djp,
              'sitenav':          self.get_main_nav(request),
-             'breadcrumbs':      breadcrumbs(cl),
-             'grid':             self.grid960()}
+             'breadcrumbs':      breadcrumbs(djp),
+             'grid':             grid}
         
         # Inner template available, fill the context dictionary
         # with has many content keys as the number of blocks in the page
         if page and page.inner_template:
-            cb = {'cl': cl,
-                  'grid': self.grid960()}
+            cb = {'djp':  djp, 'grid': grid}
             blocks = page.inner_template.numblocks()
             for b in range(0,blocks):
-                cb['content%s' % b] = BlockContentGen(cl, b)
+                cb['content%s' % b] = BlockContentGen(djp, b)
                     
             inner = page.inner_template.render(RequestContext(request, cb))
             
@@ -223,13 +246,13 @@ class djpcmsview(UnicodeObject):
              
         else:
             # No page or no inner_template. Get the inner content directly
-            inner = self.inner_content(request)
+            inner = self.inner_content(djp)
             
         c['inner'] = inner
-        return render_to_response(template_name = cl.template,
+        return render_to_response(template_name = djp.template,
                                   context_instance = RequestContext(request, c))
     
-    def post_response(self, cl):
+    def post_response(self, djp):
         '''
         Handle the post view.
         This function checks the request.POST dictionary
@@ -254,7 +277,7 @@ class djpcmsview(UnicodeObject):
             Than there should be a function called   'ajax__change_parameter'
             which handle the response
         '''
-        request   = cl.request
+        request   = djp.request
         post      = request.POST
         params    = dict(post.items())
         ajax_key  = params.get(HTML_CLASSES.post_view_key, None)
@@ -270,7 +293,7 @@ class djpcmsview(UnicodeObject):
                 if not ajax_view_function:
                     ajax_view_function = self.default_ajax_view;
                     
-                res  = ajax_view_function(cl)
+                res  = ajax_view_function(djp)
             except Exception, e:
                 # we got an error. If in debug mode send a JSON response with
                 # the error message back to javascript.
@@ -284,18 +307,18 @@ class djpcmsview(UnicodeObject):
         else:
             return self.default_post(request)
             
-    def default_post(self, cl):
+    def default_post(self, djp):
         '''
         Default POST view.
         by default we redirect to the next page if available
         otherwise we redirect to home page
         '''
-        request   = cl.request
+        request   = djp.request
         params    = dict(post.items())
-        next      = params.get('next',self.url)
+        next      = params.get('next',djp.url)
         return http.HttpResponseRedirect(next)
     
-    def default_ajax_view(self, cl):
+    def default_ajax_view(self, djp):
         '''
         This function is called by the self.post_view method when the ajax is is available
         but no ajax function was found.

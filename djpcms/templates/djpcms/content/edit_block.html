@@ -1,17 +1,11 @@
 <div id="{{ contentblock.htmlid }}" class="edit-contentblock">
   <div class="actions">{% if contentblock.plugin %}
   <ul>
-  <li><a class="{{ cl.css.ajax }} {{ cl.css.delete }}" href="{{ contentblock.url }}" name="delete_plugin" title="Remove content"></a></li>
+  <li><a class="{{ djp.css.ajax }} {{ djp.css.delete }}" href="{{ djp.url }}" name="delete_plugin" title="Remove content"></a></li>
   </ul>{% endif %}
   </div>
   <div class="hd">
-    <form class="edit-block-form align {{ css.ajax }}" action="{{ contentblock.url }}" method="post">
-     <table class="plain">
-      <tbody>
-        {{ form.as_table }}
-      </tbody>
-     </table>
-    </form>
+    {{ form }}
   </div>
   <div id="{{ contentblock.pluginid }}" class="bd">{% if plugin_edit_block %}
   {{ plugin_edit_block }}{% endif %}

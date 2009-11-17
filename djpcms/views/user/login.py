@@ -22,7 +22,8 @@ class LogoutApp(appview.AppView):
     def __init__(self, url = 'logout', parent = None):
         super(LogoutApp,self).__init__(url,parent,isapp = False)
         
-    def preget(self, request):
+    def preget(self, djp):
+        request = djp.request
         params  = dict(request.GET.items())
         url     = params.get('next','/')
         user    = request.user
@@ -40,15 +41,15 @@ class LoginApp(appview.AppView):
     def __init__(self, url = 'login', parent = None, **kwargs):
         super(LoginApp,self).__init__(url, parent, **kwargs)
         
-    def title(self):
+    def title(self, djp):
         return 'Sign in to %s' % self.page.site.name
     
-    def preget(self, request):
+    def preget(self, djp):
         '''
         Check if user is already logged-in.
         Normally this should not append.
         '''
-        if request.user.is_authenticated():
+        if djp.request.user.is_authenticated():
             return http.HttpResponseRedirect('/')
     
     def inner_content(self, request):

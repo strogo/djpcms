@@ -1,3 +1,7 @@
+'''
+Model responsible for handling html rendering of plugins
+This module is closely associated with the views module
+'''
 from django.conf import settings
 from django.db.models.base import ModelBase
 from django.contrib.contenttypes.models import ContentType
@@ -126,11 +130,7 @@ class BlockContentBase(models.Model):
         abstract = True
         
     def __unicode__(self):
-        return '%s-%s-%s-%s' % (self.typenum,self.page.id,self.block,self.position)
-    
-    def __get_typenum(self):
-        return self.page.typenum
-    typenum = property(fget = __get_typenum)
+        return '%s-%s-%s' % (self.page.id,self.block,self.position)
     
     def htmlid(self):
         return u'blockcontent-%s' % self
@@ -139,8 +139,7 @@ class BlockContentBase(models.Model):
         return u'plugin-%s' % self
     
     def url(self):
-        baseurl = CONTENT_INLINE_EDITING.get('pagecontent','/content/')
-        return '%s%s/%s/%s/%s/' % (baseurl,self.typenum,self.page.id,self.block,self.position)
+        return ''
         
     def wrapper(self):
         ct = int(self.container_type)
@@ -164,7 +163,7 @@ class BlockContentBase(models.Model):
         plugin.delete()
         self.save()
         
-    def plugin_edit_block(self, cl):
+    def plugin_edit_block(self, djp):
         '''
         Render the edit element for this block
         @param cl: instance of djpcms.views.baseview.ResponseBase
@@ -173,11 +172,10 @@ class BlockContentBase(models.Model):
             return u''
         return loader.render_to_string(['content/edit_content_plugin.html',
                                         'djpcms/content/edit_content_plugin.html'],
-                                        {'html':         self.render(cl),
-                                         'changeform':   self.changeform(cl.request),
-                                         'url':          self.url(),
+                                        {'html':         self.render(djp),
+                                         'changeform':   self.changeform(djp.request),
                                          'contentblock': self,
-                                         'cl':           cl})
+                                         'djp':          djp})
         
     def changeform(self, request = None):
         f = self.plugin.changeform(request = request, prefix = 'cf_%s' % self.pluginid())
@@ -186,7 +184,7 @@ class BlockContentBase(models.Model):
                        submit = submit(value = 'Change',
                                        name  = 'change_plugin_content'))
     
-    def render(self, cl):
+    def render(self, djp):
         '''
         @param cl: instance of djpcms.views.baseview.ResponseBase
          
@@ -194,9 +192,9 @@ class BlockContentBase(models.Model):
         This function is called when the plugin needs to be rendered
         This function call the plugin render function passing three arguments
         '''
-        return self.plugin.render(cl,
-                                  prefix  = 'bd_%s' % self.pluginid(),
-                                  wrapper = self.wrapper().handler)
+        djp = djp(prefix  = 'bd_%s' % self.pluginid(),
+                  wrapper = self.wrapper().handler)
+        return self.plugin.render(djp)
     
     def change_plugin_content(self, request):
         '''
@@ -286,7 +284,7 @@ class DJPplugin(models.Model):
     def __unicode__(self):
         return force_unicode(self._meta.verbose_name)
         
-    def render(self, request, prefix, wrapper, **kwargs):
+    def render(self, djp, **kwargs):
         '''
         Function called to render the plugin
         '''

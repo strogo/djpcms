@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.sites.models import Site
 
+from djpcms.settings import HTML_CLASSES
 from djpcms.models import Page, AppPage
 from djpcms.utils import lazyattr
 from djpcms import siteapp_choices
@@ -25,6 +26,14 @@ class LazyChoiceField(forms.ChoiceField):
             lz = lz()
         result.choices = lz
         return result
+    
+class LazyAjaxChoice(LazyChoiceField):
+    
+    def __init__(self, *args, **kwargs):
+        super(LazyAjaxChoice,self).__init__(*args, **kwargs)
+        
+    def widget_attrs(self, widget):
+        return {'class': HTML_CLASSES.ajax}
 
 
 class PageForm(forms.ModelForm):

@@ -65,7 +65,7 @@ class ModelApplicationBase(ajaxbase):
     Each one of the class attributes are optionals
     '''
     # Name for this application. Optional (the model name will be used if None)
-    name             = 'NoName'
+    name             = None
     # Base URL for the application including trailing slashes. Optional
     baseurl          = '/'
     # Does require authenticated user?
@@ -94,11 +94,12 @@ class ModelApplicationBase(ajaxbase):
     # If set to True, base class views will be available
     inherit          = False
     
-    def __init__(self, model, application_site):
+    def __init__(self, model, application_site, editavailable):
         self.model = model
         self.opts  = model._meta
         self.root_application = None
         self.application_site = application_site
+        self.editavailable    = editavailable
         self.name             = self.name or self.opts.module_name
         if not self.baseurl:
             raise ModelApplicationUrlError('Base url for application %s not defined' % model)
@@ -181,31 +182,34 @@ class ModelApplicationBase(ajaxbase):
     def getapp(self, code):
         return self.applications.get(code, None)
         
-    def get_form(self, request, prefix = None, wrapper = None, url = None, instance = None):
+    def get_form(self, djp):
         '''
         Build an add/edit form for the application model
+        @param djp: instance of djpcms.views.DjpRequestWrap 
         @param request: django HttpRequest instance
         @param instance: instance of self.model or None
         @param prefix: prefix to use in the form
         @param wrapper: instance of djpcms.plugins.wrapper.ContentWrapperHandler with information on layout
         @param url: action url in the form     
         '''
-        if callable(self.form):
-            mform = self.form(instance = instance)
-        else:
+        instance = djp.instance
+        if isinstance(self.form,type):
             mform = modelform_factory(self.model, self.form)
+        else:
+            mform = self.form(instance = instance)
             
-        mform = addhiddenfield(mform,'prefix')
-        initial = None
-        if prefix:
-            initial = {'prefix':prefix}
+        mform    = addhiddenfield(mform,'prefix')
+        wrapper  = djp.wrapper
+        initial  = None
+        if djp.prefix:
+            initial = {'prefix': djp.prefix}
                 
-        f     = mform(**form_kwargs(request,
-                                    instance = instance,
-                                    initial = initial,
-                                    withrequest = self.form_withrequest,
-                                    prefix = prefix))
-        fhtml = form(method = self.form_method, url = url)
+        f     = mform(**form_kwargs(request     = djp.request,
+                                    instance    = instance,
+                                    initial     = initial,
+                                    prefix      = djp.prefix,
+                                    withrequest = self.form_withrequest))
+        fhtml = form(method = self.form_method, url = djp.url)
         
         sbvalue = 'add'
         sbname  = 'add'
@@ -249,8 +253,7 @@ class ModelApplicationBase(ajaxbase):
         '''
         from django.conf.urls.defaults import patterns, url
         from djpcms.settings import CONTENT_INLINE_EDITING
-        edit = CONTENT_INLINE_EDITING.get('available',False)
-        if edit:
+        if self.editavailable:
             edit = CONTENT_INLINE_EDITING.get('preurl','edit')
         else:
             edit = None
@@ -362,6 +365,29 @@ class ModelApplicationBase(ajaxbase):
                         'deleteurl': self.deleteurl(request, obj)})
         return loader.render_to_string(template_name    = template_name,
                                        context_instance = RequestContext(request, content))
+        
+    def data_generator(self, cl, prefix, wrapper, data):
+        '''
+        Return a generator for the query.
+        This function can be overritten by derived classes
+        '''
+        request = cl.request
+        app = self
+        template = self.get_item_template(obj,wrapper)
+        for obj in data:
+            content = app.object_content(request, prefix, wrapper, obj)
+            content.update({'item': obj,
+                            'editurl': app.editurl(request, obj),
+                            'viewurl': app.viewurl(request, obj),
+                            'deleteurl': app.deleteurl(request, obj)})
+            yield loader.render_to_string(template_name    = template,
+                                          context_instance = RequestContext(request, content))
+            
+    def get_item_template(self, obj, wrapper):
+        opts = obj._meta
+        template_name_0 = '%s_search_item.html' % opts.module_name
+        template_name_1 = '%s/%s' % (opts.app_label,template_name_0)
+        return [template_name_0,template_name_1]
 
 
 class ModelApplication(ModelApplicationBase):

@@ -8,7 +8,11 @@ from djpcms.forms import LazyChoiceField
 
 
 def load():
+    '''
+    Load dynamic applications and create urls
+    '''
     from djpcms.settings import APPLICATION_URL_MODULE
+    import djpcms.views.contentedit
     if APPLICATION_URL_MODULE:
         app_module = import_module(APPLICATION_URL_MODULE)
         

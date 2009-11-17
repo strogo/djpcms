@@ -31,7 +31,7 @@ class TextEditor(DJPplugin):
         else:
             return u''
             
-    def render(self, cl, prefix, wrapper):
+    def render(self, djp):
         if self.site_content:
             return self.site_content.htmlbody()
         else:

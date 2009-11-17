@@ -6,8 +6,52 @@ from django.template import RequestContext, loader
 from tagging.models import TaggedItem
 from tagging.utils import calculate_cloud
 
+from djpcms.views.customview import CustomView
 from djpcms.views.apps.appurls import ModelApplication, ArchiveApplication
 from djpcms.views.appview import AppView, ArchiveApp, TagApp, SearchApp
+
+
+
+class tagcloud(CustomView):
+    verbose_name = "Tag Cloud for a Model"
+    
+    def get_tags(self, tag1 = None, tag2 = None, tag3 = None, **kwargs):
+        if tag1:
+            if tag2:
+                if tag3:
+                    return (tag1,tag2,tag3)
+                else:
+                    return (tag1,tag2)
+            else:
+                return tag1,
+            
+    def render(self, request, cl, prefix, wrapper,
+               formodel = None, steps = 4, min_count = None, **kwargs):
+        steps     = int(steps)
+        if min_count:
+            min_count = int(min_count)
+        appmodel  = appsite.site.for_model(formodel)
+        
+        tags = self.get_tags(**kwargs)
+        if tags:
+            query = TaggedItem.objects.get_by_model(formodel,tags)
+            query = self.model.objects.usage_for_queryset(query, counts=True)
+            tags  = calculate_cloud(query)
+        else:
+            tags = self.model.objects.cloud_for_model(formodel,
+                                                      steps = steps,
+                                                      min_count = min_count)
+        for tag in tags:
+            tag.url = appmodel.tagurl(request, tag.name)
+            if tag.count == 1:
+                tag.times = 'time'
+            else:
+                tag.times = 'times'
+        c = self.content_dict(cl)
+        c['tags'] = tags
+        return loader.render_to_string(['bits/tag_cloud.html',
+                                        'djpcms/bits/tag_cloud.html'],
+                                        RequestContext(request, c))
 
 
 class CloudApp(AppView):
@@ -67,14 +111,39 @@ class TagArchiveApp(ArchiveApp):
 
 class ArchiveTaggedApplication(ArchiveApplication):
     '''
-    An archive Tagged application
+    Comprehensive Tagged Archive Application urls
     '''
-    formodel      = None
-    cloud         = CloudApp(in_navigation = True)
-    tag           = TagApp(regex = '(?P<tag>\w+)', parent = 'cloud')
-    year_archive  = TagArchiveApp(regex = '(?P<year>\d{4})',  parent = 'tag')
-    month_archive = TagArchiveApp(regex = '(?P<month>\w{3})', parent = 'year_archive', in_navigation = False)
-    day_archive   = TagArchiveApp(regex = '(?P<day>\d{2})',   parent = 'month_archive', in_navigation = False)
+    search         =    ArchiveApp(in_navigation = True)
+    year_archive   =    ArchiveApp(regex = '(?P<year>\d{4})',
+                                   parent = 'search')
+    month_archive  =    ArchiveApp(regex = '(?P<month>\w{3})',
+                                   parent = 'year_archive')
+    day_archive    =    ArchiveApp(regex = '(?P<day>\d{2})',
+                                   parent = 'month_archive')
+    tag1           = TagArchiveApp(regex = 'tags/(?P<tag1>\w+)',
+                                   parent = 'search')
+    year_archive1  = TagArchiveApp(regex = '(?P<year>\d{4})',
+                                   parent = 'tag1')
+    month_archive1 = TagArchiveApp(regex = '(?P<month>\w{3})',
+                                   parent = 'year_archive')
+    day_archive1   = TagArchiveApp(regex = '(?P<day>\d{2})',
+                                   parent = 'month_archive')
+    tag2           = TagArchiveApp(regex = 'tags2/(?P<tag1>\w+)/(?P<tag2>\w+)',
+                                   parent = 'search')
+    year_archive2  = TagArchiveApp(regex = '(?P<year>\d{4})',
+                                   parent = 'tag2')
+    month_archive2 = TagArchiveApp(regex = '(?P<month>\w{3})',
+                                   parent = 'year_archive2')
+    day_archive2   = TagArchiveApp(regex = '(?P<day>\d{2})',
+                                   parent = 'month_archive2')
+    tag3           = TagArchiveApp(regex = 'tags3/(?P<tag1>\w+)/(?P<tag2>\w+)/(?P<tag3>\w+)',
+                                   parent = 'search')
+    year_archive3  = TagArchiveApp(regex = '(?P<year>\d{4})',
+                                   parent = 'tag3')
+    month_archive3 = TagArchiveApp(regex = '(?P<month>\w{3})',
+                                   parent = 'year_archive3')
+    day_archive3   = TagArchiveApp(regex = '(?P<day>\d{2})',
+                                   parent = 'month_archive3')
     
     def basequery(self, request):
         return self.formodel.objects.all()
@@ -95,25 +164,3 @@ class ArchiveTaggedApplication(ArchiveApplication):
     
     
     
-    
-class TaggedApplication(ModelApplication):
-    search         = SearchApp()
-    tags1          = TagApp('tags1/(\w+)', in_navigation = False)
-    tags2          = TagApp('tags2/(\w+)/(\w+)', in_navigation = False)
-    tags3          = TagApp('tags3/(\w+)/(\w+)/(\w+)', in_navigation = False)
-    tags4          = TagApp('tags4/(\w+)/(\w+)/(\w+)/(\w+)', in_navigation = False)
-    
-    def tagurl(self, request, *tags):
-        N = len(tags)
-        view = self.getapp('tags%s' % N)
-        if view:
-            return view.get_url(*tags)    
-    
-    def object_content(self, request, prefix, wrapper, obj):
-        tagurls = []
-        tagview = self.getapp('tags1')
-        if obj.tags and tagview:
-            tags = obj.tags.split(u' ')
-            for tag in tags:
-                tagurls.append({'url':tagview.get_url(tag),'name':tag})
-        return {'tagurls': tagurls}

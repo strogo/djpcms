@@ -15,15 +15,27 @@ _Custom_response_methods = {}
 siteapp_choices = [('','---------------'),('this','THIS')]
 
 def functiongenerator():
+    '''
+    generator for iterating through rendering functions.
+    Used in django.Forms
+    '''
     global _Custom_response_methods
-    for k in _Custom_response_methods:
-        yield (k,k)
+    for m in _Custom_response_methods.values():
+        yield (m.name,m.description)
 
-def register_view_method(func, name = None):
+
+def register_view_method(method):
+    '''
+    Register a new rendering function
+    '''
     global _Custom_response_methods
-    name = name or func.__name__
+    name = method.name or method.__name__
+    method.name = name
+    description = method.description or name
+    method.description = description
     if not _Custom_response_methods.has_key(name):
-        _Custom_response_methods[name] = saferender(func)
+        _Custom_response_methods[name] = method()
+
 
 def custom_response(name):
     global _Custom_response_methods

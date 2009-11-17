@@ -12,8 +12,9 @@ class ApplicationSite(object):
     registered django applications.
     '''
     def __init__(self):
-        from djpcms.settings import APPLICATION_URL_PREFIX
+        from djpcms.settings import APPLICATION_URL_PREFIX, CONTENT_INLINE_EDITING
         self.root_path     = APPLICATION_URL_PREFIX[1:]
+        self.editavailable = CONTENT_INLINE_EDITING.get('available',False)
         self._registry     = {}
         self._nameregistry = {}
         self.parent_pages  = {}
@@ -22,7 +23,8 @@ class ApplicationSite(object):
     def count(self):
         return len(self._registry)
         
-    def register(self, model_or_iterable, application_class=None, **options):
+    def register(self, model_or_iterable, application_class=None,
+                 editavailable = True, **options):
         """
         Registers the given model(s) with the given admin class.
 
@@ -39,12 +41,13 @@ class ApplicationSite(object):
         
         if isinstance(model_or_iterable, ModelBase):
             model_or_iterable = [model_or_iterable]
-            
+        
+        editavailable = self.editavailable and editavailable
         for model in model_or_iterable:
             # Instantiate the admin class to save in the registry
             if model in self._registry:
                 raise ValueError('Model %s already registered as application' % model)
-            appmodel = application_class(model, self)
+            appmodel = application_class(model, self, editavailable)
             if appmodel.name in self._nameregistry:
                 raise ValueError('Model %s already registered as application' % model)
             self._registry[model] = appmodel
