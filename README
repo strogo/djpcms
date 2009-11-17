@@ -1,7 +1,7 @@
 djpcms: a dynamic content management system for Django and jQuery
 
-An example on how to use the package is in the sitedjpcms module which is
-the python module which runs www.djpcms.com
+Still very much under development.
+An example on how to use the package is in the sitedjpcms module.
 
-Enjoy it!
+
 
