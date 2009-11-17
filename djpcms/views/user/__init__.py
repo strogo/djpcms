@@ -1,11 +1,8 @@
+
+from djpcms.views import appsite
 from login import *
 
-
-
-from djpcms.plugins.application.appsite.options import ModelApplication
-
-
-class UserApplication(ModelApplication):
+class UserApplication(appsite.ModelApplication):
     name    = 'account'
     baseurl = '/accounts/'
     login   = LoginApp()

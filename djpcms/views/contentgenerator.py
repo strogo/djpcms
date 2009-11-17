@@ -69,12 +69,7 @@ class BlockContentGen(UnicodeObject):
         '''
         for b in blockcontents:
             wrapper = b.wrapper()
-            plugin  = b.plugin
-            if not plugin:
-                continue
-            # Return a wrapped plugin html
             yield wrapper.wrap(self.djp, b)
-        return
 
     def empty(self):
         return '&nbsp;'

@@ -195,12 +195,12 @@ class AppView(djpcmsview):
         return copy.copy(self)
 
 
-class SearchApp(AppView):
+class SearchView(AppView):
     '''
     Base class for searching objects in model
     '''
     def __init__(self, *args, **kwargs):
-        super(SearchApp,self).__init__(*args,**kwargs)
+        super(SearchView,self).__init__(*args,**kwargs)
     
     def render(self, djp, **kwargs):
         '''
@@ -225,12 +225,12 @@ class SearchApp(AppView):
                                         c)
 
 
-class ArchiveApp(SearchApp):
+class ArchiveView(SearchView):
     '''
     Search view with archive subviews
     '''
     def __init__(self, *args, **kwargs):
-        super(ArchiveApp,self).__init__(*args,**kwargs)
+        super(ArchiveView,self).__init__(*args,**kwargs)
     
     def _date_code(self):
         return self.appmodel.date_code
@@ -276,7 +276,7 @@ class ArchiveApp(SearchApp):
         
         
 
-class AddApp(AppView):
+class AddView(AppView):
     '''
     Standard Add method
     '''
@@ -285,11 +285,11 @@ class AddApp(AppView):
         '''
         Set some default values for add application
         '''
-        super(AddApp,self).__init__(regex  = regex,
-                                    parent = parent,
-                                    name   = name,
-                                    isapp  = isapp,
-                                    **kwargs)
+        super(AddView,self).__init__(regex  = regex,
+                                     parent = parent,
+                                     name   = name,
+                                     isapp  = isapp,
+                                     **kwargs)
     
     def render(self, request, prefix, wrapper, *args):
         '''
@@ -342,14 +342,14 @@ class ObjectView(AppView):
     
 
 # View and object
-class ViewApp(ObjectView):
+class ViewView(ObjectView):
     
     def __init__(self, regex = '(\d+)', parent = None, name = 'view', **kwargs):
         '''
         By default the relative url is given by the databse id number
         '''
-        super(ViewApp,self).__init__(regex = regex, parent = parent,
-                                     name = name, **kwargs)
+        super(ViewView,self).__init__(regex = regex, parent = parent,
+                                      name = name, **kwargs)
         
     def render(self, request, prefix, wrapper, *args):
         '''
@@ -359,19 +359,19 @@ class ViewApp(ObjectView):
     
     
 # Delete an object. POST method only. not GET method should modify databse
-class DeleteApp(ObjectView):
+class DeleteView(ObjectView):
     _methods      = ('post',) 
     def __init__(self, regex = 'delete', parent = 'view', name = 'delete', **kwargs):
-        super(DeleteApp,self).__init__(regex = regex, parent = parent, name = name, **kwargs)
+        super(DeleteView,self).__init__(regex = regex, parent = parent, name = name, **kwargs)
       
 
 # Edit/Change an object
-class EditApp(ObjectView):
+class EditView(ObjectView):
     '''
     Edit view
     '''
     def __init__(self, regex = 'edit', parent = 'view', name = 'edit',  **kwargs):
-        super(EditApp,self).__init__(regex = regex, parent = parent, name = name, **kwargs)
+        super(EditView,self).__init__(regex = regex, parent = parent, name = name, **kwargs)
     
     def render(self, djp):
         f = self.appmodel.get_form(djp)
@@ -388,40 +388,4 @@ class EditApp(ObjectView):
                 return f.errorpost('%s' % e)
             return f.messagepost('%s modified' % instance)
         else:
-            return f.jerrors          
-    
-
-class ArchiveidApp(AppView):
-    '''
-    Search view with archive subviews
-    '''
-    def __init__(self, *args, **kwargs):
-        super(ArchiveidApp,self).__init__(*args,**kwargs)
-    
-    def render(self, request, prefix, wrapper, *args):
-        '''
-        Render the application child.
-        This method is reimplemented by subclasses.
-        By default it renders the search application
-        '''
-        url  = self.get_url(*args)
-        data = self.appmodel.get_archive(*args).order_by('-%s' % self.appmodel.date_code)
-        return self.appmodel.paginate(request, data)
-
-
-class TagApp(SearchApp):
-    
-    def __init__(self, *args, **kwargs):
-        self.tags = None
-        super(TagApp,self).__init__(*args,**kwargs)
-    
-    def title(self, request):
-        return self.breadcrumbs()
-
-    def handle_reponse_arguments(self, request, *args, **kwargs):
-        view = copy.copy(self)
-        view.args = args
-        return view
-        
-    def myquery(self, query, request, *tags):
-        return self.model.objects.with_all(tags, queryset = query)
+            return f.jerrors

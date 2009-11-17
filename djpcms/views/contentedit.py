@@ -4,14 +4,13 @@ from django.utils.translation import ugettext_lazy as _
 from django.template import RequestContext, loader
 
 from djpcms.settings import HTML_CLASSES, CONTENT_INLINE_EDITING
-from djpcms.models import BlockContent, AppBlockContent, Page, AppPage, all_plugins
-from djpcms.plugins.wrapper import content_wrapper_tuple
-from djpcms.plugins.application import appsite
-from djpcms.plugins.wrapper import ContentWrapperHandler
-from djpcms.views.appview import EditApp
+from djpcms.models import BlockContent, AppBlockContent, Page, AppPage
 from djpcms.utils import form_kwargs
 from djpcms.utils.ajax import jhtmls
 from djpcms.forms import LazyAjaxChoice
+from djpcms.plugins.wrapper import ContentWrapperHandler, content_wrapper_tuple
+from djpcms.plugins.base import get_plugin, functiongenerator
+from djpcms.views import appsite, appview
 
     
 
@@ -20,7 +19,8 @@ basecontent = CONTENT_INLINE_EDITING.get('pagecontent', '/content/')
 EDIT_BLOCK_TEMPLATES = ["content/edit_block.html",
                         "djpcms/content/edit_block.html"]
 
-
+# Generator of content block in editing mode.
+# Only called when we are in editing mode
 class content_view(object):
     '''
     Utility class for creating the editing generator
@@ -48,6 +48,8 @@ class content_view(object):
             yield wrapper.wrap(djp)
 
 
+# Content wrapper in editing mode.
+# Only called by content_view (funation above)
 class EditWrapperHandler(ContentWrapperHandler):
     '''
     wrapper for editing content
@@ -73,20 +75,17 @@ class EditWrapperHandler(ContentWrapperHandler):
         return loader.render_to_string(EDIT_BLOCK_TEMPLATES, c)
 
 
-class PluginChoice(forms.ChoiceField):
+class PluginChoice(LazyAjaxChoice):
     
     def __init__(self, *args, **kwargs):
         super(PluginChoice,self).__init__(*args, **kwargs)
-        
-    def widget_attrs(self, widget):
-        return {'class': HTML_CLASSES.ajax}
     
     def clean(self, value):
         '''
         Overried default value to return a Content Type object
         '''
         name = super(PluginChoice,self).clean(value)
-        value = BlockContent.objects.plugin_content_from_name(name)
+        value = get_plugin(name) 
         if not value:
             raise forms.ValidationError('%s not a plugin object' % name)
         return value
@@ -101,8 +100,8 @@ class ContentBlockFormBase(forms.ModelForm):
     '''
     # This is a subclass of forms.ChoiceField with the class attribute
     # set to ajax.
-    plugin_name    = PluginChoice(label = _('content'), choices = all_plugins())
-    container_type = LazyAjaxChoice(choices = content_wrapper_tuple(), label=_('container'))
+    plugin_name    = PluginChoice(label = _('content'),   choices = functiongenerator)
+    container_type = LazyAjaxChoice(label=_('container'), choices = content_wrapper_tuple())
         
     def __init__(self, instance = None, initial = None, **kwargs):
         '''
@@ -117,8 +116,8 @@ class ContentBlockFormBase(forms.ModelForm):
             initial['plugin_name'] = unicode(mc.__name__) 
             
         super(ContentBlockFormBase,self).__init__(instance = instance,
-                                              initial = initial,
-                                              **kwargs)
+                                                  initial = initial,
+                                                  **kwargs)
         # Hack the field ordering
         self.fields.keyOrder = ['plugin_name', 'container_type']
         
@@ -156,7 +155,7 @@ class AppContentBlockForm(ContentBlockFormBase):
         model = AppBlockContent
         
         
-class ChangeContentView(EditApp):
+class ChangeContentView(appview.EditView):
     '''
     View class for managing inline editing of a content block.
     The url is given by the ContentBlocks models
@@ -185,7 +184,7 @@ class ChangeContentView(EditApp):
             return jhtmls(identifier = '#%s' % instance.pluginid(),
                           html = instance.plugin_edit_block(djp))
         else:
-            pass
+            return form.jerrors
         
     def ajax__container_type(self, djp):
         return self.ajax__plugin_name(djp)            
@@ -209,16 +208,14 @@ class ChangeContentView(EditApp):
         @param request: django HttpRequest instance
         @return JSON serializable object 
         '''
-        b = self.instance
-        form = b.changeform(request = request)
+        b = djp.instance
+        form = b.changeform(request = djp.request)
         if form.is_valid():
             b.plugin = form.save()
-            cl = self.requestview(request)
             return jhtmls(identifier = '#preview-%s' % b.htmlid(),
-                          html = b.render(cl)) 
+                          html = b.render(djp)) 
         else:
             return form.jerrors
-        #return self.instance.change_plugin_content(request)
     
     
     def default_ajax_view(self, djp):

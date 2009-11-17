@@ -8,7 +8,7 @@ from djpcms.djutils.fields import LazyChoiceField
 from djpcms.html import formlet, submit
 from djpcms.djutils import form_kwargs
 from djpcms.forms import LazyChoiceField
-from djpcms import functiongenerator, custom_response
+from djpcms import functiongenerator
     
     
     
@@ -24,31 +24,33 @@ def get_arguments(arguments):
         except:
             pass
 
-        
-class IntenalFunction(DJPplugin):
-    '''
-    Internal Function plugin
-    '''
-    application = models.CharField(max_length = 200, blank = True)
-    arguments   = models.CharField(blank = True, max_length = 200) 
-    
-    def __unicode__(self):
-        b = super(IntenalFunction,self).__unicode__()
-        return u'%s: %s' % (b,self.application or '')
-    
-    def render(self, djp):
-        attr = custom_response(self.application)
-        if attr:
-            kwargs = get_arguments(self.arguments)
-            if kwargs:
-                djp.update(**kwargs)
-            return attr(djp)
-        else:
-            return u''
-    
-    def changeform(self, request = None, prefix = None):
-        return IntenalFunctionForm(**form_kwargs(request, instance = self, prefix = prefix))    
-    
+
+       
+#class IntenalFunction(DJPplugin):
+#    '''
+#    Internal Function plugin
+#    '''
+#    add_to_list = False
+#    application = models.CharField(max_length = 200, blank = True)
+#    arguments   = models.CharField(blank = True, max_length = 200) 
+#    
+#    def __unicode__(self):
+#        b = super(IntenalFunction,self).__unicode__()
+#        return u'%s: %s' % (b,self.application or '')
+#    
+#    def render(self, djp):
+#        attr = custom_response(self.application)
+#        if attr:
+#            kwargs = get_arguments(self.arguments)
+#            if kwargs:
+#                djp.urlargs.update(kwargs)
+#            return attr(djp, **djp.urlargs)
+#        else:
+#            return u''
+#    
+#    def changeform(self, request = None, prefix = None):
+#        return IntenalFunctionForm(**form_kwargs(request, instance = self, prefix = prefix))    
+#    
     
 
 class DynamicApplication(DJPplugin):
@@ -58,6 +60,7 @@ class DynamicApplication(DJPplugin):
     @param title: Just the title to display in the widget
     @param arguments: IMPORTANT, to have more granularity on applications, some arguments can be specified  
     '''
+    add_to_list = False
     application = models.CharField(max_length = 200, blank = True)
     arguments   = models.CharField(blank = True, max_length = 200, help_text = 'Comma separated list of arguments for the applications') 
     
@@ -121,10 +124,10 @@ class DynamicApplication(DJPplugin):
         return appsite.ChangeForm(**form_kwargs(request, instance = self, prefix = prefix))    
 
 
-class IntenalFunctionForm(forms.ModelForm):
-    application = LazyChoiceField(choices = functiongenerator)
-    
-    class Meta:
-        model = IntenalFunction
+#class IntenalFunctionForm(forms.ModelForm):
+#    application = LazyChoiceField(choices = functiongenerator)
+#    
+#    class Meta:
+#        model = IntenalFunction
         
         

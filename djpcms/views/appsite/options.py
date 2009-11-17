@@ -266,7 +266,7 @@ class ModelApplicationBase(ajaxbase):
                        view  = child.response,
                        name  = view_name)
             urls.append(nurl)
-            if edit:
+            if edit and child.isapp:
                 eview = editview(child,edit)
                 self.edits.append(eview)
                 nurl = url(regex = child.edit_regex(edit),

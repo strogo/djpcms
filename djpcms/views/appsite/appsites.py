@@ -1,7 +1,7 @@
 from django.db.models.base import ModelBase
 from django import http
 
-from djpcms.plugins.application.appsite.options import ModelApplication
+from djpcms.views.appsite.options import ModelApplication
 from djpcms import siteapp_choices
 
 

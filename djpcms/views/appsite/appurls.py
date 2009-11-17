@@ -4,18 +4,20 @@ Define some application urls templates as example
 from django.utils.dates import MONTHS_3
 from django.utils.encoding import force_unicode
 
-from djpcms.plugins.application.appsite import ModelApplication
-from djpcms.views.appview import SearchApp, ArchiveApp, AppView
+from djpcms.views.appsite.options import ModelApplication
+from djpcms.views.appview import ArchiveView
+
+__all__ = ['ArchiveApplication']
 
 
 class ArchiveApplication(ModelApplication):
     '''
     An application urls wich define a search and archive views
     '''
-    search        = ArchiveApp()
-    year_archive  = ArchiveApp(regex = '(?P<year>\d{4})',  parent = 'search')
-    month_archive = ArchiveApp(regex = '(?P<month>\w{3})', parent = 'year_archive')
-    day_archive   = ArchiveApp(regex = '(?P<day>\d{2})',   parent = 'month_archive')
+    search        = ArchiveView()
+    year_archive  = ArchiveView(regex = '(?P<year>\d{4})',  parent = 'search')
+    month_archive = ArchiveView(regex = '(?P<month>\w{3})', parent = 'year_archive')
+    day_archive   = ArchiveView(regex = '(?P<day>\d{2})',   parent = 'month_archive')
     
     def get_month_value(self, month):
         return force_unicode(MONTHS_3.get(month))

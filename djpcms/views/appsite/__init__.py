@@ -1,10 +1,10 @@
 from django import forms
 from django.utils.importlib import import_module
 
-from djpcms.plugins.application.appsite.options import ModelApplication
-from djpcms.plugins.application.appsite.appsites import ApplicationSite, site
-from djpcms.plugins.application.models import DynamicApplication
+from djpcms.views.appsite.options import ModelApplication
+from djpcms.views.appsite.appsites import ApplicationSite, site
 from djpcms.forms import LazyChoiceField
+from djpcms.views.appsite.appurls import *
 
 
 def load():
@@ -20,9 +20,6 @@ def load():
 
 class ChangeForm(forms.ModelForm):
     application = LazyChoiceField(choices = site.choices)
-    
-    class Meta:
-        model = DynamicApplication
         
     def save(self, commit = True):
         return super(ChangeForm,self).save(commit = commit)

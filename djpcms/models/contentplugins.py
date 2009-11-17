@@ -12,6 +12,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.template import loader
 
 from djpcms.plugins import content_wrapper_tuple, CONTENT_WRAP_HANDLERS
+from djpcms.plugins.base import get_plugin
 from djpcms.settings import CONTENT_INLINE_EDITING, HTML_CLASSES
 from djpcms.html import formlet, submit
 from djpcms.utils.ajax import jhtmls
@@ -62,7 +63,7 @@ class BlockContentManager(models.Manager):
             create = True
             pos    = 0
         # Last content has a plugin. Add another block
-        elif blockcontents[-1].plugin:
+        elif blockcontents[-1].plugin_name:
             create = True
             pos = blockcontents[-1].position + 1
             
@@ -121,10 +122,11 @@ class BlockContentBase(models.Model):
     '''
     block          = models.PositiveSmallIntegerField(_("block"), editable = False)
     position       = models.PositiveIntegerField(_("position"), blank=True, editable=False, default = 0)
-    plugin_name    = models.ForeignKey(ContentType, verbose_name=_('plugin name'), null=True, editable = False)
-    object_id      = models.PositiveIntegerField(_('object id'), db_index=True, null=True, editable = False)
-    plugin         = generic.GenericForeignKey('plugin_name', 'object_id')
-    container_type = models.PositiveSmallIntegerField(choices = content_wrapper_tuple(), default = 0, verbose_name=_('container'))
+    plugin_name    = models.CharField(blank = True, max_length = 100)
+    arguments      = models.TextField(blank = True)
+    container_type = models.PositiveSmallIntegerField(choices = content_wrapper_tuple(),
+                                                      default = 0,
+                                                      verbose_name=_('container'))
     
     class Meta:
         abstract = True
@@ -138,8 +140,10 @@ class BlockContentBase(models.Model):
     def pluginid(self):
         return u'plugin-%s' % self
     
-    def url(self):
-        return ''
+    def __get_plugin(self):
+        return get_plugin(self.plugin_name)
+    plugin = property(__get_plugin)
+        
         
     def wrapper(self):
         ct = int(self.container_type)
@@ -192,9 +196,11 @@ class BlockContentBase(models.Model):
         This function is called when the plugin needs to be rendered
         This function call the plugin render function passing three arguments
         '''
-        djp = djp(prefix  = 'bd_%s' % self.pluginid(),
-                  wrapper = self.wrapper().handler)
-        return self.plugin.render(djp)
+        plugin = self.plugin
+        if plugin:
+            djp = djp(prefix  = 'bd_%s' % self.pluginid(),
+                      wrapper = self.wrapper().handler)
+            return plugin(djp,self.arguments)
     
     def change_plugin_content(self, request):
         '''
@@ -259,10 +265,8 @@ class PluginModelBase(ModelBase):
             if new_class._meta.db_table.startswith("%s_" % new_class._meta.app_label):
                 table = "djpplugin_" + new_class._meta.db_table.split("%s_" % new_class._meta.app_label, 1)[1]
                 new_class._meta.db_table = table
-                namep = new_class.__name__
-                vname = force_unicode(new_class._meta.verbose_name)
-                _all_plugins.append((namep,vname))
-                _plugin_dictionary[namep] = new_class 
+                #if new_class.add_to_list:
+                #    register_djpplugin(new_class) 
         return new_class 
     
     
@@ -275,6 +279,7 @@ class DJPplugin(models.Model):
         1 - implements the __unicode__ function which renders the plugin
         2 - implements the changeform function which render plugin editing panel
     '''
+    add_to_list   = True
     last_modified = models.DateTimeField(auto_now = True, editable = False)
     title         = models.CharField(max_length = 100, blank = True)
     

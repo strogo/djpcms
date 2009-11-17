@@ -10,7 +10,7 @@ from djpcms.models import Page
 
 
 def get_children(request, view):
-    from djpcms.plugins.application import appsite
+    from djpcms.views import appsite
     views = []
     page  = view.get_page()
     

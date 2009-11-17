@@ -4,7 +4,7 @@ from django.conf.urls.defaults import *
 
 import djpcms
 from djpcms.settings import SERVE_STATIC_FILES
-from djpcms.plugins.application import appsite
+from djpcms.views import appsite
 
 #if not settings.DEBUG:
 #    handler404 = 'djpcms.views.specials.http404view'
