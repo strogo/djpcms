@@ -59,10 +59,15 @@ class ArchiveTaggedApplication(appsite.ArchiveApplication):
     def basequery(self, request):
         return self.formodel.objects.all()
     
-    def tagurl(self, request, tag):
-        view = self.getapp('tag')
+    def tagurl(self, request, *tags):
+        view = self.getapp('tag%s' % len(tags))
         if view:
-            return view.requestview(request, tag = tag).get_url()
+            kwargs = {}
+            c = 1
+            for tag in tags:
+                kwargs['tag%s' % c] = tag
+                c += 1
+            return view.requestview(request, **kwargs).url
     
     def object_content(self, request, prefix, wrapper, obj):
         tagurls = []

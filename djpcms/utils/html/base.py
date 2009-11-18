@@ -28,14 +28,8 @@ class htmlbase(UnicodeObject):
     def getplugins(self, ftype):
         return None
     
-    def __setitem__(self, key, value):
-        pass
-    
     def items(self):
         return []
-    
-    def hasattr(self):
-        return False
     
     def attrs(self):
         return None
@@ -73,9 +67,6 @@ class htmlattr(htmlbase):
         if value:
             self._attrs['value'] = value
         self.addClass(cn)
-        
-    def hasattr(self):
-        return len(self._attrs)
     
     def attrs(self):
         return self._attrs

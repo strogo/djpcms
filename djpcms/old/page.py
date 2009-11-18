@@ -256,7 +256,8 @@ class Page(PageBase):
     code        = SlugCode(max_length=32,
                            help_text=_('The unique page code. Choose one you like'))
     url_pattern = models.CharField(max_length = 200,
-                                   help_text=_('The name of the page that appears in the URL.'))
+                                   blank = True,
+                                   help_text=_('URL bit for flat pages only'))
     # Navigation
     parent      = models.ForeignKey('self',
                                     null  = True,

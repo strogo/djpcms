@@ -7,8 +7,9 @@ from djpcms.settings import HTML_CLASSES, CONTENT_INLINE_EDITING
 from djpcms.models import BlockContent, AppBlockContent, Page, AppPage
 from djpcms.utils import form_kwargs
 from djpcms.utils.ajax import jhtmls
+from djpcms.utils.formjson import form2json
 from djpcms.utils.html import form, formlet, submit, htmlcomp
-from djpcms.forms import LazyAjaxChoice
+from djpcms.forms import LazyChoiceField, LazyAjaxChoice
 from djpcms.plugins import get_plugin, functiongenerator, \
                            ContentWrapperHandler, content_wrapper_tuple
 from djpcms.views import appsite, appview
@@ -17,8 +18,6 @@ from djpcms.views import appsite, appview
 
 basecontent = CONTENT_INLINE_EDITING.get('pagecontent', '/content/')
 
-EDIT_BLOCK_TEMPLATES = ["content/edit_block.html",
-                        "djpcms/content/edit_block.html"]
 
 # Generator of content block in editing mode.
 # Only called when we are in editing mode
@@ -40,7 +39,7 @@ class content_view(object):
         Return a generator
         '''
         appmodel = appsite.site.for_model(self.blockClass)
-        view = appmodel.getapp('main')
+        view = appmodel.getapp('edit')
         wrapper = EditWrapperHandler()
         for b in blockcontents:
             djp  = view.requestview(request, instance = b)
@@ -67,13 +66,23 @@ class EditWrapperHandler(ContentWrapperHandler):
         '''
         render a block for content editing
         '''
-        form = djp.view.render(djp)
+        view     = djp.view
         instance = djp.instance
+        form     = view.render(djp)
+        try:
+            html     = instance.render(djp)
+        except Exception, e:
+            html     = u'%s' % e
+        delurl   = view.appmodel.deleteurl(djp.request, instance)
         c = {'djp':               djp,
-             'contentblock':      instance,
              'form':              form,
-             'plugin_edit_block': instance.plugin_edit_block(djp)}
-        return loader.render_to_string(EDIT_BLOCK_TEMPLATES, c)
+             'preview':           html,
+             'instance':          djp.instance,
+             'deleteurl':         delurl,
+             'plugin_preview_id': view.plugin_preview_id(instance)}
+        return loader.render_to_string(["content/edit_block.html",
+                                        "djpcms/content/edit_block.html"],
+                                        c)
 
 
 class PluginChoice(LazyAjaxChoice):
@@ -101,8 +110,8 @@ class ContentBlockFormBase(forms.ModelForm):
     '''
     # This is a subclass of forms.ChoiceField with the class attribute
     # set to ajax.
-    plugin_name    = PluginChoice(label = _('content'),   choices = functiongenerator)
-    container_type = LazyAjaxChoice(label=_('container'), choices = content_wrapper_tuple())
+    plugin_name    = PluginChoice(label = _('content'),   choices = functiongenerator, required = False)
+    container_type = LazyChoiceField(label=_('container'), choices = content_wrapper_tuple())
         
     def __init__(self, instance = None, **kwargs):
         '''
@@ -114,18 +123,14 @@ class ContentBlockFormBase(forms.ModelForm):
         # Hack the field ordering
         self.fields.keyOrder = ['plugin_name', 'container_type']
         
-    def save(self, *args, **kwargs):
+    def save(self, commit = True):
         pt = self.cleaned_data.pop('plugin_name')
         instance = self.instance
-        if not (instance.plugin and pt == instance.plugin_name):
-            if instance.plugin:
-                instance.plugin.delete()
-                delattr(self.instance,'_plugin_cache')
-            plugin_instance = pt.model_class()()
-            plugin_instance.save()
-            self.instance.plugin_name = pt
-            self.instance.object_id   = plugin_instance.pk
-        return super(ContentBlockFormBase,self).save(*args,**kwargs)
+        if pt:
+            instance.plugin_name = pt.name
+        else:
+            instance.plugin_name = ''
+        return super(ContentBlockFormBase,self).save(commit = commit)
 
 
 class ContentBlockForm(ContentBlockFormBase):
@@ -144,10 +149,13 @@ class AppContentBlockForm(ContentBlockFormBase):
     '''
     def __init__(self,*args,**kwargs):
         super(AppContentBlockForm,self).__init__(*args,**kwargs)
+        
     class Meta:
         model = AppBlockContent
         
-        
+
+# Application view for handling change in content block internal plugin
+# It handles two different Ajax interaction with the browser 
 class ChangeContentView(appview.EditView):
     '''
     View class for managing inline editing of a content block.
@@ -160,25 +168,43 @@ class ChangeContentView(appview.EditView):
         super(ChangeContentView,self).__init__(regex = regex,
                                                parent = None,
                                                name = 'edit_content_block')
+        
+    def plugin_form_id(self, instance):
+        return '%s-options' % instance.pluginid()
+    def plugin_preview_id(self, instance):
+        return '%s-preview' % instance.pluginid()
             
     def get_form(self, djp, all = True):
-        app = self.appmodel
-        fhtml  = form(method = app.form_method, url = djp.url)
+        '''
+        Get the contentblock editing form
+        This form is composed of two formlet,
+        one for choosing the plugin type,
+        and one for setting the plugin options
+        '''
+        app      = self.appmodel
+        instance = djp.instance
+        fhtml    = form(method = app.form_method, url = djp.url)
         if app.form_ajax:
             fhtml.addClass(app.ajax.ajax)
-        fhtml['topform'] = app.get_form(djp, prefix = 'topchoice', wrapped = False)
+        fhtml['topform'] = app.get_form(djp, wrapped = False)
         # We wrap the bottom part of the form with a div for ajax interaction
-        div = htmlcomp('div', cn = 'plugin-options')
+        div = htmlcomp('div', id = self.plugin_form_id(instance))
         fhtml['plugin']  = div
         if all:
-            plugin = djp.instance.plugin
-            if plugin:
-                pform = plugin.get_form(djp)
-                if pform:
-                    div['bottomform'] = formlet(form = pform,
-                                                layout = app.form_layout)
-            fhtml['submit'] = formlet(submit = submit(value = 'change'))
+            div['form'] = self.get_plugin_form(djp, instance.plugin)
+            fhtml['submit'] = formlet(submit = submit(value = 'change'),
+                                      layout = app.form_layout)
         return fhtml
+        
+    def get_plugin_form(self, djp, plugin):
+        if plugin:
+            instance = djp.instance
+            args     = None
+            if instance.plugin == plugin:
+                args = instance.arguments
+            pform = plugin.get_form(djp,args)
+            if pform:
+                return formlet(form = pform, layout = self.appmodel.form_layout)
     
     def edit_block(self, request):
         return jhtmls(identifier = '#%s' % self.instance.pluginid(),
@@ -190,29 +216,23 @@ class ChangeContentView(appview.EditView):
         @param request: django HttpRequest instance
         @return JSON serializable object 
         '''
-        form = self.appmodel.get_form(djp, all = False)
+        form = self.get_form(djp, all = False)
         if form.is_valid():
-            new_plugin = form.instance
-            return jhtmls(identifier = '#%s' % instance.pluginid(),
-                          html = instance.plugin_edit_block(djp))
+            new_plugin = form.cleaned_data.get('plugin_name',None)
+            pform      = self.get_plugin_form(djp, new_plugin)
+            if pform:
+                html = pform.render()
+            else:
+                html = u''
+            return jhtmls(identifier = '#%s' % self.plugin_form_id(djp.instance),
+                          html = html)
         else:
             return form.jerrors
         
     def ajax__container_type(self, djp):
-        return self.ajax__plugin_name(djp)            
-        
-    def ajax__delete_plugin(self, djp):
-        '''
-        Here we delete the BlockContent.
-        Deletion only happens when the blockcontent instance has
-        a plugin.
-        '''
-        if BlockContent.objects.delete_and_sort(self.instance):
-            pass
-        else:
-            pass
+        return self.ajax__plugin_name(djp)
     
-    def ajax__change_plugin_content(self, djp):
+    def default_ajax_view(self, djp):
         '''
         Ajax view called when changing the content plugin values.
         The instance.plugin object is maintained but its fields may change
@@ -220,21 +240,17 @@ class ChangeContentView(appview.EditView):
         @param request: django HttpRequest instance
         @return JSON serializable object 
         '''
-        b = djp.instance
-        form = b.changeform(request = djp.request)
+        form = self.get_form(djp, all = False)
         if form.is_valid():
-            b.plugin = form.save()
-            return jhtmls(identifier = '#preview-%s' % b.htmlid(),
-                          html = b.render(djp)) 
+            instance  = form.save(commit = False)
+            pform     = instance.plugin.get_form(djp)
+            instance.arguments = form2json(pform)
+            instance.save()
+            # We now serialize the argument form
+            return jhtmls(identifier = '#%s' % self.plugin_preview_id(instance),
+                          html = instance.render(djp)) 
         else:
             return form.jerrors
-    
-    
-    def default_ajax_view(self, djp):
-        '''
-        Ajax view called when changing the plugin values
-        '''
-        return self.instance.change_plugin(request, self.ajax_key)
         
     def has_permission(self, request):
         if request.user.is_authenticated():
@@ -243,12 +259,27 @@ class ChangeContentView(appview.EditView):
             return False
         
 
-class ContentSite(appsite.ModelApplication):
-    baseurl   = '%spage/' % basecontent
-    pagemodel = Page
-    form      = ContentBlockForm
+class DeleteContentView(appview.DeleteView):
     
-    main      = ChangeContentView()
+    def __init__(self, **kwargs):
+        super(DeleteContentView,self).__init__(**kwargs)
+    
+    def default_ajax_view(self, djp):
+        request = djp.request
+        if self.model.objects.delete_and_sort(djp.instance):
+            pass
+        else:
+            pass
+
+
+class ContentSite(appsite.ModelApplication):
+    baseurl     = '%spage/' % basecontent
+    pagemodel   = Page
+    form        = ContentBlockForm
+    form_layout = 'onecolumn'
+    
+    edit        = ChangeContentView()
+    delete      = DeleteContentView(parent = 'edit')
     
     def submit(self, instance):
         return None
@@ -295,8 +326,7 @@ class AppContentSite(ContentSite):
     baseurl   = '%sapp/' % basecontent 
     pagemodel = AppPage
     form      = AppContentBlockForm
-    
-    main      = ChangeContentView()
+    inherit   = True
     
     
     

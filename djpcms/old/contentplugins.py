@@ -158,27 +158,6 @@ class BlockContentBase(models.Model):
             return self.plugin.__class__
         else:
             return None
-    
-    def delete_plugin(self):
-        plugin = self.plugin
-        self.plugin_name = None
-        self.object_id = None
-        plugin.delete()
-        self.save()
-        
-    def plugin_edit_block(self, djp):
-        '''
-        Render the edit element for this block
-        @param cl: instance of djpcms.views.baseview.ResponseBase
-        '''
-        if not self.plugin:
-            return u''
-        return loader.render_to_string(['content/edit_content_plugin.html',
-                                        'djpcms/content/edit_content_plugin.html'],
-                                        {'html':         self.render(djp),
-                                         'changeform':   self.changeform(djp.request),
-                                         'contentblock': self,
-                                         'djp':          djp})
         
     def changeform(self, djp):
         f = self.plugin.get_form(djp)
@@ -197,9 +176,12 @@ class BlockContentBase(models.Model):
         '''
         plugin = self.plugin
         if plugin:
-            djp = djp(prefix  = 'bd_%s' % self.pluginid(),
-                      wrapper = self.wrapper().handler)
+            #prefix  = 'bd_%s' % self.pluginid()
+            prefix = None
+            djp    = djp(wrapper = self.wrapper().handler, prefix = prefix)
             return plugin(djp,self.arguments)
+        else:
+            return u''
     
     def change_plugin_content(self, request):
         '''

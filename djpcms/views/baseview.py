@@ -298,7 +298,7 @@ class djpcmsview(UnicodeObject):
                 # we got an error. If in debug mode send a JSON response with
                 # the error message back to javascript.
                 if settings.DEBUG:
-                    res = jservererror(e, url = self.url)
+                    res = jservererror(e, url = djp.url)
                 else:
                     raise e
             return http.HttpResponse(res.dumps(), mimetype='application/javascript')

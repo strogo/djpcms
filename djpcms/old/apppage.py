@@ -23,7 +23,6 @@ class AppPageManager(models.Manager):
 
 class AppPage(PageBase):
     code = models.CharField(max_length = 100, blank = False, verbose_name='application')
-    typenum  = 1
     
     objects = AppPageManager()
     

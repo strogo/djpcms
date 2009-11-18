@@ -2,6 +2,7 @@ import os
 import glob
 import logging
 
+from djpcms.utils import json
 from djpcms.utils import form_kwargs
 from wrapper import *
 
@@ -27,9 +28,25 @@ class DJPplugin(object):
     withrequest  = False
     
     def arguments(self, args):
-        return {}
+        try:
+            kwargs = json.loads(args)
+            if isinstance(kwargs,dict):
+                rargs = {}
+                for k,v in kwargs.items():
+                    rargs[str(k)] = v
+                return self.processargs(rargs)
+            else:
+                return {}
+        except:
+            return {}
         
-    def __call__(self, djp, args):
+    def processargs(self,kwargs):
+        '''
+        You can use this hook to perfom some preprocessing on options
+        '''
+        return kwargs
+    
+    def __call__(self, djp, args = None):
         '''
         This function needs to be implemented
         '''
@@ -38,12 +55,15 @@ class DJPplugin(object):
     def render(self, djp, **kwargs):
         return u''
     
-    def get_form(self, djp):
+    def get_form(self, djp, args = None):
         '''
         Form for this plugin
         '''
+        initial = self.arguments(args) or None
         if self.form:
-            return self.form(**form_kwargs(request = djp.request, withrequest = self.withrequest))
+            return self.form(**form_kwargs(request = djp.request,
+                                           initial = initial,
+                                           withrequest = self.withrequest))
     
 
 class EmptyPlugin(DJPplugin):
@@ -68,12 +88,6 @@ class ThisPlugin(DJPplugin):
         This function needs to be implemented
         '''
         return u''
-    
-    def get_form(self, djp):
-        '''
-        Form for this plugin
-        '''
-        return None
     
 
 def functiongenerator():

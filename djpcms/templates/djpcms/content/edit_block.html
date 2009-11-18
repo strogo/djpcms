@@ -1,13 +1,13 @@
-<div id="{{ contentblock.htmlid }}" class="edit-contentblock">
-  <div class="actions">{% if contentblock.plugin %}
+<div id="{{ instance.htmlid }}" class="edit-contentblock">
+  <div class="actions">{% if instance.plugin %}
   <ul>
-  <li><a class="{{ djp.css.ajax }} {{ djp.css.delete }}" href="{{ djp.url }}" name="delete_plugin" title="Remove content"></a></li>
+  <li><a class="{{ djp.css.ajax }} {{ djp.css.delete }}" href="{{ deleteurl }}" title="Remove content"></a></li>
   </ul>{% endif %}
   </div>
   <div class="hd">
     {{ form }}
   </div>
-  <div id="{{ contentblock.pluginid }}" class="bd">{% if plugin_edit_block %}
-  {{ plugin_edit_block }}{% endif %}
+  <div id="{{ plugin_preview_id }}" class="bd">{% if preview %}
+  {{ preview }}{% endif %}
   </div>
 </div>

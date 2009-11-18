@@ -1,6 +1,7 @@
 import re
 
 from django import forms
+from django.utils.encoding import smart_unicode
 from django.utils.safestring import mark_safe
 
 
@@ -27,3 +28,7 @@ def data2url(url,data):
         ps.append('%s=%s' % (k,v))
     p = '&'.join(ps)
     return u'%s?%s' % (url,p)
+
+class PathList(list):
+    def __unicode__(self):
+        return u' > '.join([smart_unicode(page) for page in self])
