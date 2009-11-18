@@ -373,8 +373,11 @@ class EditView(ObjectView):
     def __init__(self, regex = 'edit', parent = 'view', name = 'edit',  **kwargs):
         super(EditView,self).__init__(regex = regex, parent = parent, name = name, **kwargs)
     
+    def get_form(self, djp):
+        return self.appmodel.get_form(djp)
+    
     def render(self, djp):
-        f = self.appmodel.get_form(djp)
+        f = self.get_form(djp)
         return f.render()
     
     def default_ajax_view(self, djp):

@@ -13,9 +13,11 @@ from django.template import loader, Template, RequestContext
 
 from djpcms.djutils import form_kwargs, UnicodeObject
 from djpcms.djutils.forms import addhiddenfield
-from djpcms.html import formlet, submit, form, div, ajaxbase
 from djpcms.views.baseview import editview
 from djpcms.views.appview import AppView
+from djpcms.settings import HTML_CLASSES
+
+from djpcms.utils.html import formlet, submit, form
 
 
 class SearchForm(forms.Form):
@@ -57,13 +59,14 @@ class ModelAppMetaClass(type):
     
 
 
-class ModelApplicationBase(ajaxbase):
+class ModelApplicationBase(object):
     '''
     Base class for model applications
     This class implements the basic functionality for a general model
     User should subclass this for full control on the model application.
     Each one of the class attributes are optionals
     '''
+    ajax             = HTML_CLASSES
     # Name for this application. Optional (the model name will be used if None)
     name             = None
     # Base URL for the application including trailing slashes. Optional
@@ -182,7 +185,7 @@ class ModelApplicationBase(ajaxbase):
     def getapp(self, code):
         return self.applications.get(code, None)
         
-    def get_form(self, djp):
+    def get_form(self, djp, prefix = None, initial = None, wrapped = True):
         '''
         Build an add/edit form for the application model
         @param djp: instance of djpcms.views.DjpRequestWrap 
@@ -197,28 +200,28 @@ class ModelApplicationBase(ajaxbase):
             mform = modelform_factory(self.model, self.form)
         else:
             mform = self.form(instance = instance)
-            
-        mform    = addhiddenfield(mform,'prefix')
+        
         wrapper  = djp.wrapper
-        initial  = None
-        if djp.prefix:
-            initial = {'prefix': djp.prefix}
                 
         f     = mform(**form_kwargs(request     = djp.request,
-                                    instance    = instance,
                                     initial     = initial,
-                                    prefix      = djp.prefix,
+                                    instance    = instance,
+                                    prefix      = prefix,
                                     withrequest = self.form_withrequest))
-        fhtml  = form(method = self.form_method, url = djp.url)
         if wrapper:
             layout = wrapper.form_layout
         else:
             layout = None
         fl = formlet(form = f, layout = layout, submit = self.submit(instance))
-        if self.form_ajax:
-            fhtml.addclass(self.ajax.ajax)            
-        fhtml.make_container(div).append(fl)
-        return fhtml
+        
+        if wrapped:
+            fhtml  = form(method = self.form_method, url = djp.url)
+            if self.form_ajax:
+                fhtml.addClass(self.ajax.ajax)
+            fhtml['form'] = fl
+            return fhtml
+        else:
+            return fl
         
     def submit(self, instance):
         if instance:

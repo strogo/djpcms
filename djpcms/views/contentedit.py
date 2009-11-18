@@ -7,6 +7,7 @@ from djpcms.settings import HTML_CLASSES, CONTENT_INLINE_EDITING
 from djpcms.models import BlockContent, AppBlockContent, Page, AppPage
 from djpcms.utils import form_kwargs
 from djpcms.utils.ajax import jhtmls
+from djpcms.utils.html import form, formlet, submit, htmlcomp
 from djpcms.forms import LazyAjaxChoice
 from djpcms.plugins import get_plugin, functiongenerator, \
                            ContentWrapperHandler, content_wrapper_tuple
@@ -160,6 +161,25 @@ class ChangeContentView(appview.EditView):
                                                parent = None,
                                                name = 'edit_content_block')
             
+    def get_form(self, djp, all = True):
+        app = self.appmodel
+        fhtml  = form(method = app.form_method, url = djp.url)
+        if app.form_ajax:
+            fhtml.addClass(app.ajax.ajax)
+        fhtml['topform'] = app.get_form(djp, prefix = 'topchoice', wrapped = False)
+        # We wrap the bottom part of the form with a div for ajax interaction
+        div = htmlcomp('div', cn = 'plugin-options')
+        fhtml['plugin']  = div
+        if all:
+            plugin = djp.instance.plugin
+            if plugin:
+                pform = plugin.get_form(djp)
+                if pform:
+                    div['bottomform'] = formlet(form = pform,
+                                                layout = app.form_layout)
+            fhtml['submit'] = formlet(submit = submit(value = 'change'))
+        return fhtml
+    
     def edit_block(self, request):
         return jhtmls(identifier = '#%s' % self.instance.pluginid(),
                       html = self.instance.plugin_edit_block(request))
@@ -170,7 +190,7 @@ class ChangeContentView(appview.EditView):
         @param request: django HttpRequest instance
         @return JSON serializable object 
         '''
-        form = self.appmodel.get_form(djp)
+        form = self.appmodel.get_form(djp, all = False)
         if form.is_valid():
             new_plugin = form.instance
             return jhtmls(identifier = '#%s' % instance.pluginid(),

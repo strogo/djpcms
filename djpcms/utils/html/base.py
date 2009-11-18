@@ -2,14 +2,24 @@
 from django.template import loader, Context
 from django.forms.util import flatatt
 from django.utils.datastructures import SortedDict
+from django.utils.safestring import mark_safe
 
 from djpcms.settings import HTML_CLASSES
+from djpcms.utils import UnicodeObject
 
-class htmlbase(object):
+
+class htmlbase(UnicodeObject):
     ajax = HTML_CLASSES
     
     def get_template(self):
-        raise NotImplementedError
+        template = getattr(self,'template',None)
+        if template:
+            return template
+        else:
+            raise NotImplementedError
+    
+    def __unicode__(self):
+        return self.render()
     
     def get_content(self):
         return {'html': self,
@@ -18,8 +28,14 @@ class htmlbase(object):
     def getplugins(self, ftype):
         return None
     
+    def __setitem__(self, key, value):
+        pass
+    
     def items(self):
         return []
+    
+    def hasattr(self):
+        return False
     
     def attrs(self):
         return None
@@ -34,14 +50,9 @@ class htmlbase(object):
         return self
     
     def flatatt(self):
-        _attrs = self.attrs()
-        if _attrs:
-            attrs = {}
-            for k,v in _attrs.items():
-                if v:
-                    attrs[k] = v
-            if attrs:
-                return mark_safe(u'%s' % flatatt(attrs))
+        attrs = self.attrs()
+        if attrs:
+            return mark_safe(u'%s' % flatatt(attrs))
         return u''
         
     def render(self):
@@ -53,23 +64,32 @@ class htmlattr(htmlbase):
     '''
     HTML utility with attributes a la jQuery
     '''
-    def __init__(self, id = None, cn = None, name = None):
+    def __init__(self, id = None, cn = None, name = None, value = None):
         self._attrs = {}
         if id:
             self._attrs['id'] = id
         if name:
             self._attrs['name'] = name
-        self.addclass(cn)
+        if value:
+            self._attrs['value'] = value
+        self.addClass(cn)
         
-    def attr(self):
+    def hasattr(self):
+        return len(self._attrs)
+    
+    def attrs(self):
         return self._attrs
         
     def addClass(self, cn):
         if cn:
+            cn = str(cn).replace(' ','')
+        if cn:
             attrs = self._attrs
-            c    = attrs['class']
+            c    = attrs.get('class',None)
             if c:
-                attrs['class'] = '%s %s' % (c,cn)
+                cs = c.split(' ')
+                if cn not in cs:
+                    attrs['class'] = '%s %s' % (c,cn)
             else:
                 attrs['class'] = cn
         return self
@@ -90,14 +110,32 @@ class htmlattr(htmlbase):
         self._attrs['class'] = ' '.join(css)
         return self
     
+
+class htmltag(htmlattr):
     
-def htmlcomp(htmlattr):
+    def __init__(self, tag, **attrs):
+        self.tag = tag
+        super(htmltag,self).__init__(**attrs)
+
+
+class htmltiny(htmltag):
+    
+    def __init__(self, tag, **attrs):
+        super(htmltiny,self).__init__(tag, **attrs)
+    
+    def render(self):
+        return mark_safe(u'<%s %s/>' % (self.tag,self.flatatt()))
+    
+    
+class htmlcomp(htmltag):
     '''
     HTML component with inner components
     '''
-    def __init__(self, **attrs):
-        super(htmlcomp,self).__init__(**attrs)
-        self.inner = SortedDict()
+    def __init__(self, tag, template = None, **attrs):
+        super(htmlcomp,self).__init__(tag, **attrs)
+        self.template = template
+        self.tag      = tag
+        self.inner    = SortedDict()
         
     def __setitem__(self, key, value):
         if isinstance(value, htmlbase):
@@ -118,4 +156,12 @@ def htmlcomp(htmlattr):
             elif isinstance(c,htmlcomp):
                 fs.extend(c.getplugins(ftype))
         return fs
-        
+    
+    def get_template(self):
+        if self.template:
+            return self.template
+        top = 'components/%s.html' % self.tag
+        return [top,
+                'djpcms/%s' % top,
+                'components/htmlcomp.html',
+                'djpcms/components/htmlcomp.html']
