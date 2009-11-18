@@ -5,7 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.template import loader, RequestContext
 from django.utils.dates import MONTHS_3_REV
 
-from djpcms.models import AppPage
+from djpcms.models import Page
 from djpcms.utils.html import Paginator
 from djpcms.views.baseview import djpcmsview
 from djpcms.views.site import get_view_from_url
@@ -17,7 +17,6 @@ class AppView(djpcmsview):
     Base class for application views
     '''
     creation_counter = 0
-    page_model       = AppPage
     
     def __init__(self,
                  regex  = None,
@@ -149,7 +148,7 @@ class AppView(djpcmsview):
     def get_page(self):
         if self.code:
             try:
-                return self.page_model.objects.get_for_code(self.code)
+                return Page.objects.get_for_code(self.code)
             except:
                 if self.parent:
                     return self.parent.get_page()

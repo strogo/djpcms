@@ -1,9 +1,10 @@
 from django import forms
 from django.db import models
 from django.contrib.sites.models import Site
+from django.utils.translation import ugettext_lazy as _
 
 from djpcms.settings import HTML_CLASSES
-from djpcms.models import Page, AppPage
+from djpcms.models import Page
 from djpcms.utils import lazyattr
 from djpcms import siteapp_choices
 
@@ -27,7 +28,8 @@ class LazyChoiceField(forms.ChoiceField):
             lz = lz()
         result.choices = lz
         return result
-    
+
+
 class LazyAjaxChoice(LazyChoiceField):
     
     def __init__(self, *args, **kwargs):
@@ -72,6 +74,7 @@ class ModelCharField(forms.CharField):
     def trim(self, value):
         return value
 
+
 class SlugField(ModelCharField):
     
     def __init__(self, *args, **kwargs):
@@ -81,16 +84,22 @@ class SlugField(ModelCharField):
         return self.model_field.trim(value)
     
 
-
+# Form for a Page
 class PageForm(forms.ModelForm):
     '''
     Page form
-    This specialized form taks care of all th possible permutation
-    in input values.
+    This specialized form takes care of all the possible permutation
+    in input values. These are the possibilities
+        
+        1) parent = None
+            a) the unique root page
+            b) an application page (application field must be available)
+        2) 
     '''
     site        = forms.ModelChoiceField(queryset = Site.objects.all(), required = False)
-    code        = forms.CharField(max_length=32, required = False)
-    url_pattern = forms.CharField(required = False)
+    application = LazyChoiceField(choices = siteapp_choices,
+                                  required = False,
+                                  label = _('application'))
     
     class Meta:
         model = Page
@@ -115,6 +124,9 @@ class PageForm(forms.ModelForm):
             return code
         
     def clean_site(self):
+        '''
+        Check for site
+        '''
         data   = self.data
         site   = data.get('site',None)
         parent = self.get_parent()
@@ -127,47 +139,48 @@ class PageForm(forms.ModelForm):
         else:
             return Site.objects.get(id = int(site))
     
-    def clean_app_type(self):
+    def clean_application(self):
         '''
-        If application type is specified,
-        than a parent page with a content type must be available
+        If application type is specified, than it must be unique
         '''
         data = self.data
-        app_type = data.get('app_type',None)
-        if app_type:
-            parent = self.get_parent()
-            if parent:
-                if parent.content_type:
-                    return app_type
-                else:
-                    raise forms.ValidationError('Parent page with no content type')
-            else:
-                raise forms.ValidationError('App Type must have a parent page')
+        app = data.get('application',None)
+        if app:
+            if Page.objects.filter(application = app):
+                raise forms.ValidationError('Application page %s already avaiable' % app)
         else:
-            return app_type
+            parent = self.get_parent()
+            if not parent:
+                # No parent specified. Let's check that a root is not available
+                root = Page.objects.root()
+                if root and root != self.instance:
+                    raise forms.ValidationError('Page root already avaiable')
+        return app
         
     def clean_url_pattern(self):
-        data = self.data
-        url = data.get('url_pattern',None)
-        app_name = data.get('app_type',None)
-        if app_name:
-            data['url_pattern'] = u''
-            return u''
-        elif not url:
-            raise forms.ValidationError('url_pattern or app_type must be provided')
-        else:
-            return url
+        '''
+        Check for url patterns
+            No need if:
+                1 - it is the root page
+                2 - oit is an application page
+            Otherwise it is required
+        '''
+        data     = self.data
+        value    = data.get('url_pattern',None)
+        if value:
+            return value
+        app      = data.get('application',None)
+        if app:
+            return value
+        parent   = data.get('parent',None)
+        if parent:
+            raise forms.ValidationError('url_pattern or application must be provided if not root page')
+        return value
         
     def save(self, commit = True):
         return super(PageForm,self).save(commit)
         
-        
-        
-class AppPageForm(forms.ModelForm):
-    code = LazyChoiceField(choices = siteapp_choices, required = True, label = 'application')
-    
-    class Meta:
-        model = AppPage
+
         
 
 AS_Q_CHOICES = (

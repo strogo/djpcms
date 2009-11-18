@@ -16,10 +16,13 @@ from django.utils.translation import ugettext_lazy as _
 from django.template import Template as DjangoTemplate
 
 #from djcms.middleware.threadlocals import get_current_user
+from djpcms.fields import SlugCode
 from djpcms.plugins import content_wrapper_tuple, CONTENT_WRAP_HANDLERS, get_plugin
 from djpcms.utils.models import TimeStamp
 from djpcms.utils import lazyattr, function_module
+from djpcms.utils.func import PathList
 from djpcms.uploads import upload_function, site_image_storage
+from djpcms.utils.markups import markup_choices, MARKUP_HANDLERS, default_markup
 from djpcms.settings import *
 
 
@@ -72,26 +75,11 @@ class PageManager(models.Manager):
         self.__class__._cache.clear()
         
     def root(self):
-        root = self.__class__._cache.root
-        if not root:
-            try:
-                root = self.filter(parent__isnull=True, site = Site.objects.get_current())[0]
-                if CACHE_VIEW_OBJECTS:
-                    self.__class__._cache.root = root
-            except IndexError:
-                raise RootPageDoesNotExist, unicode(_('Please create at least one page.'))
-        return root
-    
-    def get_for_code(self, code):
-        page = self.__class__._cache.tree.get(code,None)
-        if not page:
-            try:
-                page = self.get(code = code)
-                if CACHE_VIEW_OBJECTS:
-                    self.__class__._cache.tree[code] = page
-            except:
-                page = None
-        return page
+        f = self.filter(parent__isnull=True, site = Site.objects.get_current())
+        if f:
+            return f[0]
+        else:
+            return None
     
     def get_for_model(self, model):
         ct = ContentType.objects.get_for_model(model)
@@ -249,10 +237,9 @@ class Page(TimeStamp):
         get_latest_by   = 'last_modified'
 
     def __unicode__(self):
-        return u'%s' % self.code
+        return u'%s' % self.url
     
     def save(self, **kwargs):
-        Page.objects.clear_cache()
         d = self.get_level()
         self.level = d
         super(Page,self).save(**kwargs)
@@ -341,7 +328,7 @@ class Page(TimeStamp):
         if not url.endswith('/'):
             url += '/'
         return url
-    absolute_url = property(fget = get_absolute_url)
+    url = property(get_absolute_url)
 
     def get_children(self):
         return Page.objects.filter(parent=self, in_navigation__gt = 0).order_by('in_navigation')
@@ -522,3 +509,98 @@ class BlockContent(models.Model):
                           html = self.render(request = request)) 
         else:
             return f.jerrors
+        
+        
+
+class SiteContentManager(models.Manager):
+    
+    _cache  = {}
+    
+    def get_from_code(self, code):
+        c = code.lower()
+        try:
+            return self.__class__._cache[c]
+        except:
+            try:
+                obj = SiteContent.objects.get(code = c)
+                if CACHE_VIEW_OBJECTS:
+                    self.__class__._cache[c] = obj
+                return obj
+            except:
+                pass
+            
+    def get_from_codes(self, codes):
+        objs = []
+        for code in codes:
+            obj = self.get_from_code(code)
+            if obj:
+                objs.append(obj)
+        return objs        
+    
+    def clear_cache(self):
+        self.__class__._cache = {}
+
+
+class SiteContent(models.Model):
+    last_modified = models.DateTimeField(auto_now = True, editable = False)
+    user_last     = models.ForeignKey(User, null = True, blank = True)
+    code          = SlugCode(max_length = 64,
+                             unique     = True,
+                             help_text  = _("Unique name for the content. Choose one you like"))
+    description   = models.TextField(blank = True)
+    body          = models.TextField(_('body'),blank=True)
+    markup        = models.CharField(max_length = 3,
+                                     choices = markup_choices(),
+                                     default = default_markup,
+                                     null = False)
+    
+    objects = SiteContentManager()
+    
+    def __unicode__(self):
+        return u'%s' % self.code
+    
+    class Meta:
+        ordering  = ('code',)
+    
+    def htmlbody(self):
+        text = self.body
+        if not text:
+            html = u''
+        mkp = MARKUP_HANDLERS.get(self.markup,None)
+        if mkp:
+            handler = mkp.get('handler')
+            html = force_unicode(handler(text))
+        return mark_safe(html)
+    
+    def update(self, user = None, body = ''):
+        self.body = body
+        user_last = None
+        if user and user.is_authenticated():
+            user_last = user
+        self.user_last = user_last
+        self.save()
+        
+    
+class SiteImage(models.Model):
+    code        = SlugCode(max_length = 64,
+                           unique = True,
+                           help_text = _("Unique name for the image. Choose one you like"))
+    image       = models.ImageField(upload_to = upload_function, storage = site_image_storage())
+    path        = models.CharField(max_length=200,
+                                   blank = True,
+                                   help_text = _("Optional, relative path in file storage"))
+    description = models.TextField(blank = True)
+    url         = models.URLField(blank = True)
+        
+    def __unicode__(self):
+        return u'%s' % self.image
+
+
+
+def create_new_content(user = None, **kwargs):
+    user_last = None
+    if user and user.is_authenticated():
+        user_last = user
+    ct = SiteContent(user_last = user_last, **kwargs)
+    ct.save()
+    return ct

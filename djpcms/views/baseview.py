@@ -22,6 +22,8 @@ from djpcms.utils import urlbits, urlfrombits
 
 from djpcms.views.load import *
 
+
+# Wrapper around request
 class DjpRequestWrap(UnicodeObject):
     '''
     Generic response based on djpcms view objects
@@ -105,9 +107,13 @@ class DjpRequestWrap(UnicodeObject):
         return self.view.bodybits()
 
 
+# THE DJPCMS INTERFACE CLASS for handling views
+# the response method handle all the views in djpcms
 class djpcmsview(UnicodeObject):
     # This override the template name in the page object (if it exists)
+    # hardly used but here just in case.
     template_name = None
+    # methods handled by the current view. By default GET and POST only
     _methods      = ('get','post') 
     '''
     Base class for handling django views.
@@ -173,8 +179,13 @@ class djpcmsview(UnicodeObject):
     
     def response(self, request, *args, **kwargs):
         '''
-        Entry point.
-        NO NEED TO OVERRIDE THIS FUNCTION
+        Entry point. DO NO NOT OVERRIDE THIS FUNCTION
+        
+        If you feel there is a need to override this,
+        maybe you need to send us a message
+        
+        Hooks:
+            has_permission    Check for permissions
         '''
         # we do one more final check for permission
         if not self.has_permission(request):
@@ -201,12 +212,14 @@ class djpcmsview(UnicodeObject):
     
     def get_response(self, djp):
         '''
-        Handle the Get view.
+        Handle the GET RESPONSE.
         This function SHOULD NOT be overwritten.
-        Several functions can be reimplemented for twicking the result.
-        In particular:
-            - 'preget' for some sort of preprocessing (and redirect)
-            - 'update_content' - for creating content when there is no inner_template
+        Several functions can be overwritten for tweaking the results.
+        If that is not enough, maybe more hooks should be put in place.
+        
+        Hooks:
+            - 'preget':        for pre-processing and redirect
+            - 'inner_content': for creating content when there is no inner_template
         '''
         #First check for redirect
         re = self.preget(djp)
@@ -320,8 +333,8 @@ class djpcmsview(UnicodeObject):
     
     def default_ajax_view(self, djp):
         '''
-        This function is called by the self.post_view method when the ajax is is available
-        but no ajax function was found.
+        This function is called by the self.post_view method when the
+        ajax key is available but no ajax function was found.
         By default it raises an error
         '''
         raise NotImplementedError('Default ajax response not implemented')
@@ -330,6 +343,9 @@ class djpcmsview(UnicodeObject):
         return grid960()
     
     def has_permission(self, request):
+        '''
+        Hook for permissions
+        '''
         return True
     
     def bodybits(self):

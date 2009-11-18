@@ -10,7 +10,7 @@ def get_version():
         v = '%s.%s' % VERSION[:2]
     return v
 
-siteapp_choices = []
+siteapp_choices = [('','-----------------')]
         
 
 __version__ = get_version()

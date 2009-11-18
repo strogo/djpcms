@@ -4,7 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.template import RequestContext, loader
 
 from djpcms.settings import HTML_CLASSES, CONTENT_INLINE_EDITING
-from djpcms.models import BlockContent, AppBlockContent, Page, AppPage
+from djpcms.models import BlockContent, Page
 from djpcms.utils import form_kwargs
 from djpcms.utils.ajax import jhtmls
 from djpcms.utils.formjson import form2json
@@ -14,10 +14,6 @@ from djpcms.plugins import get_plugin, functiongenerator, \
                            ContentWrapperHandler, content_wrapper_tuple
 from djpcms.views import appsite, appview
 
-    
-
-basecontent = CONTENT_INLINE_EDITING.get('pagecontent', '/content/')
-
 
 # Generator of content block in editing mode.
 # Only called when we are in editing mode
@@ -26,13 +22,10 @@ class content_view(object):
     Utility class for creating the editing generator
     '''
     def __init__(self, page):
-        if page == AppPage or isinstance(page, AppPage):
-            self.blockClass = AppBlockContent
-        else:
-            self.blockClass = BlockContent
+        pass
             
     def blockcontents(self, page, b):
-        return self.blockClass.objects.for_page_block(page, b)
+        return BlockContent.objects.for_page_block(page, b)
     
     def __call__(self, request, blockcontents):
         '''
@@ -101,7 +94,7 @@ class PluginChoice(LazyAjaxChoice):
         return value
     
 
-class ContentBlockFormBase(forms.ModelForm):
+class ContentBlockForm(forms.ModelForm):
     '''
     Content Block Change form
     
@@ -112,6 +105,9 @@ class ContentBlockFormBase(forms.ModelForm):
     # set to ajax.
     plugin_name    = PluginChoice(label = _('content'),   choices = functiongenerator, required = False)
     container_type = LazyChoiceField(label=_('container'), choices = content_wrapper_tuple())
+    
+    class Meta:
+        model = BlockContent
         
     def __init__(self, instance = None, **kwargs):
         '''
@@ -132,27 +128,6 @@ class ContentBlockFormBase(forms.ModelForm):
             instance.plugin_name = ''
         return super(ContentBlockFormBase,self).save(commit = commit)
 
-
-class ContentBlockForm(ContentBlockFormBase):
-    '''
-    Page ContentBlock Form
-    '''
-    def __init__(self,*args,**kwargs):
-        super(ContentBlockForm,self).__init__(*args,**kwargs)
-    class Meta:
-        model = BlockContent
-
-
-class AppContentBlockForm(ContentBlockFormBase):
-    '''
-    AppPage ContentBlock Form
-    '''
-    def __init__(self,*args,**kwargs):
-        super(AppContentBlockForm,self).__init__(*args,**kwargs)
-        
-    class Meta:
-        model = AppBlockContent
-        
 
 # Application view for handling change in content block internal plugin
 # It handles two different Ajax interaction with the browser 
@@ -273,7 +248,7 @@ class DeleteContentView(appview.DeleteView):
 
 
 class ContentSite(appsite.ModelApplication):
-    baseurl     = '%spage/' % basecontent
+    baseurl     = CONTENT_INLINE_EDITING.get('pagecontent', '/content/')
     pagemodel   = Page
     form        = ContentBlockForm
     form_layout = 'onecolumn'
@@ -321,16 +296,7 @@ class ContentSite(appsite.ModelApplication):
         
         return instance
     
-     
-class AppContentSite(ContentSite):
-    baseurl   = '%sapp/' % basecontent 
-    pagemodel = AppPage
-    form      = AppContentBlockForm
-    inherit   = True
-    
-    
     
 if appsite.site.editavailable:
     appsite.site.register(BlockContent,ContentSite,False)
-    appsite.site.register(AppBlockContent,AppContentSite,False)
     
