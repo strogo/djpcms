@@ -1,3 +1,4 @@
+from djpcms.utils import form_kwargs
 
 _plugin_dictionary = {}
 
@@ -6,6 +7,8 @@ _plugin_dictionary = {}
 class DJPplugin(object):
     name         = None
     description  = None
+    form         = None
+    withrequest  = False
     
     def arguments(self, args):
         return {}
@@ -23,7 +26,8 @@ class DJPplugin(object):
         '''
         Form for this plugin
         '''
-        return None
+        if self.form:
+            return self.form(**form_kwargs(request = djp.request, withrequest = self.withrequest))
     
 
 class EmptyPlugin(DJPplugin):
@@ -61,7 +65,7 @@ def functiongenerator():
     generator for iterating through rendering functions.
     Used in django.Forms
     '''
-    for p in _plugin_dictionary.value():
+    for p in _plugin_dictionary.values():
         yield (p.name,p.description)
 
     

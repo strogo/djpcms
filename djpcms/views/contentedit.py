@@ -103,21 +103,13 @@ class ContentBlockFormBase(forms.ModelForm):
     plugin_name    = PluginChoice(label = _('content'),   choices = functiongenerator)
     container_type = LazyAjaxChoice(label=_('container'), choices = content_wrapper_tuple())
         
-    def __init__(self, instance = None, initial = None, **kwargs):
+    def __init__(self, instance = None, **kwargs):
         '''
         @param instance: must be an instance of BlockContent not Null
         '''
         if not instance:
             raise ValueError('No content block available')
-        
-        if instance.plugin:
-            initial = initial or {}
-            mc = instance.plugin_class()
-            initial['plugin_name'] = unicode(mc.__name__) 
-            
-        super(ContentBlockFormBase,self).__init__(instance = instance,
-                                                  initial = initial,
-                                                  **kwargs)
+        super(ContentBlockFormBase,self).__init__(instance = instance, **kwargs)
         # Hack the field ordering
         self.fields.keyOrder = ['plugin_name', 'container_type']
         
