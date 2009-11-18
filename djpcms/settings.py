@@ -29,6 +29,8 @@ ENABLE_BREADCRUMBS       = getattr(settings, 'ENABLE_BREADCRUMBS', True)
 APPLICATION_URL_MODULE   = getattr(settings, 'APPLICATION_URL_MODULE', None)
 APPLICATION_URL_PREFIX   = getattr(settings, 'APPLICATION_URL_PREFIX', '/apps/')
 
+DJPCMS_PLUGINS           = getattr(settings, 'DJPCMS_PLUGINS', ['djpcms.plugins.*'])
+
 
 
 #---------------------------------- Styling

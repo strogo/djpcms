@@ -8,8 +8,8 @@ from djpcms.models import BlockContent, AppBlockContent, Page, AppPage
 from djpcms.utils import form_kwargs
 from djpcms.utils.ajax import jhtmls
 from djpcms.forms import LazyAjaxChoice
-from djpcms.plugins.wrapper import ContentWrapperHandler, content_wrapper_tuple
-from djpcms.plugins.base import get_plugin, functiongenerator
+from djpcms.plugins import get_plugin, functiongenerator, \
+                           ContentWrapperHandler, content_wrapper_tuple
 from djpcms.views import appsite, appview
 
     
@@ -172,7 +172,7 @@ class ChangeContentView(appview.EditView):
         '''
         form = self.appmodel.get_form(djp)
         if form.is_valid():
-            instance = form.save()
+            new_plugin = form.instance
             return jhtmls(identifier = '#%s' % instance.pluginid(),
                           html = instance.plugin_edit_block(djp))
         else:
@@ -229,6 +229,9 @@ class ContentSite(appsite.ModelApplication):
     form      = ContentBlockForm
     
     main      = ChangeContentView()
+    
+    def submit(self, instance):
+        return None
     
     def objectbits(self, obj):
         return {'pageid': obj.page.id,

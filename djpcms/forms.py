@@ -1,4 +1,5 @@
 from django import forms
+from django.db import models
 from django.contrib.sites.models import Site
 
 from djpcms.settings import HTML_CLASSES

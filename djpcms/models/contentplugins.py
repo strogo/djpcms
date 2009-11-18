@@ -11,8 +11,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.template import loader
 
-from djpcms.plugins import content_wrapper_tuple, CONTENT_WRAP_HANDLERS
-from djpcms.plugins.base import get_plugin
+from djpcms.plugins import content_wrapper_tuple, CONTENT_WRAP_HANDLERS, get_plugin
 from djpcms.settings import CONTENT_INLINE_EDITING, HTML_CLASSES
 from djpcms.html import formlet, submit
 from djpcms.utils.ajax import jhtmls
@@ -181,10 +180,10 @@ class BlockContentBase(models.Model):
                                          'contentblock': self,
                                          'djp':          djp})
         
-    def changeform(self, request = None):
-        f = self.plugin.changeform(request = request, prefix = 'cf_%s' % self.pluginid())
-        return formlet(form = f,
-                       layout = 'onecolumn',
+    def changeform(self, djp):
+        f = self.plugin.get_form(djp)
+        #, prefix = 'cf_%s' % self.pluginid())
+        return formlet(form = f, layout = 'onecolumn',
                        submit = submit(value = 'Change',
                                        name  = 'change_plugin_content'))
     

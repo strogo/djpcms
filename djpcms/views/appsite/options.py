@@ -209,22 +209,22 @@ class ModelApplicationBase(ajaxbase):
                                     initial     = initial,
                                     prefix      = djp.prefix,
                                     withrequest = self.form_withrequest))
-        fhtml = form(method = self.form_method, url = djp.url)
-        
-        sbvalue = 'add'
-        sbname  = 'add'
-        if instance:
-            sbvalue = 'save'
-            sbname  = 'edit'
+        fhtml  = form(method = self.form_method, url = djp.url)
         if wrapper:
             layout = wrapper.form_layout
         else:
             layout = None
-        fl = formlet(form = f, layout = layout, submit = submit(value = sbvalue, name = sbname))
+        fl = formlet(form = f, layout = layout, submit = self.submit(instance))
         if self.form_ajax:
             fhtml.addclass(self.ajax.ajax)            
         fhtml.make_container(div).append(fl)
         return fhtml
+        
+    def submit(self, instance):
+        if instance:
+            return submit(value = 'save', name = 'edit')
+        else:
+            return submit(value = 'add', name = 'add')
     
     def get_searchform(self, request, prefix = None, wrapper = None, url = None):
         '''
