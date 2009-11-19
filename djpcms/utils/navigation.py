@@ -54,19 +54,24 @@ class Navigator(lazycounter):
         parent = djp.parent
         if parent:
             urlselects.append(djp.url)
-            self.buildselects(parent, urlselects)
+            return self.buildselects(parent, urlselects)
+        else:
+            return djp
         
     def _items(self, urlselects = None, secondary_after = 100, **kwargs):
         djp        = self.djp
         if urlselects is None:
             urlselects = []
-            self.buildselects(djp,urlselects)
+            djp = self.buildselects(djp,urlselects)
             self.kwargs['urlselects'] = urlselects
         scn        = HTML_CLASSES.secondary_in_list
         request    = djp.request
         children   = djp.children
         items      = []
         for djp in children:
+            nav = djp.in_navigation()
+            if not nav:
+                continue
             url     = djp.url
             classes = []
             if djp.in_navigation() > secondary_after:

@@ -1,5 +1,25 @@
 from django.utils.encoding import smart_str, force_unicode, smart_unicode
 
+
+def form_kwargs(request, instance = None, withrequest = False, **kwargs):
+    '''
+    Quick form arguments aggregator
+    
+    Usage:
+      def someview(request):
+          form = MyForm(**form_kwargs(request))
+    '''
+    if request and request.method == 'POST':
+        kwargs['data'] = request.POST
+        kwargs['files'] = request.FILES
+    if withrequest:
+        kwargs['request'] = request
+    if instance:
+        kwargs['instance'] = instance
+    return kwargs
+
+
+
 class NoAjaxKeyError(Exception):
     
     def __init__(self, key):

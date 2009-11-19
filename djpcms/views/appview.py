@@ -9,6 +9,7 @@ from djpcms.models import Page
 from djpcms.utils.html import Paginator
 from djpcms.views.baseview import djpcmsview
 from djpcms.views.site import get_view_from_url
+from djpcms.utils.func import force_number_insert
 from djpcms.utils import form_kwargs
 
 
@@ -92,6 +93,7 @@ class AppView(djpcmsview):
         Process url bits and store information for navigation and urls
         '''
         self.appmodel = appmodel
+        self.ajax     = appmodel.ajax
         if self.parent:
             baseurl = self.parent._regex
             purl    = self.parent.purl
@@ -154,7 +156,7 @@ class AppView(djpcmsview):
     def get_page(self):
         if self.code:
             try:
-                return Page.objects.get_for_code(self.code)
+                return Page.objects.get_for_application(self.code)
             except:
                 if self.parent:
                     return self.parent.get_page()
@@ -189,16 +191,25 @@ class AppView(djpcmsview):
         '''
         pass
     
-    def children(self, request, **kwargs):
-        views = {}
+    def children(self, request, instance = None, **kwargs):
+        views = []
         for view in self.appmodel.applications.values():
-            if view is self:
+            if view is self or not view.has_permission(request, instance):
                 continue
             djp = view.requestview(request, **kwargs)
             nav = djp.in_navigation()
             if nav:
-                views[nav] = djp
-        return views.values()
+                views.append(djp)
+        return self.sortviewlist(views)
+    
+    def has_permission(self, request, obj = None):
+        '''
+        Delegate to appmodel
+        '''
+        return self.appmodel.has_permission(request, obj)
+    
+    def permissionDenied(self, djp):
+        return self.appmodel.permissionDenied(djp)
     
     def __deepcopy__(self, memo):
         return copy.copy(self)
@@ -247,7 +258,7 @@ class ArchiveView(SearchView):
         return self.appmodel.date_code
     
     def content_dict(self, djp):
-        c = super(ArchiveApp,self).content_dict(djp)
+        c = super(ArchiveView,self).content_dict(djp)
         month = c.get('month',None)
         if month:
             try:
@@ -336,14 +347,16 @@ class ObjectView(AppView):
     def get_url(self, djp, instance = None, **urlargs):
         '''
         get object application url
+        If instance not defined it return None
         '''
         if instance:
             return self.purl % self.appmodel.objectbits(instance)
         else:
             instance = self.appmodel.get_object(**urlargs)
-            url = self.purl % urlargs
-            djp.instance = instance
-            return url
+            if instance:
+                url = self.purl % urlargs
+                djp.instance = instance
+                return url
     
     def title(self, request, pagetitle):
         try:
@@ -372,8 +385,12 @@ class ViewView(ObjectView):
 # Delete an object. POST method only. not GET method should modify databse
 class DeleteView(ObjectView):
     _methods      = ('post',) 
+    
     def __init__(self, regex = 'delete', parent = 'view', name = 'delete', **kwargs):
         super(DeleteView,self).__init__(regex = regex, parent = parent, name = name, **kwargs)
+        
+    def has_permission(self, request, obj):
+        return self.appmodel.has_delete_permission(request, obj)
       
 
 # Edit/Change an object
@@ -383,6 +400,9 @@ class EditView(ObjectView):
     '''
     def __init__(self, regex = 'edit', parent = 'view', name = 'edit',  **kwargs):
         super(EditView,self).__init__(regex = regex, parent = parent, name = name, **kwargs)
+    
+    def has_permission(self, request, obj):
+        return self.appmodel.has_edit_permission(request, obj)
     
     def get_form(self, djp):
         return self.appmodel.get_form(djp)

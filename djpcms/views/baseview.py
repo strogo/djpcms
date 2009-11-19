@@ -8,7 +8,7 @@ from django import http
 from django.utils.safestring import mark_safe
 from django.utils.encoding import force_unicode
 from django.shortcuts import render_to_response
-from django.template import RequestContext, loader
+from django.template import RequestContext, Context, loader
 from django.core.exceptions import PermissionDenied
 
 
@@ -55,6 +55,7 @@ class DjpRequestWrap(UnicodeObject):
     
     @lazyattr
     def get_children(self):
+        self.instance
         return self.view.children(self.request, **self.urlargs) or []
     children = property(get_children)
     
@@ -121,8 +122,9 @@ class DjpRequestWrap(UnicodeObject):
     def response(self):
         view    = self.view
         request = self.request
-        if not view.has_permission(request):
-            raise PermissionDenied
+        
+        if not view.has_permission(request, self.instance):
+            return view.permissionDenied(self)
         
         method  = request.method.lower()
         methods = view.methods(request)
@@ -243,7 +245,7 @@ class djpcmsview(UnicodeObject):
                 cb['content%s' % b] = BlockContentGen(djp, b)
             
             # Call the inner-template renderer
-            inner = page.inner_template.render(RequestContext(request, cb))
+            inner = page.inner_template.render(Context(cb))
             
             if self.editurl:
                 b = urlbits(request.path)[1:]
@@ -336,7 +338,7 @@ class djpcmsview(UnicodeObject):
     def grid960(self):
         return grid960()
     
-    def has_permission(self, request):
+    def has_permission(self, request, obj = None):
         '''
         Hook for permissions
         '''
@@ -379,6 +381,17 @@ class djpcmsview(UnicodeObject):
             bc.append(me)
         return bc
     
+    def permissionDenied(self, djp):
+        raise PermissionDenied
+    
+    def sortviewlist(self, views):
+        def comp(a,b):
+            if a.in_navigation() > b.in_navigation():
+                return 1
+            else:
+                return -1
+        views.sort(comp)
+        return views
 
 class wrapview(djpcmsview):
     '''

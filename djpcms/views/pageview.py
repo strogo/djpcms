@@ -3,6 +3,7 @@ This module define djpcmsview specialization for flatpages called pageview.
 A pageview is a view not associated with any model in django but
 it is associated with a page (instance of Page)
 '''
+from djpcms.utils.func import force_number_insert
 from djpcms.views.baseview import djpcmsview
 from djpcms.views.site import get_view_from_page
 from djpcms.views import appsite
@@ -42,14 +43,14 @@ class pageview(djpcmsview):
         else:
             return None
         
-    def has_permission(self, request):
+    def has_permission(self, request, obj = None):
         if self.page.requires_login:
             return request.user.is_authenticated()
         else:
             return True
         
     def children(self, request, **kwargs):
-        views = {}
+        views = []
         page      = self.get_page()
         pchildren = page.get_children()
         for child in pchildren:
@@ -58,7 +59,10 @@ class pageview(djpcmsview):
             except Exception, e:
                 continue
             if v.has_permission(request):
-                views[child.in_navigation] = v.requestview(request, **kwargs)
+                djp = v.requestview(request, **kwargs)
+                nav = djp.in_navigation()
+                if nav:
+                    views.append(djp)
         #
         # Now check for application children
         appchildren = appsite.site.parent_pages.get(self.url,None)
@@ -66,12 +70,12 @@ class pageview(djpcmsview):
         if appchildren:
             for app in appchildren:
                 rootview = app.root_application
-                if rootview:
+                if rootview and rootview.has_permission(request): 
                     djp = rootview.requestview(request, **kwargs)
                     nav = djp.in_navigation()
-                    views[nav] = djp
+                    if nav:
+                        views.append(djp)
         
-        views.pop(0,None)
-        return views.values()
+        return self.sortviewlist(views)
         
     

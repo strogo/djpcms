@@ -10,8 +10,9 @@ from django.forms.models import modelform_factory
 from django.utils.encoding import force_unicode
 from django.utils.datastructures import SortedDict
 from django.template import loader, Template, RequestContext
+from django.core.exceptions import PermissionDenied
 
-from djpcms.djutils import form_kwargs, UnicodeObject
+from djpcms.utils import form_kwargs, UnicodeObject
 from djpcms.djutils.forms import addhiddenfield
 from djpcms.views.baseview import editview
 from djpcms.views.appview import AppView
@@ -173,8 +174,11 @@ class ModelApplicationBase(object):
         By default arguments is the object id,
         Reimplement for custom arguments
         '''
-        id = int(kwargs.get('id',None))
-        return self.model.objects.get(id = id)
+        try:
+            id = int(kwargs.get('id',None))
+            return self.model.objects.get(id = id)
+        except:
+            return None
         
     def get_baseurl(self):
         if self.baseurl:
@@ -319,13 +323,16 @@ class ModelApplicationBase(object):
         
     def tagurl(self, request, tag):
         return None
-            
+    
+    def has_permission(self, request, obj = None):
+        return True
+    
     def has_edit_permission(self, request, obj=None):
         opts = self.opts
         return request.user.has_perm(opts.app_label + '.' + opts.get_change_permission())
     
     def has_view_permission(self, request, obj=None):
-        return True
+        return self.has_permission(request, obj)
     
     def has_delete_permission(self, request, obj=None):
         """
@@ -379,21 +386,22 @@ class ModelApplicationBase(object):
         return loader.render_to_string(template_name    = template_name,
                                        context_instance = RequestContext(request, content))
         
-    def data_generator(self, cl, prefix, wrapper, data):
+    def data_generator(self, djp, data):
         '''
         Return a generator for the query.
         This function can be overritten by derived classes
         '''
-        request = cl.request
-        app = self
-        template = self.get_item_template(obj,wrapper)
+        request = djp.request
+        wrapper = djp.wrapper
+        prefix  = djp.prefix
+        app     = self
         for obj in data:
             content = app.object_content(request, prefix, wrapper, obj)
             content.update({'item': obj,
                             'editurl': app.editurl(request, obj),
                             'viewurl': app.viewurl(request, obj),
                             'deleteurl': app.deleteurl(request, obj)})
-            yield loader.render_to_string(template_name    = template,
+            yield loader.render_to_string(template_name    = self.get_item_template(obj, wrapper),
                                           context_instance = RequestContext(request, content))
             
     def get_item_template(self, obj, wrapper):
@@ -401,6 +409,9 @@ class ModelApplicationBase(object):
         template_name_0 = '%s_search_item.html' % opts.module_name
         template_name_1 = '%s/%s' % (opts.app_label,template_name_0)
         return [template_name_0,template_name_1]
+    
+    def permissionDenied(self, djp):
+        raise PermissionDenied
 
 
 class ModelApplication(ModelApplicationBase):

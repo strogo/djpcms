@@ -4,7 +4,8 @@ from django import http
 from djpcms.settings import HTML_CLASSES
 from djpcms.views import appview
 
-from djpcms.html import quickform, link
+from djpcms.utils.html import form, formlet, submit
+from djpcms.utils import form_kwargs
 from djpcms.utils.ajax import jredirect
 
 from forms import LoginForm
@@ -51,34 +52,21 @@ class LoginApp(appview.AppView):
         '''
         if djp.request.user.is_authenticated():
             return http.HttpResponseRedirect('/')
-    
-    def inner_content(self, request):
-        data = request.GET.copy()
-        return self.get_form(request, initial = data)
         
-    def render(self, request, prefix, wrapper):
-        '''
-        Render login form according to wrapper
-        '''
-        if request.user.is_authenticated():
-            return None
-        url = self.get_url(request)
-        f = self.get_form(request, prefix, wrapper, url)
+    def render(self, djp, **kwargs):
+        f = self.get_form(djp)
         return f.render()
     
-    def get_form(self, request, data = None, initial = None):
+    def get_form(self, djp):
         '''
         Create the login form. This function can be reimplemented by
         a derived view
         '''
-        url = self.get_url(request)
-        return quickform(url     = url,
-                         form    = LoginForm,
-                         initial = initial,
-                         data    = data,
-                         submitname  = 'login_user',
-                         submitvalue = 'Sign in',
-                         cn = HTML_CLASSES.ajax)
+        f = LoginForm(**form_kwargs(request = djp.request))
+        fhtm = form(cn = self.ajax.ajax, url = djp.url)
+        fhtm['form'] = formlet(form = f,
+                               submit = submit(name = 'login_user', value = 'Sign in'))
+        return fhtm
         
     def get_form_url(self, request):
         url = self.page.get_absolute_url()
@@ -88,13 +76,13 @@ class LoginApp(appview.AppView):
                 url = '%s?next=%s' % (url,next)
         return url
     
-    def ajax__login_user(self, request):
+    def ajax__login_user(self, djp):
         '''
         Try to log in
         '''
-        f = self.get_form(request, data = request.POST)
+        f = self.get_form(djp)
         if f.is_valid():
-            error = self.process_login_data(request,f.cleaned_data)
+            error = self.process_login_data(djp.request,f.cleaned_data)
             if not error:
                 next = f.cleaned_data.get('next','/')
                 return jredirect(url = next)

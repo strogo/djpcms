@@ -49,6 +49,9 @@ class PageManager(models.Manager):
     # This cache is shared by all the get_for_* methods.
     _cache  = PageCache()
     
+    def get_for_application(self, name):
+        return self.get(application = name)
+    
     def hierarchy(self, parent=None):
         if parent:
             filter = self.filter(parent=parent)
@@ -75,7 +78,7 @@ class PageManager(models.Manager):
         self.__class__._cache.clear()
         
     def root(self):
-        f = self.filter(parent__isnull=True, site = Site.objects.get_current())
+        f = self.filter(level=0)
         if f:
             return f[0]
         else:
@@ -232,7 +235,7 @@ class Page(TimeStamp):
                                    blank=True,
                                    help_text=_('Optional. Dotted path to a python class dealing with requests'))
         
-    # hidden fields
+    # Denormalized level in the tree, for performance 
     level       = models.IntegerField(default = 0, editable = False)
 
     objects = PageManager()
@@ -323,15 +326,23 @@ class Page(TimeStamp):
             return v + self.parent.num_arguments()
         else:
             return v
+        
+    def unsafe_url(self):
+        if self.application:
+            from djpcms.views import appsite
+            app = appsite.site.getapp(self.application)
+            return u'/%s' % app._regex
+        else:
+            url = u'/%s' % '/'.join([page.url_pattern for page in self.get_path() if page.parent])
+            if not url.endswith('/'):
+                url += '/'
+            return url
 
     def get_absolute_url(self):
-        '''
-        Calculate the absolute url for the page
-        '''
-        url = u'/%s' % '/'.join([page.url_pattern for page in self.get_path() if page.parent])
-        if not url.endswith('/'):
-            url += '/'
-        return url
+        try:
+            return self.unsafe_url()
+        except:
+            return 'ERROR'
     url = property(get_absolute_url)
 
     def get_children(self):
@@ -342,11 +353,19 @@ class Page(TimeStamp):
         return children and (children[0].position+1) or 1
 
     def get_level(self):
-        parent = self.parent
-        level = 0
-        while parent:
-            level += 1
-            parent = parent.parent
+        try:
+            url = self.unsafe_url()
+            if url.startswith('/'):
+                url = url[1:]
+            if url.endswith('/'):
+                url = url[:-1]
+            if url:
+                bits  = url.split('/')
+                level = len(bits)
+            else:
+                level = 0
+        except:
+            level = 1
         return level
 
     def published(self):

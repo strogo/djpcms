@@ -4,9 +4,24 @@ Requires django-tagging
 Battery included plugins and application for tagging and tagging with archive
 '''
 from djpcms.views import appsite
-from djpcms.views.appview import AppView, ArchiveView
+from djpcms.views.appview import AppView, ArchiveView, SearchView
 
-       
+from tagging.models import TaggedItem
+
+
+class TagView(SearchView):
+    
+    def __init__(self, *args, **kwargs):
+        super(TagView,self).__init__(*args, **kwargs)
+        
+    def appquery(self, request, **tags):
+        qs = self.basequery(request)
+        if tags:
+            return TaggedItem.objects.get_by_model(qs, tags.values())
+        else:
+            return qs
+
+
 class TagArchiveView(ArchiveView):
     
     def __init__(self, *args, **kwargs):
@@ -19,6 +34,12 @@ class TagArchiveView(ArchiveView):
         else:
             return query
 
+
+class TagApplication(appsite.ModelApplication):
+    search  = SearchView(in_navigation = True)
+    cloud   = SearchView(regex = 'tag', parent = 'search')
+    tag     = TagView(regex = '(?P<tag1>\w+)', parent = 'cloud')
+    
 
 class ArchiveTaggedApplication(appsite.ArchiveApplication):
     '''
@@ -55,9 +76,6 @@ class ArchiveTaggedApplication(appsite.ArchiveApplication):
                                     parent = 'year_archive3')
     day_archive3   = TagArchiveView(regex = '(?P<day>\d{2})',
                                     parent = 'month_archive3')
-    
-    def basequery(self, request):
-        return self.formodel.objects.all()
     
     def tagurl(self, request, *tags):
         view = self.getapp('tag%s' % len(tags))

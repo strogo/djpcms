@@ -32,3 +32,10 @@ def data2url(url,data):
 class PathList(list):
     def __unicode__(self):
         return u' > '.join([smart_unicode(page) for page in self])
+    
+    
+def force_number_insert(n, d, v):
+    if d.has_key(n):
+        force_number_insert(n+0.1, d, v)
+    else:
+        d[n] = v
