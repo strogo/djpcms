@@ -4,9 +4,10 @@ from django.contrib.sites.models import Site
 from django.utils.translation import ugettext_lazy as _
 
 from djpcms.settings import HTML_CLASSES
-from djpcms.models import Page
+from djpcms.models import Page, BlockContent
 from djpcms.utils import lazyattr
 from djpcms import siteapp_choices
+from djpcms.plugins import get_plugin, functiongenerator, content_wrapper_tuple
 
 
 class LazyChoiceField(forms.ChoiceField):
@@ -180,6 +181,56 @@ class PageForm(forms.ModelForm):
     def save(self, commit = True):
         return super(PageForm,self).save(commit)
         
+
+class PluginChoice(LazyAjaxChoice):
+    
+    def __init__(self, *args, **kwargs):
+        super(PluginChoice,self).__init__(*args, **kwargs)
+    
+    def clean(self, value):
+        '''
+        Overried default value to return a Content Type object
+        '''
+        name = super(PluginChoice,self).clean(value)
+        value = get_plugin(name) 
+        if not value:
+            raise forms.ValidationError('%s not a plugin object' % name)
+        return value
+    
+
+class ContentBlockForm(forms.ModelForm):
+    '''
+    Content Block Change form
+    
+    This Model form is used to change the plug-in within
+    for a given BlockContent instance.
+    '''
+    # This is a subclass of forms.ChoiceField with the class attribute
+    # set to ajax.
+    plugin_name    = PluginChoice(label = _('content'),   choices = functiongenerator, required = False)
+    container_type = LazyChoiceField(label=_('container'), choices = content_wrapper_tuple())
+    
+    class Meta:
+        model = BlockContent
+        
+    def __init__(self, instance = None, **kwargs):
+        '''
+        @param instance: must be an instance of BlockContent not Null
+        '''
+        if not instance:
+            raise ValueError('No content block available')
+        super(ContentBlockForm,self).__init__(instance = instance, **kwargs)
+        # Hack the field ordering
+        self.fields.keyOrder = ['plugin_name', 'container_type']
+        
+    def save(self, commit = True):
+        pt = self.cleaned_data.pop('plugin_name')
+        instance = self.instance
+        if pt:
+            instance.plugin_name = pt.name
+        else:
+            instance.plugin_name = ''
+        return super(ContentBlockForm,self).save(commit = commit)
 
         
 

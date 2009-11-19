@@ -16,6 +16,7 @@ def load():
     if APPLICATION_URL_MODULE:
         app_module = import_module(APPLICATION_URL_MODULE)
         
+
         
 
 class ChangeForm(forms.ModelForm):

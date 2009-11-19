@@ -5,8 +5,7 @@ it is associated with a page (instance of Page)
 '''
 from djpcms.views.baseview import djpcmsview
 from djpcms.views.site import get_view_from_page
-from djpcms.html import grid960
-from djpcms.utils import lazyattr
+from djpcms.views import appsite
 
 
 def create_view(obj, dbmodel, url = u'/', parent = None):
@@ -43,13 +42,36 @@ class pageview(djpcmsview):
         else:
             return None
         
-    def grid960(self):
-        #return grid960(self.gridcolumns,self.grid_fixed)
-        return grid960()
-        
     def has_permission(self, request):
         if self.page.requires_login:
             return request.user.is_authenticated()
         else:
             return True
+        
+    def children(self, request, **kwargs):
+        views = {}
+        page      = self.get_page()
+        pchildren = page.get_children()
+        for child in pchildren:
+            try:
+                v = get_view_from_page(request, child)
+            except Exception, e:
+                continue
+            if v.has_permission(request):
+                views[child.in_navigation] = v.requestview(request, **kwargs)
+        #
+        # Now check for application children
+        appchildren = appsite.site.parent_pages.get(self.url,None)
+        
+        if appchildren:
+            for app in appchildren:
+                rootview = app.root_application
+                if rootview:
+                    djp = rootview.requestview(request, **kwargs)
+                    nav = djp.in_navigation()
+                    views[nav] = djp
+        
+        views.pop(0,None)
+        return views.values()
+        
     

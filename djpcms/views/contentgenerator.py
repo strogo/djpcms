@@ -44,7 +44,7 @@ class BlockContentGen(UnicodeObject):
         return mark_safe(u'\n'.join(html))
     
     def __unicode__(self):
-        return self.htmlid()
+        return self.render()
     
     def htmlid(self):
         return 'djpcms-block-%s-%s' % (self.page.id,self.b)

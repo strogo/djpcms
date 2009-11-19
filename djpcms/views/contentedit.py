@@ -9,9 +9,8 @@ from djpcms.utils import form_kwargs
 from djpcms.utils.ajax import jhtmls
 from djpcms.utils.formjson import form2json
 from djpcms.utils.html import form, formlet, submit, htmlcomp
-from djpcms.forms import LazyChoiceField, LazyAjaxChoice
-from djpcms.plugins import get_plugin, functiongenerator, \
-                           ContentWrapperHandler, content_wrapper_tuple
+from djpcms.forms import ContentBlockForm
+from djpcms.plugins import get_plugin, ContentWrapperHandler
 from djpcms.views import appsite, appview
 
 
@@ -31,7 +30,7 @@ class content_view(object):
         '''
         Return a generator
         '''
-        appmodel = appsite.site.for_model(self.blockClass)
+        appmodel = appsite.site.for_model(BlockContent)
         view = appmodel.getapp('edit')
         wrapper = EditWrapperHandler()
         for b in blockcontents:
@@ -76,57 +75,6 @@ class EditWrapperHandler(ContentWrapperHandler):
         return loader.render_to_string(["content/edit_block.html",
                                         "djpcms/content/edit_block.html"],
                                         c)
-
-
-class PluginChoice(LazyAjaxChoice):
-    
-    def __init__(self, *args, **kwargs):
-        super(PluginChoice,self).__init__(*args, **kwargs)
-    
-    def clean(self, value):
-        '''
-        Overried default value to return a Content Type object
-        '''
-        name = super(PluginChoice,self).clean(value)
-        value = get_plugin(name) 
-        if not value:
-            raise forms.ValidationError('%s not a plugin object' % name)
-        return value
-    
-
-class ContentBlockForm(forms.ModelForm):
-    '''
-    Content Block Change form
-    
-    This Model form is used to change the plug-in within
-    for a given BlockContent instance.
-    '''
-    # This is a subclass of forms.ChoiceField with the class attribute
-    # set to ajax.
-    plugin_name    = PluginChoice(label = _('content'),   choices = functiongenerator, required = False)
-    container_type = LazyChoiceField(label=_('container'), choices = content_wrapper_tuple())
-    
-    class Meta:
-        model = BlockContent
-        
-    def __init__(self, instance = None, **kwargs):
-        '''
-        @param instance: must be an instance of BlockContent not Null
-        '''
-        if not instance:
-            raise ValueError('No content block available')
-        super(ContentBlockFormBase,self).__init__(instance = instance, **kwargs)
-        # Hack the field ordering
-        self.fields.keyOrder = ['plugin_name', 'container_type']
-        
-    def save(self, commit = True):
-        pt = self.cleaned_data.pop('plugin_name')
-        instance = self.instance
-        if pt:
-            instance.plugin_name = pt.name
-        else:
-            instance.plugin_name = ''
-        return super(ContentBlockFormBase,self).save(commit = commit)
 
 
 # Application view for handling change in content block internal plugin
@@ -279,22 +227,31 @@ class ContentSite(appsite.ModelApplication):
         position    = int(position)
         page        = self.pagemodel.objects.get(pk = pageid)
         blocks      = self.model.objects.filter(page = page)
-        nblocks     = page.numblocks()
+        inner       = page.inner_template
+        if inner:
+            nblocks     = inner.numblocks()
+        else:
+            nblocks     = 0
+            
         if blocknumber >= nblocks:
-            raise http.Http404('Block number too high for current page')
-        cb     = blocks.count()
-    
-        # Create new blocks if necessary
-        for bn in range(cb,nblocks):
-            b = self.model(page = page, block = bn)
-            b.save()
-    
-        try:
-            instance = self.model.objects.get(page = page, block = blocknumber, position = position)
-        except:
-            raise http.Http404('Position %s not available in content block %s' % (position,blocknumber))
+            # TODO Remove blocks
+            raise ValueError('Block number too high for current page')
         
-        return instance
+        if nblocks:
+            cb     = blocks.count()
+            # Create new blocks if necessary
+            for bn in range(cb,nblocks):
+                b = self.model(page = page, block = bn)
+                b.save()
+    
+            try:
+                instance = self.model.objects.get(page = page, block = blocknumber, position = position)
+            except:
+                raise http.Http404('Position %s not available in content block %s' % (position,blocknumber))
+        
+            return instance
+        else:
+            return None
     
     
 if appsite.site.editavailable:

@@ -30,6 +30,7 @@ APPLICATION_URL_MODULE   = getattr(settings, 'APPLICATION_URL_MODULE', None)
 APPLICATION_URL_PREFIX   = getattr(settings, 'APPLICATION_URL_PREFIX', '/apps/')
 
 DJPCMS_PLUGINS           = getattr(settings, 'DJPCMS_PLUGINS', ['djpcms.plugins.*'])
+DJPCMS_CONTENT_FUNCTION  = getattr(settings, 'DJPCMS_CONTENT_FUNCTION', 'djpcms.views.content.basecontent')
 
 
 

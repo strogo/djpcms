@@ -13,7 +13,7 @@ from django.contrib.sites.models import Site
 from django.utils.datastructures import SortedDict
 from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext_lazy as _
-from django.template import Template as DjangoTemplate
+from django.template import Template
 
 #from djcms.middleware.threadlocals import get_current_user
 from djpcms.fields import SlugCode
@@ -132,8 +132,12 @@ class InnerTemplate(TimeStamp):
         return u'%s' % self.name
     
     def render(self, c):
-        t = DjangoTemplate(self.template)
-        return t.render(c)
+        '''
+        Render the inner template given the content
+        @param param: c content dictionary or instance of Context
+        @return: html 
+        '''
+        return Template(self.template).render(c)
         
     def numblocks(self):
         bs = self.blocks.split(',')
@@ -440,7 +444,8 @@ class BlockContent(models.Model):
     container_type = models.PositiveSmallIntegerField(choices = content_wrapper_tuple(),
                                                       default = 0,
                                                       verbose_name=_('container'))
-        
+    objects = BlockContentManager()
+    
     class Meta:
         unique_together = (('page','block','position'),)
         ordering  = ('page','block','position',)

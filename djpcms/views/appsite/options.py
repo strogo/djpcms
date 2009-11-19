@@ -229,16 +229,26 @@ class ModelApplicationBase(object):
         else:
             return submit(value = 'add', name = 'add')
     
-    def get_searchform(self, request, prefix = None, wrapper = None, url = None):
+    def get_searchform(self, djp,
+                       initial = None,
+                       prefix = None,
+                       method = 'get',
+                       wrapper = None,
+                       url = None):
         '''
         Build a search form for model
         '''
-        mform = addhiddenfield(self.search_form,'prefix')
-        initial = {'prefix':prefix}
-        f = mform(**form_kwargs(request, initial = initial, prefix = prefix))
-        fhtml = form(method = 'get', url = url)
-        fhtml.make_container(div).append(formlet(form = f, layout = 'flat-notag', submit = submit(value = 'search', name = 'search')))
-        return fhtml        
+        mform = self.search_form
+        #mform = addhiddenfield(self.search_form,'prefix')
+        #initial = {'prefix':prefix}
+        f = mform(**form_kwargs(request = djp.request,
+                                initial = initial,
+                                prefix  = prefix))
+        fhtml = form(method = method, url = url)
+        fhtml['form'] = formlet(form = f,
+                                layout = 'flat-notag',
+                                submit = submit(value = 'search', name = 'search'))
+        return fhtml
     
     def get_page(self):
         from djpcms.models import Page

@@ -76,11 +76,12 @@ def get_view_from_page(request, page):
     view  = cache.page(page)
     if view:
         return view
+    
     if page.parent:
         view = get_view_from_page(request, page.parent)
-        url = '%s%s/' % (view.url,page.code)
+        url  = '%s%s/' % (view.url, page.url_pattern)
     else:
-        url = '/%s/' % page.code
+        url = '/%s/' % page.url_pattern
     view = page.object(url = url)
     cache.add(view)
     return view

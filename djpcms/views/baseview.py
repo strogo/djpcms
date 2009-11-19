@@ -11,28 +11,27 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext, loader
 from django.core.exceptions import PermissionDenied
 
-from djpcms.settings import HTML_CLASSES, GRID960_DEFAULT_FIXED, DEFAULT_TEMPLATE_NAME
+
+from djpcms.settings import HTML_CLASSES, GRID960_DEFAULT_FIXED, \
+                            DEFAULT_TEMPLATE_NAME, DJPCMS_CONTENT_FUNCTION
 from djpcms.utils.ajax import jservererror
 from djpcms.views.contentgenerator import BlockContentGen
-from djpcms.html import TemplatePlugin, breadcrumbs, grid960
-from djpcms.utils import UnicodeObject
-from djpcms.views.navigation import default_navigation_constructor, breadcrumbs
+from djpcms.utils.html import grid960
 from djpcms.permissions import inline_editing
-from djpcms.utils import urlbits, urlfrombits
+from djpcms.utils import UnicodeObject, urlbits, urlfrombits, function_module, lazyattr
 
-from djpcms.views.load import *
+build_base_context = function_module(DJPCMS_CONTENT_FUNCTION)
 
 
 # Wrapper around request
 class DjpRequestWrap(UnicodeObject):
     '''
-    Generic response based on djpcms view objects
+    Request wrapper for djpcms views.
     '''
     def __init__(self, request, view, *args, **kwargs):
         self.request  = request
         self.view     = view
         self.css      = HTML_CLASSES
-        self._url     = None
         self._urlargs = None
         self.args     = args
         self.kwargs   = kwargs
@@ -44,6 +43,20 @@ class DjpRequestWrap(UnicodeObject):
         djp.prefix  = prefix
         djp.wrapper = wrapper
         return djp
+    
+    @lazyattr
+    def get_parent(self):
+        p = self.view.parentview(self.request)
+        if p:
+            return p.requestview(self.request, *self.args, **self.kwargs)
+        else:
+            return None
+    parent = property(get_parent)
+    
+    @lazyattr
+    def get_children(self):
+        return self.view.children(self.request, **self.urlargs) or []
+    children = property(get_children)
     
     def _get_instance(self):
         instance = self.urlargs.get('instance',None)
@@ -70,41 +83,57 @@ class DjpRequestWrap(UnicodeObject):
         self.handle_arguments()
         return self._urlargs
     urlargs = property(__get_urlargs)
-            
+    
+    @lazyattr
     def get_url(self):
         '''
         Build the url for this application view
         '''
-        if self._url is None:
-            self._url = self.view.get_url(self, **self.urlargs)
-        return self._url
+        return self.view.get_url(self, **self.urlargs)
     url = property(get_url)
         
-    def __get_page(self):
-        if not hasattr(self,'_page'):
-            view          = self.view
-            self._page    = view.get_page()
-            self.template = view.get_template(self._page)
-        return self._page
-    page = property(fget = __get_page)
+    @lazyattr
+    def get_page(self):
+        view    = self.view
+        page    = view.get_page()
+        self.template = view.get_template(page)
+        return page
+    page = property(get_page)
         
     def __unicode__(self):
         return unicode(self.view)
     
-    def urlname(self):
-        return self.view.urlname(self)
+    def get_linkname(self):
+        return self.view.linkname(self.page, **self.urlargs)
+    linkname = property(get_linkname)
         
-    def title(self):
-        return self.view.title(self)
+    def get_title(self):
+        return self.view.title(self.page, **self.urlargs)
+    title = property(get_title)
     
+    @lazyattr
     def in_navigation(self):
-        if self.page:
-            return self.page.in_navigation
-        else:
-            return 1
+        return self.view.in_navigation(self.request, self.page)
     
     def bodybits(self):
         return self.view.bodybits()
+    
+    def response(self):
+        view    = self.view
+        request = self.request
+        if not view.has_permission(request):
+            raise PermissionDenied
+        
+        method  = request.method.lower()
+        methods = view.methods(request)
+        if method not in (method.lower() for method in methods):
+            return http.HttpResponseNotAllowed(methods)
+        
+        func = getattr(view,'%s_response' % method,None)
+        if not func:
+            raise ValueError("Allowed view method %s does not exist in %s." % (method,view))
+        
+        return func(self)
 
 
 # THE DJPCMS INTERFACE CLASS for handling views
@@ -119,7 +148,6 @@ class djpcmsview(UnicodeObject):
     Base class for handling django views.
     No views should use this class directly.
     '''
-    
     def requestview(self, request, *args, **kwargs):
         return DjpRequestWrap(request, self, *args, **kwargs)
     
@@ -149,60 +177,27 @@ class djpcmsview(UnicodeObject):
             else:
                 return DEFAULT_TEMPLATE_NAME
         
-    def title(self, cl):
-        if cl.page:
-            return cl.page.title
+    def title(self, page, **urlargs):
+        if page:
+            return page.title
         else:
             return None
     
-    def urlname(self, cl):
-        if cl.page:
-            return cl.page.href_name
+    def linkname(self, page, **urlargs):
+        if page:
+            return page.link
         else:
-            return None
-    
-    def get_main_nav(self, request, children = None):
-        '''
-        Get the main navigation for the page.
-        The default implementation is to look for the parent
-        main navigation.
-        If this view requires a brand new main navigation
-        than this function should be re-implemented.
-        '''
-        return default_navigation_constructor(request, self, 'get_main_nav', children)
-    
-    def get_page_nav(self, request):
-        return None
+            return u'link'
     
     def parentview(self, request):
         pass
     
     def response(self, request, *args, **kwargs):
-        '''
-        Entry point. DO NO NOT OVERRIDE THIS FUNCTION
-        
-        If you feel there is a need to override this,
-        maybe you need to send us a message
-        
-        Hooks:
-            has_permission    Check for permissions
-        '''
-        # we do one more final check for permission
-        if not self.has_permission(request):
-            raise PermissionDenied
-        
-        method  = request.method.lower()
-        methods = self.methods(request)
-        if method not in (method.lower() for method in methods):
-            return http.HttpResponseNotAllowed(methods)
-        
-        djp = self.requestview(request,*args,**kwargs)
-        view = djp.view
-        func = getattr(view,'%s_response' % method,None)
-        if not func:
-            raise ValueError("Allowed view method %s does not exist in %s." % (method,view))
-        
-        return func(djp)
+        djp = self.requestview(request, *args, **kwargs)
+        return djp.response()
+    
+    def render(self, djp, **kwargs):
+        return u''
     
     def preget(self, djp):
         pass
@@ -218,8 +213,8 @@ class djpcmsview(UnicodeObject):
         If that is not enough, maybe more hooks should be put in place.
         
         Hooks:
-            - 'preget':        for pre-processing and redirect
-            - 'inner_content': for creating content when there is no inner_template
+            - 'preget':     for pre-processing and redirect
+            - 'render':     for creating content when there is no inner_template
         '''
         #First check for redirect
         re = self.preget(djp)
@@ -235,20 +230,19 @@ class djpcmsview(UnicodeObject):
         # If user not authenticated set a test cookie  
         if not request.user.is_authenticated():
             request.session.set_test_cookie()
-               
-        c = {'djp':              djp,
-             'sitenav':          self.get_main_nav(request),
-             'breadcrumbs':      breadcrumbs(djp),
-             'grid':             grid}
+        
+        c = build_base_context(djp)
+        c.update({'djp':  djp, 'grid': grid})
         
         # Inner template available, fill the context dictionary
         # with has many content keys as the number of blocks in the page
         if page and page.inner_template:
-            cb = {'djp':  djp, 'grid': grid}
+            cb = copy.copy(c)
             blocks = page.inner_template.numblocks()
             for b in range(0,blocks):
                 cb['content%s' % b] = BlockContentGen(djp, b)
-                    
+            
+            # Call the inner-template renderer
             inner = page.inner_template.render(RequestContext(request, cb))
             
             if self.editurl:
@@ -259,7 +253,7 @@ class djpcmsview(UnicodeObject):
              
         else:
             # No page or no inner_template. Get the inner content directly
-            inner = self.inner_content(djp)
+            inner = self.render(djp)
             
         c['inner'] = inner
         return render_to_response(template_name = djp.template,
@@ -348,6 +342,19 @@ class djpcmsview(UnicodeObject):
         '''
         return True
     
+    def in_navigation(self, request, page):
+        '''
+        Hook for modifying the in_navigation property.
+        This default implementation should suffice
+        '''
+        if page:
+            return page.in_navigation
+        else:
+            return 0
+    
+    def children(self, request, **kwargs):
+        return None
+    
     def bodybits(self):
         if self.editurl:
             return mark_safe(u'class="edit"')
@@ -410,6 +417,9 @@ class editview(wrapview):
     def __init__(self, view, prefix):
         super(editview,self).__init__(view,prefix)
         self.editurl = self.prefix
-        
+    
+    def in_navigation(self, request, page):
+        return 0
+    
     def get_main_nav(self, request):
         return None

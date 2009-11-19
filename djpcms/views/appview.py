@@ -36,7 +36,7 @@ class AppView(djpcmsview):
         self.appmodel = None
         self.code     = None
         self.editurl  = None
-        self.in_navigation = in_navigation
+        self.in_nav   = in_navigation
         if template_name:
             self.template_name = template_name
         # Increase the creation counter, and save our local copy.
@@ -54,20 +54,26 @@ class AppView(djpcmsview):
         return self.appmodel.model
     model = property(fget = __get_model)
     
-    def urlname(self, cl):
-        if not self.breadcrumbs:
-            if not cl.page:
-                return self.appmodel.name
+    def in_navigation(self, request, page):
+        if self.in_nav:
+            if page:
+                return page.in_navigation
             else:
-                return cl.page.href_name
+                return 1
         else:
-            return ' '.join(self.breadcrumbs) % cl.urlargs
-        
-    def title(self, cl):
-        if not cl.page:
+            return 0
+    
+    def linkname(self, page, **urlargs):
+        if not page:
             return self.appmodel.name
         else:
-            return cl.page.title
+            return page.link
+        
+    def title(self, page, **urlargs):
+        if not page:
+            return self.appmodel.name
+        else:
+            return page.title
     
     def edit_regex(self, edit):
         return r'^%s/%s$' % (edit,self._regex)
@@ -152,10 +158,6 @@ class AppView(djpcmsview):
             except:
                 if self.parent:
                     return self.parent.get_page()
-                else:
-                    return None
-        else:
-            return None
     
     def basequery(self, request, **kwargs):
         '''
@@ -187,8 +189,16 @@ class AppView(djpcmsview):
         '''
         pass
     
-    def inner_content(self, request):
-        return self.render(request,None,None)
+    def children(self, request, **kwargs):
+        views = {}
+        for view in self.appmodel.applications.values():
+            if view is self:
+                continue
+            djp = view.requestview(request, **kwargs)
+            nav = djp.in_navigation()
+            if nav:
+                views[nav] = djp
+        return views.values()
     
     def __deepcopy__(self, memo):
         return copy.copy(self)
@@ -210,15 +220,17 @@ class SearchView(AppView):
         @see: djpcms.utils.html.pagination for pagination
         '''
         request = djp.request
-        djp.update(**kwargs)
-        cl    = self.requestview(request, *args, **kwargs)
-        query = self.appquery(request, *cl.args, **cl.kwargs)
-        f  = self.appmodel.get_searchform(request, prefix, wrapper, cl.get_url())
+        if kwargs:
+            urlargs = djp.urlargs
+            urlargs.update(kwargs)
+            djp = self.requestview(request, *urlargs)
+        query = self.appquery(request, *djp.args, **djp.kwargs)
+        f  = self.appmodel.get_searchform(djp)
         p  = Paginator(request, query)
-        c  = self.content_dict(cl)
+        c  = self.content_dict(djp)
         c.update({'form':f,
                   'paginator': p,
-                  'items': self.appmodel.data_generator(cl, prefix, wrapper, p.qs)})
+                  'items': self.appmodel.data_generator(djp, p.qs)})
         return loader.render_to_string(['bits/pagination.html',
                                         'djpcms/bits/pagination.html'],
                                         c)
@@ -234,8 +246,8 @@ class ArchiveView(SearchView):
     def _date_code(self):
         return self.appmodel.date_code
     
-    def content_dict(self, cl):
-        c = super(ArchiveApp,self).content_dict(cl)
+    def content_dict(self, djp):
+        c = super(ArchiveApp,self).content_dict(djp)
         month = c.get('month',None)
         if month:
             try:
