@@ -93,6 +93,23 @@ class form(htmlcomp):
                 id = id_
         return id    
         
+        
+   
+class fieldhandle(object):
+    
+    def __init__(self, flet):
+        self.flet = flet
+    
+    def __getattr__(self, fname):
+        form = self.flet.form
+        bf   = form[fname]
+        if bf:
+            b = BoundField(bf,self.flet)
+            return b
+        else:
+            return None
+        
+        
 
 class formlet(htmlattr):
     '''
@@ -127,6 +144,9 @@ class formlet(htmlattr):
             self.submits = submit
         else:
             self.submits  = []
+            
+        if self.form:
+            self.handle = fieldhandle(self)
                 
     def __get_fields(self):
         if self.form:

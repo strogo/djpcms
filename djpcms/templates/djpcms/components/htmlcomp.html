@@ -1,4 +1,4 @@
 <{{ html.tag }}{{ html.flatatt }}>{% block pre-items %}{% endblock %}
 {% block item-body %}{% for item in html.items %}
 {{ item.render }}{% endfor %}{% endblock %}
-</{{ html.tag }}>
+</{{ html.tag }}>{% block after-body %}{% endblock %}

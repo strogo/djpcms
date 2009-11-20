@@ -23,9 +23,9 @@ from djpcms.utils.models import TimeStamp
 from djpcms.utils import lazyattr, function_module
 from djpcms.utils.func import PathList
 from djpcms.uploads import upload_function, site_image_storage
-from djpcms.utils.markups import markup_choices, MARKUP_HANDLERS, default_markup
 from djpcms.settings import *
 
+from djpcms import markup
 
 protocol_re = re.compile('^\w+://')
 
@@ -580,8 +580,8 @@ class SiteContent(models.Model):
     description   = models.TextField(blank = True)
     body          = models.TextField(_('body'),blank=True)
     markup        = models.CharField(max_length = 3,
-                                     choices = markup_choices(),
-                                     default = default_markup,
+                                     choices = markup.choices(),
+                                     default = markup.default(),
                                      null = False)
     
     objects = SiteContentManager()
@@ -596,7 +596,7 @@ class SiteContent(models.Model):
         text = self.body
         if not text:
             html = u''
-        mkp = MARKUP_HANDLERS.get(self.markup,None)
+        mkp = markup.get(self.markup,None)
         if mkp:
             handler = mkp.get('handler')
             html = force_unicode(handler(text))

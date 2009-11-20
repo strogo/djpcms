@@ -117,7 +117,7 @@ class DjpRequestWrap(UnicodeObject):
         return self.view.in_navigation(self.request, self.page)
     
     def bodybits(self):
-        return self.view.bodybits()
+        return self.view.bodybits(self.page)
     
     def response(self):
         view    = self.view
@@ -227,7 +227,7 @@ class djpcmsview(UnicodeObject):
         request = djp.request
         page    = djp.page
         inner_template  = None
-        grid    = self.grid960()
+        grid    = self.grid960(page)
         
         # If user not authenticated set a test cookie  
         if not request.user.is_authenticated():
@@ -347,8 +347,11 @@ class djpcmsview(UnicodeObject):
         '''
         raise NotImplementedError('Default ajax response not implemented')
 
-    def grid960(self):
-        return grid960()
+    def grid960(self, page):
+        if page and page.cssinfo:
+            return grid960(columns = page.cssinfo.gridsize, fixed = page.cssinfo.fixed)
+        else:
+            return grid960()
     
     def has_permission(self, request, obj = None):
         '''
@@ -369,11 +372,15 @@ class djpcmsview(UnicodeObject):
     def children(self, request, **kwargs):
         return None
     
-    def bodybits(self):
+    def bodybits(self, page):
+        b = u''
         if self.editurl:
-            return mark_safe(u'class="edit"')
-        else:
-            return u''
+            b = u'class="edit"'
+        elif page:
+            css = page.cssinfo
+            if css and css.body_class_name:
+                b = 'class="%s"' % css.body_class_name
+        return mark_safe(b)
         
     def breadcrumbs(self, final = True):
         '''
@@ -431,8 +438,8 @@ class wrapview(djpcmsview):
     def get_template(self, page):
         return self._view.get_template(page)
     
-    def grid960(self):
-        return self._view.grid960()
+    def grid960(self, page):
+        return self._view.grid960(page)
 
 
 class editview(wrapview):
