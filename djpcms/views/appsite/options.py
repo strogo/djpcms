@@ -14,6 +14,7 @@ from django.core.exceptions import PermissionDenied
 
 from djpcms.utils import form_kwargs, UnicodeObject
 from djpcms.djutils.forms import addhiddenfield
+from djpcms.plugins import register_application
 from djpcms.views.baseview import editview
 from djpcms.views.appview import AppView
 from djpcms.settings import HTML_CLASSES
@@ -144,6 +145,8 @@ class ModelApplicationBase(object):
             if child.isapp:
                 name = u'%s %s' % (self.name,child.name.replace('_',' '))
                 self.application_site.choices.append((code,name))
+            if child.isplugin:
+                register_application(child)
         #
         # Check for parents
         if len(roots) > 1:
@@ -298,8 +301,8 @@ class ModelApplicationBase(object):
         #TODO: change this so that we are not tide up with name
         view = self.getapp('delete')
         if view and self.has_delete_permission(request, obj):
-            cl = view.requestview(request, instance = obj)
-            return cl.get_url()
+            djp = view.requestview(request, instance = obj)
+            return djp.url
         
     def editurl(self, request, obj):
         '''
@@ -308,8 +311,8 @@ class ModelApplicationBase(object):
         #TODO: change this so that we are not tide up with name
         view = self.getapp('edit')
         if view and self.has_edit_permission(request, obj):
-            cl = view.requestview(request, instance = obj)
-            return cl.get_url()
+            djp = view.requestview(request, instance = obj)
+            return djp.url
     
     def viewurl(self, request, obj):
         '''
@@ -318,8 +321,8 @@ class ModelApplicationBase(object):
         #TODO: change this so that we are not tide up with name
         view = self.getapp('view')
         if view and self.has_view_permission(request, obj):
-            cl = view.requestview(request, instance = obj)
-            return cl.get_url()
+            djp = view.requestview(request, instance = obj)
+            return djp.url
         
     def tagurl(self, request, tag):
         return None
@@ -386,6 +389,11 @@ class ModelApplicationBase(object):
         return loader.render_to_string(template_name    = template_name,
                                        context_instance = RequestContext(request, content))
         
+    def remove_object(self, obj):
+        id = obj.id
+        obj.delete()
+        return id
+        
     def data_generator(self, djp, data):
         '''
         Return a generator for the query.
@@ -405,10 +413,20 @@ class ModelApplicationBase(object):
                                           context_instance = RequestContext(request, content))
             
     def get_item_template(self, obj, wrapper):
+        '''
+        Search item template. Look in
+         1 - components/<<module_name>>_search_item.html
+         2 - <<app_label>>/<<module_name>>_search_item.html
+         3 - djpcms/components/object_search_item.html (fall back)
+        '''
         opts = obj._meta
-        template_name_0 = '%s_search_item.html' % opts.module_name
-        template_name_1 = '%s/%s' % (opts.app_label,template_name_0)
-        return [template_name_0,template_name_1]
+        template_name = '%s_search_item.html' % opts.module_name
+        return ['components/%s' % template_name,
+                '%s/%s' % (opts.app_label,template_name),
+                'djpcms/components/object_search_item.html']
+        
+    def object_from_form(self, form):
+        return form.save()
     
     def permissionDenied(self, djp):
         raise PermissionDenied

@@ -17,7 +17,8 @@ from django.template import Template
 
 #from djcms.middleware.threadlocals import get_current_user
 from djpcms.fields import SlugCode
-from djpcms.plugins import content_wrapper_tuple, CONTENT_WRAP_HANDLERS, get_plugin
+from djpcms.plugins import content_wrapper_tuple, CONTENT_WRAP_HANDLERS, \
+                           default_content_wrapper, get_plugin
 from djpcms.utils.models import TimeStamp
 from djpcms.utils import lazyattr, function_module
 from djpcms.utils.func import PathList
@@ -460,9 +461,13 @@ class BlockContent(models.Model):
     plugin_name    = models.CharField(blank = True,
                                       max_length = 100)
     arguments      = models.TextField(blank = True)
-    container_type = models.PositiveSmallIntegerField(choices = content_wrapper_tuple(),
-                                                      default = 0,
-                                                      verbose_name=_('container'))
+    container_type = models.CharField(choices = content_wrapper_tuple(),
+                                      default = default_content_wrapper.name,
+                                      max_length = 30,
+                                      blank = False,
+                                      verbose_name=_('container'))
+    title          = models.CharField(blank = True, max_length = 100)
+    
     objects = BlockContentManager()
     
     class Meta:
@@ -483,9 +488,9 @@ class BlockContent(models.Model):
     plugin = property(__get_plugin)
         
         
-    def wrapper(self):
-        ct = int(self.container_type)
-        return CONTENT_WRAP_HANDLERS[ct]
+    def _get_wrapper(self):
+        return CONTENT_WRAP_HANDLERS.get(self.container_type,None) or default_content_wrapper
+    wrapper = property(_get_wrapper)
     
     def plugin_class(self):
         '''
@@ -513,12 +518,13 @@ class BlockContent(models.Model):
         This function is called when the plugin needs to be rendered
         This function call the plugin render function passing three arguments
         '''
-        plugin = self.plugin
+        plugin  = self.plugin
+        wrapper = self.wrapper
         if plugin:
             #prefix  = 'bd_%s' % self.pluginid()
             prefix = None
-            djp    = djp(wrapper = self.wrapper().handler, prefix = prefix)
-            return plugin(djp,self.arguments)
+            html   = plugin(djp, self.arguments, wrapper = wrapper, prefix = prefix)
+            return wrapper(djp, self, html)
         else:
             return u''
     

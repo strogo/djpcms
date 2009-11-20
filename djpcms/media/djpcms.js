@@ -87,7 +87,9 @@
 				if(status == "success") {
 					var id  = data.header;
 					var jcb = jsonCallBacks[id];
-					return jcb.handle(data.body, elem) & data.error;
+					if(jcb) {
+						return jcb.handle(data.body, elem) & data.error;
+					}
 				}
 			};
 	
@@ -147,6 +149,25 @@
 					//}
 					el.djpcms();
 					el.show();
+				}
+			});
+			return true;
+		}
+	});
+	
+	/**
+	 * Remove html tags
+	 */
+	dj.addJsonCallBack({
+		id: "remove",
+		handle: function(data, elem) {
+			$.each(data, function(i,b) {
+				var el = $(b.identifier,elem);
+				if(!el.length & b.alldocument) {
+					el = $(b.identifier);
+				}
+				if(el) {
+					el.fadeOut($.djpcms.options.fadetime,el.remove());
 				}
 			});
 			return true;

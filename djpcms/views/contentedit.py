@@ -6,11 +6,11 @@ from django.template import RequestContext, loader
 from djpcms.settings import HTML_CLASSES, CONTENT_INLINE_EDITING
 from djpcms.models import BlockContent, Page
 from djpcms.utils import form_kwargs
-from djpcms.utils.ajax import jhtmls
+from djpcms.utils.ajax import jhtmls, jremove
 from djpcms.utils.formjson import form2json
 from djpcms.utils.html import form, formlet, submit, htmlcomp
 from djpcms.forms import ContentBlockForm
-from djpcms.plugins import get_plugin, ContentWrapperHandler
+from djpcms.plugins import get_plugin, ContentWrapper
 from djpcms.views import appsite, appview
 
 
@@ -42,7 +42,7 @@ class content_view(object):
 
 # Content wrapper in editing mode.
 # Only called by content_view (funation above)
-class EditWrapperHandler(ContentWrapperHandler):
+class EditWrapperHandler(ContentWrapper):
     '''
     wrapper for editing content
     '''
@@ -66,10 +66,14 @@ class EditWrapperHandler(ContentWrapperHandler):
         except Exception, e:
             html     = u'%s' % e
         delurl   = view.appmodel.deleteurl(djp.request, instance)
+        plugin = False
+        if instance.plugin:
+            plugin = True
         c = {'djp':               djp,
              'form':              form,
              'preview':           html,
-             'instance':          djp.instance,
+             'instance':          instance,
+             'plugin':            plugin,
              'deleteurl':         delurl,
              'plugin_preview_id': view.plugin_preview_id(instance)}
         return loader.render_to_string(["content/edit_block.html",
@@ -90,6 +94,7 @@ class ChangeContentView(appview.EditView):
         regex = '(?P<pageid>\d+)/(?P<blocknumber>\d+)/(?P<position>\d+)'
         super(ChangeContentView,self).__init__(regex = regex,
                                                parent = None,
+                                               isapp = False,
                                                name = 'edit_content_block')
         
     def plugin_form_id(self, instance):
@@ -170,30 +175,14 @@ class ChangeContentView(appview.EditView):
             instance.arguments = form2json(pform)
             instance.save()
             # We now serialize the argument form
-            return jhtmls(identifier = '#%s' % self.plugin_preview_id(instance),
-                          html = instance.render(djp)) 
+            ret = jhtmls(identifier = '#%s' % self.plugin_preview_id(instance),
+                         html = instance.render(djp))
+            ret.update(form.messagepost("Plugin changed to %s" % instance.plugin.description))
+            return ret 
         else:
             return form.jerrors
         
-    def has_permission(self, request):
-        if request.user.is_authenticated():
-            return True
-        else:
-            return False
-        
-
-class DeleteContentView(appview.DeleteView):
     
-    def __init__(self, **kwargs):
-        super(DeleteContentView,self).__init__(**kwargs)
-    
-    def default_ajax_view(self, djp):
-        request = djp.request
-        if self.model.objects.delete_and_sort(djp.instance):
-            pass
-        else:
-            pass
-
 
 class ContentSite(appsite.ModelApplication):
     baseurl     = CONTENT_INLINE_EDITING.get('pagecontent', '/content/')
@@ -202,7 +191,7 @@ class ContentSite(appsite.ModelApplication):
     form_layout = 'onecolumn'
     
     edit        = ChangeContentView()
-    delete      = DeleteContentView(parent = 'edit')
+    delete      = appview.DeleteView(parent = 'edit')
     
     def submit(self, instance):
         return None
@@ -211,6 +200,11 @@ class ContentSite(appsite.ModelApplication):
         return {'pageid': obj.page.id,
                 'blocknumber': obj.block,
                 'position': obj.position}
+    
+    def remove_object(self, obj):
+        bid = obj.htmlid()
+        if self.model.objects.delete_and_sort(obj):
+            return bid
         
     def get_object(self, pageid = 1, blocknumber = 1, position = 1):
         '''

@@ -4,22 +4,14 @@ import datetime
 from django.conf import settings
 from django import http
 from django.shortcuts import render_to_response
-from django.template import RequestContext
+from django.template import loader, RequestContext
 from django.utils.safestring import mark_safe
 
 from unipath import FSPath as Path
 
-from djpcms.views.baseview import djpcmsview, ResponseBase 
+from djpcms.views.baseview import djpcmsview
 
-class DocResponse(ResponseBase):
-    
-    def __init__(self, request, view, lang, version):
-        super(DocResponse,self).__init__(request, view)
-        self.lang = lang
-        self.version = version
-        
-    def get_view_attr(self, attr):
-        return attr(self.request,self.lang,self.version)
+
 
 class DocView(djpcmsview):
     # Name the documents
@@ -45,9 +37,6 @@ class DocView(djpcmsview):
                 )
     urls = property(fget = make_urls)
     
-    def requestview(self, request, lang, version):
-        return DocResponse(request, self, lang, version)
-    
     def get_path_args(self, lang, version):
         return (lang, version, "_build", "json")
     
@@ -71,6 +60,15 @@ class DocView(djpcmsview):
         return None
             
     def document(self, request, lang, version, url = None):
+        djp = self.requestview(request, lang = lang, version = version, url = url)
+        return djp.response()
+    
+    def render(self, djp):
+        request = djp.request
+        args    = djp.urlargs
+        lang    = args.get('lang')
+        version = args.get('version')
+        url     = args.get('url')
         docroot = self.get_docroot(lang, version)
     
         # First look for <bits>/index.fpickle, then for <bits>.fpickle
@@ -90,19 +88,22 @@ class DocView(djpcmsview):
                           'docs/%s.html' % namet, 
                           'docs/doc.html'
                           ]
-        return render_to_response(template_names, RequestContext(request, {
-            'cl': DocResponse(request,self,lang,version),
-            'doc': json.load(open(doc, 'rb')),
-            'env': json.load(open(docroot.child('globalcontext.json'), 'rb')),
-            'lang': lang,
-            'version': version,
-            'docurl': url,
-            'update_date': datetime.datetime.fromtimestamp(docroot.child('last_build').mtime()),
-            #'home': urlresolvers.reverse('document-index', kwargs={'lang':lang, 'version':version}),
-            #'search': urlresolvers.reverse('document-search', kwargs={'lang':lang, 'version':version}),
-            'redirect_from': request.GET.get('from', None),
-            'grid':  self.grid960()
-        }))
+        c = {
+             'djp':     djp,
+             'doc':     json.load(open(doc, 'rb')),
+             'env':     json.load(open(docroot.child('globalcontext.json'), 'rb')),
+             'lang':    lang,
+             'version': version,
+             'docurl':  url,
+             'update_date': datetime.datetime.fromtimestamp(docroot.child('last_build').mtime()),
+             #'home': urlresolvers.reverse('document-index', kwargs={'lang':lang, 'version':version}),
+             #'search': urlresolvers.reverse('document-search', kwargs={'lang':lang, 'version':version}),
+             'redirect_from': request.GET.get('from', None),
+             'grid':          self.grid960()
+             }
+        
+        return render_to_response(template_names,
+                                  RequestContext(request,c))
         
     def bodybits(self):
         if self.editurl:

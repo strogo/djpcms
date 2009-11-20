@@ -10,6 +10,7 @@ from djpcms.utils.html import Paginator
 from djpcms.views.baseview import djpcmsview
 from djpcms.views.site import get_view_from_url
 from djpcms.utils.func import force_number_insert
+from djpcms.utils.ajax import jremove
 from djpcms.utils import form_kwargs
 
 
@@ -20,10 +21,11 @@ class AppView(djpcmsview):
     creation_counter = 0
     
     def __init__(self,
-                 regex  = None,
-                 parent = None,
-                 name   = None,
-                 isapp  = True,
+                 regex     = None,
+                 parent    = None,
+                 name      = None,
+                 isapp     = True,
+                 isplugin  = False,
                  template_name = None,
                  in_navigation = False):
         # number of positional arguments in the url
@@ -33,6 +35,7 @@ class AppView(djpcmsview):
         self.name     = name
         self._regex   = ''
         self.isapp    = isapp
+        self.isplugin = isplugin
         self.func     = None
         self.appmodel = None
         self.code     = None
@@ -78,15 +81,6 @@ class AppView(djpcmsview):
     
     def edit_regex(self, edit):
         return r'^%s/%s$' % (edit,self._regex)
-    
-    def get_prefix(self, data):
-        '''
-        Get form prefix from data.
-        '''
-        for k,v in data.items():
-            sv = str(v)
-            if sv and k.endswith('-prefix'):
-                return sv
     
     def processurlbits(self, appmodel):
         '''
@@ -202,6 +196,14 @@ class AppView(djpcmsview):
                 views.append(djp)
         return self.sortviewlist(views)
     
+    def get_prefix(self, djp):
+        return None
+        data = dict(djp.request.POST.items())
+        for k,v in data.items():
+            sv = str(v)
+            if sv and k.endswith('-prefix'):
+                return sv
+    
     def has_permission(self, request, obj = None):
         '''
         Delegate to appmodel
@@ -242,8 +244,8 @@ class SearchView(AppView):
         c.update({'form':f,
                   'paginator': p,
                   'items': self.appmodel.data_generator(djp, p.qs)})
-        return loader.render_to_string(['bits/pagination.html',
-                                        'djpcms/bits/pagination.html'],
+        return loader.render_to_string(['components/pagination.html',
+                                        'djpcms/components/pagination.html'],
                                         c)
 
 
@@ -303,35 +305,40 @@ class AddView(AppView):
     Standard Add method
     '''
     def __init__(self, regex = 'add', parent = None,
-                 name = 'add', isapp = True, **kwargs):
+                 name = 'add', isplugin = True, **kwargs):
         '''
         Set some default values for add application
         '''
         super(AddView,self).__init__(regex  = regex,
                                      parent = parent,
                                      name   = name,
-                                     isapp  = isapp,
+                                     isplugin = isplugin,
                                      **kwargs)
     
-    def render(self, request, prefix, wrapper, *args):
+    def get_form(self, djp):
+        return self.appmodel.get_form(djp)
+    
+    def save(self, f):
+        return self.appmodel.object_from_form(f)
+    
+    def render(self, djp):
         '''
         Render the add view
         '''
-        url = self.get_url(request, *args)
-        f = self.appmodel.get_form(request, prefix, wrapper, url)
+        f = self.get_form(djp)
         return f.render()
     
-    def default_ajax_view(self, request):
-        prefix = self.get_prefix(dict(request.POST.items()))
-        f = self.appmodel.get_form(request, prefix = prefix)
+    def default_ajax_view(self, djp):
+        djp.prefix = self.get_prefix(djp)
+        f = self.get_form(djp)
         if f.is_valid():
             try:
-                instance = f.save()
+                instance = self.save(f)
             except Exception, e:
                 return f.errorpost('%s' % e)
             return f.messagepost('%s added' % instance)
         else:
-            return f.jerrors 
+            return f.jerrors
         
         
 # Application views which requires an object
@@ -386,11 +393,25 @@ class ViewView(ObjectView):
 class DeleteView(ObjectView):
     _methods      = ('post',) 
     
-    def __init__(self, regex = 'delete', parent = 'view', name = 'delete', **kwargs):
-        super(DeleteView,self).__init__(regex = regex, parent = parent, name = name, **kwargs)
+    def __init__(self, regex = 'delete', parent = 'view', name = 'delete',
+                 isapp = False, **kwargs):
+        super(DeleteView,self).__init__(regex = regex, parent = parent,
+                                        name = name, isapp = isapp,
+                                        **kwargs)
         
     def has_permission(self, request, obj):
         return self.appmodel.has_delete_permission(request, obj)
+    
+    def default_ajax_view(self, djp):
+        instance = djp.instance
+        try:
+            bid = self.appmodel.remove_object(instance)
+            if bid:
+                return jremove('#%s' % bid)
+            else:
+                pass
+        except:
+            raise ValueError('Could not remove %s' % instance)
       
 
 # Edit/Change an object
@@ -411,13 +432,15 @@ class EditView(ObjectView):
         f = self.get_form(djp)
         return f.render()
     
+    def save(self, f):
+        return self.appmodel.object_from_form(f)
+    
     def default_ajax_view(self, djp):
-        request = djp.request
-        prefix = self.get_prefix(dict(request.POST.items()))
-        f = self.appmodel.get_form(request, prefix = prefix, instance = self.object)
+        djp.prefix = self.get_prefix(djp)
+        f = self.get_form(djp)
         if f.is_valid():
             try:
-                instance = f.save()
+                instance = self.save(f)
             except Exception, e:
                 return f.errorpost('%s' % e)
             return f.messagepost('%s modified' % instance)

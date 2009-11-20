@@ -69,9 +69,13 @@ class Text(DJPplugin):
         else:
             return u''
             
-    def render(self, djp, **kwargs):
-        if self.site_content:
-            return self.site_content.htmlbody()
+    def render(self, djp, wrapper, prefix, site_content = None, **kwargs):
+        if site_content:
+            try:
+                site_content = SiteContent.objects.get(id = int(site_content))
+                return self.site_content.htmlbody()
+            except:
+                return u''
         else:
             return u''
     

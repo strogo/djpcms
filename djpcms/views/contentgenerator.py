@@ -68,8 +68,7 @@ class BlockContentGen(UnicodeObject):
         Displaying the actual content of the block
         '''
         for b in blockcontents:
-            wrapper = b.wrapper()
-            yield wrapper.wrap(self.djp, b)
+            yield b.render(self.djp)
 
     def empty(self):
         return '&nbsp;'

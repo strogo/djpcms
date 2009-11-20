@@ -12,7 +12,7 @@ def dumps(atom):
         return atom
 
 def form2json(form):
-    if form.is_valid():
+    if form and form.is_valid():
         data = form.cleaned_data
         fields = {}
         for k,v in data.items():

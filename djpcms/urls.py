@@ -18,10 +18,13 @@ appsite.load()
 
 
 # Admin Site
-try:
-    admin_url_prefix = settings.ADMIN_URL_PREFIX
-    site_urls  = url(r'^%s(.*)' % admin_url_prefix[1:],    admin.site.root),
-except:
+if 'django.contrib.admin' in settings.INSTALLED_APPS:
+    try:
+        admin_url_prefix = settings.ADMIN_URL_PREFIX
+        site_urls  = url(r'^%s(.*)' % admin_url_prefix[1:],    admin.site.root),
+    except:
+        site_urls  = ()
+else:
     site_urls  = ()
     
 

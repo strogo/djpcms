@@ -256,6 +256,8 @@ class djpcmsview(UnicodeObject):
         else:
             # No page or no inner_template. Get the inner content directly
             inner = self.render(djp)
+            if isinstance(inner,http.HttpResponse):
+                return inner
             
         c['inner'] = inner
         return render_to_response(template_name = djp.template,
@@ -290,18 +292,28 @@ class djpcmsview(UnicodeObject):
         post      = request.POST
         params    = dict(post.items())
         ajax_key  = params.get(HTML_CLASSES.post_view_key, None)
+        def_ajax  = False
+        
+        # check if this is an ajax request with no ajax_key
+        if not ajax_key:
+            ajax_key = request.is_ajax()
+            def_ajax = True
+        else:
+            ajax_key = ajax_key.replace('-','_').lower()
         
         # If post_view key is defined, it means this is a AJAX-JSON request
         if ajax_key:
-            ajax_key = ajax_key.replace('-','_').lower()
-            try:
+            if def_ajax:
+                ajax_view_function = self.default_ajax_view
+            else:
                 ajax_view = 'ajax__%s' % ajax_key
                 ajax_view_function  = getattr(self,str(ajax_view),None)
                 
                 # No post view function found. Let's try the default ajax post view
                 if not ajax_view_function:
                     ajax_view_function = self.default_ajax_view;
-                    
+            
+            try:
                 res  = ajax_view_function(djp)
             except Exception, e:
                 # we got an error. If in debug mode send a JSON response with

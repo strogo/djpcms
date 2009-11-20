@@ -110,7 +110,7 @@ class jhtmls(HeaderBody):
         if objr == None:
             html[key] = obj
         else:
-            objr['html'] += obj['html']            
+            objr['html'] += obj['html']
         
     def add(self, identifier, html, type = 'replace', alldocument = False):
         obj = {'identifier':    identifier,
@@ -137,6 +137,23 @@ class jerrors(jhtmls):
     def error(self):
         return True
 
+
+class jremove(HeaderBody):
+    
+    def __init__(self, identifier, alldocument = True):
+        self.identifiers = []
+        self.add(identifier, alldocument)
+        
+    def add(self, identifier, alldocument = True):
+        self.identifiers.append({'identifier': identifier,
+                                 'alldocument': alldocument})
+    
+    def header(self):
+        return 'remove'
+    
+    def body(self):
+        return self.identifiers
+        
 
 class jredirect(HeaderBody):
     '''

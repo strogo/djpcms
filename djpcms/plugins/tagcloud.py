@@ -32,7 +32,8 @@ class tagcloud(DJPplugin):
             else:
                 return tag1,
     
-    def render(self, djp, for_model = None, steps = 4, min_count = None, **kwargs):
+    def render(self, djp, wrapper, prefix,
+               for_model = None, steps = 4, min_count = None, **kwargs):
         try:
             formodel = ContentType.objects.get(id = int(for_model)).model_class()
         except:

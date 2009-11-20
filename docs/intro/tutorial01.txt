@@ -39,14 +39,15 @@ Refer to Django documentation http://docs.djangoproject.com/en/dev/intro/tutoria
 Setting up djpcms
 ----------------------
 
-Change into the :file:`mysite` directory and edit the :file:`setting.py` file and add the following applications to
+Change into the :file:`mysite` directory and edit the :file:`setting.py` file and add at least the following applications to
 INSTALLED_APPS_::
 
 	INSTALLED_APPS = (
-		...,
-		'djpcms',
-		'djpcms.plugins.text',
-		'djpcms.plugins.snippet'
+		'django.contrib.auth',
+		'django.contrib.sites',
+		'django.contrib.contenttypes',
+		'django.contrib.sessions',
+		'djpcms'
 	)
 	
 .. _installed_apps: http://docs.djangoproject.com/en/dev/ref/settings/#setting-INSTALLED_APPS

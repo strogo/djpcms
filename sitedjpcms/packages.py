@@ -1,27 +1,31 @@
-
+'''
+Install Packages.
+This is usually needed during development
+'''
+import os
 import sys
 
-class install(object):
-    
-    def __init__(self, serv = None):
-        try:
-            import djpcms
-        except:
-            sys.path.append('..')
-            import djpcms
-    
-        self.LOCDIR    = os.path.dirname(__file__)
+def install(debug):
+    path = os.getcwd()
+    home = os.path.split(path)[0]
+    if home not in sys.path:
+        sys.path.append(home)
         
-        if not serv:
-            cd = os.getcwd()
-            os.chdir(os.pardir)
-            path = os.getcwd()
-            self.MEDIA_ROOT  = os.path.join(path,'media')
-            os.chdir(cd)
-        else:
-            self.MEDIA_ROOT  = serv
+    # Try to import. If failed throw the error
+    import sitedjpcms
     
-    #PS.local_apps    = putils.adddir(PS.LOCDIR, 'apps')
-    #PS.local_plugins = putils.adddir(PS.LOCDIR, 'plugins')
+    # machines module is not provided for obvious security reasons.
+    # machines_example is provided for illustration
+    try:
+        import machines
+    except ImportError:
+        import machine_example as machines
+    
+    # Get server setting
+    sett    = machines.get_machine(sitedjpcms.__path__[0])
+    # Set identity
+    sett.id = machines.Identity()
+    
+    return sett
     
     

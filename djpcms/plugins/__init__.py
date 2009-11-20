@@ -1,6 +1,7 @@
 import os
 import glob
 import logging
+import copy
 
 from djpcms.utils import json
 from djpcms.utils import form_kwargs
@@ -46,13 +47,13 @@ class DJPplugin(object):
         '''
         return kwargs
     
-    def __call__(self, djp, args = None):
+    def __call__(self, djp, args = None, wrapper = None, prefix = None):
         '''
         This function needs to be implemented
         '''
-        return self.render(djp, **self.arguments(args))
+        return self.render(djp, wrapper, prefix, **self.arguments(args))
     
-    def render(self, djp, **kwargs):
+    def render(self, djp, wrapper, prefix, **kwargs):
         return u''
     
     def get_form(self, djp, args = None):
@@ -83,11 +84,41 @@ class ThisPlugin(DJPplugin):
     name        = 'this'
     description = 'Current View'
     
-    def render(self, djp, **kwargs):
+    def render(self, djp, wrapper, prefix, **kwargs):
         '''
         This function needs to be implemented
         '''
-        return u''
+        djp.wrapper = wrapper
+        djp.prefix  = prefix
+        return djp.view.render(djp)
+    
+    
+class ApplicationPlugin(DJPplugin):
+    '''
+    Plugin formed by application views
+    '''
+    def __init__(self, app):
+        self.app  = app
+        self.name = '%s %s' % (app.appmodel.name,app.name)
+    
+    def render(self, djp, wrapper, prefix, **kwargs):
+        '''
+        This function needs to be implemented
+        '''
+        app  = self.app
+        args = copy.copy(djp.urlargs)
+        args.update(kwargs)
+        instance = args.pop('instance',None)
+        if instance and not isinstance(instance,app.model):
+            instance = None 
+        ndjp = self.app.requestview(djp.request,
+                                    instance = instance,
+                                    **args)
+        ndjp.wrapper = wrapper
+        ndjp.prefix  = prefix
+        return self.app.render(ndjp)
+    
+    
     
 
 def functiongenerator():
@@ -98,6 +129,10 @@ def functiongenerator():
     for p in _plugin_dictionary.values():
         yield (p.name,p.description)
 
+
+def register_application(app):
+    p = ApplicationPlugin(app)
+    register_plugin(p)
     
 def register_plugin(plugin):
     '''
@@ -108,8 +143,10 @@ def register_plugin(plugin):
         name = plugin.__name__
         plugin.name = name
     plugin.description = plugin.description or name
+    if isinstance(plugin,DJPpluginMeta):
+        plugin = plugin()
     if not _plugin_dictionary.has_key(name):
-        _plugin_dictionary[name] = plugin()
+        _plugin_dictionary[name] = plugin
         
 def get_plugin(name):
     return _plugin_dictionary.get(name,None)

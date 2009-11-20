@@ -2,12 +2,11 @@ import os
 
 SERVE_STATIC_FILES = True
 DEBUG = True
+TEMPLATE_DEBUG = DEBUG
+
 
 import packages
-PSETTINGS = packages.install()
-
-
-TEMPLATE_DEBUG = DEBUG
+PSETTINGS = packages.install(DEBUG)
 
 ADMINS = (
      ('Luca Sbardella', 'luca.sbardella@gmail.com'),
@@ -15,12 +14,12 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-DATABASE_ENGINE = 'sqlite3'    # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-DATABASE_NAME = os.path.join(PSETTINGS.LOCDIR,'djpcms')             # Or path to database file if using sqlite3.
-DATABASE_USER = ''             # Not used with sqlite3.
-DATABASE_PASSWORD = ''         # Not used with sqlite3.
-DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
-DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
+DATABASE_ENGINE   = PSETTINGS.dbengine
+DATABASE_NAME     = PSETTINGS.dbname
+DATABASE_USER     = PSETTINGS.dbuser
+DATABASE_PASSWORD = PSETTINGS.dbpassword
+DATABASE_HOST     = PSETTINGS.dbhost
+DATABASE_PORT     = PSETTINGS.dbport
 
 SECRET_KEY = '9ydnib90%5_reb+*klqo5*y&kozxxp(mdyc(7uqrifa*=(ln$3'
 TIME_ZONE             = 'Europe/London'
@@ -30,10 +29,17 @@ USE_I18N = False
 
 DATE_FORMAT            = 'D d M y'
 DATETIME_FORMAT        = 'D d M y P'
-ADMIN_URL_PREFIX       = '/admin/' 
-MEDIA_ROOT = PSETTINGS.MEDIA_ROOT
-MEDIA_URL = '/media/'
-ADMIN_MEDIA_PREFIX = MEDIA_URL + 'django_admin/'
+SERVE_STATIC_FILES     = PSETTINGS.servs
+MEDIA_ROOT             = PSETTINGS.media_root()
+MEDIA_URL              = '/media/'
+ADMIN_MEDIA_PREFIX     = MEDIA_URL + 'django_admin/'
+SECRET_KEY             = PSETTINGS.id.SECRET_KEY
+ADMIN_URL_PREFIX       = PSETTINGS.id.ADMIN_URL_PREFIX
+ 
+USER_ACCOUNT_HOME_URL  = '/accounts/'
+LOGIN_URL  = '%slogin/' % USER_ACCOUNT_HOME_URL
+LOGOUT_URL = '%slogout/' % USER_ACCOUNT_HOME_URL
+
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
@@ -63,10 +69,8 @@ INSTALLED_APPS = ['django.contrib.auth',
                   'django.contrib.sites',
                   'django.contrib.contenttypes',
                   'django.contrib.sessions',
-                  'django.contrib.admin',
-                  'djpcms',
-                  'djpcms.plugins.text',
-                  'djpcms.plugins.snippet']
+                  #'django.contrib.admin',
+                  'djpcms']
 
 # djpcms settings
 DEFAULT_TEMPLATE_NAME = 'base.html'

@@ -89,11 +89,13 @@ class ArchiveTaggedApplication(appsite.ArchiveApplication):
     
     def object_content(self, request, prefix, wrapper, obj):
         tagurls = []
-        tagview = self.getapp('tag')
+        tagview = self.getapp('tag1')
         if obj.tags and tagview:
             tags = obj.tags.split(u' ')
             for tag in tags:
-                tagurls.append({'url':tagview.get_url(request, tag = tag),'name':tag})
+                djp = tagview.requestview(request, tag1 = tag)
+                tagurls.append({'url':djp.url,
+                                'name':tag})
         return {'tagurls': tagurls}
     
     

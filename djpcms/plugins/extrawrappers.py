@@ -1,24 +1,20 @@
-from djpcms.plugins.wrapper import ContentWrapperHandler, add_content_wrapper
+from djpcms.plugins.wrapper import ContentWrapper, add_content_wrapper
 from djpcms.html import box
 
 
-class BoxWrapper(ContentWrapperHandler):
+class BoxWrapper(ContentWrapper):
     
-    def wrap(self, cblock, request, view):
-        html = self.inner(cblock, request, view)
-        hd = cblock.plugin.title
+    def wrap(self, djp, cblock, html):
+        hd = cblock.title
         return box(hd = hd, bd = html).render()
-
-add_content_wrapper('simple box',BoxWrapper())
+add_content_wrapper(BoxWrapper,'boxwrapper','Box with title')
 
 
     
-class BoxWrapper2(ContentWrapperHandler):
+class BoxWrapper2(ContentWrapper):
     form_layout = 'onecolumn'
     
-    def wrap(self, cblock, request, view):
-        html = self.inner(cblock, request, view)
-        hd = cblock.plugin.title
+    def wrap(self, djp, cblock, html):
+        hd = cblock.title
         return box(hd = hd, bd = html).render()
-    
-add_content_wrapper('compact box',BoxWrapper2())
+add_content_wrapper(BoxWrapper2,'compactbox','Compact Box with title')
