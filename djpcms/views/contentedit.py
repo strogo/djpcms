@@ -6,8 +6,8 @@ from django.template import RequestContext, loader
 from djpcms.settings import HTML_CLASSES, CONTENT_INLINE_EDITING
 from djpcms.models import BlockContent, Page
 from djpcms.utils import form_kwargs
-from djpcms.utils.ajax import jhtmls, jremove
-from djpcms.utils.formjson import form2json
+from djpcms.utils.func import isforminstance
+from djpcms.utils.ajax import jhtmls, jremove, dialog, jempty
 from djpcms.utils.html import form, formlet, submit, htmlcomp
 from djpcms.forms import ContentBlockForm
 from djpcms.plugins import get_plugin, ContentWrapper
@@ -66,6 +66,7 @@ class EditWrapperHandler(ContentWrapper):
         except Exception, e:
             html     = u'%s' % e
         delurl   = view.appmodel.deleteurl(djp.request, instance)
+        plgurl   = view.appmodel.pluginurl(djp.request, instance)
         plugin = False
         if instance.plugin:
             plugin = True
@@ -75,6 +76,7 @@ class EditWrapperHandler(ContentWrapper):
              'instance':          instance,
              'plugin':            plugin,
              'deleteurl':         delurl,
+             'pluginurl':         plgurl,
              'plugin_preview_id': view.plugin_preview_id(instance)}
         return loader.render_to_string(["content/edit_block.html",
                                         "djpcms/content/edit_block.html"],
@@ -168,11 +170,11 @@ class ChangeContentView(appview.EditView):
         @param request: django HttpRequest instance
         @return JSON serializable object 
         '''
-        form = self.get_form(djp, all = False)
+        form = self.get_form(djp, all = True)
         if form.is_valid():
             instance  = form.save(commit = False)
             pform     = instance.plugin.get_form(djp)
-            instance.arguments = form2json(pform)
+            instance.arguments = instance.plugin.save(pform)
             instance.save()
             # We now serialize the argument form
             ret = jhtmls(identifier = '#%s' % self.plugin_preview_id(instance),
@@ -182,7 +184,55 @@ class ChangeContentView(appview.EditView):
         else:
             return form.jerrors
         
+
+class EditPluginView(appview.EditView):
+    '''
+    View class for managing inline editing of a content block.
+    The url is given by the ContentBlocks models
+    '''
+    _methods = ('post',)
     
+    def __init__(self, regex = 'plugin', parent = 'edit'):
+        super(EditPluginView,self).__init__(regex = regex,
+                                            parent = parent,
+                                            isapp = False,
+                                            name = 'edit_plugin')
+    
+    def get_form(self, djp, withdata = True):
+        instance = djp.instance
+        p = instance.plugin
+        if p:
+            f = p.edit(djp, instance.arguments, withdata = withdata)
+            if f:
+                if isforminstance(f):
+                    flet = formlet(form = f,
+                                   layout = 'onecolumn')
+                    f = form(url = djp.url, cn = self.ajax.ajax)
+                    f['form'] = flet
+                return f
+    
+    def default_ajax_view(self, djp):
+        f = self.get_form(djp, withdata = False)
+        d = dialog(hd = f.instance.code,
+                   bd = f.render(),
+                   modal = True,
+                   width = 600)
+        d.addbutton('Ok', url = djp.url, func = 'save')
+        d.addbutton('Cancel', url = djp.url, func = 'cancel')
+        d.addbutton('Save', url = djp.url, func = 'save', close = False)
+        return d
+    
+    def ajax__save(self, djp):
+        f = self.get_form(djp)
+        if f.is_valid():
+            f.save()
+            return f.messagepost('%s saved' % f.instance)
+        else:
+            return f.jerrors
+        
+    def ajax__cancel(self, djp):
+        return jempty()
+
 
 class ContentSite(appsite.ModelApplication):
     baseurl     = CONTENT_INLINE_EDITING.get('pagecontent', '/content/')
@@ -192,6 +242,7 @@ class ContentSite(appsite.ModelApplication):
     
     edit        = ChangeContentView()
     delete      = appview.DeleteView(parent = 'edit')
+    plugin      = EditPluginView(regex = 'plugin', parent = 'edit')
     
     def submit(self, instance):
         return None
@@ -205,6 +256,16 @@ class ContentSite(appsite.ModelApplication):
         bid = obj.htmlid()
         if self.model.objects.delete_and_sort(obj):
             return bid
+        
+    def pluginurl(self, request, obj):
+        p = obj.plugin
+        if not p or not p.edit_form:
+            return
+        view = self.getapp('plugin')
+        if view and self.has_edit_permission(request, obj):
+            djp = view.requestview(request, instance = obj)
+            return djp.url
+        
         
     def get_object(self, pageid = 1, blocknumber = 1, position = 1):
         '''

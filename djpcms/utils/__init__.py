@@ -113,7 +113,7 @@ class requestwrap(UnicodeObject):
             return attr
 
 
-def form_kwargs(request, instance = None, withrequest = False, **kwargs):
+def form_kwargs(request, instance = None, withrequest = False, withdata = True, **kwargs):
     '''
     Quick form arguments aggregator
     
@@ -121,8 +121,9 @@ def form_kwargs(request, instance = None, withrequest = False, **kwargs):
       def someview(request):
           form = MyForm(**form_kwargs(request))
     '''
-    if request and request.method == 'POST':
-        kwargs['data'] = request.POST
+    if request and request.method == 'POST' and withdata:
+        data = request.POST
+        kwargs['data'] = data
         kwargs['files'] = request.FILES
     if withrequest:
         kwargs['request'] = request

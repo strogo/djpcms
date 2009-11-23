@@ -1,0 +1,9 @@
+.. _topics-plugins:
+
+========================
+Markups
+========================
+
+plugins are installed in a project by defining the variable
+
+	

@@ -107,6 +107,16 @@ body.edit #branding-banner {
 	width: 100%;
 	height: 20px;
 }
+.edit-contentblock .actions ul {
+	float: right;
+	display: inline;
+}
+.edit-contentblock .actions li {
+	display: inline;
+	list-style-type:none;
+	margin:0;
+	padding:0 0 0 5px;
+}
 .edit-contentblock .hd {
 	background: rgb(35,79,50);
 	color: rgb(255,255,255);
@@ -130,7 +140,6 @@ body.edit #branding-banner {
 	color: rgb(255,255,255);
 }
 .edit-contentblock table {width: 100%;}
-.edit-contentblock .actions ul {float: right;}
 form.edit-block-form select {width: 100%;}
 form.content-select table {margin:0; float: left;}
 
@@ -156,6 +165,12 @@ form .field-separator {
 }
 form .errorlist {
 	margin: 0;
+}
+.aligned label {
+    display: block;
+    padding: 3px 10px 0 0;
+    float: left;
+    width: 8em;
 }
 
 

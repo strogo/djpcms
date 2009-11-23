@@ -1,12 +1,12 @@
 from django.conf import settings
-from djpcms.utils.ajax import classes as default_html_classes
+from djpcms.ajaxhtml import ajaxhtml
 
 # Not available yet. For future releases
 LANGUAGE_REDIRECT      = getattr(settings, 'LANGUAGE_REDIRECT', False)
 DEFAULT_TEMPLATE_NAME  = getattr(settings, 'DEFAULT_TEMPLATE_NAME', ['base.html','djpcms/base.html'])
 DEFAULT_VIEW_MODULE    = getattr(settings, 'DEFAULT_VIEW_MODULE', 'djpcms.views.pageview.pageview')
 USE_TINYMCE            = getattr(settings, 'USE_TINYMCE', False)
-HTML_CLASSES           = getattr(settings, 'HTML_CLASSES', default_html_classes)
+HTML_CLASSES           = getattr(settings, 'HTML_CLASSES', ajaxhtml())
 MAX_SEARCH_DISPLAY     = getattr(settings, 'MAX_SEARCH_DISPLAY', 20)
 DEFAULT_CODE_BASKET    = getattr(settings, 'DEFAULT_CODE_BASKET', ('code','user'))
 CACHE_VIEW_OBJECTS     = getattr(settings, 'CACHE_VIEW_OBJECTS', True)
@@ -58,6 +58,3 @@ CONTENT_INLINE_EDITING = getattr(settings, 'CONTENT_INLINE_EDITING',  {'availabl
                                                                        'pagecontent': '/content/',
                                                                        'width': 600,
                                                                        'height': 400,})
-
-
-

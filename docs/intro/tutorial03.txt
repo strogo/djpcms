@@ -1,0 +1,22 @@
+.. _intro-tutorial03:
+
+=====================================
+Writing your first djpcms site, part 3
+=====================================
+
+Creating your first scalable dynamic application
+====================================================
+
+If there is to reed a section about this documentation, this is it.
+Dynamic applications are the only reason why we build djpcms.
+
+Dynamic applications is **the only reason** that drive us to specialise django.
+dAapplications which manipulate data interact with users, collect data, give back results
+can use djpcms to their advantage.
+
+
+Django is deisgn to deal with dynamic applications. In Django everything is centered around models,
+database pices of data. However Django provides a very general framework not designed to
+provide too much magic. Djpcms, will bridge that gap at the expense of more coupling
+between different technologies (sometimes coupling is good, not always).
+ 

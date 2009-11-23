@@ -1,0 +1,12 @@
+.. _topics-markup:
+
+========================
+Markups
+========================
+
+There are several murkup languages available to use within a content management system.
+This is a brief list of the most common one:
+ * wiki creole
+ * markdown
+ 
+

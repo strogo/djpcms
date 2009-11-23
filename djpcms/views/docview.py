@@ -16,7 +16,7 @@ from djpcms.views.baseview import djpcmsview
 class DocView(djpcmsview):
     # Name the documents
     name             = None
-    baseurl          = '/'
+    baseurl          = '/docs/'
     deflang          = 'en'
     DOCS_PICKLE_ROOT = None
     editurl          = None
@@ -66,6 +66,7 @@ class DocView(djpcmsview):
     def render(self, djp):
         request = djp.request
         args    = djp.urlargs
+        page    = djp.page
         lang    = args.get('lang')
         version = args.get('version')
         url     = args.get('url')
@@ -99,7 +100,7 @@ class DocView(djpcmsview):
              #'home': urlresolvers.reverse('document-index', kwargs={'lang':lang, 'version':version}),
              #'search': urlresolvers.reverse('document-search', kwargs={'lang':lang, 'version':version}),
              'redirect_from': request.GET.get('from', None),
-             'grid':          self.grid960()
+             'grid':          self.grid960(page)
              }
         
         return render_to_response(template_names,

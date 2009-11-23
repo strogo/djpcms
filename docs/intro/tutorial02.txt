@@ -1,0 +1,11 @@
+.. _intro-tutorial02:
+
+=====================================
+Writing your first djpcms site, part 2
+=====================================
+
+Creating your first page
+=========================
+
+We assume you succesfully created a new django project with djpcms installed as explained in tutorial
+:ref:`Part 1 <intro-tutorial01>`

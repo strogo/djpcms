@@ -2,10 +2,12 @@
 #
 from django import forms
 
+from djpcms.utils import json
 from djpcms.models import SiteContent
 from djpcms.plugins import DJPplugin
 from djpcms.forms import SlugField
-from djpcms.utils.markups import markup_choices, default_markup
+from djpcms.utils import form_kwargs
+from djpcms import markup
 
 
 class NewContentCode(SlugField):
@@ -28,8 +30,8 @@ class ChangeTextContent(forms.Form):
                                   label = 'New content unique code',
                                   help_text = 'When creating a new content give a unique name you like',
                                   required = False)
-    markup       = forms.ChoiceField(choices = markup_choices(),
-                                     initial = default_markup,
+    markup       = forms.ChoiceField(choices = markup.choices(),
+                                     initial = markup.default(),
                                      required = False)
     
     def __init__(self, *args, **kwargs):
@@ -40,28 +42,48 @@ class ChangeTextContent(forms.Form):
         super(ChangeTextContent,self).__init__(*args,**kwargs)
         
     def clean_new_content(self):
-        sc = self.cleaned_data.get('site_content',None)
-        nc = self.cleaned_data.get('new_content',u'')
-        if not sc and not nc:
-            raise forms.ValidationError('New content title must be provided')
-        if nc:
-            return self.fields['new_content'].clean2(nc)
-        else:
-            return nc
+        sc = self.cleaned_data['site_content']
+        nc = self.cleaned_data['new_content']
+        if not sc:
+            if not nc:
+                raise forms.ValidationError('New content name must be provided')
+            avail = SiteContent.objects.filter(code = nc)
+            if avail:
+                raise forms.ValidationError('New content name already used')
+        return nc
     
-    def save(self, commit = True):
-        nc = self.cleaned_data.get('new_content',u'')
+    def update(self):
+        cd   = self.cleaned_data
+        text = cd.get('site_content',None)
+        nc   = cd.get('new_content',u'')
         # If new_content is available. A new SiteContent object is created
-        if nc:
-            self.instance = SiteContent(code = nc)
-        self.instance.user_last = self.user
-        return super(ChangeForm,self).save(commit)
+        if not text:
+            text = SiteContent(code = nc)
+        text.markup    = cd.get('markup')
+        text.user_last = self.user
+        text.save()
+        return text
+        
+
+class EditContentForm(forms.ModelForm):
+    
+    def __init__(self, *args, **kwargs):
+        request = kwargs.pop('request',None)
+        if not request:
+            raise ValueError('Request not available')
+        self.user = request.user
+        super(EditContentForm,self).__init__(*args,**kwargs)
+        
+    class Meta:
+        model = SiteContent
+        fields = ('description', 'body')
+
     
 
 
 class Text(DJPplugin):
-    withrequest = True
-    form        = ChangeTextContent
+    withrequest   = True
+    form          = ChangeTextContent
     
     def html(self):
         if self.site_content:
@@ -79,4 +101,19 @@ class Text(DJPplugin):
         else:
             return u''
     
-    
+    def edit_form(self, djp, site_content = None, **kwargs):
+        if site_content:
+            try:
+                site_content = SiteContent.objects.get(id = int(site_content))
+                return EditContentForm(**form_kwargs(request = djp.request,
+                                                     instance = site_content,
+                                                     withrequest = True,
+                                                     **kwargs))
+            except Exception, e:
+                return None
+            
+    def save(self, pform):
+        text = pform.update()
+        return json.dumps({'site_content': text.id})
+        
+        

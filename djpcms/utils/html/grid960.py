@@ -1,3 +1,6 @@
+#
+#    Utility for managing grid 960 css templates
+#
 from django.utils.safestring import mark_safe
 
 __all__ = ['grid960']

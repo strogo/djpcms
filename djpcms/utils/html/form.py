@@ -199,6 +199,16 @@ class formlet(htmlattr):
         else:
             return None
         
+    def __get_instance(self):
+        '''
+        It assume only one model instance can exist
+        '''
+        try:
+            return self.form.instance
+        except:
+            return None
+    instance = property(__get_instance)
+        
 
     
         

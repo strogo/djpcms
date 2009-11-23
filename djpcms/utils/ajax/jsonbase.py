@@ -75,6 +75,14 @@ class HeaderBody(jsonbase):
         js = self._dump(self._dict('server-error', e))
         return mark_safe(force_unicode(js))
 
+
+class jempty(HeaderBody):
+    
+    def header(self):
+        return 'empty'
+
+
+
 class jservererror(HeaderBody):
     
     def __init__(self, err, url = None):

@@ -4,7 +4,9 @@
 Writing your first djpcms site, part 1
 =====================================
 
-Following django documentation, let's learn by example.
+Django documentation is one of the best written technical documentation available.
+Following Django's masterpiece, we will guide you through the use of djpcms by setting
+up a an example web site.
 Throughout this tutorial, we'll walk you through the creation of a basic
 poll application.
 

@@ -4,7 +4,7 @@ from django.contrib.sites.models import Site
 from django.utils.translation import ugettext_lazy as _
 
 from djpcms.settings import HTML_CLASSES
-from djpcms.models import Page, BlockContent
+from djpcms.models import Page, BlockContent, SiteContent
 from djpcms.utils import lazyattr
 from djpcms import siteapp_choices
 from djpcms.plugins import get_plugin, functiongenerator, content_wrapper_tuple
@@ -232,7 +232,8 @@ class ContentBlockForm(forms.ModelForm):
             instance.plugin_name = ''
         return super(ContentBlockForm,self).save(commit = commit)
 
-        
+
+
 
 AS_Q_CHOICES = (
     ('more:dev_docs', 'Latest'),

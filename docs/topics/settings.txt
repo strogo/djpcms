@@ -1,0 +1,68 @@
+.. _topics-settings:
+
+===============
+Djpcms settings
+===============
+
+A Django settings file contains all the configuration of your Django powered site.
+This document explains the additional settings Djpcms add to the standard Django implementation.
+
+
+Default settings
+================
+
+A Django settings file doesn't have to define any djpcms settings if it doesn't need
+to. Each setting has a sensible default value. These defaults live in the
+module :file:`djpcms/settings.py`.
+
+Available settings
+==================
+
+Here's a full list of all available settings, in alphabetical order, and their
+default values.
+
+
+.. setting:: DJPCMS_PLUGINS
+
+DJPCMS_PLUGINS
+----------------------
+
+Default: ``['djpcms.plugins.*]``
+
+The python dotted path to the default python class used to handle view requests.
+
+
+
+.. setting:: DEFAULT_VIEW_MODULE
+
+DEFAULT_VIEW_MODULE
+----------------------
+
+Default: ``djpcms.views.pageview.pageview``
+
+The python dotted path to the default python class used to handle view requests.
+
+
+.. setting:: SERVE_STATIC_FILES
+
+SERVE_STATIC_FILES
+----------------------
+
+Default: ``False``
+
+Whether static files are served by the server running the Django site (and therefore included in the urls) or not.
+
+Usually ones set ``SERVE_STATIC_FILES`` to True when in development mode
+
+.. setting:: ADMIN_FOR
+
+ADMIN_FOR
+---------
+
+Default: ``()`` (Empty tuple)
+
+Used for admin-site settings modules, this should be a tuple of settings
+modules (in the format ``'foo.bar.baz'``) for which this site is an admin.
+
+The admin site uses this in its automatically-introspected documentation of
+models, views and template tags.

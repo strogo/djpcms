@@ -15,76 +15,32 @@ First steps
 
     * **Tutorial:**
       :ref:`Part 1 <intro-tutorial01>` |
-      :ref:`Part 2 <intro-tutorial02>`
+      :ref:`Part 2 <intro-tutorial02>` |
+      :ref:`Part 3 <intro-tutorial03>` |
+      :ref:`Part 4 <intro-tutorial04>`
 
-The view layer
-===============
+Dynamic Content Management
+=============================
+	* **Applications:**
+	  :ref:`Introduction <application-into>` |
+	  :ref:`Examples <application-example>` |
+	  
+	* **Plugins:**
+	  :ref:`Introduction <plugin-into>` |
+	  :ref:`Examples <application-example>` |
+	  :ref:`Extending <application-example>`
+	  
+	* **Design:**
+	  :ref:`Introduction <design-intro>` |
+	  :ref:`Content wrapping <design-wrap>`	
 
-    * **Models:**
-      :ref:`Model syntax <topics-db-models>` |
-      :ref:`Field types <ref-models-fields>` |
-      :ref:`Meta options <ref-models-options>`
 
-    * **QuerySets:**
-      :ref:`Executing queries <topics-db-queries>` |
-      :ref:`QuerySet method reference <ref-models-querysets>`
-
-    * **Model instances:**
-      :ref:`Instance methods <ref-models-instances>` |
-      :ref:`Accessing related objects <ref-models-relations>`
-
-    * **Advanced:**
-      :ref:`Managers <topics-db-managers>` |
-      :ref:`Raw SQL <topics-db-sql>` |
-      :ref:`Transactions <topics-db-transactions>` |
-      :ref:`Aggregation <topics-db-aggregation>` |
-      :ref:`Custom fields <howto-custom-model-fields>`
-
-    * **Other:**
-      :ref:`Supported databases <ref-databases>` |
-      :ref:`Legacy databases <howto-legacy-databases>` |
-      :ref:`Providing initial data <howto-initial-data>`
-
-The template layer
-==================
-
-    * **For designers:**
-      :ref:`Syntax overview <topics-templates>` |
-      :ref:`Built-in tags and filters <ref-templates-builtins>`
-
-    * **For programmers:**
-      :ref:`Template API <ref-templates-api>` |
-      :ref:`Custom tags and filters <howto-custom-template-tags>`
-
-The view layer
-==============
-
-    * **The basics:**
-      :ref:`URLconfs <topics-http-urls>` |
-      :ref:`View functions <topics-http-views>` |
-      :ref:`Shortcuts <topics-http-shortcuts>`
-
-    * **Reference:**  :ref:`Request/response objects <ref-request-response>`
-
-    * **File uploads:**
-      :ref:`Overview <topics-http-file-uploads>` |
-      :ref:`File objects <ref-files-file>` |
-      :ref:`Storage API <ref-files-storage>` |
-      :ref:`Managing files <topics-files>` |
-      :ref:`Custom storage <howto-custom-file-storage>`
-
-    * **Generic views:**
-      :ref:`Overview<topics-generic-views>` |
-      :ref:`Built-in generic views<ref-generic-views>`
-
-    * **Advanced:**
-      :ref:`Generating CSV <howto-outputting-csv>` |
-      :ref:`Generating PDF <howto-outputting-pdf>`
-
-    * **Middleware:**
-      :ref:`Overview <topics-http-middleware>` |
-      :ref:`Built-in middleware classes <ref-middleware>`
-
+Battery Included
+=================
+	* **Markups:**
+	  :ref:`Markup languages <topics-markup>` |
+	  :ref:`Example <topics-markup-examples>` |
+	  :ref:`Extending <topics-markup-extending>`
 
 The Djpcms open-source project
 ===============================

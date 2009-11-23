@@ -5,6 +5,8 @@ import copy
 
 from djpcms.utils import json
 from djpcms.utils import form_kwargs
+from djpcms.utils.formjson import form2json
+
 from wrapper import *
 
 log = logging.getLogger("djpcms.plugins")
@@ -20,15 +22,24 @@ class DJPpluginMeta(type):
     '''
     pass
 
+
+
 class DJPplugin(object):
+    '''
+    Base class for plugins
+    '''
     __metaclass__ = DJPpluginMeta
-    name         = None
-    description  = None
-    form         = None
-    virtual      = False
-    withrequest  = False
+    name          = None
+    description   = None
+    form          = None
+    virtual       = False
+    withrequest   = False
+    edit_form     = False
     
     def arguments(self, args):
+        '''
+        Process arguments string
+        '''
         try:
             kwargs = json.loads(args)
             if isinstance(kwargs,dict):
@@ -53,8 +64,16 @@ class DJPplugin(object):
         '''
         return self.render(djp, wrapper, prefix, **self.arguments(args))
     
+    def edit(self, djp, args = None, **kwargs):
+        if self.edit_form:
+            kwargs.update(**self.arguments(args))
+            return self.edit_form(djp, **kwargs)
+    
     def render(self, djp, wrapper, prefix, **kwargs):
         return u''
+    
+    def save(self, pform):
+        return form2json(pform)
     
     def get_form(self, djp, args = None):
         '''
@@ -65,6 +84,7 @@ class DJPplugin(object):
             return self.form(**form_kwargs(request = djp.request,
                                            initial = initial,
                                            withrequest = self.withrequest))
+           
     
 
 class EmptyPlugin(DJPplugin):
