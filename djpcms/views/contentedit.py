@@ -10,7 +10,7 @@ from djpcms.utils.func import isforminstance
 from djpcms.utils.ajax import jhtmls, jremove, dialog, jempty
 from djpcms.utils.html import form, formlet, submit, htmlcomp
 from djpcms.forms import ContentBlockForm
-from djpcms.plugins import get_plugin, ContentWrapper
+from djpcms.plugins import get_plugin, DJPwrapper
 from djpcms.views import appsite, appview
 
 
@@ -42,7 +42,7 @@ class content_view(object):
 
 # Content wrapper in editing mode.
 # Only called by content_view (funation above)
-class EditWrapperHandler(ContentWrapper):
+class EditWrapperHandler(DJPwrapper):
     '''
     wrapper for editing content
     '''
@@ -170,10 +170,18 @@ class ChangeContentView(appview.EditView):
         @param request: django HttpRequest instance
         @return JSON serializable object 
         '''
-        form = self.get_form(djp, all = True)
+        # First get the plugin name
+        form = self.get_form(djp, all = False)
         if form.is_valid():
-            instance  = form.save(commit = False)
-            pform     = instance.plugin.get_form(djp)
+            plugin = form.cleaned_data.get('plugin_name',None)
+            djp.instance.plugin_name = plugin.name
+        else:
+            return form.jerrors
+        
+        form      =  self.get_form(djp)
+        if form.is_valid(): 
+            instance   = form.save(commit = False)
+            pform      = instance.plugin.get_form(djp)
             instance.arguments = instance.plugin.save(pform)
             instance.save()
             # We now serialize the argument form

@@ -1,6 +1,7 @@
 import datetime
 import re
 
+from django.utils.encoding import force_unicode
 from django.utils.safestring import mark_safe
 from django.http import Http404
 from django.utils.dateformat import DateFormat
@@ -17,8 +18,9 @@ from django.template import Template
 
 #from djcms.middleware.threadlocals import get_current_user
 from djpcms.fields import SlugCode
-from djpcms.plugins import content_wrapper_tuple, CONTENT_WRAP_HANDLERS, \
-                           default_content_wrapper, get_plugin
+from djpcms.plugins import wrappergenerator, get_wrapper, \
+                           default_content_wrapper, get_plugin, \
+                           get_wrapper
 from djpcms.utils.models import TimeStamp
 from djpcms.utils import lazyattr, function_module
 from djpcms.utils.func import PathList
@@ -461,7 +463,7 @@ class BlockContent(models.Model):
     plugin_name    = models.CharField(blank = True,
                                       max_length = 100)
     arguments      = models.TextField(blank = True)
-    container_type = models.CharField(choices = content_wrapper_tuple(),
+    container_type = models.CharField(choices = wrappergenerator(),
                                       default = default_content_wrapper.name,
                                       max_length = 30,
                                       blank = False,
@@ -489,7 +491,7 @@ class BlockContent(models.Model):
         
         
     def _get_wrapper(self):
-        return CONTENT_WRAP_HANDLERS.get(self.container_type,None) or default_content_wrapper
+        return get_wrapper(self.container_type,default_content_wrapper)
     wrapper = property(_get_wrapper)
     
     def plugin_class(self):
@@ -596,7 +598,7 @@ class SiteContent(models.Model):
         text = self.body
         if not text:
             html = u''
-        mkp = markup.get(self.markup,None)
+        mkp = markup.get(self.markup)
         if mkp:
             handler = mkp.get('handler')
             html = force_unicode(handler(text))

@@ -1,19 +1,49 @@
 import os
-import glob
 import logging
 import copy
 
-from djpcms.utils import json
-from djpcms.utils import form_kwargs
+from django.utils.safestring import mark_safe
+from djpcms.utils.plugin import PluginBase, loadobjects
+from djpcms.utils import json, form_kwargs
 from djpcms.utils.formjson import form2json
-
-from wrapper import *
-
-log = logging.getLogger("djpcms.plugins")
-
-
+    
 
 _plugin_dictionary = {}
+_wrapper_dictionary = {}
+
+
+def plugingenerator():
+    for p in _plugin_dictionary.values():
+        yield (p.name,p.description)
+        
+def wrappergenerator():
+    for p in _wrapper_dictionary.values():
+        yield (p.name,p.description)
+
+        
+def get_plugin(name, default = None):
+    return _plugin_dictionary.get(name,default)
+
+def get_wrapper(name, default = None):
+    return _wrapper_dictionary.get(name,default)
+
+
+def register_application(app):
+    ApplicationPlugin(app).register()
+
+def loadplugins(plist):
+    EmptyPlugin().register()
+    ThisPlugin().register()
+    loadobjects(plist,DJPplugin)
+    
+def loadwrappers(plist):
+    loadobjects(plist,DJPwrapper)
+
+
+####    IMPLEMENTATION
+
+
+
 
 
 class DJPpluginMeta(type):
@@ -22,19 +52,46 @@ class DJPpluginMeta(type):
     '''
     pass
 
+class DJPwrapperMeta(type):
+    '''
+    Just a metaclass to differentiate wrapper from other calsses
+    '''
+    pass
 
 
-class DJPplugin(object):
+class DJPwrapper(PluginBase):
+    '''
+    Class responsible for wrapping djpcms plugins
+    '''
+    __metaclass__ = DJPwrapperMeta
+    form_layout   = None
+    storage       = _wrapper_dictionary
+
+    def wrap(self, djp, cblock, html):
+        '''
+        Render the inner block. This function is the one to implement
+        '''
+        return html
+    
+    def __call__(self, djp, cblock, html):
+        '''
+        Wrap content for block cblock
+        @param param: djp instance of djpcms.views.baseview.DjpRequestWrap 
+        @param param: cblock instance or BlockContent
+        @return: safe unicode HTML
+        '''
+        return mark_safe(self.wrap(djp, cblock, html))
+
+
+class DJPplugin(PluginBase):
     '''
     Base class for plugins
     '''
     __metaclass__ = DJPpluginMeta
-    name          = None
-    description   = None
     form          = None
-    virtual       = False
     withrequest   = False
     edit_form     = False
+    storage       = _plugin_dictionary
     
     def arguments(self, args):
         '''
@@ -85,6 +142,8 @@ class DJPplugin(object):
                                            initial = initial,
                                            withrequest = self.withrequest))
            
+class SimpleWrap(DJPwrapper):
+    name         = 'simple no-tag'   
     
 
 class EmptyPlugin(DJPplugin):
@@ -138,70 +197,6 @@ class ApplicationPlugin(DJPplugin):
         ndjp.prefix  = prefix
         return self.app.render(ndjp)
     
-    
-    
+                    
 
-def functiongenerator():
-    '''
-    generator for iterating through rendering functions.
-    Used in django.Forms
-    '''
-    for p in _plugin_dictionary.values():
-        yield (p.name,p.description)
-
-
-def register_application(app):
-    p = ApplicationPlugin(app)
-    register_plugin(p)
-    
-def register_plugin(plugin):
-    '''
-    Register a new plugin object
-    '''
-    name = plugin.name
-    if name is None:
-        name = plugin.__name__
-        plugin.name = name
-    plugin.description = plugin.description or name
-    if isinstance(plugin,DJPpluginMeta):
-        plugin = plugin()
-    if not _plugin_dictionary.has_key(name):
-        _plugin_dictionary[name] = plugin
-        
-def get_plugin(name):
-    return _plugin_dictionary.get(name,None)
-
-
-def loadplugins(plist):
-    '''
-    Load plugins into cache.
-    Called by djpcms.urls
-    '''
-    register_plugin(EmptyPlugin)
-    register_plugin(ThisPlugin)
-    for plugin in plist:
-        if plugin.endswith('.*'):
-            to_load = expand_star(plugin)
-        else:
-            to_load = [plugin]
-        for p in to_load:
-            try:
-                mod = __import__(p, '', '', [''])
-            except ImportError, e:
-                log.error("Couldn't import provider %r: %s" % (p, e))
-            else:
-                for name in dir(mod):
-                    obj = getattr(mod, name)
-                    if isinstance(obj,DJPpluginMeta) and not obj == DJPplugin and not obj.virtual:
-                        register_plugin(obj)
-                
-def expand_star(mod_name):
-    """
-    Expand something like 'djpcms.plugins.*' into a list of all the modules
-    there.
-    """
-    expanded = []
-    mod_dir = os.path.dirname(__import__(mod_name[:-2], {}, {}, ['']).__file__)
-    for f in glob.glob1(mod_dir, "[!_]*.py"):
-        expanded.append('%s.%s' % (mod_name[:-2], f[:-3]))
-    return expanded
+default_content_wrapper = SimpleWrap().register()

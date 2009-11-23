@@ -3,16 +3,17 @@ from django.contrib import admin
 from django.conf.urls.defaults import *
 
 import djpcms
-from djpcms.settings import SERVE_STATIC_FILES, DJPCMS_PLUGINS
+from djpcms.settings import SERVE_STATIC_FILES, DJPCMS_PLUGINS, DJPCMS_WRAPPERS
 from djpcms.views import appsite
 
 #if not settings.DEBUG:
 #    handler404 = 'djpcms.views.specials.http404view'
 #    handler500 = 'djpcms.views.specials.http500view'
 
-from djpcms.plugins import loadplugins
+from djpcms.plugins import loadplugins, loadwrappers
     
 loadplugins(DJPCMS_PLUGINS)
+loadwrappers(DJPCMS_WRAPPERS)
 admin.autodiscover()
 appsite.load()
 

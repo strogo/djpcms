@@ -1,6 +1,7 @@
 #
 #
 from django import forms
+from django.conf import settings
 
 from djpcms.utils import json
 from djpcms.models import SiteContent
@@ -53,16 +54,17 @@ class ChangeTextContent(forms.Form):
         return nc
     
     def update(self):
-        cd   = self.cleaned_data
-        text = cd.get('site_content',None)
-        nc   = cd.get('new_content',u'')
-        # If new_content is available. A new SiteContent object is created
-        if not text:
-            text = SiteContent(code = nc)
-        text.markup    = cd.get('markup')
-        text.user_last = self.user
-        text.save()
-        return text
+        if self.is_valid():
+            cd   = self.cleaned_data
+            text = cd.get('site_content',None)
+            nc   = cd.get('new_content',u'')
+            # If new_content is available. A new SiteContent object is created
+            if not text:
+                text = SiteContent(code = nc)
+            text.markup    = cd.get('markup')
+            text.user_last = self.user
+            text.save()
+            return text
         
 
 class EditContentForm(forms.ModelForm):
@@ -82,6 +84,7 @@ class EditContentForm(forms.ModelForm):
 
 
 class Text(DJPplugin):
+    name          = "text"
     withrequest   = True
     form          = ChangeTextContent
     
@@ -95,9 +98,12 @@ class Text(DJPplugin):
         if site_content:
             try:
                 site_content = SiteContent.objects.get(id = int(site_content))
-                return self.site_content.htmlbody()
-            except:
-                return u''
+                return site_content.htmlbody()
+            except Exception, e:
+                if settings.DEBUG:
+                    return u'%s' % e 
+                else:
+                    return u''
         else:
             return u''
     

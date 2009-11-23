@@ -19,6 +19,7 @@ class CloudForm(forms.Form):
 
 
 class tagcloud(DJPplugin):
+    name        = "tag-cloud"
     description = "Tag Cloud for a Model"
     form        = CloudForm
     

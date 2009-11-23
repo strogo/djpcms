@@ -1,5 +1,6 @@
 #
 # Handle the view entry point
+import re
 
 from django.http import Http404, HttpResponseRedirect
 from django.core.exceptions import PermissionDenied
@@ -99,7 +100,7 @@ def _get_view_from_url(request, url):
     
     url    = clean_url(url)
     if isinstance(url,HttpResponseRedirect):
-        return set_page_cache(request, url)
+        return url, None
     
     edit   = None
     parts  = None

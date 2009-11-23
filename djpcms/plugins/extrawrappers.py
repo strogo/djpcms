@@ -1,20 +1,28 @@
-from djpcms.plugins.wrapper import ContentWrapper, add_content_wrapper
+from django.utils.safestring import mark_safe
+
+from djpcms.plugins import DJPwrapper
 from djpcms.html import box
 
 
-class BoxWrapper(ContentWrapper):
-    
+class simplediv(DJPwrapper):
+    name = 'flat-element'
+    description = 'div .flat-element'
+    def wrap(self, djp, cblock, html):
+        return mark_safe(u'\n'.join(['<div class="flat-element">',
+                                     html,
+                                     '</div>']))
+
+class BoxWrapper(DJPwrapper):
+    name = 'box'
     def wrap(self, djp, cblock, html):
         hd = cblock.title
         return box(hd = hd, bd = html).render()
-add_content_wrapper(BoxWrapper,'boxwrapper','Box with title')
-
-
     
-class BoxWrapper2(ContentWrapper):
+    
+class BoxWrapper2(DJPwrapper):
+    name = 'compact-box'
     form_layout = 'onecolumn'
     
     def wrap(self, djp, cblock, html):
         hd = cblock.title
         return box(hd = hd, bd = html).render()
-add_content_wrapper(BoxWrapper2,'compactbox','Compact Box with title')

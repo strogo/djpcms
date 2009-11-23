@@ -5,5 +5,5 @@ from login import *
 class UserApplication(appsite.ModelApplication):
     name    = 'account'
     baseurl = '/accounts/'
-    login   = LoginApp()
+    login   = LoginApp(isplugin = True)
     logout  = LogoutApp()

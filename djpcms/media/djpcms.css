@@ -239,7 +239,9 @@ input.search-box {padding: 4px 2px;}
 
 /* CONTENT CLASSES
 ------------------------------------------------------------------*/
-
+div.flat-element {
+	margin-bottom: 30px
+}
 .djpcms-block {
 	overflow: hidden;
 }

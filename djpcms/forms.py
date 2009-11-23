@@ -7,7 +7,7 @@ from djpcms.settings import HTML_CLASSES
 from djpcms.models import Page, BlockContent, SiteContent
 from djpcms.utils import lazyattr
 from djpcms import siteapp_choices
-from djpcms.plugins import get_plugin, functiongenerator, content_wrapper_tuple
+from djpcms.plugins import get_plugin, plugingenerator, wrappergenerator
 
 
 class LazyChoiceField(forms.ChoiceField):
@@ -207,8 +207,8 @@ class ContentBlockForm(forms.ModelForm):
     This Model form is used to change the plug-in within
     for a given BlockContent instance.
     '''
-    plugin_name    = PluginChoice(label = _('content'),   choices = functiongenerator, required = False)
-    container_type = LazyChoiceField(label=_('container'), choices = content_wrapper_tuple())
+    plugin_name    = PluginChoice(label = _('content'),   choices = plugingenerator, required = False)
+    container_type = LazyChoiceField(label=_('container'), choices = wrappergenerator)
     
     class Meta:
         model = BlockContent
