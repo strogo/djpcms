@@ -40,6 +40,19 @@ class TagApplication(appsite.ModelApplication):
     cloud   = SearchView(regex = 'tag', parent = 'search')
     tag     = TagView(regex = '(?P<tag1>\w+)', parent = 'cloud')
     
+    def object_content(self, djp, obj):
+        request = djp.request
+        tagurls = []
+        tagview = self.getapp('tag1')
+        if obj.tags and tagview:
+            tags = obj.tags.split(u' ')
+            for tag in tags:
+                djp = tagview.requestview(request, tag1 = tag)
+                tagurls.append({'url':djp.url,
+                                'name':tag})
+        return {'tagurls': tagurls}
+
+
 
 class ArchiveTaggedApplication(appsite.ArchiveApplication):
     '''
@@ -87,7 +100,8 @@ class ArchiveTaggedApplication(appsite.ArchiveApplication):
                 c += 1
             return view.requestview(request, **kwargs).url
     
-    def object_content(self, request, prefix, wrapper, obj):
+    def object_content(self, djp, obj):
+        request = djp.request
         tagurls = []
         tagview = self.getapp('tag1')
         if obj.tags and tagview:

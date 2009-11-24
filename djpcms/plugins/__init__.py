@@ -143,7 +143,7 @@ class DJPplugin(PluginBase):
                                            withrequest = self.withrequest))
            
 class SimpleWrap(DJPwrapper):
-    name         = 'simple no-tag'   
+    name         = 'simple no-tag'
     
 
 class EmptyPlugin(DJPplugin):

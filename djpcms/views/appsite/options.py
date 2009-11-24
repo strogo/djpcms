@@ -9,7 +9,7 @@ from django import forms
 from django.forms.models import modelform_factory
 from django.utils.encoding import force_unicode
 from django.utils.datastructures import SortedDict
-from django.template import loader, Template, RequestContext
+from django.template import loader, Template, Context, RequestContext
 from django.core.exceptions import PermissionDenied
 
 from djpcms.utils import form_kwargs, UnicodeObject
@@ -356,8 +356,19 @@ class ModelApplicationBase(object):
         '''
         return self.model.objects.all()
     
-    def object_content(self, request, prefix, wrapper, obj):
+    def object_content(self, djp, obj):
+        '''
+        Utility function for getting more content out of an instance of a model
+        '''
         return {}
+    
+    def app_for_object(self, obj):
+        try:
+            if self.model == obj.__class__:
+                return self
+        except:
+            pass
+        return self.application_site.for_model(obj.__class__)
     
     def paginate(self, request, data, prefix, wrapper):
         '''
@@ -368,7 +379,7 @@ class ModelApplicationBase(object):
         template_name = '%s/%s_search_item.html' % (self.opts.app_label,self.opts.module_name)
         pa = Paginator(data = data, request = request)
         for obj in pa.qs:
-            content = self.object_content(request, prefix, wrapper, obj)
+            content = self.object_content(djp, obj)
             content.update({'item': obj,
                             'editurl': self.editurl(request, obj),
                             'viewurl': self.viewurl(request, obj),
@@ -376,18 +387,20 @@ class ModelApplicationBase(object):
             yield loader.render_to_string(template_name    = template_name,
                                           context_instance = RequestContext(request, content))
     
-    def render_object(self, request, prefix, wrapper, obj):
+    def render_object(self, djp):
         '''
         Render an object
         '''
+        obj      = djp.instance
+        request  = djp.request
         template_name = self.object_template_file or \
                 '%s/%s.html' % (self.opts.app_label,self.opts.module_name)
-        content = self.object_content(request, prefix, wrapper, obj)
+        content = self.object_content(djp, obj)
         content.update({'item': obj,
                         'editurl': self.editurl(request, obj),
                         'deleteurl': self.deleteurl(request, obj)})
         return loader.render_to_string(template_name    = template_name,
-                                       context_instance = RequestContext(request, content))
+                                       context_instance = Context(content))
         
     def remove_object(self, obj):
         id = obj.id
@@ -404,7 +417,7 @@ class ModelApplicationBase(object):
         prefix  = djp.prefix
         app     = self
         for obj in data:
-            content = app.object_content(request, prefix, wrapper, obj)
+            content = app.object_content(djp, obj)
             content.update({'item': obj,
                             'editurl': app.editurl(request, obj),
                             'viewurl': app.viewurl(request, obj),

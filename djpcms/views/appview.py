@@ -382,11 +382,11 @@ class ViewView(ObjectView):
         super(ViewView,self).__init__(regex = regex, parent = parent,
                                       name = name, **kwargs)
         
-    def render(self, request, prefix, wrapper, *args):
+    def render(self, djp):
         '''
         Render the add view
         '''
-        return self.appmodel.render_object(request, prefix, wrapper, self.object)
+        return self.appmodel.render_object(djp)
     
     
 # Delete an object. POST method only. not GET method should modify databse

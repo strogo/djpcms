@@ -115,18 +115,29 @@ class htmltiny(htmltag):
         super(htmltiny,self).__init__(tag, **attrs)
     
     def render(self):
-        return mark_safe(u'<%s %s/>' % (self.tag,self.flatatt()))
+        return mark_safe(u'<%s%s/>' % (self.tag,self.flatatt()))
+    
+class htmlsmall(htmltag):
+    
+    def __init__(self, tag, inner, **attrs):
+        self.inner = inner
+        super(htmlsmall,self).__init__(tag, **attrs)
+    
+    def render(self):
+        return mark_safe(u'<%s%s>%s</%s>' % (self.tag,self.flatatt(),self.inner,self.tag))
     
     
 class htmlcomp(htmltag):
     '''
     HTML component with inner components
     '''
-    def __init__(self, tag, template = None, **attrs):
+    def __init__(self, tag, template = None, inner = None, **attrs):
         super(htmlcomp,self).__init__(tag, **attrs)
         self.template = template
         self.tag      = tag
         self.inner    = SortedDict()
+        if inner:
+            self['inner'] = inner
         
     def __setitem__(self, key, value):
         if isinstance(value, htmlbase):
