@@ -5,7 +5,7 @@ import os
 
 from django.core.files.storage import FileSystemStorage
 
-from djpcms.djutils.func import function_module, safepath
+from djpcms.utils import function_module, safepath
 
 
 def _default_uploads(obj, name):

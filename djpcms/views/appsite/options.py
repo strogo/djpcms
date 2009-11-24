@@ -13,7 +13,6 @@ from django.template import loader, Template, Context, RequestContext
 from django.core.exceptions import PermissionDenied
 
 from djpcms.utils import form_kwargs, UnicodeObject
-from djpcms.djutils.forms import addhiddenfield
 from djpcms.plugins import register_application
 from djpcms.views.baseview import editview
 from djpcms.views.appview import AppView

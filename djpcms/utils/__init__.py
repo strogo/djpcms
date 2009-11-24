@@ -43,6 +43,15 @@ def function_module(dotpath, default = None):
     else:
         return default
     
+
+def safepath(path, rtx = '-'):
+    rpath = path.split('/')
+    bits = []
+    for p in rpath:
+        if p:
+            bits.append(slugify(p, rtx = rtx))
+    return '/'.join(bits)
+    
     
 def lazyattr(f):
     

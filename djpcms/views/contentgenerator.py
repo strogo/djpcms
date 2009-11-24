@@ -4,7 +4,7 @@ from django.template import RequestContext, loader
 from django.utils.safestring import mark_safe
 
 from djpcms.settings import HTML_CLASSES
-from djpcms.djutils import UnicodeObject
+from djpcms.utils import UnicodeObject
 
 
 class BlockContentGen(UnicodeObject):
