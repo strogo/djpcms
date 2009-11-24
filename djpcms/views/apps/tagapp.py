@@ -54,8 +54,18 @@ def add_tags(self, c, djp, obj):
 class TagApplication(appsite.ModelApplication):
     search  = SearchView(in_navigation = True)
     cloud   = SearchView(regex = 'tag', parent = 'search')
-    tag     = TagView(regex = '(?P<tag1>\w+)', parent = 'cloud')
+    tag1    = TagView(regex = '(?P<tag1>\w+)', parent = 'cloud')
     
+    def tagurl(self, request, *tags):
+        view = self.getapp('tag%s' % len(tags))
+        if view:
+            kwargs = {}
+            c = 1
+            for tag in tags:
+                kwargs['tag%s' % c] = tag
+                c += 1
+            return view.requestview(request, **kwargs).url
+        
     def object_content(self, djp, obj):
         c = super(TagApplication,self).object_content(djp, obj)
         return add_tags(self, c, djp, obj)
