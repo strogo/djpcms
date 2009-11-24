@@ -333,6 +333,7 @@ class ModelApplicationBase(object):
         return None
     
     # Permissions
+    #-----------------------------------------------------------------------------------------
     def has_permission(self, request = None, obj = None):
         return True
     def has_add_permission(self, request = None, obj=None):
@@ -352,6 +353,7 @@ class ModelApplicationBase(object):
             return False
         opts = self.opts
         return request.user.has_perm(opts.app_label + '.' + opts.get_delete_permission())
+    #-----------------------------------------------------------------------------------------------
     
     def basequery(self, request):
         '''
@@ -363,9 +365,15 @@ class ModelApplicationBase(object):
     
     def object_content(self, djp, obj):
         '''
-        Utility function for getting more content out of an instance of a model
+        Utility function for getting content out of an instance of a model.
+        This dictionary should be used to render an object within a template
         '''
-        return {}
+        request = djp.request
+        return {'item':      obj,
+                'user':      request.user,
+                'editurl':   self.editurl(request, obj),
+                'deleteurl': self.deleteurl(request, obj),
+                'viewurl':   self.viewurl(request, obj)}
     
     def app_for_object(self, obj):
         try:
@@ -385,12 +393,7 @@ class ModelApplicationBase(object):
         pa = Paginator(data = data, request = request)
         for obj in pa.qs:
             content = self.object_content(djp, obj)
-            content.update({'item': obj,
-                            'editurl': self.editurl(request, obj),
-                            'viewurl': self.viewurl(request, obj),
-                            'deleteurl': self.deleteurl(request, obj)})
-            yield loader.render_to_string(template_name    = template_name,
-                                          context_instance = RequestContext(request, content))
+            yield loader.render_to_string(template_name, content)
     
     def render_object(self, djp):
         '''

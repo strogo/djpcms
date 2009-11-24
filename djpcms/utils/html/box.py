@@ -1,4 +1,4 @@
-from base import htmlbase, htmlsmall, htmlcomp
+from base import htmlbase, htmlwrap, htmlcomp
 
 __all__ = ['box']
 
@@ -23,11 +23,14 @@ class box(htmlcomp):
             if isinstance(hd,htmlbase):
                 inner = hd
             else:
-                inner = htmlsmall('h2', hd)
+                inner = htmlwrap('h2', hd)
             self['hd'] = htmlcomp('div', cn = 'hd', inner = inner)
         
         # The body
-        self['bd'] = htmlcomp('div', cn = 'bd', inner = bd)
+        if not isinstance(bd,htmlbase):
+            self['bd'] = htmlwrap('div', bd or u'', cn = 'bd')
+        else:
+            self['bd'] = htmlcomp('div', cn = 'bd', inner = bd)
         
         # The footer
         if ft:

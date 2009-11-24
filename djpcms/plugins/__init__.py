@@ -71,7 +71,10 @@ class DJPwrapper(PluginBase):
         '''
         Render the inner block. This function is the one to implement
         '''
-        return html
+        if html:
+            return html
+        else:
+            return u''
     
     def __call__(self, djp, cblock, html):
         '''

@@ -35,22 +35,30 @@ class TagArchiveView(ArchiveView):
             return query
 
 
+
+def add_tags(self, c, djp, obj):
+    request = djp.request
+    tagurls = []
+    tagview = self.getapp('tag1')
+    if obj.tags and tagview:
+        tags = obj.tags.split(u' ')
+        for tag in tags:
+            djp = tagview.requestview(request, tag1 = tag)
+            tagurls.append({'url':djp.url,
+                            'name':tag})
+    c['tagurls'] = tagurls
+    return c
+
+
+
 class TagApplication(appsite.ModelApplication):
     search  = SearchView(in_navigation = True)
     cloud   = SearchView(regex = 'tag', parent = 'search')
     tag     = TagView(regex = '(?P<tag1>\w+)', parent = 'cloud')
     
     def object_content(self, djp, obj):
-        request = djp.request
-        tagurls = []
-        tagview = self.getapp('tag1')
-        if obj.tags and tagview:
-            tags = obj.tags.split(u' ')
-            for tag in tags:
-                djp = tagview.requestview(request, tag1 = tag)
-                tagurls.append({'url':djp.url,
-                                'name':tag})
-        return {'tagurls': tagurls}
+        c = super(ArchiveTaggedApplication,self).object_content(djp, obj)
+        return add_tags(self, c, djp, obj)
 
 
 
@@ -101,16 +109,8 @@ class ArchiveTaggedApplication(appsite.ArchiveApplication):
             return view.requestview(request, **kwargs).url
     
     def object_content(self, djp, obj):
-        request = djp.request
-        tagurls = []
-        tagview = self.getapp('tag1')
-        if obj.tags and tagview:
-            tags = obj.tags.split(u' ')
-            for tag in tags:
-                djp = tagview.requestview(request, tag1 = tag)
-                tagurls.append({'url':djp.url,
-                                'name':tag})
-        return {'tagurls': tagurls}
+        c = super(ArchiveTaggedApplication,self).object_content(djp, obj)
+        return add_tags(self, c, djp, obj)
     
     
     

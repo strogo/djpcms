@@ -117,14 +117,18 @@ class htmltiny(htmltag):
     def render(self):
         return mark_safe(u'<%s%s/>' % (self.tag,self.flatatt()))
     
-class htmlsmall(htmltag):
-    
+class htmlwrap(htmltag):
+    '''
+    wrap a string within a tag
+    '''
     def __init__(self, tag, inner, **attrs):
         self.inner = inner
-        super(htmlsmall,self).__init__(tag, **attrs)
+        super(htmlwrap,self).__init__(tag, **attrs)
     
     def render(self):
-        return mark_safe(u'<%s%s>%s</%s>' % (self.tag,self.flatatt(),self.inner,self.tag))
+        return mark_safe(u'\n'.join(['<%s%s>' % (self.tag,self.flatatt()),
+                                     self.inner,
+                                     '</%s>' % self.tag]))
     
     
 class htmlcomp(htmltag):

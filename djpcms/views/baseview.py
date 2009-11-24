@@ -138,7 +138,7 @@ class DjpRequestWrap(UnicodeObject):
         return func(self)
     
     def robots(self):
-        if self.view.has_permission():
+        if self.view.has_permission(None, self.instance):
             return u'ALL'
         else:
             return u'NONE,NOARCHIVE'
