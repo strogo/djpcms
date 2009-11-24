@@ -1,5 +1,8 @@
 #
-#    Requires tagging
+# Collection of plugins which handle tags
+#
+#@requires: django-tagging    http://code.google.com/p/django-tagging/
+#
 from django import forms
 from django.contrib.contenttypes.models import ContentType
 from django.template import loader
@@ -68,3 +71,31 @@ class tagcloud(DJPplugin):
         return loader.render_to_string(['bits/tag_cloud.html',
                                         'djpcms/bits/tag_cloud.html'],c)
 
+
+class TagForObject(DJPplugin):
+    
+    def render(self, djp, **kwargs):
+        request = djp.request
+        try:
+            appmodel = djp.view.appmodel
+            tags = djp.instance.tags
+            if tags:
+                tagnames = tags.split(' ')
+                tags = []
+                for name in tagnames:
+                    tag = {'name': name,
+                           }
+                    try:
+                        tag['url'] = appmodel.tagurl(request, name)
+                    except:
+                        tag['url'] = None
+                c = {'tags': tags,
+                     'instance': djp.instance}
+                return loader.render_to_string(['bits/object_tags.html',
+                                                'djpcms/bits/object_tags.html'],c)
+            else:
+                return u''
+        except:
+            return u''
+            
+            
