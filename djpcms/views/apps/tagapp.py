@@ -57,7 +57,7 @@ class TagApplication(appsite.ModelApplication):
     tag     = TagView(regex = '(?P<tag1>\w+)', parent = 'cloud')
     
     def object_content(self, djp, obj):
-        c = super(ArchiveTaggedApplication,self).object_content(djp, obj)
+        c = super(TagApplication,self).object_content(djp, obj)
         return add_tags(self, c, djp, obj)
 
 
