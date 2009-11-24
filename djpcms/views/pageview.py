@@ -43,9 +43,12 @@ class pageview(djpcmsview):
         else:
             return None
         
-    def has_permission(self, request, obj = None):
+    def has_permission(self, request = None, obj = None):
         if self.page.requires_login:
-            return request.user.is_authenticated()
+            if request:
+                return request.user.is_authenticated()
+            else:
+                return False
         else:
             return True
         

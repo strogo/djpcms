@@ -204,7 +204,7 @@ class AppView(djpcmsview):
             if sv and k.endswith('-prefix'):
                 return sv
     
-    def has_permission(self, request, obj = None):
+    def has_permission(self, request = None, obj = None):
         '''
         Delegate to appmodel
         '''
@@ -315,6 +315,9 @@ class AddView(AppView):
                                      isplugin = isplugin,
                                      **kwargs)
     
+    def has_permission(self, request = None, obj = None):
+        return self.appmodel.has_add_permission(request, obj)
+    
     def get_form(self, djp):
         return self.appmodel.get_form(djp)
     
@@ -399,7 +402,7 @@ class DeleteView(ObjectView):
                                         name = name, isapp = isapp,
                                         **kwargs)
         
-    def has_permission(self, request, obj):
+    def has_permission(self, request = None, obj = None):
         return self.appmodel.has_delete_permission(request, obj)
     
     def default_ajax_view(self, djp):
@@ -422,7 +425,7 @@ class EditView(ObjectView):
     def __init__(self, regex = 'edit', parent = 'view', name = 'edit',  **kwargs):
         super(EditView,self).__init__(regex = regex, parent = parent, name = name, **kwargs)
     
-    def has_permission(self, request, obj):
+    def has_permission(self, request = None, obj = None):
         return self.appmodel.has_edit_permission(request, obj)
     
     def get_form(self, djp):

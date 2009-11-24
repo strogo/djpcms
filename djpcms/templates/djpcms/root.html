@@ -7,7 +7,7 @@
  <!--[if IE]><style type="text/css"> body {word-wrap: break-word;}</style><![endif]-->{% block meta-content %}
  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />{% endblock %}{% block meta-language %}
  <meta http-equiv="Content-Language" content="en-uk" />{% endblock %}{% block meta-robots %}
-<meta name="ROBOTS" content="ALL" />{% endblock %}
+<meta name="ROBOTS" content="{{ djp.robots }}" />{% endblock %}
 <meta name="keywords" content="{% block site-keywords %}{% endblock %}"/>
 <meta name="description" content="{% block site-description %}{% endblock %}"/>{% block style-reset %}{% endblock %}{% block style-block %}
 {% styling %}{% endblock %}

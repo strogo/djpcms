@@ -73,8 +73,10 @@ class tagcloud(DJPplugin):
 
 
 class TagForObject(DJPplugin):
+    name        = "object-tags"
+    description = "Tags for an object"
     
-    def render(self, djp, **kwargs):
+    def render(self, djp, wrapper, prefix, **kwargs):
         request = djp.request
         try:
             appmodel = djp.view.appmodel
@@ -83,12 +85,12 @@ class TagForObject(DJPplugin):
                 tagnames = tags.split(' ')
                 tags = []
                 for name in tagnames:
-                    tag = {'name': name,
-                           }
+                    tag = {'name': name}
                     try:
                         tag['url'] = appmodel.tagurl(request, name)
                     except:
                         tag['url'] = None
+                    tags.append(tag)
                 c = {'tags': tags,
                      'instance': djp.instance}
                 return loader.render_to_string(['bits/object_tags.html',
@@ -97,5 +99,5 @@ class TagForObject(DJPplugin):
                 return u''
         except:
             return u''
-            
+    
             

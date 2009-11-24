@@ -297,6 +297,12 @@ class ModelApplicationBase(object):
         return tuple(urls)
     urls = property(fget = make_urls)
     
+    def addurl(self, request):
+        view = self.getapp('add')
+        if view and self.has_add_permission(request):
+            djp = view.requestview(request)
+            return djp.url
+        
     def deleteurl(self, request, obj):
         #TODO: change this so that we are not tide up with name
         view = self.getapp('delete')
@@ -327,24 +333,24 @@ class ModelApplicationBase(object):
     def tagurl(self, request, tag):
         return None
     
-    def has_permission(self, request, obj = None):
+    # Permissions
+    def has_permission(self, request = None, obj = None):
         return True
-    
-    def has_edit_permission(self, request, obj=None):
+    def has_add_permission(self, request = None, obj=None):
+        if not request:
+            return False
+        opts = self.opts
+        return request.user.has_perm(opts.app_label + '.' + opts.get_add_permission())
+    def has_edit_permission(self, request = None, obj=None):
+        if not request:
+            return False
         opts = self.opts
         return request.user.has_perm(opts.app_label + '.' + opts.get_change_permission())
-    
-    def has_view_permission(self, request, obj=None):
+    def has_view_permission(self, request = None, obj=None):
         return self.has_permission(request, obj)
-    
-    def has_delete_permission(self, request, obj=None):
-        """
-        Returns True if the given request has permission to change the given
-        Django model instance.
-
-        If `obj` is None, this should return True if the given request has
-        permission to delete *any* object of the given type.
-        """
+    def has_delete_permission(self, request = None, obj=None):
+        if not request:
+            return False
         opts = self.opts
         return request.user.has_perm(opts.app_label + '.' + opts.get_delete_permission())
     

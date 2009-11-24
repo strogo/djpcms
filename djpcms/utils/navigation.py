@@ -10,7 +10,7 @@ class lazycounter(object):
     '''
     A lazy view counter used to build navigations type iterators
     '''
-    def __new__(cls, djp, **kwargs):
+    def __new__(cls, djp, *args, **kwargs):
         obj = super(lazycounter, cls).__new__(cls)
         obj.djp     = djp
         obj.kwargs  = kwargs
@@ -88,6 +88,9 @@ class Breadcrumbs(lazycounter):
     Breadcrumbs for current page
     '''
     
+    def __init__(self, djp, min_length = 1):
+        self.min_length = min_length
+    
     def make_item(self, djp, classes, first):
         parent = djp.parent
         if parent:
@@ -110,6 +113,9 @@ class Breadcrumbs(lazycounter):
             djp   = djp.parent
             val   = self.make_item(djp, classes, first)
             
-        return crumbs
+        if len(crumbs) < self.min_length:
+            return []
+        else:
+            return crumbs
         
         

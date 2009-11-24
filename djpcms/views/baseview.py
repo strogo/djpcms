@@ -136,6 +136,13 @@ class DjpRequestWrap(UnicodeObject):
             raise ValueError("Allowed view method %s does not exist in %s." % (method,view))
         
         return func(self)
+    
+    def robots(self):
+        if self.view.has_permission():
+            return u'ALL'
+        else:
+            return u'NONE,NOARCHIVE'
+        
 
 
 # THE DJPCMS INTERFACE CLASS for handling views
@@ -353,7 +360,7 @@ class djpcmsview(UnicodeObject):
         else:
             return grid960()
     
-    def has_permission(self, request, obj = None):
+    def has_permission(self, request = None, obj = None):
         '''
         Hook for permissions
         '''
