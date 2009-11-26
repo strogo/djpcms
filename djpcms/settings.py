@@ -44,7 +44,7 @@ GRID960_DEFAULT_FIXED    = getattr(settings, 'GRID960_DEFAULT_FIXED', True)
 DJPCMS_SITE_STYLE        = getattr(settings, 'DJPCMS_SITE_STYLE', 'smoothness')
 
 # Inline editing configuration
-# By default it is switch off
+# By default it is switch on
 #
 #    available:    boolean   whether the inline editing is on or off
 #    preurl:       slug      which will be used as initial part of the editing url
@@ -53,9 +53,9 @@ DJPCMS_SITE_STYLE        = getattr(settings, 'DJPCMS_SITE_STYLE', 'smoothness')
 #    permission:   String    dotted path to a function handling editing permissions
 #    pagecontent:  String    Code of page to be used as root for site content. This page must be
 #                            available in the database.
-CONTENT_INLINE_EDITING = getattr(settings, 'CONTENT_INLINE_EDITING',  {'available':False,
+CONTENT_INLINE_EDITING = getattr(settings, 'CONTENT_INLINE_EDITING',  {'available':True,
                                                                        'preurl': 'edit',
                                                                        'permission': None,
-                                                                       'pagecontent': '/content/',
+                                                                       'pagecontent': '/site-content/',
                                                                        'width': 600,
                                                                        'height': 400,})

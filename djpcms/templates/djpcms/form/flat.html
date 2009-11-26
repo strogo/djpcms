@@ -1,8 +1,12 @@
-{% extends "djpcms/form/basetable.html" %}{% block core-table %}
-  <tr>{% for field in html %}{% block label-tag %}
-  	<td align="left"> {{field.label_tag }} </td>{% endblock %}
-  	<td>{{ field.field }}</td>{% endfor %}{% for sb in html.children %}
-  	<td align="left">
-  	  {{ sb }}
-	</td>{% endfor %}
-  </tr>{% endblock %}
+<table>
+<tbody>
+<tr>{% for field in html %}{% if not field.is_hidden %}
+<td align="left"><div id = "{{ field.errorid }}" class="{{ html.ajax.errorlist }}"></div></td>{% endif %}{% endfor %}{% for sb in html.submits %}
+<td></td>{% endfor %}
+</tr>
+<tr>{% for field in html %}{% if not field.is_hidden %}
+<td align="left">{{ field.field }}</td>{% endif %}{% endfor %}{% for sb in html.submits %}
+<td>{{ sb }}</td>{% endfor %}
+</tr>
+</tbody>
+</table>

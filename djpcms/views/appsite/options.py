@@ -13,6 +13,7 @@ from django.template import loader, Template, Context, RequestContext
 from django.core.exceptions import PermissionDenied
 
 from djpcms.utils import form_kwargs, UnicodeObject
+from djpcms.utils.forms import add_hidden_field
 from djpcms.plugins import register_application
 from djpcms.views.baseview import editview
 from djpcms.views.appview import AppView
@@ -190,7 +191,17 @@ class ModelApplicationBase(object):
     
     def getapp(self, code):
         return self.applications.get(code, None)
-        
+    
+    def update_initial(self, request, mform, initial):
+        if request.method == 'GET' and request.GET:
+            params = dict(request.GET.items())
+            next   = params.get('next')
+            if next:
+                mform = add_hidden_field(mform,'next')
+                initial = initial or {}
+                initial['next'] = next
+        return initial
+                
     def get_form(self, djp, prefix = None, initial = None, wrapped = True):
         '''
         Build an add/edit form for the application model
@@ -202,18 +213,23 @@ class ModelApplicationBase(object):
         @param url: action url in the form     
         '''
         instance = djp.instance
+        request  = djp.request
+        
         if isinstance(self.form,type):
             mform = modelform_factory(self.model, self.form)
         else:
-            mform = self.form(instance = instance)
+            mform = self.form(request = request, instance = instance)
+        
+        initial = self.update_initial(request, mform, initial)
         
         wrapper  = djp.wrapper
                 
-        f     = mform(**form_kwargs(request     = djp.request,
+        f     = mform(**form_kwargs(request     = request,
                                     initial     = initial,
                                     instance    = instance,
                                     prefix      = prefix,
                                     withrequest = self.form_withrequest))
+        
         if wrapper:
             layout = wrapper.form_layout
         else:
@@ -231,26 +247,23 @@ class ModelApplicationBase(object):
         
     def submit(self, instance):
         if instance:
-            return submit(value = 'save', name = 'edit')
+            sb = [submit(value = 'save', name = 'edit')]
         else:
-            return submit(value = 'add', name = 'add')
+            sb = [submit(value = 'add', name = 'add')]
+        sb.append(submit(value = 'cancel', name = 'cancel'))
+        return sb
     
-    def get_searchform(self, djp,
+    def get_searchform(self,
+                       djp,
                        initial = None,
-                       prefix = None,
-                       method = 'get',
-                       wrapper = None,
-                       url = None):
+                       method  = 'get'):
         '''
         Build a search form for model
         '''
-        mform = self.search_form
-        #mform = addhiddenfield(self.search_form,'prefix')
-        #initial = {'prefix':prefix}
+        mform  = self.search_form
         f = mform(**form_kwargs(request = djp.request,
-                                initial = initial,
-                                prefix  = prefix))
-        fhtml = form(method = method, url = url)
+                                initial = initial))
+        fhtml = form(method = method, url = djp.url)
         fhtml['form'] = formlet(form = f,
                                 layout = 'flat-notag',
                                 submit = submit(value = 'search', name = 'search'))
@@ -369,9 +382,12 @@ class ModelApplicationBase(object):
         This dictionary should be used to render an object within a template
         '''
         request = djp.request
+        editurl = self.editurl(request, obj)
+        if editurl:
+            editurl = '%s?next=%s' % (editurl,djp.url)
         return {'item':      obj,
                 'user':      request.user,
-                'editurl':   self.editurl(request, obj),
+                'editurl':   editurl,
                 'deleteurl': self.deleteurl(request, obj),
                 'viewurl':   self.viewurl(request, obj)}
     
@@ -397,16 +413,13 @@ class ModelApplicationBase(object):
     
     def render_object(self, djp):
         '''
-        Render an object
+        Render an object.
+        This is usually called in the view page of the object
         '''
         obj      = djp.instance
         request  = djp.request
-        template_name = self.object_template_file or \
-                '%s/%s.html' % (self.opts.app_label,self.opts.module_name)
+        template_name = self.get_object_view_template(obj,djp.wrapper)
         content = self.object_content(djp, obj)
-        content.update({'item': obj,
-                        'editurl': self.editurl(request, obj),
-                        'deleteurl': self.deleteurl(request, obj)})
         return loader.render_to_string(template_name    = template_name,
                                        context_instance = Context(content))
         
@@ -426,12 +439,22 @@ class ModelApplicationBase(object):
         app     = self
         for obj in data:
             content = app.object_content(djp, obj)
-            content.update({'item': obj,
-                            'editurl': app.editurl(request, obj),
-                            'viewurl': app.viewurl(request, obj),
-                            'deleteurl': app.deleteurl(request, obj)})
             yield loader.render_to_string(template_name    = self.get_item_template(obj, wrapper),
                                           context_instance = RequestContext(request, content))
+            
+    def get_object_view_template(self, obj, wrapper):
+        '''
+        Return the template file for the object
+        The search looks in
+         1 - components/<<module_name>>.html
+         2 - <<app_label>>/<<module_name>>.html
+         3 - djpcms/components/object.html (fall back)
+        '''
+        opts = obj._meta
+        template_name = '%s.html' % opts.module_name
+        return ['components/%s' % template_name,
+                '%s/%s' % (opts.app_label,template_name),
+                'djpcms/components/object.html']
             
     def get_item_template(self, obj, wrapper):
         '''

@@ -19,7 +19,7 @@ FORMLET_TEMPLATES      = {'onecolumn':    ['form/onecolumn.html',
                                            'djpcms/form/twocolumns.html'],
                           'threecolumns': ['form/threecolumns.html',
                                            'djpcms/form/threecolumns.html'],
-                          'flat_notag':   ['form/flat_notag.html',
+                          'flat-notag':   ['form/flat_notag.html',
                                            'djpcms/form/flat_notag.html'],
                           'flat':         ['form/flat.html',
                                            'djpcms/form/flat.html']}
@@ -48,7 +48,9 @@ class form(htmlcomp):
         '''
         a form error message
         '''
-        ehtml = u'\n'.join(['<div class="form-error">',html,'</div>'])
+        ehtml = u'\n'.join(['<div class="%s">' % self.ajax.errorlist,
+                            html,
+                            '</div>'])
         return self.messagepost(ehtml)
     
     def redirect(self, url):

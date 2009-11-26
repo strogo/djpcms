@@ -14,7 +14,7 @@ from django.core.exceptions import PermissionDenied
 
 from djpcms.settings import HTML_CLASSES, GRID960_DEFAULT_FIXED, \
                             DEFAULT_TEMPLATE_NAME, DJPCMS_CONTENT_FUNCTION
-from djpcms.utils.ajax import jservererror
+from djpcms.utils.ajax import jservererror, jredirect
 from djpcms.views.contentgenerator import BlockContentGen
 from djpcms.utils.html import grid960
 from djpcms.permissions import inline_editing
@@ -310,25 +310,29 @@ class djpcmsview(UnicodeObject):
         
         # If post_view key is defined, it means this is a AJAX-JSON request
         if ajax_key:
-            if def_ajax:
-                ajax_view_function = self.default_ajax_view
-            else:
-                ajax_view = 'ajax__%s' % ajax_key
-                ajax_view_function  = getattr(self,str(ajax_view),None)
-                
-                # No post view function found. Let's try the default ajax post view
-                if not ajax_view_function:
-                    ajax_view_function = self.default_ajax_view;
-            
-            try:
-                res  = ajax_view_function(djp)
-            except Exception, e:
-                # we got an error. If in debug mode send a JSON response with
-                # the error message back to javascript.
-                if settings.DEBUG:
-                    res = jservererror(e, url = djp.url)
+            if ajax_key == 'cancel':
+                url = params.get('next',djp.url)
+                res = jredirect(url)
+            else:    
+                if def_ajax:
+                    ajax_view_function = self.default_ajax_view
                 else:
-                    raise e
+                    ajax_view = 'ajax__%s' % ajax_key
+                    ajax_view_function  = getattr(self,str(ajax_view),None)
+                
+                    # No post view function found. Let's try the default ajax post view
+                    if not ajax_view_function:
+                        ajax_view_function = self.default_ajax_view;
+            
+                try:
+                    res  = ajax_view_function(djp)
+                except Exception, e:
+                    # we got an error. If in debug mode send a JSON response with
+                    # the error message back to javascript.
+                    if settings.DEBUG:
+                        res = jservererror(e, url = djp.url)
+                    else:
+                        raise e
             return http.HttpResponse(res.dumps(), mimetype='application/javascript')
         #
         # Otherwise it is a standard POST response

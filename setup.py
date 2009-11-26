@@ -1,33 +1,35 @@
-version = (0, 4, 'pre')
 
 import os
-from quickutils import packages_in_dirs, get_version
+import sys
+from setuptools import setup, find_packages
 
-from distutils.command.install import INSTALL_SCHEMES
-from distutils.core import setup
-
-# Tell distutils to put the data_files in platform-specific installation
-# locations. See here for an explanation:
-# http://groups.google.com/group/comp.lang.python/browse_thread/thread/35ec7b2fed36eaec/2105ee4d9e8042cb
-for scheme in INSTALL_SCHEMES.values():
-    scheme['data'] = scheme['purelib']
+def get_version():
+    path = os.path.dirname(__file__)
+    sys.path.insert(0,path)
+    import djpcms
+    return djpcms.get_version()
 
 
-root_dir    = os.path.dirname(__file__)
-packages, data_files = packages_in_dirs(root_dir, 'djpcms')
+def read(fname):
+    return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 
 setup(
-        name = 'djpcms',
-        version = get_version(version),
-        author = 'Luca Sbardella',
-        author_email = 'luca@quantmind.com',
-        url = 'http://code.google.com/p/txdjango/',
-        license = 'New BSD License',
-        description = 'Django-jQuery dynamic Content Management System',
-        packages = packages,
-        data_files = data_files,
-        keywords = 'django, cms',
+        name         = 'djpcms',
+        version      = get_version(),
+        author       = 'Luca Sbardella',
+        author_email = 'luca.sbardella@gmail.com',
+        url          = 'http://github.com/lsbardel/djpcms',
+        license      = 'BSD',
+        description  = 'Dynamic content management system for Django',
+        long_description = read('README'),
+        packages     = find_packages('djpcms'),
+        #data_files   = data_files,
+        install_requires = [
+                            'django-tagging==0.4pre',
+                            'Django>=1.1',
+                            'setuptools'
+                            ],
         classifiers = [
             'Development Status :: 4 - Beta',
             'Environment :: Web Environment',
@@ -38,7 +40,5 @@ setup(
             'Programming Language :: Python',
             'Topic :: Software Development :: Utilities'
         ],
-        install_requires=['django',
-                          'python-openid'],
     )
 

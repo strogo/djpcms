@@ -1,0 +1,3 @@
+<div class="object-tags">{% for tag in tags %}
+<a {% if tag.url %} href="{{ tag.url }}"{% endif %} title="{{ tag.name }}">{{ tag.name }}</a>{% endfor %}
+</div>
