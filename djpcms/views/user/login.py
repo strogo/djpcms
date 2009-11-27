@@ -20,8 +20,8 @@ class LogoutApp(appview.AppView):
     '''
     _methods = ('get',)
     
-    def __init__(self, url = 'logout', parent = None):
-        super(LogoutApp,self).__init__(url,parent,isapp = False)
+    def __init__(self, regex = 'logout', parent = None):
+        super(LogoutApp,self).__init__(regex = regex, parent = parent, isapp = False)
         
     def preget(self, djp):
         request = djp.request
@@ -39,8 +39,8 @@ class LoginApp(appview.AppView):
     A Battery included Login view.
     This object can be used to login users
     '''
-    def __init__(self, url = 'login', parent = None, **kwargs):
-        super(LoginApp,self).__init__(url, parent, **kwargs)
+    def __init__(self, regex = 'login', parent = None, **kwargs):
+        super(LoginApp,self).__init__(regex = regex, parent = parent, **kwargs)
         
     def title(self, djp):
         return 'Sign in to %s' % self.page.site.name

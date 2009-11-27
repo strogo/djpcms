@@ -1,9 +1,10 @@
 
-from djpcms.views import appsite
+from djpcms.views import appsite, appview
 from login import *
 
 class UserApplication(appsite.ModelApplication):
     name    = 'account'
     baseurl = '/accounts/'
-    login   = LoginApp(isplugin = True)
-    logout  = LogoutApp()
+    home    = appview()
+    login   = LoginApp(isplugin = True, parent = 'home')
+    logout  = LogoutApp(parent = 'home')

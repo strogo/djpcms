@@ -441,7 +441,7 @@ class ModelApplicationBase(object):
             content = app.object_content(djp, obj)
             yield loader.render_to_string(template_name    = self.get_item_template(obj, wrapper),
                                           context_instance = RequestContext(request, content))
-            
+    
     def get_object_view_template(self, obj, wrapper):
         '''
         Return the template file for the object

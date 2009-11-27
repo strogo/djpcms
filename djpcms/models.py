@@ -636,3 +636,21 @@ def create_new_content(user = None, **kwargs):
     ct = SiteContent(user_last = user_last, **kwargs)
     ct.save()
     return ct
+
+
+class Application(models.Model):
+    '''
+    A general method for creating applications
+    '''
+    name        = models.CharField(max_length=200, unique = True)
+    description = models.TextField(blank = True)
+    stylesheet  = models.TextField(blank=True)
+    javascript  = models.TextField(blank=True)
+    mark        = models.IntegerField(default = 0)
+    markup      = models.CharField(max_length = 3,
+                                   choices = markup.choices(),
+                                   default = markup.default(),
+                                   null = False)
+    
+    
+    
