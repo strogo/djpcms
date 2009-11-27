@@ -3,10 +3,14 @@ Requires django-tagging
 
 Battery included plugins and application for tagging and tagging with archive
 '''
+from django.utils.http import urlquote
 from djpcms.views import appsite
 from djpcms.views.appview import AppView, ArchiveView, SearchView
 
 from tagging.models import TaggedItem
+
+# REGEX FOR A TAG
+tag_regex = '[-\.\+\#\'\:\w]+'
 
 
 class TagView(SearchView):
@@ -49,22 +53,26 @@ def add_tags(self, c, djp, obj):
     c['tagurls'] = tagurls
     return c
 
+def tagurl(self, request, *tags):
+    view = self.getapp('tag%s' % len(tags))
+    if view:
+        kwargs = {}
+        c = 1
+        for tag in tags:
+            kwargs['tag%s' % c] = urlquote(tag)
+            c += 1
+        return view.requestview(request, **kwargs).url
+
 
 
 class TagApplication(appsite.ModelApplication):
     search  = SearchView(in_navigation = True)
     cloud   = SearchView(regex = 'tag', parent = 'search')
-    tag1    = TagView(regex = '(?P<tag1>\w+)', parent = 'cloud')
+    tag1    = TagView(regex = '(?P<tag1>%s)' % tag_regex,
+                      parent = 'cloud')
     
     def tagurl(self, request, *tags):
-        view = self.getapp('tag%s' % len(tags))
-        if view:
-            kwargs = {}
-            c = 1
-            for tag in tags:
-                kwargs['tag%s' % c] = tag
-                c += 1
-            return view.requestview(request, **kwargs).url
+        return tagurl(self, request, *tags)
         
     def object_content(self, djp, obj):
         c = super(TagApplication,self).object_content(djp, obj)
@@ -83,7 +91,7 @@ class ArchiveTaggedApplication(appsite.ArchiveApplication):
                                     parent = 'year_archive')
     day_archive    =    ArchiveView(regex = '(?P<day>\d{2})',
                                     parent = 'month_archive')
-    tag1           = TagArchiveView(regex = 'tags/(?P<tag1>\w+)',
+    tag1           = TagArchiveView(regex = 'tags/(?P<tag1>%s)' % tag_regex,
                                     parent = 'search')
     year_archive1  = TagArchiveView(regex = '(?P<year>\d{4})',
                                     parent = 'tag1')
@@ -91,7 +99,7 @@ class ArchiveTaggedApplication(appsite.ArchiveApplication):
                                     parent = 'year_archive')
     day_archive1   = TagArchiveView(regex = '(?P<day>\d{2})',
                                     parent = 'month_archive')
-    tag2           = TagArchiveView(regex = 'tags2/(?P<tag1>\w+)/(?P<tag2>\w+)',
+    tag2           = TagArchiveView(regex = 'tags2/(?P<tag1>%s)/(?P<tag2>%s)' % (tag_regex,tag_regex),
                                     parent = 'search')
     year_archive2  = TagArchiveView(regex = '(?P<year>\d{4})',
                                     parent = 'tag2')
@@ -99,7 +107,7 @@ class ArchiveTaggedApplication(appsite.ArchiveApplication):
                                     parent = 'year_archive2')
     day_archive2   = TagArchiveView(regex = '(?P<day>\d{2})',
                                     parent = 'month_archive2')
-    tag3           = TagArchiveView(regex = 'tags3/(?P<tag1>\w+)/(?P<tag2>\w+)/(?P<tag3>\w+)',
+    tag3           = TagArchiveView(regex = 'tags3/(?P<tag1>%s)/(?P<tag2>%s)/(?P<tag3>%s)' % (tag_regex,tag_regex,tag_regex),
                                     parent = 'search')
     year_archive3  = TagArchiveView(regex = '(?P<year>\d{4})',
                                     parent = 'tag3')
@@ -109,14 +117,7 @@ class ArchiveTaggedApplication(appsite.ArchiveApplication):
                                     parent = 'month_archive3')
     
     def tagurl(self, request, *tags):
-        view = self.getapp('tag%s' % len(tags))
-        if view:
-            kwargs = {}
-            c = 1
-            for tag in tags:
-                kwargs['tag%s' % c] = tag
-                c += 1
-            return view.requestview(request, **kwargs).url
+        return tagurl(self, request, *tags)
     
     def object_content(self, djp, obj):
         c = super(ArchiveTaggedApplication,self).object_content(djp, obj)

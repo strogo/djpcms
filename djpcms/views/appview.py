@@ -4,6 +4,7 @@ from django import http
 from django.core.exceptions import ObjectDoesNotExist
 from django.template import loader, RequestContext
 from django.utils.dates import MONTHS_3_REV
+from django.utils.encoding import iri_to_uri
 
 from djpcms.models import Page
 from djpcms.utils.html import Paginator
@@ -133,7 +134,7 @@ class AppView(djpcmsview):
         get application url
         '''
         if kwargs:
-            return self.purl % kwargs
+            return iri_to_uri(self.purl % kwargs)
         else:
             return self.purl
     
