@@ -14,3 +14,4 @@ def add_extra_fields(form, name, field):
 
 def add_hidden_field(form, name, required = False):
     return add_extra_fields(form,name,forms.CharField(widget=forms.HiddenInput, required = required))
+

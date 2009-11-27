@@ -62,10 +62,20 @@ class LoginApp(appview.AppView):
         Create the login form. This function can be reimplemented by
         a derived view
         '''
-        f = LoginForm(**form_kwargs(request = djp.request))
+        request = djp.request
+        mform   = LoginForm
+        initial = self.appmodel.update_initial(request, mform)
+        wrapper = djp.wrapper
+        if wrapper:
+            layout = wrapper.form_layout
+        else:
+            layout = None
+        f      = mform(**form_kwargs(request = request, initial = initial))
         fhtm = form(cn = self.ajax.ajax, url = djp.url)
         fhtm['form'] = formlet(form = f,
-                               submit = submit(name = 'login_user', value = 'Sign in'))
+                               layout = layout,
+                               submit = [submit(name = 'login_user', value = 'Sign in'),
+                                         submit(name = 'cancel', value = 'Cancel')])
         return fhtm
         
     def get_form_url(self, request):

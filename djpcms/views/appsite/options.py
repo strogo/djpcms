@@ -192,7 +192,7 @@ class ModelApplicationBase(object):
     def getapp(self, code):
         return self.applications.get(code, None)
     
-    def update_initial(self, request, mform, initial):
+    def update_initial(self, request, mform, initial = None):
         if request.method == 'GET' and request.GET:
             params = dict(request.GET.items())
             next   = params.get('next')
