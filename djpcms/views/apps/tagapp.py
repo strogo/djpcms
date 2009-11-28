@@ -59,7 +59,8 @@ def tagurl(self, request, *tags):
         kwargs = {}
         c = 1
         for tag in tags:
-            kwargs['tag%s' % c] = urlquote(tag)
+            #tag = urlquote(tag)
+            kwargs['tag%s' % c] = tag
             c += 1
         return view.requestview(request, **kwargs).url
 
