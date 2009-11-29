@@ -19,6 +19,7 @@ class machine(object):
                  dbname     = None,
                  dbuser     = None,
                  dbpassword = None,
+                 debug      = False,
                  cache      = 'dummy:///',
                  dboptions  = None,
                  egg_cache  = '/var/www/.python-eggs',
@@ -37,6 +38,7 @@ class machine(object):
         self.dev         = dev
         self.dboptions   = dboptions
         self.egg_cache   = egg_cache
+        self.debug       = debug
         self._media_root = media_root
         self._machines[name] = self
         
