@@ -31,6 +31,8 @@ class AppView(djpcmsview):
                  in_navigation = False):
         # number of positional arguments in the url
         self.num_args = 0
+        # total number of arguments, including positional and key-worded
+        self.tot_args = 0
         self.urlbit   = regex or u''
         self.parent   = parent
         self.name     = name
@@ -93,10 +95,12 @@ class AppView(djpcmsview):
             baseurl = self.parent._regex
             purl    = self.parent.purl
             nargs   = self.parent.num_args
+            targs   = self.parent.tot_args
         else:
             baseurl = self.appmodel.baseurl[1:]
             purl    = self.appmodel.baseurl
             nargs   = 0
+            targs   = 0
         
         breadcrumbs = []
         if self.urlbit:
@@ -104,6 +108,7 @@ class AppView(djpcmsview):
             for bit in bits:
                 if bit:
                     if bit.startswith('('):
+                        targs += 1
                         st = bit.find('<') + 1
                         en = bit.find('>')
                         if st and en:
@@ -125,6 +130,7 @@ class AppView(djpcmsview):
         self.breadcrumbs = breadcrumbs
         self.purl     = purl
         self.num_args = nargs
+        self.tot_args = targs
         
     def content_dict(self, cl):
         return copy.copy(cl.urlargs)

@@ -7,8 +7,10 @@ INSTALLED_APPS  = ['django.contrib.auth',
                    'django.contrib.sessions',
                    'django.contrib.sites',
                    'django.contrib.contenttypes',
-                   'tagging',
-                   'djpcms']
+                   'djpcms',
+                   'mptt',
+                   'tagging']
+
 
 
 # Silence logging

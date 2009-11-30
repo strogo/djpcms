@@ -44,7 +44,7 @@ class machine(object):
         
     def media_root(self):
         if self.servs:
-            return os.path.join(self.LOCDIR,'media')
+            return os.path.join(self.LOCDIR,'media','site')
         else:
             return self._media_root
             

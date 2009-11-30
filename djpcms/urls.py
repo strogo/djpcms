@@ -5,6 +5,7 @@ from django.conf.urls.defaults import *
 import djpcms
 from djpcms.settings import SERVE_STATIC_FILES, DJPCMS_PLUGINS, DJPCMS_WRAPPERS
 from djpcms.views import appsite
+from djpcms.sitemap import get_site_maps
 
 #if not settings.DEBUG:
 #    handler404 = 'djpcms.views.specials.http404view'
@@ -33,7 +34,7 @@ else:
 if SERVE_STATIC_FILES:
     import djpcms
     import os
-    djpcms_media_root = os.path.join(djpcms.__path__[0],'media')
+    djpcms_media_root = os.path.join(djpcms.__path__[0],'media','djpcms')
     murl = settings.MEDIA_URL.lstrip("/")
     site_urls += (r'^%sdjpcms/(?P<path>.*)$' % murl,
                   'django.views.static.serve',
@@ -48,6 +49,9 @@ if SERVE_STATIC_FILES:
 # Applications urls
 if appsite.site.count():
     site_urls += appsite.site.urls
+
+# Sitemap
+site_urls      += (r'^sitemap.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': get_site_maps()}),
 
 # The djcms pagination goes as last
 site_urls      += ((r'([\w/-]*)', 'djpcms.views.site.handler'),)

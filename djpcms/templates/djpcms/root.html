@@ -9,7 +9,8 @@
  <meta http-equiv="Content-Language" content="en-uk" />{% endblock %}{% block meta-robots %}
 <meta name="ROBOTS" content="{{ djp.robots }}" />{% endblock %}
 <meta name="keywords" content="{% block site-keywords %}{% endblock %}"/>
-<meta name="description" content="{% block site-description %}{% endblock %}"/>{% block style-reset %}{% endblock %}{% block style-block %}
+<meta name="description" content="{% block site-description %}{% endblock %}"/>
+{% block style-reset %}{% endblock %}{% block style-block %}
 {% styling %}{% endblock %}
 <style type="text/css">{% block body-extra-style %}{% endblock %}
 </style>{% block script-block %}{% endblock %}{% block extra-head %}{% endblock %}

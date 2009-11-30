@@ -124,7 +124,7 @@ def _get_view_from_url(request, url):
     cache.add(view)
     if parts:
         for part in parts:
-            pages = page.children_pages.filter(url_pattern = part)
+            pages = page.children.filter(url_pattern = part)
             if not pages:
                 raise Http404('Flatpage %s not found' % request.path)
             else:

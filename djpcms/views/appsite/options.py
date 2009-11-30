@@ -98,6 +98,8 @@ class ModelApplicationBase(object):
     in_navigation    = True
     # If set to True, base class views will be available
     inherit          = False
+    # True is application is added in sitemap
+    insitemap        = False
     
     def __init__(self, model, application_site, editavailable):
         self.model = model

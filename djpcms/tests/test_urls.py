@@ -1,8 +1,7 @@
-from djpcms.plugins.application import appsite
-from djpcms.views.apps import appurls
+from djpcms.views import appsite
 from djpcms.models import SiteContent
 
-class ContentArchiveApplication(appurls.ArchiveApplication):
+class ContentArchiveApplication(appsite.ArchiveApplication):
     inherit    = True
     name       = 'content'
     baseurl    = '/content/'

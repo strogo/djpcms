@@ -1,7 +1,20 @@
-djpcms: a dynamic content management system for Django and jQuery
+=========
+Djpcms
+=========
 
-Still very much under development.
-An example on how to use the package is in the sitedjpcms module.
+A dynamic content management system for Django and jQuery
+
+Required
+-----------
+
+ * django latest version
+ * django-mptt	http://code.google.com/p/django-mptt/
+
+Optional
+-----------
+ * django-tagging	http://code.google.com/p/django-tagging/
+  
+ 
 
 
 

@@ -86,6 +86,9 @@ class PageManager(models.Manager):
             return f[0]
         else:
             return None
+        
+    def flat_pages(self, **kwargs):
+        return self.filter(application = '', **kwargs)
     
     def get_for_model(self, model):
         ct = ContentType.objects.get_for_model(model)
@@ -231,7 +234,7 @@ class Page(TimeStamp):
     parent      = models.ForeignKey('self',
                                     null  = True,
                                     blank = True,
-                                    related_name = 'children_pages',
+                                    related_name = 'children',
                                     help_text=_('This page will be appended inside the chosen parent page.'))
     
     code_object = models.CharField(max_length=200,
@@ -374,6 +377,8 @@ class Page(TimeStamp):
     def published(self):
         return self in Page.objects.published()
     published.boolean = True
+
+
     
     
 class BlockContentManager(models.Manager):
