@@ -1,6 +1,6 @@
 
 
-def addmarkup(code, name, handler):
+def add(code, name, handler):
     global _default_markup, MARKUP_HANDLERS
     if not _default_markup:
         _default_markup = code
