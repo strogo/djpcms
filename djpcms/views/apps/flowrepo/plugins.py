@@ -4,19 +4,16 @@ from django.template import loader
 
 from djpcms.plugins import DJPplugin
 
-from flowrepo.models import Report
+from flowrepo.models import FlowItem, Report
 
 class YourDraft(DJPplugin):
     name = 'flowrepo-draft'
-    description = 'User report drafts'
+    description = 'User private items'
     
     def render(self, djp, wrapper, prefix, **kwargs):
         from djpcms.views import appsite
         request = djp.request
-        appmodel = appsite.site.for_model(Report)
-        if not appmodel:
-            return None
-        qs = Report.objects.get_author_drafts(request.user)
+        qs = FlowItem.objects.private(request.user)
         if not qs:
             return None
         return loader.render_to_string(['report_draft_list.html',

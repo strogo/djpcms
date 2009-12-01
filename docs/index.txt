@@ -22,7 +22,7 @@ First steps
 Dynamic Content Management
 =============================
 	* **Applications:**
-	  :ref:`Introduction <application-into>` |
+	  :ref:`Introduction <topics-application-into>` |
 	  :ref:`Examples <application-example>` |
 	  
 	* **Plugins:**
@@ -33,7 +33,6 @@ Dynamic Content Management
 	* **Design:**
 	  :ref:`Introduction <design-intro>` |
 	  :ref:`Content wrapping <design-wrap>`	
-
 
 Battery Included
 =================

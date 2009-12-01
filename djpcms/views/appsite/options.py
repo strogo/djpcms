@@ -90,8 +90,6 @@ class ModelApplicationBase(object):
     date_code        = None
     search_form      = SearchForm
     search_item_template = '''<div>{{ item }}</div>'''
-    # Template file for displaying an object
-    object_template_file = None
     # Number of arguments to create an instance of model
     num_obj_args     = 1
     # True if applications can go into navigation

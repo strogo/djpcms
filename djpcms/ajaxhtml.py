@@ -15,6 +15,7 @@ class ajaxhtml(object):
         d['ajax']                    = 'ajax'
         d['errorlist']               = 'errorlist'
         d['formmessages']            = 'form-messages'
+        d['field_separator']         = 'field-separator'
         
         # css decorators
         d['calendar_class']          = 'calendar-input'

@@ -148,6 +148,9 @@ form.content-select table {margin:0; float: left;}
 
 /* FORM classes
 -------------------------------------------------------------*/
+form tr {
+	margin-bottom: 5px;
+}
 form .onecolumn input[type="text"] {
 	width: 98%;
 	padding: 2px 2px;

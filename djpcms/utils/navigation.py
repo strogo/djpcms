@@ -19,6 +19,9 @@ class lazycounter(object):
     def __len__(self):
         return len(self.elems())
     
+    def count(self):
+        return len(self)
+    
     def __iter__(self):
         return self.items()
 
