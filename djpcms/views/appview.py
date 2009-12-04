@@ -1,9 +1,12 @@
 import copy
+from datetime import datetime
 
+from django.conf import settings
 from django import http
 from django.core.exceptions import ObjectDoesNotExist
 from django.template import loader, RequestContext
 from django.utils.dates import MONTHS_3_REV
+from django.utils.dateformat import format
 from django.utils.encoding import iri_to_uri
 
 from djpcms.models import Page
@@ -11,7 +14,7 @@ from djpcms.utils.html import Paginator
 from djpcms.views.baseview import djpcmsview
 from djpcms.views.site import get_view_from_url
 from djpcms.utils.func import force_number_insert
-from djpcms.utils.ajax import jremove, dialog
+from djpcms.utils.ajax import jremove, dialog, jredirect
 from djpcms.utils import form_kwargs
 
 
@@ -248,6 +251,7 @@ class SearchView(AppView):
         f  = self.appmodel.get_searchform(djp)
         p  = Paginator(request, query)
         c  = self.content_dict(djp)
+        f  = None
         c.update({'form':f,
                   'paginator': p,
                   'items': self.appmodel.data_generator(djp, p.qs)})
@@ -445,7 +449,19 @@ class EditView(ObjectView):
     def save(self, f):
         return self.appmodel.object_from_form(f)
     
-    def default_ajax_view(self, djp):
+    def ajax__save(self, djp):
+        '''
+        Save and redirect to default redirect
+        '''
+        return self.default_ajax_view(djp,True)
+    
+    def ajax__save_and_continue(self, djp):
+        '''
+        Save and redirect to default redirect
+        '''
+        return self.default_ajax_view(djp,False)
+    
+    def default_ajax_view(self, djp, redirect = False):
         djp.prefix = self.get_prefix(djp)
         f = self.get_form(djp)
         if f.is_valid():
@@ -453,6 +469,14 @@ class EditView(ObjectView):
                 instance = self.save(f)
             except Exception, e:
                 return f.errorpost('%s' % e)
-            return f.messagepost('%s modified' % instance)
+            if redirect:
+                url = self.defaultredirect(djp)
+                if url != djp.url:
+                    return jredirect(url)
+            dt = datetime.now()
+            return f.messagepost('Saved at %s' % format(dt,settings.DATETIME_FORMAT))
         else:
             return f.jerrors
+
+    def defaultredirect(self, djp):
+        return self.appmodel.viewurl(djp.request, djp.instance) or djp.url

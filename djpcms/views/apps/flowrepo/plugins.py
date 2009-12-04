@@ -12,21 +12,27 @@ class YourDraft(DJPplugin):
     description = 'User private items'
     
     def render(self, djp, wrapper, prefix, **kwargs):
-        from djpcms.views import appsite
         request = djp.request
         qs = FlowItem.objects.private(request.user)
         if not qs:
             return None
         return loader.render_to_string(['report_draft_list.html',
                                         'flowrepo/report_draft_list.html'],
-                                        {'items': self.paginator(appmodel,djp,qs)})
+                                        {'items': self.paginator(djp,qs)})
         
-    def paginator(self, appmodel, djp, qs):
+    def paginator(self, djp, qs):
+        from djpcms.views import appsite
+        for_model = appsite.site.for_model
         for obj in qs:
-            content = appmodel.object_content(djp, obj)
-            yield loader.render_to_string(['report_list_item.html',
-                                           'flowrepo/report_list_item.html'],
-                                           content)
+            object = obj.object
+            if not object:
+                continue
+            appmodel = for_model(object.__class__)
+            if appmodel:
+                content  = appmodel.object_content(djp, obj)
+                yield loader.render_to_string(['report_list_item.html',
+                                               'flowrepo/report_list_item.html'],
+                                               content)
             
 
 class LinkedItems(DJPplugin):
@@ -60,3 +66,21 @@ class LinkedItems(DJPplugin):
             if not url.startswith('/'):
                 link._attrs['target'] = "_blank"
             yield link.render()
+
+
+class AddLinkedItems(DJPplugin):
+    name = 'flowrepo-add-linked'
+    description = "Add Linked item urls"
+    
+    def render(self, djp, wrapper, prefix, **kwargs):
+        from djpcms.views import appsite
+        instance = djp.instance
+        if not isinstance(instance,FlowItem):
+            return
+        qs = FlowRelated.objects.filter(item = instance)
+        if not qs:
+            return
+        request = djp.request
+        return loader.render_to_string(['report_draft_list.html',
+                                        'flowrepo/report_draft_list.html'],
+                                        {'items': self.paginator(djp,qs)})

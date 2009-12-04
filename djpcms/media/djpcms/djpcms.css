@@ -1,11 +1,4 @@
 
-pre {
-	margin:1em 1.75em;
-	overflow:auto;
-	padding:0.25em;
-}
-
-
 /**	TABLE
 -----------------------------------------------------------*/
 table.plain td,
@@ -75,7 +68,7 @@ ul.menu li.selected ul li.selected a {background: rgb(245,245,245);}
 
 
 
-/** INLINE CONTENT EDITING WITH DEFAULT STYLE
+/** INLINE CONTENT EDITING DEFAULT STYLE
 -----------------------------------------------------------*/
 body.edit {
 	background: rgb(9,46,32);

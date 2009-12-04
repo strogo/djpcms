@@ -310,8 +310,13 @@ class djpcmsview(UnicodeObject):
         
         # If post_view key is defined, it means this is a AJAX-JSON request
         if ajax_key:
+            #
+            # Handle the cancel request redirect.
+            # Check for next in the parameters, If not there redirect to self.defaultredirect
             if ajax_key == 'cancel':
-                url = params.get('next',djp.url)
+                url = params.get('next',None)
+                if not url:
+                    url = self.defaultredirect(djp)
                 res = jredirect(url)
             else:    
                 if def_ajax:
@@ -422,6 +427,9 @@ class djpcmsview(UnicodeObject):
                 return -1
         views.sort(comp)
         return views
+    
+    def defaultredirect(self, djp):
+        return djp.url
 
 class wrapview(djpcmsview):
     '''

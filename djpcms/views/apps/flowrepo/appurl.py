@@ -44,38 +44,33 @@ class FlowRepoApplication(tagapp.ArchiveTaggedApplication):
         return ['components/%s' % template_name,
                 '%s/%s' % (opts.app_label,template_name),
                 'djpcms/components/object.html']
-
-
-
-class BaseBlogBlogApplication(FlowRepoApplication):
-    date_code = 'timestamp'
-    inherit   = True
     
     def object_content(self, djp, obj):
         '''
         Utility function for getting more content out of an instance of a model
         '''
-        c = super(BaseBlogBlogApplication,self).object_content(djp,obj)
+        c = super(FlowRepoApplication,self).object_content(djp,obj)
         c['authors'] = obj.niceauthors()
         return c
-    
 
 
-class BlogApplication(BaseBlogBlogApplication):
+
+class BlogApplication(FlowRepoApplication):
     '''
     Writing application
     @note: this application assume FLOWREPO_UNIQUE_SLUG is set to True in the settings file.
            In this way the slug field of a Report is used to build the url
     '''
     inherit   = True
+    date_code = 'timestamp'
     form      = ReportForm
     
     add       = appview.AddView(regex = 'write',
                                 parent = 'search',
                                 isplugin = False,
                                 in_navigation = True)
-    view      = appview.ViewView(regex = 'item/(?P<slug>[\w-]+)', parent = 'search')
-    edit      = appview.EditView(regex = 'edit/(?P<slug>[\w-]+)', parent = 'search')
+    view      = appview.ViewView(regex = '(?P<slug>[\w-]+)', parent = 'search')
+    edit      = appview.EditView(regex = 'edit', parent = 'view')
     
     def objectbits(self, obj):
         '''

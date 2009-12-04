@@ -201,7 +201,9 @@ class ModelApplicationBase(object):
                 initial = initial or {}
                 initial['next'] = next
         return initial
-                
+    
+    #  FORMS FOR EDITING AND SEARCHING
+    #---------------------------------------------------------------------------------
     def get_form(self, djp, prefix = None, initial = None, wrapped = True):
         '''
         Build an add/edit form for the application model
@@ -246,8 +248,12 @@ class ModelApplicationBase(object):
             return fl
         
     def submit(self, instance):
+        '''
+        Submits elements
+        '''
         if instance:
-            sb = [submit(value = 'save', name = 'edit')]
+            sb = [submit(value = 'done', name = 'save'),
+                  submit(value = 'save', name = 'save_and_continue')]
         else:
             sb = [submit(value = 'add', name = 'add')]
         sb.append(submit(value = 'cancel', name = 'cancel'))
@@ -309,6 +315,9 @@ class ModelApplicationBase(object):
         return tuple(urls)
     urls = property(fget = make_urls)
     
+    # APPLICATION URLS
+    # TODO: write it better (not use of application name)
+    #----------------------------------------------------------------
     def addurl(self, request):
         view = self.getapp('add')
         if view and self.has_add_permission(request):
@@ -345,7 +354,7 @@ class ModelApplicationBase(object):
     def tagurl(self, request, tag):
         return None
     
-    # Permissions
+    # PERMISSIONS
     #-----------------------------------------------------------------------------------------
     def has_permission(self, request = None, obj = None):
         return True
