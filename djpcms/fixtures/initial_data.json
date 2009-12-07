@@ -44,7 +44,7 @@
             "created": "2009-11-18 21:42:17", 
             "image": "", 
             "last_modified": "2009-11-18 21:42:17", 
-            "template": "<div class=\"{{ grid.column_1_3 }}\">\r\n{{ content0 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_3 }}\">\r\n{{ content1 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_3 }}\">\r\n{{ content2 }}\r\n</div>\r\n{{ grid.clear }}\r\n<div class=\"{{ grid.column_1_2 }}\">\r\n{{ content1 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_2 }}\">\r\n{{ content2 }}\r\n</div>\r\n{{ grid.clear }}"
+            "template": "<div class=\"{{ grid.column_1_3 }}\">\r\n{{ content0 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_3 }}\">\r\n{{ content1 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_3 }}\">\r\n{{ content2 }}\r\n</div>\r\n{{ grid.clear }}\r\n<div class=\"{{ grid.column_1_2 }}\">\r\n{{ content3 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_2 }}\">\r\n{{ content4 }}\r\n</div>\r\n{{ grid.clear }}"
         }
     }, 
     {
