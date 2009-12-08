@@ -1,0 +1,5 @@
+<div class="breadcrumbs">{% if breadcrumbs %}<ul>{% for item in breadcrumbs %}
+<li><span class="breadcrumbs-separator">&rsaquo;</span></li>
+<li><a{% if item.url %} href="{{ item.url }}"{% endif %}>{{ item.name }}</a></li>{% endfor %}
+</ul>{% endif %}
+</div>
