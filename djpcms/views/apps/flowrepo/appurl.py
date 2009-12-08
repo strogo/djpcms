@@ -66,7 +66,8 @@ class FlowRepoApplication(tagapp.ArchiveTaggedApplication):
 
 
 class CategoryApplication(appsite.ModelApplication):
-    view = appview.ViewView(regex = '(?P<category>%s)' % tagapp.tag_regex)
+    category = appview.AppView(in_navigation = True)
+    view = appview.ViewView(regex = '(?P<category>%s)' % tagapp.tag_regex, parent = 'category')
     
     def objectbits(self, obj):
         return {'category': obj.slug}

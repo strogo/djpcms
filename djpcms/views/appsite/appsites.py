@@ -18,6 +18,7 @@ class ApplicationSite(object):
         self._registry     = {}
         self._nameregistry = {}
         self.parent_pages  = {}
+        self.root_pages    = {}
         self.choices       = siteapp_choices
         
     def count(self):

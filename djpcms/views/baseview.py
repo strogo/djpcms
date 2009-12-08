@@ -105,7 +105,7 @@ class DjpRequestWrap(UnicodeObject):
         return unicode(self.view)
     
     def get_linkname(self):
-        return self.view.linkname(self.page, **self.urlargs)
+        return self.view.linkname(self)
     linkname = property(get_linkname)
         
     def get_title(self):
@@ -192,7 +192,8 @@ class djpcmsview(UnicodeObject):
         else:
             return None
     
-    def linkname(self, page, **urlargs):
+    def linkname(self, djp):
+        page = djp.page
         if page:
             return page.link
         else:

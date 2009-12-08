@@ -73,7 +73,8 @@ class AppView(djpcmsview):
         else:
             return 0
     
-    def linkname(self, page, **urlargs):
+    def linkname(self, djp):
+        page = djp.page
         if not page:
             return self.appmodel.name
         else:
@@ -151,9 +152,15 @@ class AppView(djpcmsview):
         '''
         Retrive the parent view
         '''
-        if not self.parent:
-            # No parent check for flat pages
-            return get_view_from_url(request,self.appmodel.parent_url)
+        appmodel = self.appmodel
+        if not self.parent and self.appmodel.parent_url:
+            # First check for application pages
+            view = appmodel.application_site.root_pages.get(self.appmodel.parent_url,None)
+            if not view:
+                # No parent check for flat pages
+                return get_view_from_url(request,self.appmodel.parent_url)
+            else:
+                return view
         else:
             return self.parent
     
@@ -197,13 +204,28 @@ class AppView(djpcmsview):
     
     def children(self, request, instance = None, **kwargs):
         views = []
-        for view in self.appmodel.applications.values():
+        appmodel = self.appmodel
+        djpr  = None
+        for view in appmodel.applications.values():
             if view is self or not view.has_permission(request, instance):
                 continue
             djp = view.requestview(request, **kwargs)
             nav = djp.in_navigation()
             if nav:
                 views.append(djp)
+                
+        if not self.parent:
+            sitereg = appmodel.application_site._registry
+            for app in sitereg.values():
+                if app is appmodel:
+                    continue
+                base = app.root_application
+                if base and not base.tot_args and app.parent_url == self.purl:
+                    djp = base.requestview(request, **kwargs)
+                    nav = djp.in_navigation()
+                    if nav:
+                        views.append(djp)
+                    
         return self.sortviewlist(views)
     
     def get_prefix(self, djp):
@@ -395,6 +417,9 @@ class ViewView(ObjectView):
         '''
         super(ViewView,self).__init__(regex = regex, parent = parent,
                                       name = name, **kwargs)
+    
+    def linkname(self, djp):
+        return str(djp.instance)
         
     def render(self, djp):
         '''

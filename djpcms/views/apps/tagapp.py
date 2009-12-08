@@ -31,6 +31,10 @@ class TagArchiveView(ArchiveView):
     def __init__(self, *args, **kwargs):
         super(TagArchiveView,self).__init__(*args, **kwargs)
         
+    def linkname(self, djp):
+        urlargs = djp.urlargs
+        return urlargs.get('tag1',None)
+        
     def appquery(self, request, year = None, month = None, day = None, **tags):
         query = super(TagArchiveView,self).appquery(request, year = year, month = month, day = day)
         if tags:
@@ -92,8 +96,9 @@ class ArchiveTaggedApplication(appsite.ArchiveApplication):
                                     parent = 'year_archive')
     day_archive    =    ArchiveView(regex = '(?P<day>\d{2})',
                                     parent = 'month_archive')
-    tag1           = TagArchiveView(regex = 'tags/(?P<tag1>%s)' % tag_regex,
-                                    parent = 'search')
+    tags           = AppView(regex = 'tags', in_navigation = True, parent = 'search')
+    tag1           = TagArchiveView(regex = '(?P<tag1>%s)' % tag_regex,
+                                    parent = 'tags')
     year_archive1  = TagArchiveView(regex = '(?P<year>\d{4})',
                                     parent = 'tag1')
     month_archive1 = TagArchiveView(regex = '(?P<month>\w{3})',

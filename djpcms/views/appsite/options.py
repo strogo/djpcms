@@ -110,12 +110,19 @@ class ModelApplicationBase(object):
             raise ModelApplicationUrlError('Base url for application %s not defined' % model)
         self.applications     = deepcopy(self.base_applications)
         self.edits            = []
-        parent_url            = '/'.join(self.baseurl[1:-1].split('/')[:-1])
-        if not parent_url:
-            parent_url = '/'
+        
+        # In case the application is root, register with the
+        # application site
+        if self.baseurl == '/':
+            parent_url = None
         else:
-            parent_url = '/%s/' % parent_url
+            parent_url = '/'.join(self.baseurl[1:-1].split('/')[:-1])
+            if not parent_url:
+                parent_url = '/'
+            else:
+                parent_url = '/%s/' % parent_url
         self.parent_url = parent_url
+        
         parents = self.application_site.parent_pages
         children = parents.get(self.parent_url,None)
         if not children:
@@ -125,6 +132,9 @@ class ModelApplicationBase(object):
         self.create_applications()
         
     def create_applications(self):
+        '''
+        Build sub views for this application
+        '''
         roots = []
         for app_name,child in self.applications.items():
             child.name = app_name
@@ -142,6 +152,11 @@ class ModelApplicationBase(object):
             child.processurlbits(self)
             code = u'%s-%s' % (self.name,child.name)
             child.code = code
+            #
+            # View with no arguments. Store in parent pages
+            if not child.tot_args:
+                self.application_site.root_pages[child.purl] = child
+                
             if child.isapp:
                 name = u'%s %s' % (self.name,child.name.replace('_',' '))
                 self.application_site.choices.append((code,name))
