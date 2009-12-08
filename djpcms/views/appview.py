@@ -220,7 +220,7 @@ class AppView(djpcmsview):
                 if app is appmodel:
                     continue
                 base = app.root_application
-                if base and not base.tot_args and app.parent_url == self.purl:
+                if base and not base.tot_args and app.parent_url == self.purl and base.has_permission(request):
                     djp = base.requestview(request, **kwargs)
                     nav = djp.in_navigation()
                     if nav:
