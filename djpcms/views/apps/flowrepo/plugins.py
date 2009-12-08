@@ -31,14 +31,14 @@ class YourDraft(DJPplugin):
             appmodel = for_model(object.__class__)
             if appmodel:
                 content  = appmodel.object_content(djp, obj)
-                yield loader.render_to_string(['report_list_item.html',
+                yield loader.render_to_string(['components/report_list_item.html',
                                                'flowrepo/report_list_item.html'],
                                                content)
             
-class TwitterLine(DJPplugin):
+class MessageLine(DJPplugin):
     items = 5
-    name = 'twitter-timeline'
-    description = 'Twitter time-line'
+    name = 'message-timeline'
+    description = 'Message time-line'
     
     def render(self, djp, wrapper, prefix, **kwargs):
         request = djp.request
@@ -46,7 +46,7 @@ class TwitterLine(DJPplugin):
         if not qs:
             return None
         qs = qs[:self.items]
-        return loader.render_to_string(['message_list.html',
+        return loader.render_to_string(['components/message_list.html',
                                         'djpcms/components/object_list.html'],
                                         {'items': self.paginator(djp,qs)})
         
