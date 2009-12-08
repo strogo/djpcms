@@ -6,6 +6,12 @@ table.plain th {padding: 3px 15px 3px 0; text-align: left;}
 
 /*		BOX and CONTENT BLOCKS
 -------------------------------------------------*/
+.djpcms-block-element {
+	overflow: hidden;
+}
+div.flat-element {
+	padding: 10px;
+}
 
 .djpcms-contentblock {
 	margin-bottom: 20px;
@@ -18,7 +24,6 @@ table.plain th {padding: 3px 15px 3px 0; text-align: left;}
 	overflow:hidden;
 }
 .djpcms-html-box .hd  h2 {
-	color: #464646;
 	font-size: 12px;
 	font-weight: bold;
 	line-height: 1;
@@ -232,9 +237,6 @@ input.search-box {padding: 4px 2px;}
 
 /* CONTENT CLASSES
 ------------------------------------------------------------------*/
-div.flat-element {
-	margin-bottom: 30px
-}
 .djpcms-block {
 	overflow: hidden;
 }

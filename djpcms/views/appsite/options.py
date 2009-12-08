@@ -473,10 +473,10 @@ class ModelApplicationBase(object):
          3 - djpcms/components/object_search_item.html (fall back)
         '''
         opts = obj._meta
-        template_name = '%s_search_item.html' % opts.module_name
+        template_name = '%s_list_item.html' % opts.module_name
         return ['components/%s' % template_name,
                 '%s/%s' % (opts.app_label,template_name),
-                'djpcms/components/object_search_item.html']
+                'djpcms/components/object_list_item.html']
         
     def object_from_form(self, form):
         return form.save()

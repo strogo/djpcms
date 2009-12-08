@@ -8,9 +8,10 @@ from django.forms.models import modelform_factory
 
 from flowrepo.settings import FLOWREPO_SLUG_UNIQUE
 from flowrepo.models import FlowItem
-from flowrepo.forms import ReportForm
+from flowrepo.forms import ReportForm, get_flow_form
 
 from djpcms.views import appview
+from djpcms.views import appsite
 from djpcms.views.apps import tagapp
 from djpcms.utils.html import form, formlet
 from djpcms.utils import form_kwargs
@@ -20,9 +21,13 @@ class FlowRepoApplication(tagapp.ArchiveTaggedApplication):
     '''
     Base application class for flowitem models
     '''
-    inherit          = True
+    date_code        = 'timestamp'
     form_withrequest = True
-    
+    form             = get_flow_form
+    split_days       = True
+    inherit          = True
+    insitemap        = True
+
     def basequery(self, request):
         return FlowItem.objects.public(user = request.user, model = self.model)
 
@@ -44,6 +49,12 @@ class FlowRepoApplication(tagapp.ArchiveTaggedApplication):
         return ['components/%s' % template_name,
                 '%s/%s' % (opts.app_label,template_name),
                 'djpcms/components/object.html']
+        
+    def get_item_template(self, obj, wrapper):
+        model = obj.content_type.model
+        return ['components/%s_list_item.html' % model,
+                'flowrepo/%s_list_item.html' % model,
+                'flowrepo/flowitem_list_item.html']
     
     def object_content(self, djp, obj):
         '''
@@ -54,6 +65,25 @@ class FlowRepoApplication(tagapp.ArchiveTaggedApplication):
         return c
 
 
+class CategoryApplication(appsite.ModelApplication):
+    view = appview.ViewView(regex = '(?P<category>%s)' % tagapp.tag_regex)
+    
+    def objectbits(self, obj):
+        return {'category': obj.slug}
+    
+    def get_object(self, *args, **kwargs):
+        '''
+        Retrive an instance of self.model for arguments.
+        By default arguments is the object id,
+        Reimplement for custom arguments
+        '''
+        try:
+            slug = kwargs.get('category',None)
+            return self.model.objects.get(slug = slug)
+        except:
+            return None
+    
+    
 
 class BlogApplication(FlowRepoApplication):
     '''

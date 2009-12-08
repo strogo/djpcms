@@ -38,3 +38,16 @@ class BoxWrapper2(DJPwrapper):
             return box(hd = hd, bd = html, id = id).render()
         else:
             return u''
+        
+
+class centereddiv(DJPwrapper):
+    name = 'centered-element'
+    description = 'Centered element'
+    def wrap(self, djp, cblock, html):
+        if html:
+            id = cblock.htmlid()
+            return mark_safe(u'\n'.join(['<div id="%s" class="%s">' % (id,self.name),
+                                         html,
+                                         '</div>']))
+        else:
+            return u''

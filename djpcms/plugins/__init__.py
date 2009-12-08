@@ -83,7 +83,9 @@ class DJPwrapper(PluginBase):
         @param param: cblock instance or BlockContent
         @return: safe unicode HTML
         '''
-        return mark_safe(self.wrap(djp, cblock, html))
+        return mark_safe(u'\n'.join(['<div class="djpcms-block-element">',
+                                     self.wrap(djp, cblock, html),
+                                     '</div>']))
 
 
 class DJPplugin(PluginBase):
