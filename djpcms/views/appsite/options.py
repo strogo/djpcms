@@ -98,6 +98,8 @@ class ModelApplicationBase(object):
     inherit          = False
     # True is application is added in sitemap
     insitemap        = False
+    #
+    search_fields    = None
     
     def __init__(self, model, application_site, editavailable):
         self.model = model
@@ -170,7 +172,15 @@ class ModelApplicationBase(object):
                 for app in roots:
                     app.parent = self.root_application
                                 
-                
+    def get_search_fields(self):
+        if self.search_fields:
+            return self.search_fields
+        else:
+            from django.contrib.admin import site
+            admin = site._registry.get(self.model,None)
+            if admin:
+                return admin.search_fields
+        
     def get_view_name(self, name):
         if not self.baseurl:
             raise ModelApplicationUrlError('Application without baseurl')
