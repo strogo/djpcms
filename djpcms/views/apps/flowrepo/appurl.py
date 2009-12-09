@@ -17,7 +17,7 @@ from djpcms.utils.html import form, formlet
 from djpcms.utils import form_kwargs
 
 
-class FlowRepoApplication(tagapp.ArchiveTaggedApplication):
+class FlowRepoApplication(tagurl.ArchiveTaggedApplication):
     '''
     Base application class for flowitem models
     '''
@@ -67,7 +67,7 @@ class FlowRepoApplication(tagapp.ArchiveTaggedApplication):
 
 class CategoryApplication(appsite.ModelApplication):
     category = appview.AppView(in_navigation = True)
-    view = appview.ViewView(regex = '(?P<category>%s)' % tagapp.tag_regex, parent = 'category')
+    view = appview.ViewView(regex = '(?P<category>%s)' % tagurl.tag_regex, parent = 'category')
     
     def objectbits(self, obj):
         return {'category': obj.slug}
@@ -100,7 +100,7 @@ class BlogApplication(FlowRepoApplication):
                                 parent = 'search',
                                 isplugin = False,
                                 in_navigation = True)
-    view      = appview.ViewView(regex = '(?P<slug>[\w-]+)', parent = 'search')
+    view      = appview.ViewView(regex = '(?P<slug>[\w-]+)')
     edit      = appview.EditView(regex = 'edit', parent = 'view')
     
     def objectbits(self, obj):

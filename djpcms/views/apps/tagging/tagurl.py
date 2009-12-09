@@ -89,38 +89,29 @@ class ArchiveTaggedApplication(appsite.ArchiveApplication):
     '''
     Comprehensive Tagged Archive Application urls
     '''
-    search         =    ArchiveView(in_navigation = True)
-    year_archive   =    ArchiveView(regex = '(?P<year>\d{4})',
-                                    parent = 'search')
-    month_archive  =    ArchiveView(regex = '(?P<month>\w{3})',
-                                    parent = 'year_archive')
-    day_archive    =    ArchiveView(regex = '(?P<day>\d{2})',
-                                    parent = 'month_archive')
-    tags           = AppView(regex = 'tags', in_navigation = True, parent = 'search')
-    tag1           = TagArchiveView(regex = '(?P<tag1>%s)' % tag_regex,
-                                    parent = 'tags')
-    year_archive1  = TagArchiveView(regex = '(?P<year>\d{4})',
-                                    parent = 'tag1')
-    month_archive1 = TagArchiveView(regex = '(?P<month>\w{3})',
-                                    parent = 'year_archive')
-    day_archive1   = TagArchiveView(regex = '(?P<day>\d{2})',
-                                    parent = 'month_archive')
-    tag2           = TagArchiveView(regex = 'tags2/(?P<tag1>%s)/(?P<tag2>%s)' % (tag_regex,tag_regex),
-                                    parent = 'search')
-    year_archive2  = TagArchiveView(regex = '(?P<year>\d{4})',
-                                    parent = 'tag2')
-    month_archive2 = TagArchiveView(regex = '(?P<month>\w{3})',
-                                    parent = 'year_archive2')
-    day_archive2   = TagArchiveView(regex = '(?P<day>\d{2})',
-                                    parent = 'month_archive2')
-    tag3           = TagArchiveView(regex = 'tags3/(?P<tag1>%s)/(?P<tag2>%s)/(?P<tag3>%s)' % (tag_regex,tag_regex,tag_regex),
-                                    parent = 'search')
-    year_archive3  = TagArchiveView(regex = '(?P<year>\d{4})',
-                                    parent = 'tag3')
-    month_archive3 = TagArchiveView(regex = '(?P<month>\w{3})',
-                                    parent = 'year_archive3')
-    day_archive3   = TagArchiveView(regex = '(?P<day>\d{2})',
-                                    parent = 'month_archive3')
+    search         =    ArchiveView(in_navigation = True)    
+    
+    year_archive   =    ArchiveView(regex = '(?P<year>\d{4})')
+    month_archive  =    ArchiveView(regex = '(?P<month>\w{3})', parent = 'year_archive')
+    day_archive    =    ArchiveView(regex = '(?P<day>\d{2})',   parent = 'month_archive')
+    
+    tagc0          =        AppView(regex = 'tags', in_navigation = True)
+    tag1           = TagArchiveView(regex = '(?P<tag1>%s)' % tag_regex, parent = 'tagc0')
+    year_archive1  = TagArchiveView(regex = '(?P<year>\d{4})',  parent = 'tag1')
+    month_archive1 = TagArchiveView(regex = '(?P<month>\w{3})', parent = 'year_archive1')
+    day_archive1   = TagArchiveView(regex = '(?P<day>\d{2})',   parent = 'month_archive1')
+    
+    tagc1          =        AppView(regex = 'tags2/(?P<tag1>%s)' % tag_regex)
+    tag2           = TagArchiveView(regex = '(?P<tag2>%s)' % tag_regex, parent = 'tagc1')
+    year_archive2  = TagArchiveView(regex = '(?P<year>\d{4})',  parent = 'tag2')
+    month_archive2 = TagArchiveView(regex = '(?P<month>\w{3})', parent = 'year_archive2')
+    day_archive2   = TagArchiveView(regex = '(?P<day>\d{2})',   parent = 'month_archive2')
+    
+    #tagc2          =        AppView(regex = 'tags3/(?P<tag1>%s)/(?P<tag2>%s)' % (tag_regex,tag_regex))
+    #tag3           = TagArchiveView(regex = '(?P<tag3>%s)' % tag_regex, parent = 'tagc2')
+    #year_archive3  = TagArchiveView(regex = '(?P<year>\d{4})',  parent = 'tag3')
+    #month_archive3 = TagArchiveView(regex = '(?P<month>\w{3})', parent = 'year_archive3')
+    #day_archive3   = TagArchiveView(regex = '(?P<day>\d{2})',   parent = 'month_archive3')
     
     def tagurl(self, request, *tags):
         return tagurl(self, request, *tags)

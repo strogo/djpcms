@@ -269,13 +269,11 @@ class SearchView(AppView):
             urlargs = djp.urlargs
             urlargs.update(kwargs)
             djp = self.requestview(request, *urlargs)
-        query = self.appquery(request, *djp.args, **djp.kwargs)
+        query   = self.appquery(request, *djp.args, **djp.kwargs)
         f  = self.appmodel.get_searchform(djp)
         p  = Paginator(request, query)
         c  = self.content_dict(djp)
-        f  = None
-        c.update({'form':f,
-                  'paginator': p,
+        c.update({'paginator': p,
                   'items': self.appmodel.data_generator(djp, p.qs)})
         return loader.render_to_string(['components/pagination.html',
                                         'djpcms/components/pagination.html'],

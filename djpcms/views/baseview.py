@@ -123,6 +123,7 @@ class DjpRequestWrap(UnicodeObject):
         view    = self.view
         request = self.request
         
+        # Last check for permissions
         if not view.has_permission(request, self.instance):
             return view.permissionDenied(self)
         
@@ -215,7 +216,7 @@ class djpcmsview(UnicodeObject):
     def update_content(self, request, c):
         pass
     
-    def get_response(self, djp):
+    def handle_response(self, djp):
         '''
         Handle the GET RESPONSE.
         This function SHOULD NOT be overwritten.
@@ -238,7 +239,7 @@ class djpcmsview(UnicodeObject):
         grid    = self.grid960(page)
         
         # If user not authenticated set a test cookie  
-        if not request.user.is_authenticated():
+        if not request.user.is_authenticated() and request.method == 'GET':
             request.session.set_test_cookie()
         
         c = build_base_context(djp)
@@ -343,18 +344,13 @@ class djpcmsview(UnicodeObject):
         #
         # Otherwise it is a standard POST response
         else:
-            return self.default_post(request)
-            
+            return self.default_post(djp)
+    
+    def get_response(self, djp):
+        return self.handle_response(djp)
+    
     def default_post(self, djp):
-        '''
-        Default POST view.
-        by default we redirect to the next page if available
-        otherwise we redirect to home page
-        '''
-        request   = djp.request
-        params    = dict(post.items())
-        next      = params.get('next',djp.url)
-        return http.HttpResponseRedirect(next)
+        return self.handle_response(djp)
     
     def default_ajax_view(self, djp):
         '''
