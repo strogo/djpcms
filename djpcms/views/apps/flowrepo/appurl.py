@@ -12,7 +12,7 @@ from flowrepo.forms import ReportForm, get_flow_form
 
 from djpcms.views import appview
 from djpcms.views import appsite
-from djpcms.views.apps import tagapp
+from djpcms.views.apps.tagging import tagurl
 from djpcms.utils.html import form, formlet
 from djpcms.utils import form_kwargs
 

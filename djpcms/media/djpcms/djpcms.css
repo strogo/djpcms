@@ -41,8 +41,12 @@ div.intro {
 	text-align: justify;
 }
 
-.grid_3 .djpcms-block-element img.fullwidth {
+.grid_3 .djpcms-block-element .flat-element img.fullwidth,
+.grid_3 .djpcms-block-element .djpcms-html-box .bd img.fullwidth {
 	width: 200px;
+}
+.grid_3 .djpcms-block-element img.fullwidth {
+	width: 220px;
 }
 
 

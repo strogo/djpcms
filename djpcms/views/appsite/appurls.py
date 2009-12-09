@@ -19,7 +19,7 @@ class ArchiveApplication(ModelApplication):
     '''
     split_days    = False
     search        = ArchiveView()
-    year_archive  = ArchiveView(regex = '(?P<year>\d{4})',  parent = 'search')
+    year_archive  = ArchiveView(regex = '(?P<year>\d{4})')
     month_archive = ArchiveView(regex = '(?P<month>\w{3})', parent = 'year_archive')
     day_archive   = ArchiveView(regex = '(?P<day>\d{2})',   parent = 'month_archive')
     

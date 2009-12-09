@@ -4,9 +4,10 @@ from django.template import loader
 
 from djpcms.plugins import DJPplugin
 from djpcms.utils.html import htmlwrap
-from djpcms.views.apps.flowrepo.forms import ChangeCategory
+from djpcms.views.apps.flowrepo.forms import ChangeCategory, ChangeImage
 
-from flowrepo.models import FlowRelated, FlowItem, Report, Message, Category
+from flowrepo.models import FlowRelated, FlowItem, Report, Message, Category, Image
+from flowrepo.forms import FlowSearchForm
 
 class YourDraft(DJPplugin):
     name = 'flowrepo-draft'
@@ -34,7 +35,50 @@ class YourDraft(DJPplugin):
                 yield loader.render_to_string(['components/report_list_item.html',
                                                'flowrepo/report_list_item.html'],
                                                content)
-            
+
+
+class SearchFlow(DJPplugin):
+    '''
+    Just a search box for flowitems
+    '''
+    name = 'flow-search'
+    description = 'Search Flow Items'
+    
+    def render(self, djp, wrapper, prefix, **kwargs):
+        from djpcms.views import appsite
+        appmodel = appsite.site.for_model(FlowItem)
+        if appmodel:
+            search_url = appmodel.searchurl(djp.request)
+            if search_url:
+                f = FlowSearchForm(data = djp.request.GET)
+                return loader.render_to_string(['flowitem_search.html',
+                                                'flowrepo/flowitem_search.html'],
+                                                {'form': f,
+                                                 'url': search_url,
+                                                 'method':'post'})
+    
+
+
+class ImagePlugin(DJPplugin):
+    '''
+    Plugin for displaying a single image on a content block
+    '''
+    name = 'image'
+    description = 'Image'
+    form = ChangeImage
+    
+    def render(self, djp, wrapper, prefix, image = None, class_name = None, **kwargs):
+        try:
+            img = Image.objects.get(id = int(image))
+            if class_name:
+                cn = ' class="%s"' % class_name
+            else:
+                cn = ''
+            return '<img src="%s" title="%s" alt="%s"%s/>' % (img.url,img.name,img.name,cn)
+        except:
+            return u''
+    
+
 class MessageLine(DJPplugin):
     items = 5
     name = 'message-timeline'

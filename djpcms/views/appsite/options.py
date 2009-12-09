@@ -365,6 +365,15 @@ class ModelApplicationBase(object):
         if view and self.has_view_permission(request, obj):
             djp = view.requestview(request, instance = obj)
             return djp.url
+    
+    def searchurl(self, request):
+        '''
+        The search url for the model
+        '''
+        view = self.getapp('search')
+        if view and self.has_view_permission(request):
+            djp = view.requestview(request)
+            return djp.url
         
     def tagurl(self, request, tag):
         return None
