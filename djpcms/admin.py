@@ -12,9 +12,6 @@ class BlockContentAdmin(admin.ModelAdmin):
 class SiteContentAdmin(admin.ModelAdmin):
     list_display = ('code','last_modified','user_last','markup')
     
-class SiteImageAdmin(admin.ModelAdmin):
-    list_display = ('image','code','path','description','url')
-    
 class InnerTemplateAdmin(admin.ModelAdmin):
     list_display = ('name','numblocks','blocks','image')
 
@@ -47,7 +44,6 @@ class PageAdmin(admin.ModelAdmin):
     
     
 admin.site.register(models.SiteContent, SiteContentAdmin)
-admin.site.register(models.SiteImage, SiteImageAdmin)
 admin.site.register(models.InnerTemplate, InnerTemplateAdmin)
 admin.site.register(models.CssPageInfo, list_display=['id','body_class_name','conteiner_class','fixed'])
 admin.site.register(models.Page, PageAdmin)    

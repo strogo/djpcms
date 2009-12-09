@@ -41,6 +41,9 @@ div.intro {
 	text-align: justify;
 }
 
+.grid_3 .djpcms-block-element img.fullwidth {
+	width: 200px;
+}
 
 
 /**  MENU AND ACCORDION MENU

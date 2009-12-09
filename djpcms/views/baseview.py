@@ -364,7 +364,7 @@ class djpcmsview(UnicodeObject):
         '''
         raise NotImplementedError('Default ajax response not implemented')
 
-    def grid960(self, page):
+    def grid960(self, page = None):
         if page and page.cssinfo:
             return grid960(columns = page.cssinfo.gridsize, fixed = page.cssinfo.fixed)
         else:

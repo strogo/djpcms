@@ -618,22 +618,6 @@ class SiteContent(models.Model):
         self.save()
         
     
-class SiteImage(models.Model):
-    code        = SlugCode(max_length = 64,
-                           unique = True,
-                           help_text = _("Unique name for the image. Choose one you like"))
-    image       = models.ImageField(upload_to = upload_function, storage = site_image_storage())
-    path        = models.CharField(max_length=200,
-                                   blank = True,
-                                   help_text = _("Optional, relative path in file storage"))
-    description = models.TextField(blank = True)
-    url         = models.URLField(blank = True)
-        
-    def __unicode__(self):
-        return u'%s' % self.image
-
-
-
 def create_new_content(user = None, **kwargs):
     user_last = None
     if user and user.is_authenticated():

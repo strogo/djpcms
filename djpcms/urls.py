@@ -7,9 +7,9 @@ from djpcms.settings import SERVE_STATIC_FILES, DJPCMS_PLUGINS, DJPCMS_WRAPPERS
 from djpcms.views import appsite
 from djpcms.sitemap import get_site_maps
 
-#if not settings.DEBUG:
-#    handler404 = 'djpcms.views.specials.http404view'
-#    handler500 = 'djpcms.views.specials.http500view'
+if not settings.DEBUG:
+    handler404 = 'djpcms.views.specials.http404view'
+    handler500 = 'djpcms.views.specials.http500view'
 
 from djpcms.plugins import loadplugins, loadwrappers
     

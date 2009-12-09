@@ -38,7 +38,7 @@ class grid960_base(object):
         self.column_5_6 = 'grid_%s' % (5*c6,)
         
     def empty(self):
-        return '&nbsp;'
+        return mark_safe('&nbsp;')
 
 
 class grid960_12(grid960_base):
