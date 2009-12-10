@@ -218,7 +218,7 @@ class djpcmsview(UnicodeObject):
     
     def handle_response(self, djp):
         '''
-        Handle the GET RESPONSE.
+        Handle the RESPONSE.
         This function SHOULD NOT be overwritten.
         Several functions can be overwritten for tweaking the results.
         If that is not enough, maybe more hooks should be put in place.

@@ -3,37 +3,46 @@
 from django.template import loader
 
 from djpcms.plugins import DJPplugin
-from djpcms.utils.html import htmlwrap
+from djpcms.utils.html import htmlwrap, Paginator
 from djpcms.views.apps.flowrepo.forms import ChangeCategory, ChangeImage
 
 from flowrepo.models import FlowRelated, FlowItem, Report, Message, Category, Image
-from flowrepo.forms import FlowSearchForm
+from flowrepo.forms import FlowSearchForm, FlowItemSelector
 
-class YourDraft(DJPplugin):
-    name = 'flowrepo-draft'
-    description = 'Private reports'
+
+class FlowItemSelection(DJPplugin):
+    name = 'flowitem-selection'
+    description = 'Flow Items Selections'
+    form = FlowItemSelector
     
-    def render(self, djp, wrapper, prefix, **kwargs):
+    def render(self, djp, wrapper, prefix,
+               visibility = None, item_per_page = 10,
+               content_type = None, tags = '',
+               **kwargs):
         request = djp.request
-        qs = FlowItem.objects.private(request.user, Report)
+        qs      = FlowItem.objects.selection(request.user,
+                                             types = content_type,
+                                             visibility = visibility,
+                                             tags = tags)
         if not qs:
             return None
-        return loader.render_to_string(['report_draft_list.html',
-                                        'flowrepo/report_draft_list.html'],
-                                        {'items': self.paginator(djp,qs)})
+        pa = Paginator(djp.request, qs, item_per_page)
+        return loader.render_to_string(['flowitem_list.html',
+                                        'djpcms/components/object_list.html'],
+                                        {'items': self.paginator(djp,pa)})
         
-    def paginator(self, djp, qs):
+    def paginator(self, djp, pa):
         from djpcms.views import appsite
-        for_model = appsite.site.for_model
+        appmodel  = appsite.site.for_model(FlowItem)
+        qs        = pa.qs
         for obj in qs:
             object = obj.object
-            if not object:
-                continue
-            appmodel = for_model(object.__class__)
             if appmodel:
-                content  = appmodel.object_content(djp, obj)
-                yield loader.render_to_string(['components/report_list_item.html',
-                                               'flowrepo/report_list_item.html'],
+                content = appmodel.object_content(djp, obj)
+                tname   = '%s_list_item.html' % object.__class__.__name__.lower()
+                yield loader.render_to_string(['components/%s' % tname,
+                                               'flowrepo/%s' % tname,
+                                               'flowrepo/flowitem_list_item.html'],
                                                content)
 
 
@@ -78,32 +87,6 @@ class ImagePlugin(DJPplugin):
         except:
             return u''
     
-
-class MessageLine(DJPplugin):
-    items = 5
-    name = 'message-timeline'
-    description = 'Message time-line'
-    
-    def render(self, djp, wrapper, prefix, **kwargs):
-        request = djp.request
-        qs = FlowItem.objects.public(request.user, Message)
-        if not qs:
-            return None
-        qs = qs[:self.items]
-        return loader.render_to_string(['components/message_list.html',
-                                        'djpcms/components/object_list.html'],
-                                        {'items': self.paginator(djp,qs)})
-        
-    def paginator(self, djp, qs):
-        from djpcms.views import appsite
-        for_model = appsite.site.for_model
-        appmodel = appsite.site.for_model(FlowItem)
-        for obj in qs:
-            if appmodel:
-                content  = appmodel.object_content(djp, obj)
-                yield loader.render_to_string(['message_list_item.html',
-                                               'flowrepo/message_list_item.html'],
-                                               content)
 
 class CategoryLinks(DJPplugin):
     name = 'category-links'

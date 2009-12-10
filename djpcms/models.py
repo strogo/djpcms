@@ -109,27 +109,6 @@ class PageManager(models.Manager):
                            Q(end_publish_date__gte=datetime.datetime.now()) | Q(end_publish_date__isnull=True),
                            )
     
-    def search(self, query, language=None):
-        if not query:
-            return
-        qs = self.published()
-        if language:
-            qs = qs.filter(
-                        Q(title__icontains=query) |
-                        Q(pagecontent__language=language) & 
-                        (Q(pagecontent__title__icontains=query) |
-                        Q(pagecontent__description__icontains=query) |
-                        Q(pagecontent__content__icontains=query))
-                    )
-        else:
-            qs = qs.filter(
-                        Q(title__icontains=query) |
-                        Q(pagecontent__title__icontains=query) |
-                        Q(pagecontent__description__icontains=query) |
-                        Q(pagecontent__content__icontains=query)
-                    )
-        return qs.distinct()
-    
 
 class InnerTemplate(TimeStamp):
     name     = models.CharField(max_length = 200)
@@ -182,6 +161,9 @@ class CssPageInfo(TimeStamp):
 class Page(TimeStamp):
     site        = models.ForeignKey(Site)
     application = models.CharField(max_length = 200, blank = True)
+    variables   = models.CharField(max_length = 255,
+                                   blank = True,
+                                   help_text=_('Comma separated list of variables. To identify pages for model subviews'))
     redirect_to = models.ForeignKey('self',
                                     null  = True,
                                     blank = True,
@@ -241,8 +223,9 @@ class Page(TimeStamp):
                                    blank=True,
                                    help_text=_('Optional. Dotted path to a python class dealing with requests'))
         
-    # Denormalized level in the tree, for performance 
+    # Denormalized level in the tree and url, for performance 
     level       = models.IntegerField(default = 0, editable = False)
+    url         = models.CharField(editable = False, max_length = 1000)
 
     objects = PageManager()
 
@@ -253,8 +236,8 @@ class Page(TimeStamp):
         return u'%s' % self.url
     
     def save(self, **kwargs):
-        d = self.get_level()
-        self.level = d
+        self.url   = self.get_absolute_url()
+        self.level = self.get_level()
         super(Page,self).save(**kwargs)
         
     def get_template(self):
@@ -332,12 +315,26 @@ class Page(TimeStamp):
             return v + self.parent.num_arguments()
         else:
             return v
+    
+    def variabledictionary(self):
+        if self.variables:
+            d = {}
+            vars = self.variables.split(',')
+            for var in vars:
+                kv = var.split('=')
+                if len(kv) == 2:
+                    d[str(kv[0])] = kv[1]
+            return d
         
     def unsafe_url(self):
         if self.application:
             from djpcms.views import appsite
             app = appsite.site.getapp(self.application)
-            return u'/%s' % app._regex
+            dv  = self.variabledictionary()
+            if dv:
+                return app.purl % dv
+            else:
+                return app.purl
         else:
             url = u'/%s' % '/'.join([page.url_pattern for page in self.get_path() if page.parent])
             if not url.endswith('/'):
@@ -349,7 +346,6 @@ class Page(TimeStamp):
             return self.unsafe_url()
         except:
             return 'ERROR'
-    url = property(get_absolute_url)
 
     def get_children(self):
         return Page.objects.filter(parent=self, in_navigation__gt = 0).order_by('in_navigation')

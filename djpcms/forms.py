@@ -126,10 +126,10 @@ class PageForm(forms.ModelForm):
         
     def clean_site(self):
         '''
-        Check for site
+        Check for site.
+        If site not provided, The parent page must be available
         '''
-        data   = self.data
-        site   = data.get('site',None)
+        site   = self.cleaned_data.get('site',None)
         parent = self.get_parent()
         if not site:
             if not parent:
@@ -138,7 +138,7 @@ class PageForm(forms.ModelForm):
         elif parent:
             return parent.site
         else:
-            return Site.objects.get(id = int(site))
+            return site
     
     def clean_application(self):
         '''
@@ -146,11 +146,14 @@ class PageForm(forms.ModelForm):
         '''
         data = self.data
         app = data.get('application',None)
+        variables = data.get('variables',None)
         if app:
             others = Page.objects.filter(application = app)
-            for other in others:
-                if other != self.instance:
-                    raise forms.ValidationError('Application page %s already avaiable' % app)
+            if others and variables:
+                others = others.filter(variables = variables)
+                for other in others:
+                    if other != self.instance:
+                        raise forms.ValidationError('Application page %s already avaiable' % app)
         else:
             parent = self.get_parent()
             if not parent:
