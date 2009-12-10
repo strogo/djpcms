@@ -26,6 +26,7 @@ from djpcms.utils import lazyattr, function_module
 from djpcms.utils.func import PathList
 from djpcms.uploads import upload_function, site_image_storage
 from djpcms.settings import *
+from djpcms import mptt
 
 from djpcms import markup
 
@@ -213,11 +214,11 @@ class Page(TimeStamp):
                                     help_text=_("All ancestors will not be displayed in the navigation"))
     
     # Navigation
-    parent      = models.ForeignKey('self',
-                                    null  = True,
-                                    blank = True,
-                                    related_name = 'children',
-                                    help_text=_('This page will be appended inside the chosen parent page.'))
+    parent    = models.ForeignKey('self',
+                                  null  = True,
+                                  blank = True,
+                                  related_name = 'children',
+                                  help_text=_('This page will be appended inside the chosen parent page.'))
     
     code_object = models.CharField(max_length=200,
                                    blank=True,
@@ -238,6 +239,8 @@ class Page(TimeStamp):
     def save(self, **kwargs):
         self.url   = self.get_absolute_url()
         self.level = self.get_level()
+        if self.application:
+            self.parent = self.get_parent()
         super(Page,self).save(**kwargs)
         
     def get_template(self):
@@ -272,6 +275,22 @@ class Page(TimeStamp):
         code_obj = self.module()
         view = function_module(code_obj)
         return view(self, **kwargs)
+    
+    def get_parent(self):
+        '''
+        For application parent is calculated here
+        '''
+        from djpcms.views import appsite
+        app = appsite.site.getapp(self.application)
+        # Application has a parent
+        if app.parent:
+            # First check for url
+            d = self.variabledictionary() or {}
+            purl = app.parent.purl % d
+            try:
+                return Page.objects.get(url = purl)
+            except:
+                pass
 
     @lazyattr
     def get_parent_path(self):
@@ -290,19 +309,6 @@ class Page(TimeStamp):
 
     def on_path(self, super):
         return super in self.get_path()
-    
-    def modified_url_pattern(self):
-        if self.parent:
-            return str(self.url_pattern).replace('*','%s')
-        else:
-            return ''
-        
-    def num_relative_arguments(self):
-        p = str(self.url_pattern)
-        if p == '*':
-            return 1
-        else:
-            return 0
         
     @lazyattr
     def num_arguments(self):
@@ -344,7 +350,7 @@ class Page(TimeStamp):
     def get_absolute_url(self):
         try:
             return self.unsafe_url()
-        except:
+        except Exception, e:
             return 'ERROR'
 
     def get_children(self):
@@ -638,4 +644,5 @@ class Application(models.Model):
                                    null = False)
     
     
-    
+
+mptt.register(Page)

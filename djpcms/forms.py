@@ -149,8 +149,11 @@ class PageForm(forms.ModelForm):
         variables = data.get('variables',None)
         if app:
             others = Page.objects.filter(application = app)
-            if others and variables:
-                others = others.filter(variables = variables)
+            if others:
+                if variables:
+                    others = others.filter(variables = variables)
+                else:
+                    others = others.filter(variables = '')
                 for other in others:
                     if other != self.instance:
                         raise forms.ValidationError('Application page %s already avaiable' % app)

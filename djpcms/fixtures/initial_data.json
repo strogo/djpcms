@@ -1,5 +1,17 @@
 [
     {
+        "pk": 1, 
+        "model": "djpcms.innertemplate", 
+        "fields": {
+            "blocks": "content", 
+            "name": "flat", 
+            "created": "2009-11-18 19:29:24", 
+            "image": "", 
+            "last_modified": "2009-12-10 17:29:00", 
+            "template": "{{ content0 }}"
+        }
+    }, 
+    {
         "pk": 5, 
         "model": "djpcms.innertemplate", 
         "fields": {
@@ -96,18 +108,6 @@
         }
     }, 
     {
-        "pk": 1, 
-        "model": "djpcms.innertemplate", 
-        "fields": {
-            "blocks": "content", 
-            "name": "flat", 
-            "created": "2009-11-18 19:29:24", 
-            "image": "", 
-            "last_modified": "2009-12-10 17:29:00", 
-            "template": "{{ content0 }}"
-        }
-    }, 
-    {
         "pk": 2, 
         "model": "djpcms.csspageinfo", 
         "fields": {
@@ -135,24 +135,28 @@
         "pk": 1, 
         "model": "djpcms.page", 
         "fields": {
-            "level": 0, 
-            "in_navigation": 1, 
-            "code_object": "", 
-            "parent": null, 
+            "rght": 2, 
             "cssinfo": 1, 
-            "redirect_to": null, 
             "variables": "", 
-            "created": "2009-11-18 20:44:26", 
             "site": 1, 
-            "soft_root": false, 
-            "inner_template": 9, 
-            "application": "", 
-            "last_modified": "2009-12-10 17:29:45", 
-            "link": "", 
-            "template": "", 
-            "requires_login": false, 
-            "title": "", 
+            "lft": 1, 
+            "in_navigation": 1, 
             "url_pattern": "", 
+            "code_object": "", 
+            "title": "", 
+            "created": "2009-12-10 18:47:54", 
+            "application": "", 
+            "template": "", 
+            "tree_id": 1, 
+            "parent": null, 
+            "soft_root": false, 
+            "last_modified": "2009-12-10 18:47:54", 
+            "link": "", 
+            "level": 0, 
+            "url": "/", 
+            "redirect_to": null, 
+            "inner_template": 9, 
+            "requires_login": false, 
             "is_published": true
         }
     }
