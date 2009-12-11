@@ -53,7 +53,7 @@ if appsite.site.count():
 # Sitemap
 site_urls      += (r'^sitemap.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': get_site_maps()}),
 
-# The djcms pagination goes as last
-site_urls      += ((r'([\w/-]*)', 'djpcms.views.site.handler'),)
+# Last the url cleaner
+site_urls      += ((r'([\w/-]*)', 'djpcms.views.staticsite.cleaner'),)
 
 
