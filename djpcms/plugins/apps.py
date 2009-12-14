@@ -5,6 +5,10 @@ from django.template import loader
 from tagging.forms import TagField
 
 from djpcms.plugins import DJPplugin
+from djpcms.forms import SearchForm
+
+
+ 
 
 
 class LatestItemForm(forms.Form):
@@ -22,6 +26,39 @@ class LatestItemForm(forms.Form):
             return ct
         else:
             raise forms.ValidationError('Model %s has no application installed' % ct)
+
+
+
+class SearchModelForm(forms.Form):
+    for_model   = forms.ModelChoiceField(queryset = ContentType.objects.all(), empty_label=None)
+    title       = forms.CharField(required = False, max_length = 50)
+
+
+class SearchBox(DJPplugin):
+    '''
+    A search box for a model
+    '''
+    name = 'search-box'
+    description = 'Search Model'
+    form = SearchModelForm
+    
+    def render(self, djp, wrapper, prefix, for_model = None, title = None, **kwargs):
+        from djpcms.views import appsite
+        if for_model:
+            ct = ContentType.objects.get(id = int(for_model))
+            model = ct.model_class()
+            appmodel = appsite.site.for_model(model)
+            if appmodel:
+                search_url = appmodel.searchurl(djp.request)
+                if search_url:
+                    f = SearchForm(data = djp.request.GET)
+                    return loader.render_to_string(['search_form.html',
+                                                    'djpcms/form/search_form.html'],
+                                                    {'html':  f,
+                                                     'title': title or 'Enter your search term',
+                                                     'url':   search_url,
+                                                     'method':'get'})
+
 
 
 

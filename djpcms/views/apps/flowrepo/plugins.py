@@ -7,12 +7,12 @@ from djpcms.utils.html import htmlwrap, Paginator
 from djpcms.views.apps.flowrepo.forms import ChangeCategory, ChangeImage
 
 from flowrepo.models import FlowRelated, FlowItem, Report, Message, Category, Image
-from flowrepo.forms import FlowSearchForm, FlowItemSelector
+from flowrepo.forms import FlowItemSelector
 
 
 class FlowItemSelection(DJPplugin):
     name = 'flowitem-selection'
-    description = 'Flow Items Selections'
+    description = 'Items Selection'
     form = FlowItemSelector
     
     def render(self, djp, wrapper, prefix,
@@ -36,36 +36,16 @@ class FlowItemSelection(DJPplugin):
         appmodel  = appsite.site.for_model(FlowItem)
         qs        = pa.qs
         for obj in qs:
-            object = obj.object
-            if appmodel:
-                content = appmodel.object_content(djp, obj)
-                tname   = '%s_list_item.html' % object.__class__.__name__.lower()
+            object    = obj.object
+            model     = object.__class__
+            objmodel  = appsite.site.for_model(model) or appmodel
+            if objmodel:
+                content = objmodel.object_content(djp, obj)
+                tname   = '%s_list_item.html' % model.__name__.lower()
                 yield loader.render_to_string(['components/%s' % tname,
                                                'flowrepo/%s' % tname,
                                                'flowrepo/flowitem_list_item.html'],
                                                content)
-
-
-class SearchFlow(DJPplugin):
-    '''
-    Just a search box for flowitems
-    '''
-    name = 'flow-search'
-    description = 'Search Flow Items'
-    
-    def render(self, djp, wrapper, prefix, **kwargs):
-        from djpcms.views import appsite
-        appmodel = appsite.site.for_model(FlowItem)
-        if appmodel:
-            search_url = appmodel.searchurl(djp.request)
-            if search_url:
-                f = FlowSearchForm(data = djp.request.GET)
-                return loader.render_to_string(['flowitem_search.html',
-                                                'flowrepo/flowitem_search.html'],
-                                                {'form': f,
-                                                 'url': search_url,
-                                                 'method':'post'})
-    
 
 
 class ImagePlugin(DJPplugin):

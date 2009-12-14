@@ -328,14 +328,14 @@ class ModelApplicationBase(object):
             nurl = url(regex = child.regex,
                        view  = child.response,
                        name  = view_name)
-            urls.append(nurl)
             if edit and child.isapp:
-                eview = editview(child,edit)
+                eview = editview(child, edit)
                 self.edits.append(eview)
-                nurl = url(regex = child.edit_regex(edit),
+                eurl = url(regex = child.edit_regex(edit),
                            view  = eview.response,
                            name  = '%s_%s' % (edit,view_name))
-                urls.append(nurl)
+                urls.append(eurl)
+            urls.append(nurl)
                 
         return tuple(urls)
     urls = property(fget = make_urls)

@@ -75,6 +75,7 @@ ul.menu li.selected ul li.selected a {background: rgb(245,245,245);}
 
 /** INLINE CONTENT EDITING DEFAULT STYLE
 -----------------------------------------------------------*/
+/*
 body.edit {
 	background: rgb(9,46,32);
 }
@@ -141,7 +142,25 @@ form.content-select table {margin:0; float: left;}
 .content-edit-body {width: 100%; height: 100%;}
 .djpcontent form {height: 100%;}
 .content-edit-body textarea {width: 98%; height: 98%;}
-
+*/
+.edit-contentblock .hd {
+	background: rgb(35,79,50);
+	color: rgb(255,255,255);
+	padding: 5px 10px;
+	margin-bottom: 10px;
+}
+.edit-contentblock .hd .errorlist {
+	color: #FF906B;
+}
+.edit-contentblock .hd .form-messages {
+	color: #DFFF80
+}
+.edit-contentblock .actions  {
+	background: rgb(9,46,32);
+	overflow:hidden;
+	width: 100%;
+	height: 20px;
+}
 
 
 /* FORM classes

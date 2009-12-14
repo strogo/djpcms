@@ -285,8 +285,9 @@ class Page(TimeStamp):
         # Application has a parent
         if app.parent:
             # First check for url
-            d = self.variabledictionary() or {}
-            purl = app.parent.purl % d
+            #d = self.variabledictionary() or {}
+            #purl = app.parent.purl % d
+            purl = app.parent.purl
             try:
                 return Page.objects.get(url = purl)
             except:

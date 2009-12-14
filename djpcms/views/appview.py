@@ -456,6 +456,8 @@ class ObjectView(AppView):
                 url = self.purl % urlargs
                 djp.instance = instance
                 return url
+            else:
+                raise http.Http404
     
     def title(self, request, pagetitle):
         try:

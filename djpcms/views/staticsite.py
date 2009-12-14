@@ -67,7 +67,7 @@ def cleaner(request, url):
     if isinstance(url,HttpResponseRedirect):
         return url
     else:
-        return Http404
+        raise Http404()
     
 
     
@@ -112,7 +112,8 @@ def _get_view_from_url(request, url):
     edit   = None
     parts  = None
     if not url == '/':
-        parts  = url[1:-1].split('/')
+        url    = url[1:-1]
+        parts  = url.split('/')
     
         # Check if we are editing
         # We are editing if the first part of the url is equal to
@@ -149,6 +150,7 @@ def _get_view_from_url(request, url):
     if page.requires_login and not request.user.is_authenticated():
         return HttpResponseRedirect(settings.LOGIN_URL), edit
 
+    view = page.object(url = url)
     return view, edit
     
     

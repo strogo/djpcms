@@ -54,7 +54,7 @@ DJPCMS_SITE_STYLE        = getattr(settings, 'DJPCMS_SITE_STYLE', 'smoothness')
 #    pagecontent:  String    Code of page to be used as root for site content. This page must be
 #                            available in the database.
 CONTENT_INLINE_EDITING = getattr(settings, 'CONTENT_INLINE_EDITING',  {'available':True,
-                                                                       'preurl': 'edit',
+                                                                       'preurl': 'edit-content',
                                                                        'permission': None,
                                                                        'pagecontent': '/site-content/',
                                                                        'width': 600,

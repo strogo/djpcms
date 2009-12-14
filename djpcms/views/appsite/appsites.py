@@ -1,5 +1,6 @@
 from django.db.models.base import ModelBase
 from django import http
+from django.utils.datastructures import SortedDict
 
 from djpcms.views.appsite.options import ModelApplication
 from djpcms import siteapp_choices
@@ -15,7 +16,7 @@ class ApplicationSite(object):
         from djpcms.settings import APPLICATION_URL_PREFIX, CONTENT_INLINE_EDITING
         self.root_path     = APPLICATION_URL_PREFIX[1:]
         self.editavailable = CONTENT_INLINE_EDITING.get('available',False)
-        self._registry     = {}
+        self._registry     = SortedDict()
         self._nameregistry = {}
         self.parent_pages  = {}
         self.root_pages    = {}

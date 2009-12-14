@@ -10,7 +10,7 @@ from django import http
 
 from flowrepo.settings import FLOWREPO_SLUG_UNIQUE
 from flowrepo.models import FlowItem
-from flowrepo.forms import FlowItemForm, get_flow_form
+from flowrepo.forms import FlowItemForm
 
 from djpcms.views import appview
 from djpcms.views import appsite
@@ -41,28 +41,18 @@ class ContentView(appview.SearchView):
                 return self.model.objects.none()
         raise self.model.objects.none()
     
-class ElementView(appview.ViewView):
-    
-    def __init__(self, *args, **kwargs):
-        super(ElementView,self).__init__(*args,**kwargs)       
-        
-
-
+       
 class FlowRepoApplication(tagurl.ArchiveTaggedApplication):
     '''
     Base application class for flowitem models
     '''
     date_code        = 'timestamp'
     form_withrequest = True
-    form             = get_flow_form
+    form             = FlowItemForm
     split_days       = True
     inherit          = True
     insitemap        = True
     content_names    = {}   # dictionary for mapping a model into a name used for url
-    
-    content          = ContentView(regex = '(?P<content>[\+\w]+)')
-    view             = ElementView(regex = '(?P<id>%s)' % tagurl.tag_regex, parent = 'content')
-    edit             = appview.EditView(regex = 'edit', parent = 'view')
     
     def __init__(self, *args, **kwargs):
         super(FlowRepoApplication,self).__init__(*args, **kwargs)
@@ -151,8 +141,8 @@ class FlowRepoApplication(tagurl.ArchiveTaggedApplication):
         
             
     def get_form(self, djp, prefix = None, initial = None, wrapped = True):
-        instance = djp.instance
-        request  = djp.request
+        instance   = djp.instance
+        request    = djp.request
         mform      = modelform_factory(self.model, self.form)
         mform.user = request.user
         initial    = self.update_initial(request, mform, initial)
@@ -170,12 +160,26 @@ class FlowRepoApplication(tagurl.ArchiveTaggedApplication):
         return rf
 
 
-class CategoryApplication(appsite.ModelApplication):
-    category = appview.AppView(in_navigation = True)
-    view = appview.ViewView(regex = '(?P<category>%s)' % tagurl.tag_regex, parent = 'category')
+
+class FlowModelApplication(FlowRepoApplication):
+    inherit  = True
     
-    def objectbits(self, obj):
-        return {'category': obj.slug}
+    add      = appview.AddView(regex = 'write')
+    view     = appview.ViewView(regex = '(?P<id>%s)' % tagurl.tag_regex)
+    edit     = appview.EditView(regex = 'edit', parent = 'view')
+    
+    def objectbits(self, object):
+        '''
+        Get arguments from model instance used to construct url
+        By default it is the object id
+        @param obj: instance of self.model
+        @return: dictionary of url bits 
+        '''
+        obj = object.object
+        if hasattr(obj,'slug'):
+            return {'id': obj.slug}
+        else:
+            return {'id': obj.id}
     
     def get_object(self, *args, **kwargs):
         '''
@@ -184,26 +188,14 @@ class CategoryApplication(appsite.ModelApplication):
         Reimplement for custom arguments
         '''
         try:
-            slug = kwargs.get('category',None)
-            return self.model.objects.get(slug = slug)
+            id   = kwargs.get('id',None)
+            try:
+                obj = self.model.objects.get(slug = id)
+            except:
+                try:
+                    obj = self.model.objects.get(id = int(id))
+                except:
+                    return None
+            return FlowItem.objects.get_from_instance(obj)
         except:
             return None
-    
-    
-
-class BlogApplication(FlowRepoApplication):
-    '''
-    Writing application
-    @note: this application assume FLOWREPO_UNIQUE_SLUG is set to True in the settings file.
-           In this way the slug field of a Report is used to build the url
-    '''
-    inherit   = True
-    date_code = 'timestamp'
-    form      = FlowItemForm
-    
-    add       = appview.AddView(regex = 'write',
-                                parent = 'search',
-                                isplugin = False,
-                                in_navigation = True)
-    view      = appview.ViewView(regex = '(?P<slug>[\w-]+)')
-    edit      = appview.EditView(regex = 'edit', parent = 'view')

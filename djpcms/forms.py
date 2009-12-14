@@ -10,6 +10,10 @@ from djpcms import siteapp_choices
 from djpcms.plugins import get_plugin, plugingenerator, wrappergenerator
 
 
+class SearchForm(forms.Form):
+    text = forms.CharField(required = False)
+    
+
 class LazyChoiceField(forms.ChoiceField):
     '''
     A Lazy ChoiceField.
