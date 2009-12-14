@@ -1,3 +1,5 @@
+import os,sys
+
 from django.conf import settings
 from djpcms.ajaxhtml import ajaxhtml
 
@@ -59,3 +61,7 @@ CONTENT_INLINE_EDITING = getattr(settings, 'CONTENT_INLINE_EDITING',  {'availabl
                                                                        'pagecontent': '/site-content/',
                                                                        'width': 600,
                                                                        'height': 400,})
+
+libpath = os.path.join(os.path.dirname(__file__),'libs')
+if libpath not in sys.path:
+    sys.path.append(libpath)

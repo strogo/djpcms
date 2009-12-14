@@ -25,10 +25,9 @@ from djpcms.utils.models import TimeStamp
 from djpcms.utils import lazyattr, function_module
 from djpcms.utils.func import PathList
 from djpcms.uploads import upload_function, site_image_storage
-from djpcms.settings import *
-from djpcms import mptt
+from djpcms import settings, markup
 
-from djpcms import markup
+import mptt
 
 protocol_re = re.compile('^\w+://')
 
@@ -252,7 +251,7 @@ class Page(TimeStamp):
             if self.parent:
                 return self.parent.get_template()
             else:
-                return DEFAULT_TEMPLATE_NAME
+                return settings.DEFAULT_TEMPLATE_NAME
         else:
             return self.template
     
@@ -264,7 +263,7 @@ class Page(TimeStamp):
             if self.parent:
                 return self.parent.module()
             else:
-                return DEFAULT_VIEW_MODULE
+                return settings.DEFAULT_VIEW_MODULE
         else:
             return self.code_object
         
