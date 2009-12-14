@@ -162,9 +162,9 @@ class CssPageInfo(TimeStamp):
 class Page(TimeStamp):
     site        = models.ForeignKey(Site)
     application = models.CharField(max_length = 200, blank = True)
-    variables   = models.CharField(max_length = 255,
-                                   blank = True,
-                                   help_text=_('Comma separated list of variables. To identify pages for model subviews'))
+    #variables   = models.CharField(max_length = 255,
+    #                               blank = True,
+    #                               help_text=_('Comma separated list of variables. To identify pages for model subviews'))
     redirect_to = models.ForeignKey('self',
                                     null  = True,
                                     blank = True,
@@ -324,6 +324,7 @@ class Page(TimeStamp):
             return v
     
     def variabledictionary(self):
+        return {}
         if self.variables:
             d = {}
             vars = self.variables.split(',')
