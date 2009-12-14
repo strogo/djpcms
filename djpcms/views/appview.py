@@ -16,7 +16,7 @@ from django.utils.text import smart_split
 from djpcms.models import Page
 from djpcms.utils.html import Paginator
 from djpcms.views.baseview import djpcmsview
-from djpcms.views.site import get_view_from_url
+from djpcms.views.staticsite import get_view_from_url
 from djpcms.utils.func import force_number_insert
 from djpcms.utils.ajax import jremove, dialog, jredirect
 from djpcms.utils import form_kwargs

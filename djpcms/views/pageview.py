@@ -5,7 +5,7 @@ it is associated with a page (instance of Page)
 '''
 from djpcms.utils.func import force_number_insert
 from djpcms.views.baseview import djpcmsview
-from djpcms.views.site import get_view_from_page
+from djpcms.views.staticsite import get_view_from_page
 from djpcms.views import appsite
 
 

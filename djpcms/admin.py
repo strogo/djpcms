@@ -36,7 +36,7 @@ class PageAdmin(admin.ModelAdmin):
         }),
         ('Custom', {
             'classes': ('collapse',),
-            'fields': ('variables', 'template', 'code_object')
+            'fields': ('template', 'code_object')
         }),
         )
     
