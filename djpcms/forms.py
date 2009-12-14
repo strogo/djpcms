@@ -150,17 +150,11 @@ class PageForm(forms.ModelForm):
         '''
         data = self.data
         app = data.get('application',None)
-        variables = data.get('variables',None)
         if app:
             others = Page.objects.filter(application = app)
-            if others:
-                if variables:
-                    others = others.filter(variables = variables)
-                else:
-                    others = others.filter(variables = '')
-                for other in others:
-                    if other != self.instance:
-                        raise forms.ValidationError('Application page %s already avaiable' % app)
+            for other in others:
+                if other != self.instance:
+                    raise forms.ValidationError('Application page %s already avaiable' % app)
         else:
             parent = self.get_parent()
             if not parent:

@@ -310,6 +310,7 @@
 	 * box decorator
 	 * 
 	 */
+	/*
 	dj.addDecorator({
 		id:"djpcms-box",
 		decorate: function($this,config) {
@@ -321,6 +322,7 @@
 			});
 		}
 	});
+	*/
 	
 	
 	/**

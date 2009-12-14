@@ -24,9 +24,6 @@ div.flat-element {
 	overflow:hidden;
 }
 .djpcms-html-box .hd  h2 {
-	font-size: 12px;
-	font-weight: bold;
-	line-height: 1;
 	padding: 0;
 	margin:0;
 }
@@ -250,8 +247,6 @@ blockquote div.body-quote {
 	margin-bottom: 0.7em;
 }
 
-input.search-box {padding: 4px 2px;}
-
 /* CONTENT CLASSES
 ------------------------------------------------------------------*/
 .djpcms-block {
@@ -285,13 +280,6 @@ div.djpcms-comment.djpcms-html-box .bd {
 .djpcms-comment .head span {
 	color: rgb(120,120,120);
 }
-
-/* SEARCH Results classes
-----------------------------------------------------------------------*/
-.search-item {margin-bottom: 20px;}
-.list-item {overflow: hidden; margin-bottom: 20px;}
-.list-item .hd {overflow: hidden; margin-bottom:5px;}
-.list-item .hd h3 {float: left; margin: 0;}
 
 /* Documentation
 -----------------------------------------------------------------------*/
