@@ -24,6 +24,9 @@ class NewContentCode(SlugField):
 
 
 class ChangeTextContent(forms.Form):
+    '''
+    Form for changing text content during inline editing
+    '''
     site_content = forms.ModelChoiceField(queryset = SiteContent.objects.all(),
                                           empty_label=u"New Content", required = False)
     new_content  = NewContentCode(SiteContent,
@@ -39,6 +42,15 @@ class ChangeTextContent(forms.Form):
         request = kwargs.pop('request',None)
         if not request:
             raise ValueError('Request not available')
+        initial = kwargs.pop('initial',None)
+        if initial:
+            site_content = initial.get('site_content',None)
+            try:
+                site_content = SiteContent.objects.get(id = int(site_content))
+                initial['markup'] = site_content.markup
+            except:
+                pass
+        kwargs['initial'] = initial
         self.user = request.user
         super(ChangeTextContent,self).__init__(*args,**kwargs)
         
@@ -67,6 +79,7 @@ class ChangeTextContent(forms.Form):
             return text
         
 
+
 class EditContentForm(forms.ModelForm):
     
     def __init__(self, *args, **kwargs):
@@ -78,11 +91,9 @@ class EditContentForm(forms.ModelForm):
         
     class Meta:
         model = SiteContent
-        fields = ('description', 'body')
+        fields = ('body',)
 
     
-
-
 class Text(DJPplugin):
     name          = "text"
     withrequest   = True

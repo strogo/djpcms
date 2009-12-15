@@ -47,13 +47,14 @@ def getcache(request):
 
 def handler(request):
     '''
-    Main entry for flatpage urls.
-    request maintains a local cache for retriving
+    Main entry for flat-pages.
+    Request maintains a local cache for retriving
     pages already loaded
     '''
     # Create the page cache
     from djpcms.views.baseview import editview
-    view, edit = _get_view_from_url(request, request.path)
+    url = request.path
+    view, edit = _get_view_from_url(request, url)
     if view: 
         if isinstance(view,HttpResponseRedirect):
             return view
@@ -61,7 +62,7 @@ def handler(request):
             view = editview(view, edit)
         return view.response(request)
     
-    
+
 def cleaner(request, url):
     url = clean_url(url)
     if isinstance(url,HttpResponseRedirect):
@@ -84,17 +85,12 @@ def get_view_from_page(request, page):
     '''
     Given a request and a page object it returns a view ovject
     '''
+    return page.object()
     cache = getcache(request)
     view  = cache.page(page)
     if view:
         return view
-    
-    if page.parent:
-        view = get_view_from_page(request, page.parent)
-        url  = '%s%s/' % (view.url, page.url_pattern)
-    else:
-        url = '/%s/' % page.url_pattern
-    view = page.object(url = url)
+    view = page.object()
     cache.add(view)
     return view
         
@@ -150,7 +146,7 @@ def _get_view_from_url(request, url):
     if page.requires_login and not request.user.is_authenticated():
         return HttpResponseRedirect(settings.LOGIN_URL), edit
 
-    view = page.object(url = url)
+    view = page.object()
     return view, edit
     
     

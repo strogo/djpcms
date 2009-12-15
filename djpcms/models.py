@@ -267,13 +267,13 @@ class Page(TimeStamp):
         else:
             return self.code_object
         
-    def object(self, **kwargs):
+    def object(self):
         '''
         Load a view class and create the view instance
         '''
         code_obj = self.module()
         view = function_module(code_obj)
-        return view(self, **kwargs)
+        return view(self)
     
     def get_parent(self):
         '''

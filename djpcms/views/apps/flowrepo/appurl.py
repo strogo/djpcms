@@ -8,7 +8,6 @@ from django.contrib.contenttypes.models import ContentType
 from django.forms.models import modelform_factory
 from django import http
 
-from flowrepo.settings import FLOWREPO_SLUG_UNIQUE
 from flowrepo.models import FlowItem
 from flowrepo.forms import FlowItemForm
 

@@ -43,8 +43,7 @@ if SERVE_STATIC_FILES:
     site_urls += (r'^%ssite/(?P<path>.*)$' % murl,
                   'django.views.static.serve',
                   {'document_root': settings.MEDIA_ROOT, 'show_indexes': True}
-                  ),
-                 
+                  ),               
 
 # Applications urls
 if appsite.site.count():

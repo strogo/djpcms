@@ -9,7 +9,7 @@ from djpcms.views.staticsite import get_view_from_page
 from djpcms.views import appsite
 
 
-def create_view(obj, dbmodel, url = u'/', parent = None):
+def create_view(obj, dbmodel):
     '''
     view object constructor
         @param dbmodel: the database model for the Page
@@ -18,8 +18,7 @@ def create_view(obj, dbmodel, url = u'/', parent = None):
         @param edit:    string (Optional)
     '''
     obj.page      = dbmodel
-    obj.editurl   = None
-    obj.url       = url                
+    obj.editurl   = None              
     return obj
 
 
@@ -29,10 +28,10 @@ class pageview(djpcmsview):
         return create_view(super(pageview, cls).__new__(cls), *args, **kwargs)
 
     def __unicode__(self):
-        return self.url
+        return self.page.url
     
     def get_url(self, djp, **urlargs):
-        return self.url
+        return self.page.url
     
     def get_page(self):
         return self.page
@@ -68,7 +67,7 @@ class pageview(djpcmsview):
                     views.append(djp)
         #
         # Now check for application children
-        appchildren = appsite.site.parent_pages.get(self.url,None)
+        appchildren = appsite.site.parent_pages.get(self.page.url,None)
         
         if appchildren:
             for app in appchildren:
