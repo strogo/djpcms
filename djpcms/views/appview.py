@@ -394,7 +394,7 @@ class AddView(AppView):
     Standard Add method
     '''
     def __init__(self, regex = 'add', parent = None,
-                 name = 'add', isplugin = True, **kwargs):
+                 name = 'add', isplugin = True, in_navigation = True, **kwargs):
         '''
         Set some default values for add application
         '''
@@ -402,6 +402,7 @@ class AddView(AppView):
                                      parent = parent,
                                      name   = name,
                                      isplugin = isplugin,
+                                     in_navigation = in_navigation,
                                      **kwargs)
     
     def has_permission(self, request = None, obj = None):
