@@ -23,7 +23,7 @@ class machine(object):
                  cache      = 'dummy:///',
                  dboptions  = None,
                  egg_cache  = '/var/www/.python-eggs',
-                 media_root = '/var/www/djangosites/media'
+                 media_root = None
                  ):
         self.dbengine    = dbengine
         self.dbhost      = dbhost
@@ -43,23 +43,22 @@ class machine(object):
         self._machines[name] = self
         
     def media_root(self):
-        if self.servs:
-            return os.path.join(self.LOCDIR,'media','site')
+        m = os.path.join(self.LOCDIR,'media','site')
+        if self.servs or not self._media_root:
+            return m
         else:
             return self._media_root
             
             
         
-
-
-
 def get_machine(pdir):
-    node = platform.node()
-    node = node.split('.')[0]
+    node    = platform.node()
+    node    = node.split('.')[0]
     default = machine._machines.get('default', None)
-    sett = machine._machines.get(node, default)
+    sett    = machine._machines.get(node, default)
     if not sett:
         raise ValueError('machine %s setting not available' % node)
     sett.machine = node
     sett.LOCDIR  = pdir
     return sett
+
