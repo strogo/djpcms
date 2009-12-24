@@ -210,13 +210,13 @@ class EditPluginView(appview.EditView):
         instance = djp.instance
         p = instance.plugin
         if p:
-            f = p.edit(djp, instance.arguments, withdata = withdata)
-            if f:
-                if isforminstance(f):
-                    flet = formlet(form = f,
-                                   layout = 'onecolumn')
-                    f = form(url = djp.url, cn = self.ajax.ajax)
-                    f['form'] = flet
+            flet = p.edit(djp, instance.arguments, withdata = withdata)
+            if isforminstance(flet):
+                flet = formlet(form = flet,
+                               layout = 'onecolumn')
+            if isinstance(flet,formlet):
+                f = form(url = djp.url, cn = self.ajax.ajax)
+                f['form'] = flet
                 return f
     
     def default_ajax_view(self, djp):

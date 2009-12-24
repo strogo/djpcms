@@ -6,15 +6,12 @@ table.plain th {padding: 3px 15px 3px 0; text-align: left;}
 
 /*		BOX and CONTENT BLOCKS
 -------------------------------------------------*/
-.djpcms-block-element {
+div.djpcms-block-element {
 	overflow: hidden;
+	margin-bottom: 20px;
 }
 div.flat-element {
 	padding: 10px;
-}
-
-.djpcms-contentblock {
-	margin-bottom: 20px;
 }
 	
 .djpcms-html-box .hd {

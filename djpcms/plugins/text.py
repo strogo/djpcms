@@ -3,11 +3,11 @@
 from django import forms
 from django.conf import settings
 
-from djpcms.utils import json
+from djpcms.utils import json, form_kwargs
 from djpcms.models import SiteContent
 from djpcms.plugins import DJPplugin
 from djpcms.forms import SlugField
-from djpcms.utils import form_kwargs
+from djpcms.utils.html import formlet
 from djpcms import markup
 
 
@@ -96,6 +96,7 @@ class EditContentForm(forms.ModelForm):
     
 class Text(DJPplugin):
     name          = "text"
+    description   = "Text Editor"
     withrequest   = True
     form          = ChangeTextContent
     
@@ -122,10 +123,11 @@ class Text(DJPplugin):
         if site_content:
             try:
                 site_content = SiteContent.objects.get(id = int(site_content))
-                return EditContentForm(**form_kwargs(request = djp.request,
-                                                     instance = site_content,
-                                                     withrequest = True,
-                                                     **kwargs))
+                f = EditContentForm(**form_kwargs(request = djp.request,
+                                                  instance = site_content,
+                                                  withrequest = True,
+                                                  **kwargs))
+                return formlet(form = f, template = 'djpcms/form/text-edit-form.html')
             except Exception, e:
                 return None
             
@@ -133,4 +135,26 @@ class Text(DJPplugin):
         text = pform.update()
         return json.dumps({'site_content': text.id})
         
+
+
+class HtmlContent(forms.Form):
+    content = forms.CharField(widget = forms.Textarea())
+
         
+class Html(DJPplugin):
+    name          = "html"
+    description   = "HTML Snippet"
+    form          = HtmlContent
+    
+    def html(self):
+        if self.site_content:
+            return self.site_content.bodyhtml()
+        else:
+            return u''
+            
+    def render(self, djp, wrapper, prefix, content = None, **kwargs):
+        if content:
+            return content
+        else:
+            return u''
+    
