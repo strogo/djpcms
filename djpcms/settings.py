@@ -60,7 +60,7 @@ CONTENT_INLINE_EDITING = getattr(settings, 'CONTENT_INLINE_EDITING',  {'availabl
                                                                        'permission': None,
                                                                        'pagecontent': '/site-content/',
                                                                        'width': 600,
-                                                                       'height': 400,})
+                                                                       'height': 400})
 
 libpath = os.path.join(os.path.dirname(__file__),'libs')
 if libpath not in sys.path:

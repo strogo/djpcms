@@ -223,8 +223,9 @@ class EditPluginView(appview.EditView):
         f = self.get_form(djp, withdata = False)
         d = dialog(hd = f.instance.code,
                    bd = f.render(),
-                   modal = True,
-                   width = 600)
+                   modal  = True,
+                   width  = CONTENT_INLINE_EDITING.get('width','auto'),
+                   height = CONTENT_INLINE_EDITING.get('height','auto'))
         d.addbutton('Ok', url = djp.url, func = 'save')
         d.addbutton('Cancel', url = djp.url, func = 'cancel')
         d.addbutton('Save', url = djp.url, func = 'save', close = False)
