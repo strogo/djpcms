@@ -13,8 +13,10 @@ Required
 Optional
 -----------
  * django-tagging	http://code.google.com/p/django-tagging/
-  
  
 
+Running tests
+---------------
+On the top level directory type
 
-
+python testing.py test djpcms

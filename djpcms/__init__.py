@@ -1,10 +1,10 @@
 import os
 import sys
 
-VERSION = (0, 4, 'beta')
+VERSION = (0, 4)
 
 def get_version():
-    if VERSION[2] is not None:
+    if len(VERSION) == 3:
         v = '%s.%s_%s' % VERSION
     else:
         v = '%s.%s' % VERSION[:2]

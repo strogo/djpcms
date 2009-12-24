@@ -44,3 +44,4 @@ class CalendarViewTest(TestCase):
                          SiteContent.objects.filter(last_modified__year  = today.year,
                                                     last_modified__month = today.month,
                                                     last_modified__day   = today.day).count())
+
