@@ -155,6 +155,8 @@ form.content-select table {margin:0; float: left;}
 	width: 100%;
 	height: 20px;
 }
+.edit form {height: 100%;}
+.edit .writing #id_body {width: 100%; height: 100%;}
 
 
 /* FORM classes
