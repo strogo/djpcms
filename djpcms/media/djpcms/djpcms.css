@@ -157,7 +157,7 @@ form.content-select table {margin:0; float: left;}
 }
 .edit form {height: 100%;}
 .edit .writing {height: 100%;}
-.writing textarea.fullsize {
+.edit .writing #id_body {
 	font-family:Monaco,"Courier New","DejaVu Sans Mono","Bitstream Vera Sans Mono",monospace;
 	width: 100%;
 	min-height: 98%;
