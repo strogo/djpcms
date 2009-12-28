@@ -38,6 +38,8 @@
 				ajax_server_error: "ajax-server-error",
 				errorlist:		   "errorlist",
 				formmessages:	   "form-messages",
+				bitly_key:		   null,
+				twitter_user:	   null,
 				fadetime:		   200,
 				ajaxtimeout:	   30,
 				tablesorter:	   {},
