@@ -1,0 +1,3 @@
+*.pyc
+djpcms.egg-info/*
+*.egg
