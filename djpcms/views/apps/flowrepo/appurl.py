@@ -160,11 +160,12 @@ class FlowRepoApplication(tagurl.ArchiveTaggedApplication):
 
 
 
+
 class FlowModelApplication(FlowRepoApplication):
     inherit  = True
     
     add      = appview.AddView(regex = 'write')
-    view     = appview.ViewView(regex = '(?P<id>%s)' % tagurl.tag_regex)
+    view     = appview.ViewView(regex = '(?P<id>[-\.\w/]+)', splitregex = False)
     edit     = appview.EditView(regex = 'edit', parent = 'view')
     
     def objectbits(self, object):
@@ -176,7 +177,12 @@ class FlowModelApplication(FlowRepoApplication):
         '''
         obj = object.object
         if hasattr(obj,'slug'):
-            return {'id': obj.slug}
+            parent = getattr(obj,'parent',None)
+            if parent:
+                bits = '%s/%s' % (self.objectbits(bits)['id'],obj.slug)
+            else:
+                bits = obj.slug
+            return {'id': bits}
         else:
             return {'id': obj.id}
     
@@ -189,7 +195,8 @@ class FlowModelApplication(FlowRepoApplication):
         try:
             id   = kwargs.get('id',None)
             try:
-                obj = self.model.objects.get(slug = id)
+                slug = id.split('/')[-1]
+                obj = self.model.objects.get(slug = slug)
             except:
                 try:
                     obj = self.model.objects.get(id = int(id))

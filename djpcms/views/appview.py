@@ -35,7 +35,8 @@ class AppView(djpcmsview):
                  isapp     = True,
                  isplugin  = False,
                  template_name = None,
-                 in_navigation = False):
+                 in_navigation = False,
+                 splitregex = True):
         # number of positional arguments in the url
         self.num_args = 0
         # total number of arguments, including positional and key-worded
@@ -50,6 +51,7 @@ class AppView(djpcmsview):
         self.appmodel = None
         self.code     = None
         self.editurl  = None
+        self.splitregex = splitregex
         self.in_nav   = in_navigation
         if template_name:
             self.template_name = template_name
@@ -112,7 +114,10 @@ class AppView(djpcmsview):
         
         breadcrumbs = []
         if self.urlbit:
-            bits = self.urlbit.split('/')
+            if self.splitregex:
+                bits = self.urlbit.split('/')
+            else:
+                bits = ['%s' % self.urlbit]
             for bit in bits:
                 if bit:
                     if bit.startswith('('):

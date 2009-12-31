@@ -1,7 +1,11 @@
 
 import os
+import sys
 from distutils.command.install import INSTALL_SCHEMES
 from distutils.core import setup
+
+package_name = 'djpcms'
+root_dir     = os.path.dirname(__file__)
 
 # Tell distutils to put the data_files in platform-specific installation
 # locations. See here for an explanation:
@@ -10,10 +14,10 @@ for scheme in INSTALL_SCHEMES.values():
     scheme['data'] = scheme['purelib']
 
 def get_version():
-    #path = os.path.dirname(__file__)
-    #sys.path.insert(0,path)
-    import djpcms
-    return djpcms.get_version()
+    if root_dir not in sys.path:
+        sys.path.insert(0,root_dir)
+    pkg = __import__(package_name)
+    return pkg.get_version()
 
 
 def read(fname):
@@ -36,8 +40,7 @@ def fullsplit(path, result=None):
 # Compile the list of packages available, because distutils doesn't have
 # an easy way to do this.
 packages, data_files = [], []
-root_dir    = os.path.dirname(__file__)
-package_dir = os.path.join(root_dir, 'djpcms')
+package_dir = os.path.join(root_dir, package_name)
 pieces = fullsplit(root_dir)
 if pieces[-1] == '':
     len_root_dir = len(pieces) - 1
@@ -56,7 +59,7 @@ for dirpath, dirnames, filenames in os.walk(package_dir):
 
 
 setup(
-        name         = 'djpcms',
+        name         = package_name,
         version      = get_version(),
         author       = 'Luca Sbardella',
         author_email = 'luca.sbardella@gmail.com',
