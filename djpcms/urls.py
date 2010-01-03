@@ -45,13 +45,13 @@ if SERVE_STATIC_FILES:
                   {'document_root': settings.MEDIA_ROOT, 'show_indexes': True}
                   ),               
 
-# Applications urls
-if appsite.site.count():
-    site_urls += appsite.site.urls
-
 # Sitemap
 site_urls      += (r'^sitemap.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': get_site_maps()}),
 
+# Applications urls
+if appsite.site.count():
+    site_urls += appsite.site.urls
+    
 # Last the url cleaner
 site_urls      += ((r'([\w/-]*)', 'djpcms.views.staticsite.cleaner'),)
 

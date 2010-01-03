@@ -32,11 +32,11 @@ from fabric.api import *
 
 
 #___________________________________________________________ SETTINGS DEFAULT
-env.module_name     = None              # Specify the module which contain the settings file
-env.server_type     = 'mod_wsgi'        # Apache deployment type ('mod_python' or 'mod_wsgi')
-env.server_name     = '127.0.0.1'       # servername
-env.project_name    = None              # if None it will be set to server_name, only used for local testing really!
-no_site_packages    = False
+env.module_name      = None              # Specify the module which contain the settings file
+env.server_type      = 'mod_wsgi'        # Apache deployment type ('mod_python' or 'mod_wsgi')
+env.server_name      = '127.0.0.1'       # servername
+env.project_name     = None              # if None it will be set to server_name, only used for local testing really!
+env.no_site_packages = False
 
 env.server_user     = 'www-data'
 env.server_group    = env.server_user 
@@ -88,9 +88,12 @@ def install_site():
 
     release = '{0[path]}/releases/{0[release]}'.format(env)
     put(nginx, release)
+    local('rm {0}'.format(nginx))
     put(apache, release)
+    local('rm {0}'.format(apache))
     if wsgi:
         put(wsgi,release)
+        local('rm {0}'.format(wsgi))
     
     sudo('cp {0}/{1} /etc/apache2/sites-available/'.format(release,apache))
     try:

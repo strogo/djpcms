@@ -10,3 +10,4 @@ Not yet released
  * Bug fixes
  * Added "splitregex" named options in views.appview.AppView constructor 
  * Added DISQUS in plugins
+ * Removed StaticPagesMiddleware request handler and moved into views.appview.AppView.response

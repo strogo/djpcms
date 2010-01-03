@@ -64,6 +64,9 @@ def handler(request):
     
 
 def cleaner(request, url):
+    response = handler(request)
+    if response:
+        return response
     url = clean_url(url)
     if isinstance(url,HttpResponseRedirect):
         return url
