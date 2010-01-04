@@ -165,8 +165,9 @@ class FlowModelApplication(FlowRepoApplication):
     inherit  = True
     
     add      = appview.AddView(regex = 'write')
+    edit     = appview.EditView(regex = '(?P<id>[-\.\w/]+)', parent = 'add', splitregex = False)
     view     = appview.ViewView(regex = '(?P<id>[-\.\w/]+)', splitregex = False)
-    edit     = appview.EditView(regex = 'edit', parent = 'view')
+    #edit     = appview.EditView(regex = 'edit', parent = 'view')
     
     def objectbits(self, object):
         '''
