@@ -23,7 +23,8 @@ appsite.load()
 if 'django.contrib.admin' in settings.INSTALLED_APPS:
     try:
         admin_url_prefix = settings.ADMIN_URL_PREFIX
-        site_urls  = url(r'^{0}(.*)'.format(admin_url_prefix[1:]),    admin.site.root),
+        #site_urls  = url(r'^{0}(.*)'.format(admin_url_prefix[1:]),    admin.site.root),
+        site_urls  = url(r'^%s(.*)' % admin_url_prefix[1:],    admin.site.root),
     except:
         site_urls  = ()
 else:
@@ -36,11 +37,11 @@ if SERVE_STATIC_FILES:
     import os
     djpcms_media_root = os.path.join(djpcms.__path__[0],'media','djpcms')
     murl = settings.MEDIA_URL.lstrip("/")
-    site_urls += (r'^{0}djpcms/(?P<path>.*)$'.format(murl),
+    site_urls += (r'^%sdjpcms/(?P<path>.*)$' % murl, # r'^{0}djpcms/(?P<path>.*)$'.format(murl),
                   'django.views.static.serve',
                   {'document_root': djpcms_media_root, 'show_indexes': True}
                   ),
-    site_urls += (r'^{0}site/(?P<path>.*)$'.format(murl),
+    site_urls += (r'^%ssite/(?P<path>.*)$' % murl, #r'^{0}site/(?P<path>.*)$'.format(murl),
                   'django.views.static.serve',
                   {'document_root': settings.MEDIA_ROOT, 'show_indexes': True}
                   ),               
@@ -50,7 +51,8 @@ site_urls      += (r'^sitemap.xml$', 'django.contrib.sitemaps.views.sitemap', {'
 
 if CONTENT_INLINE_EDITING['available']:
     edit = CONTENT_INLINE_EDITING['preurl']
-    site_urls += ((r'{0}/([\w/-]*)'.format(edit), 'djpcms.views.handlers.editHandler'),)
+    #site_urls += ((r'{0}/([\w/-]*)'.format(edit), 'djpcms.views.handlers.editHandler'),)
+    site_urls += ((r'%s/([\w/-]*)' % edit, 'djpcms.views.handlers.editHandler'),)
 
 # Applications urls
 #if appsite.site.count():
