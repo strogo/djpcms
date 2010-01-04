@@ -19,7 +19,8 @@ def djpcmsHandler(request, url):
     '''
     from django.core import urlresolvers
     
-    url = clean_url('/{0}'.format(url))
+    #url = clean_url('/{0}'.format(url))    Python 3.1
+    url = clean_url('/%s' % url)
     if isinstance(url,HttpResponseRedirect):
         return url, (), {}
     
