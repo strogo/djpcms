@@ -175,11 +175,14 @@ class FlowModelApplication(FlowRepoApplication):
         @param obj: instance of self.model
         @return: dictionary of url bits 
         '''
-        obj = object.object
+        try:
+            obj = object.object
+        except:
+            obj = object
         if hasattr(obj,'slug'):
             parent = getattr(obj,'parent',None)
             if parent:
-                bits = '%s/%s' % (self.objectbits(bits)['id'],obj.slug)
+                bits = '%s/%s' % (self.objectbits(parent)['id'],obj.slug)
             else:
                 bits = obj.slug
             return {'id': bits}

@@ -26,7 +26,7 @@ build_base_context = function_module(DJPCMS_CONTENT_FUNCTION)
 # Wrapper around request
 class DjpRequestWrap(UnicodeObject):
     '''
-    Request wrapper for djpcms views.
+    Request wrapper for djpcms class views
     '''
     def __init__(self, request, view, *args, **kwargs):
         self.request  = request
@@ -167,6 +167,10 @@ class djpcmsview(UnicodeObject):
     def get_page(self):
         return None
     
+    def __call__(self, request, *args, **kwargs):
+        djp = self.requestview(request, *args, **kwargs)
+        return djp.response()
+    
     def methods(self, request):
         '''
         Allowed methods for this view.
@@ -202,10 +206,6 @@ class djpcmsview(UnicodeObject):
     
     def parentview(self, request):
         pass
-    
-    def response(self, request, *args, **kwargs):
-        djp = self.requestview(request, *args, **kwargs)
-        return djp.response()
     
     def render(self, djp, **kwargs):
         return u''
@@ -427,6 +427,7 @@ class djpcmsview(UnicodeObject):
     
     def defaultredirect(self, djp):
         return djp.url
+
 
 class wrapview(djpcmsview):
     '''

@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.conf.urls.defaults import *
 
 import djpcms
-from djpcms.settings import SERVE_STATIC_FILES, DJPCMS_PLUGINS, DJPCMS_WRAPPERS
+from djpcms.settings import SERVE_STATIC_FILES, DJPCMS_PLUGINS, DJPCMS_WRAPPERS, CONTENT_INLINE_EDITING
 from djpcms.views import appsite
 from djpcms.sitemap import get_site_maps
 
@@ -48,11 +48,15 @@ if SERVE_STATIC_FILES:
 # Sitemap
 site_urls      += (r'^sitemap.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': get_site_maps()}),
 
+if CONTENT_INLINE_EDITING['available']:
+    edit = CONTENT_INLINE_EDITING['preurl']
+    site_urls += ((r'{0}/([\w/-]*)'.format(edit), 'djpcms.views.handlers.editHandler'),)
+
 # Applications urls
-if appsite.site.count():
-    site_urls += appsite.site.urls
+#if appsite.site.count():
+#    site_urls += appsite.site.urls
     
-# Last the url cleaner
-site_urls      += ((r'([\w/-]*)', 'djpcms.views.staticsite.cleaner'),)
+# Last the djpcms Handler
+site_urls      += ((r'([\w/-]*)', 'djpcms.views.handlers.Handler'),)
 
 

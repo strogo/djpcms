@@ -4,10 +4,12 @@ from django.conf import settings
 from djpcms.views.staticsite import handler
 
     
-class StaticPagesMiddleware(object):
+class DjpcmsRequestHandler(object):
     '''
-    Check For static Pages.
-    If a static page is found return response object, otherwise return None
+    Process a djpcms powered request.
+    This middleware should be the last one on the list of MIDDLEWARE_CLASSES
     '''
-    pass
+    def process_request(self, request):
+        pass
+    
 

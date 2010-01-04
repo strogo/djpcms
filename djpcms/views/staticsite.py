@@ -45,6 +45,7 @@ def getcache(request):
     return cache
 
 
+
 def handler(request):
     '''
     Main entry for flat-pages.

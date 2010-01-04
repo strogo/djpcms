@@ -26,88 +26,11 @@ from djpcms.utils import lazyattr, function_module
 from djpcms.utils.func import PathList
 from djpcms.uploads import upload_function, site_image_storage
 from djpcms import settings, markup
+from djpcms.managers import PageManager
 
 import mptt
 
 protocol_re = re.compile('^\w+://')
-
-
-class RootPageDoesNotExist(Exception):
-    pass
-
-
-class PageCache(object):
-    
-    def __init__(self):
-        self.clear()
-    
-    def clear(self):
-        self.root = None
-        self.tree = {}
-    
-
-class PageManager(models.Manager):
-    
-    # Cache to avoid re-looking up Page objects all over the place.
-    # This cache is shared by all the get_for_* methods.
-    _cache  = PageCache()
-    
-    def get_for_application(self, name):
-        return self.get(application = name)
-    
-    def hierarchy(self, parent=None):
-        if parent:
-            filter = self.filter(parent=parent)
-        else:
-            try:
-                root = self.root()
-            except RootPageDoesNotExist:
-                return []
-            return [(root, self.hierarchy(root))]
-        return [(page, self.hierarchy(page)) for page in filter]
-    
-    def applications(self):
-        return self.sitepages().exclude(app_type = u'')
-    
-    def sitepage(self, **kwargs):
-        site = Site.objects.get_current()
-        return self.get(site = site, **kwargs)
-    
-    def sitepages(self, **kwargs):
-        site = Site.objects.get_current()
-        return self.filter(site = site, **kwargs)
-
-    def clear_cache(self):
-        self.__class__._cache.clear()
-        
-    def root(self):
-        f = self.filter(level=0)
-        if f:
-            return f[0]
-        else:
-            return None
-        
-    def flat_pages(self, **kwargs):
-        return self.filter(application = '', **kwargs)
-    
-    def get_for_model(self, model):
-        ct = ContentType.objects.get_for_model(model)
-        return self.filter(content_type = ct)
-
-    def published(self):
-        try:
-            user_logged_in = get_current_user().is_authenticated()
-        except:
-            user_logged_in = False
-        if not user_logged_in:
-            qs = self.exclude(requires_login=True)
-        else:
-            qs = self
-        return qs.filter(
-                           Q(is_published=True),
-                           Q(start_publish_date__lte=datetime.datetime.now()) | Q(start_publish_date__isnull=True), 
-                           Q(end_publish_date__gte=datetime.datetime.now()) | Q(end_publish_date__isnull=True),
-                           )
     
 
 class InnerTemplate(TimeStamp):
@@ -161,9 +84,6 @@ class CssPageInfo(TimeStamp):
 class Page(TimeStamp):
     site        = models.ForeignKey(Site)
     application = models.CharField(max_length = 200, blank = True)
-    #variables   = models.CharField(max_length = 255,
-    #                               blank = True,
-    #                               help_text=_('Comma separated list of variables. To identify pages for model subviews'))
     redirect_to = models.ForeignKey('self',
                                     null  = True,
                                     blank = True,

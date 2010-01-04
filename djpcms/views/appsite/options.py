@@ -316,25 +316,28 @@ class ModelApplicationBase(object):
         '''
         from django.conf.urls.defaults import patterns, url
         from djpcms.settings import CONTENT_INLINE_EDITING
-        if self.editavailable:
-            edit = CONTENT_INLINE_EDITING.get('preurl','edit')
-        else:
-            edit = None
+        #if self.editavailable:
+        #    edit = CONTENT_INLINE_EDITING.get('preurl','edit')
+        #else:
+        #    edit = None
             
         urls  = []
         # Loop over childre application to form the urls
         for child in self.applications.values():
             view_name  = self.get_view_name(child.name)
+            #nurl = url(regex = child.regex,
+            #           view  = child.response,
+            #           name  = view_name)
             nurl = url(regex = child.regex,
-                       view  = child.response,
+                       view  = child,
                        name  = view_name)
-            if edit and child.isapp:
-                eview = editview(child, edit)
-                self.edits.append(eview)
-                eurl = url(regex = child.edit_regex(edit),
-                           view  = eview.response,
-                           name  = '%s_%s' % (edit,view_name))
-                urls.append(eurl)
+            #if edit and child.isapp:
+            #    eview = editview(child, edit)
+            #    self.edits.append(eview)
+            #    eurl = url(regex = child.edit_regex(edit),
+            #               view  = eview.response,
+            #               name  = '%s_%s' % (edit,view_name))
+            #    urls.append(eurl)
             urls.append(nurl)
                 
         return tuple(urls)
