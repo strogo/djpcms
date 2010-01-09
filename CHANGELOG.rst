@@ -5,7 +5,6 @@ first official Alpha release.
 
 0.5 alpha
 =====================
-Not yet released
 
  * Bug fixes
  * Added "splitregex" named options in views.appview.AppView constructor 
@@ -13,3 +12,5 @@ Not yet released
  * Removed StaticPagesMiddleware request handler
  * response method in djpcmsview class has been replaced with __call__ method
  * Change in urls
+ * Added DeploySite model
+ * Added Deploy plugin

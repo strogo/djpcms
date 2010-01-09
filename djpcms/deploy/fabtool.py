@@ -27,6 +27,10 @@ from __future__ import with_statement # needed for python 2.5
 
 import os
 
+from django.contrib.auth import authenticate
+
+from djpcms.models import DeploySite
+
 from fabric.api import *
 
 
@@ -128,15 +132,28 @@ def deploy():
     required third party modules, install the virtual host and 
     then restart the webserver
     """
+    username = prompt('username: ')
+    password = prompt('password: ')
+    comment  = prompt('comment: ')
+    user = authenticate(username = username, password = password)
+    if user is not None and user.is_active:
+        dep = DeploySite(user = user, comment = comment)
+        dep.save()
+    else:
+        exit(1)
+        
     import time
-    env.release = time.strftime('%Y%m%d-%H%M%S')
-    python_path()
-    upload_tar_from_git()
-    install_requirements()
-    install_site()
-    symlink_current_release()
-    #migrate()
-    reboot()
+    try:
+        env.release = time.strftime('%Y%m%d-%H%M%S')
+        python_path()
+        upload_tar_from_git()
+        install_requirements()
+        install_site()
+        symlink_current_release()
+        #migrate()
+        reboot()
+    except:
+        dep.delete()
 
 
 def python_version():

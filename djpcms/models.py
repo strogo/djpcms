@@ -31,6 +31,18 @@ from djpcms.managers import PageManager
 import mptt
 
 protocol_re = re.compile('^\w+://')
+
+
+class DeploySite(models.Model):
+    user     = models.ForeignKey(User)
+    created  = models.DateTimeField(auto_now_add = True)
+    comment  = models.TextField(blank = True)
+    
+    def __unicode__(self):
+        return u'%s' % self.created
+    
+    class Meta:
+        get_latest_by = "created"
     
 
 class InnerTemplate(TimeStamp):

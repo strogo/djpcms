@@ -22,3 +22,23 @@ class PoweredBy(DJPplugin):
         return loader.render_to_string(['/bits/powered_by.html',
                                         'djpcms/bits/powered_by.html'],
                                         c)
+        
+        
+class Deploy(DJPplugin):
+    name = 'deploysite'
+    description = 'Deploy Timestamp'
+    
+    def render(self, djp, wrapper, prefix, **kwargs):
+        '''
+        Information about deployment
+        '''
+        from djpcms.models import DeploySite
+        from djpcms.utils import cdt
+        try:
+            latest = DeploySite.objects.latest()
+        except:
+            return ''
+        return loader.render_to_string(['/bits/deploy.html',
+                                        'djpcms/bits/deploy.html'],
+                                        {'latest':latest,
+                                         'cdt': cdt.link()})
