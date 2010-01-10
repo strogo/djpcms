@@ -1,7 +1,7 @@
 .. _topics-design:
 
 ========================
-Content block Wrapper
+Design
 ========================
 
 As an additional layer of control, djpcms comes with html wrappers.

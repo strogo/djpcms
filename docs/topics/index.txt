@@ -10,6 +10,7 @@ Introductions to all the key parts of Djpcms you'll need to know:
 
    install
    models
+   views/index
    application/index
    plugins
    design

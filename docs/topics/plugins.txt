@@ -1,9 +1,0 @@
-.. _topics-plugins:
-
-========================
-Plugins
-========================
-
-plugins are installed in a project by defining the variable
-
-	

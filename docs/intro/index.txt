@@ -8,6 +8,7 @@ Read this material to quickly get up and running with Django and djpcms.
 .. toctree::
    :maxdepth: 1
     
+   overview
    install
    tutorial01
    tutorial02

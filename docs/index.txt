@@ -22,37 +22,24 @@ First steps
 Dynamic Content Management
 =============================
 	* **Applications:**
-	  :ref:`Introduction <topics-application-into>` |
-	  :ref:`Examples <application-example>` |
 	  
 	* **Plugins:**
-	  :ref:`Introduction <plugin-into>` |
-	  :ref:`Examples <application-example>` |
-	  :ref:`Extending <application-example>`
+	  :ref:`Examples <_topics-plugins-example>` |
+	  :ref:`Extending <_topics-plugins-extending>`
 	  
 	* **Design:**
-	  :ref:`Introduction <design-intro>` |
-	  :ref:`Content wrapping <design-wrap>`	
 
-Battery Included
-=================
-	* **Markups:**
-	  :ref:`Markup languages <topics-markup>` |
-	  :ref:`Example <topics-markup-examples>` |
-	  :ref:`Extending <topics-markup-extending>`
 
 The Djpcms open-source project
 ===============================
 
     * **Community:**
-      :ref:`How to get involved <internals-contributing>` |
-      :ref:`The release process <internals-release-process>` |
-      :ref:`Team of committers <internals-committers>`
+      :ref:`Team of committers <misc-committers>`
 
     * **Design philosophies:**
-      :ref:`Overview <misc-design-philosophies>`
+      :ref:`Overview <misc-philosophies>`
 
     * **Documentation:**
-      :ref:`About this documentation <internals-documentation>`
+      :ref:`About this documentation <misc-documentation>`
 
 

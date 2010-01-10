@@ -1,0 +1,9 @@
+.. _topics-models:
+
+================================
+Database Models
+================================
+
+At the hart of the Content Management System lays the Page model.
+
+The content editing views is controlled by the setting :ref:`content-inline-editing`.
