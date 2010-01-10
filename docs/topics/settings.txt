@@ -4,19 +4,9 @@
 Djpcms settings
 ===============
 
-A Django settings file contains all the configuration of your Django powered site.
-This document explains the additional settings Djpcms add to the standard Django implementation.
-
-
-Default settings
-================
-
 A Django settings file doesn't have to define any djpcms settings if it doesn't need
 to. Each setting has a sensible default value. These defaults live in the
 module :file:`djpcms/settings.py`.
-
-Available settings
-==================
 
 Here's a full list of all available settings, in alphabetical order, and their
 default values.
@@ -29,7 +19,7 @@ DJPCMS_PLUGINS
 
 Default: ``['djpcms.plugins.*]``
 
-The python dotted path to the default python class used to handle view requests.
+A list of python dotted paths to where plugins are defined.
 
 
 
@@ -43,6 +33,7 @@ Default: ``djpcms.views.pageview.pageview``
 The python dotted path to the default python class used to handle view requests.
 
 
+
 .. setting:: SERVE_STATIC_FILES
 
 SERVE_STATIC_FILES
@@ -54,11 +45,10 @@ Whether static files are served by the server running the Django site (and there
 
 Usually ones set ``SERVE_STATIC_FILES`` to True when in development mode
 
-.. setting:: ADMIN_FOR
 
-.. _content-inline-editing:
 
--------------------------
+.. setting:: CONTENT_INLINE_EDITING
+
 CONTENT_INLINE_EDITING
 -------------------------
 
@@ -77,36 +67,42 @@ The ``pagecontent`` key define the base url for editing page contents. It should
 A :ref:`page-model` object with url given by ``pagecontent`` needs to be created if ``available`` is set to True.
 Otherwise an error will occur. 
 
-.. _enable-breadcrumbs:
 
--------------------------
+
+.. setting:: ENABLE_BREADCRUMBS
+
 ENABLE_BREADCRUMBS
 -------------------------
+Default: ``False``
 
 If set to true, bread crumbs will be displayed at the top of the page
 
 
-.. _grid960_default:
+.. settings:: GRID960_DEFAULT_FIXED
 
---------------------------
 GRID960_DEFAULT_FIXED
 --------------------------
+Default: ``True``
 
 If set to True (the default), the grid 960 layout is fixed at 960px, otherwise is floating to the whole page.
 See `960 grid system <http://960.gs/>`_ and `fluid 960 grid system <http://www.designinfluences.com/fluid960gs/>`_ 
 
+
+
 .. _html-classes:
 
--------------------------
 HTML_CLASSES
 -------------------------
 
 This object contains names of classes used for the interaction between Django and jQuery
 
 
--------------------------
+
+.. _google_analytics_id:
+
 GOOGLE_ANALYTICS_ID
 -------------------------
+Default: ``None``
 
-ID for Google Analytics. Default ``None``.
+ID for Google Analytics.
 

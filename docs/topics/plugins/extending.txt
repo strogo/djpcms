@@ -1,0 +1,7 @@
+.. _topics-plugins-extending:
+
+============================
+Write your own plugin
+============================
+
+The real power of plugins is their extendibility.

@@ -1,0 +1,7 @@
+.. _topics-plugins-examples:
+
+============================
+Plugin Examples
+============================
+
+There are several buttery-included plugins shipped with djpcms. They are implemented in the djpcms.plugins module.

@@ -1,0 +1,11 @@
+.. _topics-plugins-index:
+
+============================
+Getting Started
+============================
+
+.. toctree::
+   :maxdepth: 2
+   
+   examples
+   extending

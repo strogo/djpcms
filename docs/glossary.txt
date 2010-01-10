@@ -1,0 +1,20 @@
+.. _glossary:
+
+========
+Glossary
+========
+
+.. glossary::
+
+    template
+        A chunk of text that acts as formatting for representing data. A
+        template helps to abstract the presentation of data from the data
+        itself.
+        
+        See :ref:`topics-templates-index`.
+        
+    view
+        A class responsible for rending a page.
+        
+        See :ref:`topics-views-index`.
+      

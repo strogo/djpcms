@@ -7,7 +7,7 @@ A dynamic application is a url dedicated to a given model in the database.
 
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
    intro
    examples
