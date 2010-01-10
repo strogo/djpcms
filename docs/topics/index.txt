@@ -12,7 +12,7 @@ Introductions to all the key parts of Djpcms you'll need to know:
    models
    views/index
    application/index
-   plugins
+   plugins/index
    design
    templates/index
    settings

@@ -24,7 +24,7 @@ Dynamic Content Management
 	* **Applications:**
 	  
 	* **Plugins:**
-	  :ref:`Examples <_topics-plugins-example>` |
+	  :ref:`Examples <_topics-plugins-examples>` |
 	  :ref:`Extending <_topics-plugins-extending>`
 	  
 	* **Design:**
