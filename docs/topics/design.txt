@@ -1,0 +1,9 @@
+.. _topics-design:
+
+========================
+Content block Wrapper
+========================
+
+As an additional layer of control, djpcms comes with html wrappers.
+These elements are used to control the design of the web site
+by injecting user-defined css classes or wrapping the html into html containers.

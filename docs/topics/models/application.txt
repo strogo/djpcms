@@ -1,8 +1,0 @@
-
-.. _application-plugin:
-
-================================
-Application Plugin
-================================
-
-As all plugins, the application plugin derives from DJPplugin

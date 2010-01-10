@@ -1,7 +1,7 @@
 .. _intro-tutorial02:
 
 =====================================
-Writing your first djpcms site, part 2
+Writing your first site, part 2
 =====================================
 
 Creating your first page

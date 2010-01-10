@@ -1,7 +1,7 @@
 .. _intro-tutorial01:
 
 =====================================
-Writing your first djpcms site, part 1
+Writing your first site, part 1
 =====================================
 
 Django documentation is one of the best written technical documentation available.

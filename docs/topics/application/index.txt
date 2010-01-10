@@ -1,0 +1,13 @@
+.. _topics-application-index:
+
+Dynamic Applications
+======================
+
+A dynamic application is a url dedicated to a given model in the database.
+
+
+.. toctree::
+   :maxdepth: 1
+
+   intro
+   examples

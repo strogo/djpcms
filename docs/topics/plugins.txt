@@ -1,7 +1,7 @@
 .. _topics-plugins:
 
 ========================
-Markups
+Plugins
 ========================
 
 plugins are installed in a project by defining the variable

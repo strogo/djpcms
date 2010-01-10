@@ -14,3 +14,4 @@ first official Alpha release.
  * Change in urls
  * Added DeploySite model
  * Added Deploy plugin
+ * Added jquery.cicle in media. jQuery plugin to handle rotating pictures.
