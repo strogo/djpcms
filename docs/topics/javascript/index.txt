@@ -1,14 +1,14 @@
-.. _topics-plugins-index:
+.. _topics-javascript-index:
 
 ============================
-Plugins
+Browser side and Javascript
 ============================
 
-.. module:: djpcms.plugins
+.. module:: djpcms.media.djpcms
+
 
 .. toctree::
    :maxdepth: 2
    
    overview
-   examples
-   extending
+   content

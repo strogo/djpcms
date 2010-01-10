@@ -37,6 +37,7 @@ div.flat-element {
 }
 
 
+
 /**  MENU AND ACCORDION MENU
 -----------------------------------------------------------*/
 ul.menu {
@@ -65,6 +66,13 @@ ul.menu li.selected a {
 ul.menu li.selected ul li a {background: rgb(255,255,255);}
 ul.menu li.selected ul li.selected a {background: rgb(245,245,245);}
 
+/** BREADCRUMBS
+-----------------------------------------------------------*/
+.breadcrumbs ul,
+.breadcrumbs ul li {
+	list-style: none;
+	display:inline;
+}
 
 
 /** INLINE CONTENT EDITING DEFAULT STYLE
@@ -197,7 +205,6 @@ form .errorlist {
 .form-messages {
 	font-weight: bold;
 	color: rgb(0,77,38);
-	margin: 5px 0;
 	filter:alpha(opacity=70);
   	opacity:0.7;
 }
@@ -300,4 +307,10 @@ div.djpcms-comment.djpcms-html-box .bd {
 	padding:0 4px;
 	text-decoration:none;
 	visibility:hidden;
+}
+
+/* IMAGE PLUGIN WIDTH
+-------------------------------------------------------------------------*/
+.grid_3 .flat-element .image-plugin {
+	width: 200px;
 }

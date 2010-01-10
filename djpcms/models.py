@@ -466,7 +466,10 @@ class BlockContent(models.Model):
             #prefix  = 'bd_%s' % self.pluginid()
             prefix = None
             html   = plugin(djp, self.arguments, wrapper = wrapper, prefix = prefix)
-            return wrapper(djp, self, html)
+            if html:
+                return wrapper(djp, self, html)
+            else:
+                return ''
         else:
             return u''
     

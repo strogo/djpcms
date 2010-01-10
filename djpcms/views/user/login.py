@@ -54,8 +54,11 @@ class LoginApp(appview.AppView):
             return http.HttpResponseRedirect('/')
         
     def render(self, djp, **kwargs):
-        f = self.get_form(djp)
-        return f.render()
+        if djp.request.user.is_authenticated():
+            return ''
+        else:
+            f = self.get_form(djp)
+            return f.render()
     
     def get_form(self, djp):
         '''

@@ -5,7 +5,12 @@ Glossary
 ========
 
 .. glossary::
-
+		
+    plugin
+		A class responsible for rendering applications and static content.
+		
+		See :ref:`topics-plugins-index`.
+		
     template
         A chunk of text that acts as formatting for representing data. A
         template helps to abstract the presentation of data from the data

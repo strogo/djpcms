@@ -13,12 +13,14 @@ from django.core.exceptions import PermissionDenied
 
 
 from djpcms.settings import HTML_CLASSES, GRID960_DEFAULT_FIXED, \
-                            DEFAULT_TEMPLATE_NAME, DJPCMS_CONTENT_FUNCTION
+                            DEFAULT_TEMPLATE_NAME, DJPCMS_CONTENT_FUNCTION, \
+                            ENABLE_BREADCRUMBS
 from djpcms.utils.ajax import jservererror, jredirect
 from djpcms.views.contentgenerator import BlockContentGen
 from djpcms.utils.html import grid960
 from djpcms.permissions import inline_editing
 from djpcms.utils import UnicodeObject, urlbits, urlfrombits, function_module, lazyattr
+from djpcms.utils.navigation import Navigator, Breadcrumbs
 
 build_base_context = function_module(DJPCMS_CONTENT_FUNCTION)
 
@@ -269,6 +271,9 @@ class djpcmsview(UnicodeObject):
                 return inner
             
         c['inner'] = inner
+        if ENABLE_BREADCRUMBS:
+            c['breadcrumbs'] = Breadcrumbs(djp,ENABLE_BREADCRUMBS)
+            
         return render_to_response(template_name = djp.template,
                                   context_instance = RequestContext(request, c))
     

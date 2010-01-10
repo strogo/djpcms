@@ -1,8 +1,10 @@
 .. _topics-settings:
 
-===============
-Djpcms settings
-===============
+==========================
+Full list of settings
+==========================
+
+.. module:: djpcms.settings
 
 A Django settings file doesn't have to define any djpcms settings if it doesn't need
 to. Each setting has a sensible default value. These defaults live in the
@@ -10,6 +12,16 @@ module :file:`djpcms/settings.py`.
 
 Here's a full list of all available settings, in alphabetical order, and their
 default values.
+
+
+.. setting:: DJPCMS_MARKUP_MODULE
+
+DJPCMS_MARKUP_MODULE
+-------------------------
+
+default: ``'djpcms.utils.markups'``
+
+Python dotted path to the markup module. This module exposes four functions:
 
 
 .. setting:: DJPCMS_PLUGINS
@@ -20,6 +32,21 @@ DJPCMS_PLUGINS
 Default: ``['djpcms.plugins.*]``
 
 A list of python dotted paths to where plugins are defined.
+
+
+
+.. setting:: DJPCMS_PLUGIN_BASE_URL
+
+DJPCMS_PLUGIN_BASE_URL
+------------------------
+
+Default: ``'/plugin/'``
+
+String used as base url when constructing plugin urls. Make sure to use a trailing slash, and to have
+this be different from any other url you may use in your application.
+
+
+See: :ref:`topics-plugins-url`
 
 
 
@@ -34,6 +61,20 @@ The python dotted path to the default python class used to handle view requests.
 
 
 
+.. setting:: HTML_CLASSES
+
+HTML_CLASSES
+----------------
+
+Default: ``djpcms.ajaxhtml.ajaxhtml()``
+
+Instance of djpcms.ajaxhtml.ajaxhtml. It contains a dictionary of css classes which may define particular
+javascript decorators or simple css styling.
+
+See: :ref:`topics-javascript-index`
+
+
+
 .. setting:: SERVE_STATIC_FILES
 
 SERVE_STATIC_FILES
@@ -43,7 +84,7 @@ Default: ``False``
 
 Whether static files are served by the server running the Django site (and therefore included in the urls) or not.
 
-Usually ones set ``SERVE_STATIC_FILES`` to True when in development mode
+It should be set to True only during development.
 
 
 
@@ -73,9 +114,10 @@ Otherwise an error will occur.
 
 ENABLE_BREADCRUMBS
 -------------------------
-Default: ``False``
+Default: ``1``
 
-If set to true, bread crumbs will be displayed at the top of the page
+If set to 0, no bread crumbs support, otherwise it indicates from which level to start generating
+bread-crumbs (usually 1 or 2).
 
 
 .. settings:: GRID960_DEFAULT_FIXED

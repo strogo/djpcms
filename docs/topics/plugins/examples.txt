@@ -5,3 +5,10 @@ Plugin Examples
 ============================
 
 There are several buttery-included plugins shipped with djpcms. They are implemented in the djpcms.plugins module.
+
+
+.. _topics-plugins-contactform
+
+Contact Form
+---------------------
+Simple display a contact form with 4 entries: name, email, subject and body.

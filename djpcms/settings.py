@@ -26,7 +26,7 @@ JS_START_END_PAGE        = getattr(settings, 'JS_START_END_PAGE', 101)
 EXTRA_CONTENT_PLUGIN     = getattr(settings, 'EXTRA_CONTENT_PLUGIN', None)
 GOOGLE_ANALYTICS_ID      = getattr(settings, 'GOOGLE_ANALYTICS_ID', None)
 
-ENABLE_BREADCRUMBS       = getattr(settings, 'ENABLE_BREADCRUMBS', True)
+ENABLE_BREADCRUMBS       = getattr(settings, 'ENABLE_BREADCRUMBS', 1)
 
 APPLICATION_URL_MODULE   = getattr(settings, 'APPLICATION_URL_MODULE', None)
 APPLICATION_URL_PREFIX   = getattr(settings, 'APPLICATION_URL_PREFIX', '/apps/')
@@ -35,6 +35,8 @@ DJPCMS_PLUGINS           = getattr(settings, 'DJPCMS_PLUGINS', ['djpcms.plugins.
 DJPCMS_WRAPPERS          = getattr(settings, 'DJPCMS_WRAPPERS', ['djpcms.plugins.extrawrappers'])
 DJPCMS_CONTENT_FUNCTION  = getattr(settings, 'DJPCMS_CONTENT_FUNCTION', 'djpcms.views.content.basecontent')
 DJPCMS_MARKUP_MODULE     = getattr(settings, 'DJPCMS_MARKUP_MODULE', 'djpcms.utils.markups')
+
+DJPCMS_PLUGIN_BASE_URL   = getattr(settings, 'DJPCMS_PLUGIN_BASE_URL', '/plugin/')
 
 
 

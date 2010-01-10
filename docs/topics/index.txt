@@ -15,4 +15,5 @@ Introductions to all the key parts of Djpcms you'll need to know:
    plugins/index
    design
    templates/index
+   javascript/index
    settings

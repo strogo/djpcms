@@ -2,10 +2,13 @@ import os
 import logging
 import copy
 
+from django import http
 from django.utils.safestring import mark_safe
 from djpcms.utils.plugin import PluginBase, loadobjects
 from djpcms.utils import json, form_kwargs
 from djpcms.utils.formjson import form2json
+from djpcms.utils.deco import response_wrap
+from djpcms import settings
     
 
 _plugin_dictionary = {}
@@ -31,20 +34,45 @@ def get_wrapper(name, default = None):
 def register_application(app):
     ApplicationPlugin(app).register()
 
+
 def loadplugins(plist):
+    '''
+    Load plugins into the global plugin dictionary
+    '''
     EmptyPlugin().register()
     ThisPlugin().register()
     loadobjects(plist,DJPplugin)
-    
+    urls = []
+    for p in _plugin_dictionary.values():
+        if p.URL:
+            urls.append((r'^%s' % p.URL.lstrip('/'), p.response))
+    urls.append((r'^%s([\w/-]*)' % settings.DJPCMS_PLUGIN_BASE_URL.lstrip('/'), generic_plugin_response))
+    return tuple(urls)
+
+
 def loadwrappers(plist):
     loadobjects(plist,DJPwrapper)
 
 
+@response_wrap
+def generic_plugin_response(request, url):
+    '''
+    Handle plugin response
+    '''
+    url  = url.rstrip('/')
+    bits = url.split('/')
+    name = bits.pop(0)
+    plugin = _plugin_dictionary.get(name,None)
+    if not plugin:
+        raise http.Http404
+    else:
+        return plugin.response(request, *tuple(bits))
+
+
+
+
+
 ####    IMPLEMENTATION
-
-
-
-
 
 class DJPpluginMeta(type):
     '''
@@ -97,6 +125,7 @@ class DJPplugin(PluginBase):
     withrequest   = False
     edit_form     = False
     storage       = _plugin_dictionary
+    URL           = None
     
     def arguments(self, args):
         '''
@@ -113,6 +142,13 @@ class DJPplugin(PluginBase):
                 return {}
         except:
             return {}
+        
+    def __get_url(self):
+        if self.URL:
+            return self.URL
+        else:
+            return '%s%s/' % (settings.DJPCMS_PLUGIN_BASE_URL,self.__class__.name)
+    url = property(__get_url)
         
     def processargs(self,kwargs):
         '''
@@ -146,6 +182,12 @@ class DJPplugin(PluginBase):
             return self.form(**form_kwargs(request = djp.request,
                                            initial = initial,
                                            withrequest = self.withrequest))
+            
+    def response(self, request, *bits):
+        raise http.Http404
+    
+    
+    
            
 class SimpleWrap(DJPwrapper):
     name         = 'simple no-tag'

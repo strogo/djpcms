@@ -60,9 +60,10 @@ class ImagePlugin(DJPplugin):
         try:
             img = Image.objects.get(id = int(image))
             if class_name:
-                cn = ' class="%s"' % class_name
+                class_name = '%s image-plugin'
             else:
-                cn = ''
+                class_name = 'image-plugin'
+            cn = ' class="%s"' % class_name
             return '<img src="%s" title="%s" alt="%s"%s/>' % (img.url,img.name,img.name,cn)
         except:
             return u''
