@@ -311,9 +311,9 @@ div.djpcms-comment.djpcms-html-box .bd {
 
 /* IMAGE PLUGIN WIDTH
 -------------------------------------------------------------------------*/
-.grid_3 .flat-element .image-plugin {
+.container_12 .grid_3 .image-plugin {width: 220px;}
+.container_12 .grid_4 .image-plugin {width: 300px;}
+.container_12 .grid_6 .image-plugin {width: 460px;}
+.container_12 .grid_3 .flat-element .image-plugin {
 	width: 200px;
-}
-.grid_6 .image-plugin {
-	width: 460px;
 }
