@@ -312,6 +312,9 @@ class Page(TimeStamp):
     def published(self):
         return self in Page.objects.published()
     published.boolean = True
+    
+    def additional_head(self):
+        return self.additionaldata.filter(where = 1)
 
 
     
@@ -565,6 +568,21 @@ def create_new_content(user = None, **kwargs):
     return ct
 
 
+additional_where = ((1, 'head'),
+                    (2, 'body javascript'))
+
+class AdditionalPageData(models.Model):
+    page    = models.ForeignKey(Page, related_name = 'additionaldata')
+    where   = models.PositiveIntegerField(choices = additional_where, default = 1)
+    body    = models.TextField()
+    
+    def __unicode__(self):
+        return self.body
+    
+    class Meta:
+        verbose_name_plural = 'Additional page data'
+
+
 class Application(models.Model):
     '''
     A general method for creating applications
@@ -579,6 +597,6 @@ class Application(models.Model):
                                    default = markup.default(),
                                    null = False)
     
-    
+
 
 mptt.register(Page)

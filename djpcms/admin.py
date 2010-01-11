@@ -4,7 +4,9 @@ from django.contrib import admin
 from djpcms import models
 from djpcms.forms import PageForm
 
-
+class AdditionalPageDataInline(admin.TabularInline):
+    model = models.AdditionalPageData
+    
 class BlockContentAdmin(admin.ModelAdmin):
     list_display = ('page','block','position','plugin_name')
     list_filter = ('page', 'block')
@@ -22,6 +24,7 @@ class PageAdmin(admin.ModelAdmin):
     list_display_links  = ('site','url','application',)
     ordering            = ('site', 'level',)
     list_filter         = ['level']
+    inlines             = [AdditionalPageDataInline]
     save_on_top         = True
     form                = PageForm
     

@@ -4,6 +4,15 @@
 Database Models
 ================================
 
+
+Page Model
+================
 At the hart of the Content Management System lays the Page model.
 
 The content editing views is controlled by the setting :ref:`content-inline-editing`.
+
+
+AdditionalPageData Model
+=============================
+
+this model is used to inject some extra data into the head or page javascript body.
