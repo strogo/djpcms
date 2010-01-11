@@ -41,6 +41,7 @@ div.flat-element {
 	list-style-type: disc;
 }
 
+.djpcms-block table td {padding: 0 5px;}
 
 .grid_3 .djpcms-block-element .flat-element img.fullwidth,
 .grid_3 .djpcms-block-element .djpcms-html-box .bd img.fullwidth {
