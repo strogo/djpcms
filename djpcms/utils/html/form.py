@@ -186,9 +186,10 @@ class formlet(htmlattr):
             return {}
     cleaned_data = property(fget = __get_cleaned_data)
     
-    def save(self, commit = True):
-        if isinstance(self.form,forms.ModelForm):
-            return self.form.save(commit = commit)
+    def save(self, **kwargs):
+        save = getattr(self.form,'save',None)
+        if save:
+            return save(**kwargs)
         else:
             return None
         

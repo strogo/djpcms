@@ -1,0 +1,10 @@
+Message to site {{ site }}
+
+name: {{ name }}
+email: {{ email }}
+
+subject: {{ subj }}
+
+Message:
+
+{{ body }}

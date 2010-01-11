@@ -374,5 +374,21 @@
 	});
 	
 	
+	/**
+	 * Cycle jQuery Plugin decorator
+	 * 
+	 */ 
+	dj.addDecorator({
+		id:"image-cycle",
+		decorate: function($this, config) {
+			$('.image-cycle', $this).each(function() {
+				$(this).cycle({fx: 'fade',
+							  speed: 5000,
+							  timeout: 10000});
+			});
+		}
+	});
+	
+	
 })(jQuery);
 

@@ -145,6 +145,12 @@ class ContactForm(forms.Form):
     recipient_list = [mail_tuple[1] for mail_tuple in settings.MANAGERS]
 
     _context = None
+    
+    template_name = ['bits/contact_form_message.txt',
+                     'djpcms/bits/contact_form_message.txt']
+    
+    subject_template_name = ['bits/contact_form_subject.txt',
+                             'djpcms/bits/contact_form_subject.txt']
    
     def message(self):
         """
@@ -168,8 +174,6 @@ class ContactForm(forms.Form):
         return ''.join(subject.splitlines())
    
     def get_context(self):
-        if not self.is_valid():
-            raise ValueError("Cannot generate Context from invalid contact form")
         if self._context is None:
             self._context = RequestContext(self.request,
                                            dict(self.cleaned_data,
@@ -185,7 +189,7 @@ class ContactForm(forms.Form):
             message_dict[message_part] = callable(attr) and attr() or attr
         return message_dict
    
-    def save(self, fail_silently=False):
+    def save(self, fail_silently=False, **kwargs):
         """
         Builds and sends the email message.
        
@@ -253,6 +257,7 @@ class ContactFormPlugin(DJPplugin):
         cf = self.contactform(request)
         if cf.is_valid():
             cf.save()
+            return cf.messagepost("Your message has been sent. Thank you!")
         else:
             return cf.jerrors
 
