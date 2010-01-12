@@ -29,19 +29,19 @@ class ArchiveApplication(ModelApplication):
     def yearurl(self, request, year, **kwargs):
         view = self.getapp('year_archive')
         if view:
-            return view.requestview(request, year = year, **kwargs).url
+            return view(request, year = year, **kwargs).url
         
     def monthurl(self, request, year, month, **kwargs):
         view  = self.getapp('month_archive')
         if view:
             month = self.get_month_value(month)
-            return view.requestview(request, year = year, month = month, **kwargs).url
+            return view(request, year = year, month = month, **kwargs).url
         
     def dayurl(self, request, year, month, day, **kwargs):
         view = self.getapp('day_archive')
         if view:
             month = self.get_month_value(month)
-            return view.requestview(request, year = year, month = month, day = day, **kwargs).url
+            return view(request, year = year, month = month, day = day, **kwargs).url
         
     def data_generator(self, djp, data):
         '''

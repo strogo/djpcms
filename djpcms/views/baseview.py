@@ -21,16 +21,19 @@ from djpcms.utils.html import grid960
 from djpcms.permissions import inline_editing
 from djpcms.utils import UnicodeObject, urlbits, urlfrombits, function_module, lazyattr
 from djpcms.utils.navigation import Navigator, Breadcrumbs
+from djpcms.views.response import DjpResponse
 
 build_base_context = function_module(DJPCMS_CONTENT_FUNCTION)
 
 
-# Wrapper around request
-class DjpRequestWrap(UnicodeObject):
+class OldDjpResponse(http.HttpResponse):
     '''
-    Request wrapper for djpcms class views
+    Response object for djpcms views
     '''
     def __init__(self, request, view, *args, **kwargs):
+        super(DjpResponse,self).__init__()
+        self.context  = RequestContext(request)
+        obj           = self.setup(request, *args, **kwargs)
         self.request  = request
         self.view     = view
         self.css      = HTML_CLASSES
@@ -39,6 +42,9 @@ class DjpRequestWrap(UnicodeObject):
         self.kwargs   = kwargs
         self.wrapper  = None
         self.prefix   = None
+        
+    def __unicode__(self):
+        return unicode(self.view)
     
     def __call__(self, prefix = None, wrapper = None):
         djp = copy.copy(self)
@@ -48,7 +54,7 @@ class DjpRequestWrap(UnicodeObject):
     
     @lazyattr
     def get_parent(self):
-        p = self.view.parentview(self.request)
+        pview = self.view.parentview(self.request)
         if p:
             return p.requestview(self.request, *self.args, **self.kwargs)
         else:
@@ -96,15 +102,15 @@ class DjpRequestWrap(UnicodeObject):
     url = property(get_url)
         
     @lazyattr
-    def get_page(self):
+    def _get_page(self):
+        '''
+        Get the page object
+        '''
         view    = self.view
         page    = view.get_page()
         self.template = view.get_template(page)
         return page
-    page = property(get_page)
-        
-    def __unicode__(self):
-        return unicode(self.view)
+    page = property(_get_page)
     
     def get_linkname(self):
         return self.view.linkname(self)
@@ -159,10 +165,7 @@ class djpcmsview(UnicodeObject):
     '''
     Base class for handling django views.
     No views should use this class directly.
-    '''
-    def requestview(self, request, *args, **kwargs):
-        return DjpRequestWrap(request, self, *args, **kwargs)
-    
+    '''    
     def get_url(self, djp, **urlargs):
         return None
     
@@ -170,8 +173,7 @@ class djpcmsview(UnicodeObject):
         return None
     
     def __call__(self, request, *args, **kwargs):
-        djp = self.requestview(request, *args, **kwargs)
-        return djp.response()
+        return DjpResponse(request, self, *args, **kwargs)
     
     def methods(self, request):
         '''
@@ -244,13 +246,13 @@ class djpcmsview(UnicodeObject):
         if not request.user.is_authenticated() and request.method == 'GET':
             request.session.set_test_cookie()
         
-        c = build_base_context(djp)
-        c.update({'djp':  djp, 'grid': grid})
+        more_content = build_base_context(djp)
+        more_content['grid'] = grid
         
         # Inner template available, fill the context dictionary
         # with has many content keys as the number of blocks in the page
         if page and page.inner_template:
-            cb = copy.copy(c)
+            cb = {'djp':  djp, 'grid': grid}
             blocks = page.inner_template.numblocks()
             for b in range(0,blocks):
                 cb['content%s' % b] = BlockContentGen(djp, b)
@@ -260,9 +262,9 @@ class djpcmsview(UnicodeObject):
             
             if self.editurl:
                 b = urlbits(request.path)[1:]
-                c['exit_edit_url'] = urlfrombits(b)
+                more_content['exit_edit_url'] = urlfrombits(b)
             else:
-                c['edit_content_url'] = inline_editing(request,self)
+                more_content['edit_content_url'] = inline_editing(request,self)
              
         else:
             # No page or no inner_template. Get the inner content directly
@@ -270,12 +272,14 @@ class djpcmsview(UnicodeObject):
             if isinstance(inner,http.HttpResponse):
                 return inner
             
-        c['inner'] = inner
-        if ENABLE_BREADCRUMBS:
-            c['breadcrumbs'] = Breadcrumbs(djp,ENABLE_BREADCRUMBS)
-            
-        return render_to_response(template_name = djp.template,
-                                  context_instance = RequestContext(request, c))
+        more_content['inner'] = inner
+        return djp.render_to_response(more_content)
+    
+    def get_response(self, djp):
+        return self.handle_response(djp)
+    
+    def default_post(self, djp):
+        return self.handle_response(djp)
     
     def post_response(self, djp):
         '''
@@ -345,17 +349,12 @@ class djpcmsview(UnicodeObject):
                         res = jservererror(e, url = djp.url)
                     else:
                         raise e
+            
             return http.HttpResponse(res.dumps(), mimetype='application/javascript')
         #
         # Otherwise it is a standard POST response
         else:
             return self.default_post(djp)
-    
-    def get_response(self, djp):
-        return self.handle_response(djp)
-    
-    def default_post(self, djp):
-        return self.handle_response(djp)
     
     def default_ajax_view(self, djp):
         '''

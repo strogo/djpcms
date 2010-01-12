@@ -349,14 +349,14 @@ class ModelApplicationBase(object):
     def addurl(self, request):
         view = self.getapp('add')
         if view and self.has_add_permission(request):
-            djp = view.requestview(request)
+            djp = view(request)
             return djp.url
         
     def deleteurl(self, request, obj):
         #TODO: change this so that we are not tide up with name
         view = self.getapp('delete')
         if view and self.has_delete_permission(request, obj):
-            djp = view.requestview(request, instance = obj)
+            djp = view(request, instance = obj)
             return djp.url
         
     def editurl(self, request, obj):
@@ -366,7 +366,7 @@ class ModelApplicationBase(object):
         #TODO: change this so that we are not tide up with name
         view = self.getapp('edit')
         if view and self.has_edit_permission(request, obj):
-            djp = view.requestview(request, instance = obj)
+            djp = view(request, instance = obj)
             return djp.url
     
     def viewurl(self, request, obj):
@@ -376,7 +376,7 @@ class ModelApplicationBase(object):
         #TODO: change this so that we are not tide up with name
         view = self.getapp('view')
         if view and self.has_view_permission(request, obj):
-            djp = view.requestview(request, instance = obj)
+            djp = view(request, instance = obj)
             return djp.url
     
     def searchurl(self, request):
@@ -385,7 +385,7 @@ class ModelApplicationBase(object):
         '''
         view = self.getapp('search')
         if view and self.has_view_permission(request):
-            djp = view.requestview(request)
+            djp = view(request)
             return djp.url
         
     def tagurl(self, request, tag):

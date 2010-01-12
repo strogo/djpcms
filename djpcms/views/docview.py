@@ -60,7 +60,7 @@ class DocView(djpcmsview):
         return None
             
     def document(self, request, lang, version, url = None):
-        djp = self.requestview(request, lang = lang, version = version, url = url)
+        djp = self(request, lang = lang, version = version, url = url)
         return djp.response()
     
     def render(self, djp):

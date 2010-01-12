@@ -42,8 +42,11 @@ class LoginApp(appview.AppView):
     def __init__(self, regex = 'login', parent = None, **kwargs):
         super(LoginApp,self).__init__(regex = regex, parent = parent, **kwargs)
         
-    def title(self, djp):
-        return 'Sign in to %s' % self.page.site.name
+    def title(self, page, **kwargs):
+        if page:
+            return 'Sign in to %s' % page.site.name
+        else:
+            return 'Sign in'
     
     def preget(self, djp):
         '''

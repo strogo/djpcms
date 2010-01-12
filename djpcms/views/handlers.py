@@ -40,7 +40,7 @@ def Handler(request, url):
     view, args, kwargs = djpcmsHandler(request, url)
     if isinstance(view,HttpResponseRedirect):
         return view
-    return view(request, *args, **kwargs)
+    return view(request, *args, **kwargs).response()
 
 
 def editHandler(request, url):
@@ -52,7 +52,7 @@ def editHandler(request, url):
     if isinstance(view,HttpResponseRedirect):
         return view
     view = editview(view, CONTENT_INLINE_EDITING['preurl'])
-    return view(request, *args, **kwargs)
+    return view(request, *args, **kwargs).response()
 
 
 def clean_url(path):

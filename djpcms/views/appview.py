@@ -218,7 +218,7 @@ class AppView(djpcmsview):
         for view in appmodel.applications.values():
             if view is self or not view.has_permission(request, instance):
                 continue
-            djp = view.requestview(request, **kwargs)
+            djp = view(request, **kwargs)
             nav = djp.in_navigation()
             if nav:
                 views.append(djp)
@@ -230,7 +230,7 @@ class AppView(djpcmsview):
                     continue
                 base = app.root_application
                 if base and not base.tot_args and app.parent_url == self.purl and base.has_permission(request):
-                    djp = base.requestview(request, **kwargs)
+                    djp = base(request, **kwargs)
                     nav = djp.in_navigation()
                     if nav:
                         views.append(djp)
@@ -331,7 +331,7 @@ class SearchView(AppView):
         if kwargs:
             urlargs = djp.urlargs
             urlargs.update(kwargs)
-            djp = self.requestview(request, *urlargs)
+            djp = self(request, *urlargs)
         query   = self.appquery(request, *djp.args, **djp.kwargs)
         f  = self.appmodel.get_searchform(djp)
         p  = Paginator(request, query)
@@ -465,11 +465,8 @@ class ObjectView(AppView):
             else:
                 raise http.Http404
     
-    def title(self, request, pagetitle):
-        try:
-            return pagetitle % self.object
-        except:
-            return pagetitle
+    def title(self, page, **urlargs):
+        return ''
     
 
 # View and object

@@ -5,7 +5,6 @@ it is associated with a page (instance of Page)
 '''
 from djpcms.utils.func import force_number_insert
 from djpcms.views.baseview import djpcmsview
-from djpcms.views.staticsite import get_view_from_page
 from djpcms.views import appsite
 
 
@@ -38,7 +37,7 @@ class pageview(djpcmsview):
     
     def parentview(self, request):
         if self.page.parent:
-            return get_view_from_page(request, self.page.parent)
+            return self.page.parent.object()
         else:
             return None
         
@@ -55,13 +54,15 @@ class pageview(djpcmsview):
         views = []
         page      = self.get_page()
         pchildren = page.get_children()
+        
+        # First check static childrens
         for child in pchildren:
             try:
-                v = get_view_from_page(request, child)
+                cview = child.object()
             except Exception, e:
                 continue
-            if v.has_permission(request):
-                djp = v.requestview(request, **kwargs)
+            if cview.has_permission(request):
+                djp = cview(request, **kwargs)
                 nav = djp.in_navigation()
                 if nav:
                     views.append(djp)

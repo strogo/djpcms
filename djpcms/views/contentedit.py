@@ -34,7 +34,7 @@ class content_view(object):
         view = appmodel.getapp('edit')
         wrapper = EditWrapperHandler()
         for b in blockcontents:
-            djp  = view.requestview(request, instance = b)
+            djp  = view(request, instance = b)
             djp.wrapper = wrapper
             #djp.prefix  = wrapper.prefix(b)
             yield wrapper.wrap(djp)
@@ -272,7 +272,7 @@ class ContentSite(appsite.ModelApplication):
             return
         view = self.getapp('plugin')
         if view and self.has_edit_permission(request, obj):
-            djp = view.requestview(request, instance = obj)
+            djp = view(request, instance = obj)
             return djp.url
         
         

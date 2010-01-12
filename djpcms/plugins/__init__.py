@@ -237,9 +237,7 @@ class ApplicationPlugin(DJPplugin):
         instance = args.pop('instance',None)
         if instance and not isinstance(instance,app.model):
             instance = None 
-        ndjp = self.app.requestview(djp.request,
-                                    instance = instance,
-                                    **args)
+        ndjp = self.app(djp.request, instance = instance, **args)
         ndjp.wrapper = wrapper
         ndjp.prefix  = prefix
         return self.app.render(ndjp)

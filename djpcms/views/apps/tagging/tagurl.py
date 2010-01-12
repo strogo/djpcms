@@ -51,7 +51,7 @@ def add_tags(self, c, djp, obj):
     if obj.tags and tagview:
         tags = obj.tags.split(u' ')
         for tag in tags:
-            djp = tagview.requestview(request, tag1 = tag)
+            djp = tagview(request, tag1 = tag)
             tagurls.append({'url':djp.url,
                             'name':tag})
     c['tagurls'] = tagurls
@@ -66,7 +66,7 @@ def tagurl(self, request, *tags):
             #tag = urlquote(tag)
             kwargs['tag%s' % c] = tag
             c += 1
-        return view.requestview(request, **kwargs).url
+        return view(request, **kwargs).url
 
 
 

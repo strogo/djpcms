@@ -16,6 +16,8 @@
 	 <tr class="{{ css.field_separator }}"></tr>
 	 {{ html.tags.as_tablerow1 }}
 	 <tr class="{{ css.field_separator }}"></tr>
+	 {{ html.parent.as_tablerow1 }}
+	 <tr class="{{ css.field_separator }}"></tr>
 	 <tr>
 	  <td>{% for sb in html.submits %}
 	  {{ sb }}{% endfor %}
