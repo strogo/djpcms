@@ -74,7 +74,7 @@ class DjpResponse(http.HttpResponse):
     @lazyattr
     def _get_template(self):
         return self.view.get_template(self.page)
-    template = property(_get_template)
+    template_file = property(_get_template)
     
     def _get_instance(self):
         instance = self.urlargs.get('instance',None)
@@ -177,7 +177,7 @@ class DjpResponse(http.HttpResponse):
         if settings.ENABLE_BREADCRUMBS:
             d['breadcrumbs'] = Breadcrumbs(self,settings.ENABLE_BREADCRUMBS)
         d['sitenav'] = Navigator(self)
-        res = render_to_response(self.template, context_instance=context, **kwargs)
+        res = render_to_response(self.template_file, context_instance=context, **kwargs)
         self.content = res.content
         return self
 

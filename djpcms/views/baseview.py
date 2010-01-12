@@ -21,7 +21,8 @@ from djpcms.permissions import inline_editing
 from djpcms.utils import UnicodeObject, urlbits, urlfrombits, function_module
 from djpcms.views.response import DjpResponse
 
-build_base_context = function_module(DJPCMS_CONTENT_FUNCTION)
+more_content = lambda djp : {}
+build_base_context = function_module(DJPCMS_CONTENT_FUNCTION, more_content)
 
 
 
@@ -81,7 +82,8 @@ class djpcmsview(UnicodeObject):
     
     def parentresponse(self, djp):
         if djp.page.parent:
-            return djp.page.parent.object()
+            view = djp.page.parent.object()
+            return view(djp.request)
         else:
             return None
     
@@ -272,24 +274,6 @@ class djpcmsview(UnicodeObject):
             if css and css.body_class_name:
                 b = 'class="%s"' % css.body_class_name
         return mark_safe(b)
-        
-    def breadcrumbs(self, final = True):
-        '''
-        build a breadcrumbs list
-        '''
-        if self.parent:
-            bc = self.parent.breadcrumbs(final = False)
-        else:
-            bc = []
-        return self._addtobreadcrumbs(bc,final)
-        
-    def _addtobreadcrumbs(self, bc, final):
-        me = self.title()
-        if final:
-            bc.append(me)
-        else:
-            bc.append(me)
-        return bc
     
     def permissionDenied(self, djp):
         raise PermissionDenied
@@ -348,5 +332,3 @@ class editview(wrapview):
     def in_navigation(self, request, page):
         return 0
     
-    def get_main_nav(self, request):
-        return None
