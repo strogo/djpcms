@@ -79,7 +79,7 @@ class djpcmsview(UnicodeObject):
         else:
             return u'link'
     
-    def parentview(self, djp):
+    def parentresponse(self, djp):
         if djp.page.parent:
             return djp.page.parent.object()
         else:
