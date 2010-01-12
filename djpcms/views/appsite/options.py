@@ -469,6 +469,12 @@ class ModelApplicationBase(object):
         return loader.render_to_string(template_name    = template_name,
                                        context_instance = Context(content))
         
+    def title_object(self, obj):
+        '''
+        Return the title of a object-based view
+        '''
+        return '%s' % obj
+        
     def remove_object(self, obj):
         id = obj.id
         obj.delete()
@@ -520,6 +526,27 @@ class ModelApplicationBase(object):
     
     def permissionDenied(self, djp):
         raise PermissionDenied
+    
+    def parentresponse(self, djp, app):
+        '''
+        Retrive the parent view
+        '''
+        from djpcms.models import Page
+        pview = app.parent
+        if not pview:
+            if self.parent_url:
+                # First check for application pages
+                pview = self.application_site.root_pages.get(self.parent_url,None)
+                if not pview:
+                    # No parent check for flat pages
+                    try:
+                        page  = Page.objects.get_flat_page(self.parent_url)
+                        pview = page.object()
+                    except:
+                        return None
+            else:
+                return None
+        return pview(djp.request, **djp.urlargs)
 
 
 class ModelApplication(ModelApplicationBase):

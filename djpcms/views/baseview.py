@@ -13,145 +13,16 @@ from django.core.exceptions import PermissionDenied
 
 
 from djpcms.settings import HTML_CLASSES, GRID960_DEFAULT_FIXED, \
-                            DEFAULT_TEMPLATE_NAME, DJPCMS_CONTENT_FUNCTION, \
-                            ENABLE_BREADCRUMBS
+                            DEFAULT_TEMPLATE_NAME, DJPCMS_CONTENT_FUNCTION
 from djpcms.utils.ajax import jservererror, jredirect
 from djpcms.views.contentgenerator import BlockContentGen
 from djpcms.utils.html import grid960
 from djpcms.permissions import inline_editing
-from djpcms.utils import UnicodeObject, urlbits, urlfrombits, function_module, lazyattr
-from djpcms.utils.navigation import Navigator, Breadcrumbs
+from djpcms.utils import UnicodeObject, urlbits, urlfrombits, function_module
 from djpcms.views.response import DjpResponse
 
 build_base_context = function_module(DJPCMS_CONTENT_FUNCTION)
 
-
-class OldDjpResponse(http.HttpResponse):
-    '''
-    Response object for djpcms views
-    '''
-    def __init__(self, request, view, *args, **kwargs):
-        super(DjpResponse,self).__init__()
-        self.context  = RequestContext(request)
-        obj           = self.setup(request, *args, **kwargs)
-        self.request  = request
-        self.view     = view
-        self.css      = HTML_CLASSES
-        self._urlargs = None
-        self.args     = args
-        self.kwargs   = kwargs
-        self.wrapper  = None
-        self.prefix   = None
-        
-    def __unicode__(self):
-        return unicode(self.view)
-    
-    def __call__(self, prefix = None, wrapper = None):
-        djp = copy.copy(self)
-        djp.prefix  = prefix
-        djp.wrapper = wrapper
-        return djp
-    
-    @lazyattr
-    def get_parent(self):
-        pview = self.view.parentview(self.request)
-        if p:
-            return p.requestview(self.request, *self.args, **self.kwargs)
-        else:
-            return None
-    parent = property(get_parent)
-    
-    @lazyattr
-    def get_children(self):
-        self.instance
-        return self.view.children(self.request, **self.urlargs) or []
-    children = property(get_children)
-    
-    def _get_instance(self):
-        instance = self.urlargs.get('instance',None)
-        if not instance:
-            self.url
-            return self.urlargs.get('instance',None)
-        else:
-            return instance
-    def _set_instance(self, instance):
-        self.urlargs['instance'] = instance
-    instance = property(fget = _get_instance, fset = _set_instance)
-    
-    def handle_arguments(self):
-        if self._urlargs is None:
-            i = 0
-            urlargs = copy.copy(self.kwargs)
-            for arg in self.args:
-                i += 1
-                urlargs['arg_no_key_%s' % i] = arg
-            self._urlargs = urlargs
-            self.nargs   = i
-        
-    def __get_urlargs(self):
-        self.handle_arguments()
-        return self._urlargs
-    urlargs = property(__get_urlargs)
-    
-    @lazyattr
-    def get_url(self):
-        '''
-        Build the url for this application view
-        '''
-        return self.view.get_url(self, **self.urlargs)
-    url = property(get_url)
-        
-    @lazyattr
-    def _get_page(self):
-        '''
-        Get the page object
-        '''
-        view    = self.view
-        page    = view.get_page()
-        self.template = view.get_template(page)
-        return page
-    page = property(_get_page)
-    
-    def get_linkname(self):
-        return self.view.linkname(self)
-    linkname = property(get_linkname)
-        
-    def get_title(self):
-        return self.view.title(self.page, **self.urlargs)
-    title = property(get_title)
-    
-    @lazyattr
-    def in_navigation(self):
-        return self.view.in_navigation(self.request, self.page)
-    
-    def bodybits(self):
-        return self.view.bodybits(self.page)
-    
-    def response(self):
-        view    = self.view
-        request = self.request
-        
-        # Last check for permissions
-        if not view.has_permission(request, self.instance):
-            return view.permissionDenied(self)
-        
-        method  = request.method.lower()
-        methods = view.methods(request)
-        if method not in (method.lower() for method in methods):
-            return http.HttpResponseNotAllowed(methods)
-        
-        func = getattr(view,'%s_response' % method,None)
-        if not func:
-            raise ValueError("Allowed view method %s does not exist in %s." % (method,view))
-        
-        return func(self)
-    
-    def robots(self):
-        if self.view.has_permission(None, self.instance):
-            return u'ALL'
-        else:
-            return u'NONE,NOARCHIVE'
-        
 
 
 # THE DJPCMS INTERFACE CLASS for handling views
@@ -208,8 +79,11 @@ class djpcmsview(UnicodeObject):
         else:
             return u'link'
     
-    def parentview(self, request):
-        pass
+    def parentview(self, djp):
+        if djp.page.parent:
+            return djp.page.parent.object()
+        else:
+            return None
     
     def render(self, djp, **kwargs):
         return u''

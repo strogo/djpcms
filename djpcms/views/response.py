@@ -88,16 +88,12 @@ class DjpResponse(http.HttpResponse):
     instance = property(fget = _get_instance, fset = _set_instance)
     
     @lazyattr
-    def get_parent(self):
+    def _get_parent(self):
         '''
         Parent Response object
         '''
-        pview = self.view.parentview(self.request)
-        if pview:
-            return pview(self.request, *self.args, **self.kwargs)
-        else:
-            return None
-    parent = property(get_parent)
+        return self.view.parentresponse(self)
+    parent = property(_get_parent)
     
     @lazyattr
     def get_children(self):

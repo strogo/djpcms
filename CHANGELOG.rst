@@ -20,3 +20,4 @@ first official Alpha release.
  * ADDED NEW MODEL AdditionalPageData for injecting ad-hoc data into page head or javascript in page body
  * Content text plugin is now wrapped into a div with class 'djpcms-text-content'.
  * Breadcrumbs name is given by view title
+ * Created the DjpResponse object in views.response.

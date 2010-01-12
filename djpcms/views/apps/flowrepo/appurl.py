@@ -63,6 +63,12 @@ class FlowRepoApplication(tagurl.ArchiveTaggedApplication):
                 self.content_names[model] = cname
             content_models[cname] = model
         self.content_models = content_models
+        
+    def objptr(self, object):
+        try:
+            return object.object
+        except:
+            return object
 
     def basequery(self, request):
         return FlowItem.objects.public(user = request.user, model = self.model)
@@ -92,6 +98,14 @@ class FlowRepoApplication(tagurl.ArchiveTaggedApplication):
                 'flowrepo/%s_list_item.html' % model,
                 'flowrepo/flowitem_list_item.html']
     
+    def title_object(self, obj):
+        object = self.objptr(obj)
+        name = getattr(object,'name',None)
+        if not name:
+            return str(obj)
+        else:
+            return name
+        
     def object_content(self, djp, obj):
         '''
         Utility function for getting more content out of an instance of a model
@@ -168,7 +182,7 @@ class FlowModelApplication(FlowRepoApplication):
     edit     = appview.EditView(regex = '(?P<id>[-\.\w/]+)', parent = 'add', splitregex = False)
     view     = appview.ViewView(regex = '(?P<id>[-\.\w/]+)', splitregex = False)
     #edit     = appview.EditView(regex = 'edit', parent = 'view')
-    
+            
     def objectbits(self, object):
         '''
         Get arguments from model instance used to construct url
@@ -176,10 +190,7 @@ class FlowModelApplication(FlowRepoApplication):
         @param obj: instance of self.model
         @return: dictionary of url bits 
         '''
-        try:
-            obj = object.object
-        except:
-            obj = object
+        obj = self.objptr(object)
         if hasattr(obj,'slug'):
             parent = getattr(obj,'parent',None)
             if parent:
@@ -209,3 +220,12 @@ class FlowModelApplication(FlowRepoApplication):
             return FlowItem.objects.get_from_instance(obj)
         except:
             return None
+        
+    def parentresponse(self, djp, app):
+        obj = self.objptr(djp.instance)
+        if hasattr(obj,'slug'):
+            parent = getattr(obj,'parent',None)
+            if parent:
+                return app(djp.request, instance = FlowItem.objects.get_from_instance(parent))
+        return super(FlowModelApplication, self).parentresponse(djp, app)
+

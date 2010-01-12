@@ -35,12 +35,6 @@ class pageview(djpcmsview):
     def get_page(self):
         return self.page
     
-    def parentview(self, request):
-        if self.page.parent:
-            return self.page.parent.object()
-        else:
-            return None
-        
     def has_permission(self, request = None, obj = None):
         if self.page.requires_login:
             if request:
@@ -74,7 +68,7 @@ class pageview(djpcmsview):
             for app in appchildren:
                 rootview = app.root_application
                 if rootview and rootview.has_permission(request): 
-                    djp = rootview.requestview(request, **kwargs)
+                    djp = rootview(request, **kwargs)
                     nav = djp.in_navigation()
                     if nav:
                         views.append(djp)

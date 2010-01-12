@@ -16,7 +16,6 @@ from django.utils.text import smart_split
 from djpcms.models import Page
 from djpcms.utils.html import Paginator
 from djpcms.views.baseview import djpcmsview
-from djpcms.views.staticsite import get_view_from_url
 from djpcms.utils.func import force_number_insert
 from djpcms.utils.ajax import jremove, dialog, jredirect
 from djpcms.utils import form_kwargs
@@ -157,21 +156,11 @@ class AppView(djpcmsview):
         else:
             return self.purl
     
-    def parentview(self, request):
+    def parentresponse(self, djp):
         '''
-        Retrive the parent view
+        Retrive the parent response
         '''
-        appmodel = self.appmodel
-        if not self.parent and self.appmodel.parent_url:
-            # First check for application pages
-            view = appmodel.application_site.root_pages.get(self.appmodel.parent_url,None)
-            if not view:
-                # No parent check for flat pages
-                return get_view_from_url(request,self.appmodel.parent_url)
-            else:
-                return view
-        else:
-            return self.parent
+        return self.appmodel.parentresponse(djp, self)
     
     def get_page(self):
         if self.code:
@@ -465,8 +454,8 @@ class ObjectView(AppView):
             else:
                 raise http.Http404
     
-    def title(self, page, **urlargs):
-        return ''
+    def title(self, page, instance = None, **urlargs):
+        return self.appmodel.title_object(instance)
     
 
 # View and object
