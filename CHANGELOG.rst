@@ -18,3 +18,5 @@ first official Alpha release.
  * Added plugin's url for handling dynamic plugins not connected to a model.
  * Added Contact form plugin.
  * ADDED NEW MODEL AdditionalPageData for injecting ad-hoc data into page head or javascript in page body
+ * Content text plugin is now wrapped into a div with class 'djpcms-text-content'.
+ * Breadcrumbs name is given by view title

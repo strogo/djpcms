@@ -2,6 +2,7 @@
 #
 from django import forms
 from django.conf import settings
+from django.utils.safestring import mark_safe
 
 from djpcms.utils import json, form_kwargs
 from djpcms.models import SiteContent
@@ -110,7 +111,9 @@ class Text(DJPplugin):
         if site_content:
             try:
                 site_content = SiteContent.objects.get(id = int(site_content))
-                return site_content.htmlbody()
+                return mark_safe('\n'.join(['<div class="djpcms-text-content">',
+                                            site_content.htmlbody(),
+                                            '</div>']))
             except Exception, e:
                 if settings.DEBUG:
                     return u'%s' % e 

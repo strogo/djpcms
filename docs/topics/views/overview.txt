@@ -1,14 +1,55 @@
+.. _topics-views-get:
+
+=================================
+The GET response
+=================================
+
+Implemented in function ``handle_response``.
+
+.. _topics-views-context-dictionary:
+
+Context Dictionary
+=================================
+
+The context dictionary is the dictionary passed to each GET view rendering.
+
+djp
+---------------
+Type: instance of DjpRequestWrap
+
+Instance of current view object
+
+grid
+---------------
+Type: object
+
+Instance of current page grid manager
+
+inner
+---------------
+Type: unicode
+
+The inner content of the page
+
+breadcrumbs
+---------------
+Type: instance of Breadcrumbs
+	
+A lazy Breadcrumbs generator. See :ref:`topics-included-breadcrumbs`
+
+
 
 
 ================================
-Post responses
+The POST response
 ================================
 djpcms views can handle two types of POST response:
  * Standard POST
  * AJAX POST
  
 AJAX POST reponses
---------------------------------
+======================
+
 As mentioned above there can be several different types of AJAX POST responses, these are implemented by
 defining functions with the **ajax__** prefix.
 
@@ -17,13 +58,34 @@ defining functions with the **ajax__** prefix.
 		def ajax__custom_response(self, djp):
 			return obj
 
+
+
+
+
 ================================
 Other View Methods
 ================================
 
+A list of all the remaing view methods
+
+
+.. _topics-views-title:
+
+title
+====================
+Evaluate a verbose title for the view.
+
+.. _topics-views-linkname:
+
+linkname
+====================
+Evaluate the name to display in links to self.
+
+
 
 bodybits
----------------------------------
+====================
+
 Function that returns attributes to insert into the ``body`` tag of the HTML template.
 
 has_permission

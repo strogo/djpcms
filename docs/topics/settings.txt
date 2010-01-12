@@ -105,7 +105,7 @@ Dictionary of information for inline content editing, by default it is set for n
 				}
 
 The ``pagecontent`` key define the base url for editing page contents. It should contains trailing slashes.
-A :ref:`page-model` object with url given by ``pagecontent`` needs to be created if ``available`` is set to True.
+A :ref:`topics-models-page` object with url given by ``pagecontent`` needs to be created if ``available`` is set to True.
 Otherwise an error will occur. 
 
 

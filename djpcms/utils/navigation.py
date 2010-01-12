@@ -97,7 +97,7 @@ class Breadcrumbs(lazycounter):
     def make_item(self, djp, classes, first):
         parent = djp.parent
         if parent:
-            c = {'name':    djp.linkname,
+            c = {'name':    djp.title,
                  'classes': u' '.join(classes)}
             if not first:
                 c['url'] = djp.url

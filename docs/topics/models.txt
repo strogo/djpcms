@@ -4,6 +4,7 @@
 Database Models
 ================================
 
+.. _topics-models-page:
 
 Page Model
 ================
@@ -11,6 +12,8 @@ At the hart of the Content Management System lays the Page model.
 
 The content editing views is controlled by the setting :ref:`content-inline-editing`.
 
+
+.. _topics-models-additionalpagedata:
 
 AdditionalPageData Model
 =============================

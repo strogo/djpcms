@@ -28,20 +28,20 @@ div.flat-element {
 	padding: 10px 10px;
 }
 
-.djpcms-block ul {
+.djpcms-text-content ul {
 	margin-left: 1.5em;
 	margin-bottom: 0.9em;
 }
-.djpcms-block ul li {
+.djpcms-text-content ul li {
 	margin-bottom: 0.5em;
 }
-.djpcms-block ul,
-.djpcms-block ul li {
+.djpcms-text-content ul,
+.djpcms-text-content ul li {
 	list-style-position:outside;
 	list-style-type: disc;
 }
 
-.djpcms-block table td {padding: 0 5px;}
+.djpcms-block table td {padding: 2px 5px;}
 
 .grid_3 .djpcms-block-element .flat-element img.fullwidth,
 .grid_3 .djpcms-block-element .djpcms-html-box .bd img.fullwidth {

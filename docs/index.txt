@@ -28,6 +28,10 @@ Dynamic Content Management
 	  :ref:`Extending <topics-plugins-extending>`
 	  
 	* **Design:**
+	
+	* **Battery Included:**
+	  :ref:`Navigator <topics-included-navigator>` |
+	  :ref:`Breadcrumbs <topics-included-breadcrumbs>`
 
 
 The Djpcms open-source project
