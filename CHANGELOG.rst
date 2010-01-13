@@ -3,7 +3,7 @@
 =====================
 first official Alpha release.
 
-0.5 alpha
+0.5
 =====================
 
  * Bug fixes
