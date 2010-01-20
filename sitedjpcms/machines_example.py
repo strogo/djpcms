@@ -18,12 +18,13 @@ class SiteMachine(machine):
                                          **kwargs)
         
 SiteMachine()
-SiteMachine(name = 'vespa', servs = True)
+# Set vespa machine to be a development machine
+SiteMachine(name = 'vespa', debug = True, servs = True)
 
 
 class Identity(object):
     
     def __init__(self):
-        self.SECRET_KEY          = '@anu(%l86dlk=^yb8%r1izr6^c$755+^*4-*db^3&!^o&khh1$'
+        self.SECRET_KEY          = 'q*+zqx@*%r_&7)iney)od2j*9py=n6l#_u^vms^(om&avn_8=='
         self.ADMIN_URL_PREFIX    = '/admin/'
         self.GOOGLE_ANALYTICS_ID = None

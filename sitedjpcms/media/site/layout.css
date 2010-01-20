@@ -1,0 +1,54 @@
+a, a.link {
+	text-decoration: none;
+}
+h1 {
+	margin-bottom:0.6em;
+}
+h2 {
+	margin-bottom:0.6em;
+}
+#main-body {
+	min-height: 600px;
+	margin-top: 20px;
+	margin-bottom: 40px;
+	overflow: hidden;
+}
+#footer {
+	min-height: 200px;
+}
+#documentation h2, #documentation h3, #documentation h4 {
+	margin-top:1.4em;
+}
+#tag-line {
+	padding: 0 20px;
+}
+p {
+	line-height: 1.2em;
+	margin-bottom: 0.6em;
+}
+.site-logo {
+	padding: 0 20px;
+}
+.section {
+	margin-top: 20px;
+}
+h2.deck {
+	margin-top: 0;
+	margin-bottom:0.6em;
+}
+.user-box {
+	float: right;
+}
+li.toctree-l2 {
+	margin-left: 20px;
+}
+ul.user-nav {
+	display: inline;
+}
+ul.user-nav li {
+	display: inline;
+	list-style-type:none;
+	margin:0;
+	padding:0 0 0 15px;
+}
+

@@ -43,7 +43,7 @@ class DocView(djpcmsview):
     def get_docroot(self, lang, version):
         docroot = Path(self.DOCS_PICKLE_ROOT).child(*self.get_path_args(lang, version))
         if not docroot.exists():
-            raise Http404()
+            raise http.Http404()
         return docroot 
     
     def index(self, request):
@@ -79,7 +79,7 @@ class DocView(djpcmsview):
             bits = bits[:-2] + ['%s.fjson' % bits[-2]]
             doc = docroot.child(*bits)
             if not doc.exists():
-                raise Http404("'%s' does not exist" % doc)
+                raise http.Http404("'%s' does not exist" % doc)
 
         bits[-1] = bits[-1].replace('.fjson', '')
         namet = '-'.join([b for b in bits if b])

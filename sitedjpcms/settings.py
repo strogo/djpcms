@@ -1,12 +1,13 @@
+import logging
 import os
-
-SERVE_STATIC_FILES = True
-DEBUG = True
-TEMPLATE_DEBUG = DEBUG
-
-
 import packages
-PSETTINGS = packages.install(DEBUG)
+PSETTINGS = packages.install()
+
+if not PSETTINGS.dev:
+    os.environ['PYTHON_EGG_CACHE'] = PSETTINGS.egg_cache
+
+DEBUG = PSETTINGS.debug
+TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
      ('Luca Sbardella', 'luca.sbardella@gmail.com'),
@@ -21,7 +22,6 @@ DATABASE_PASSWORD = PSETTINGS.dbpassword
 DATABASE_HOST     = PSETTINGS.dbhost
 DATABASE_PORT     = PSETTINGS.dbport
 
-SECRET_KEY = '9ydnib90%5_reb+*klqo5*y&kozxxp(mdyc(7uqrifa*=(ln$3'
 TIME_ZONE             = 'Europe/London'
 LANGUAGE_CODE         = 'en-gb'
 SITE_ID = 1
@@ -69,14 +69,11 @@ INSTALLED_APPS = ['django.contrib.auth',
                   'django.contrib.sites',
                   'django.contrib.contenttypes',
                   'django.contrib.sessions',
-                  #'django.contrib.admin',
+                  'django.contrib.admin',
                   'djpcms']
 
 # djpcms settings
-DEFAULT_TEMPLATE_NAME = 'base.html'
-CONTENT_INLINE_EDITING = {'available':      True,
-                          'pagecontent':    '/site-content/',
-                          'width':          600,
-                          'height':         500}
-APPLICATION_MODULE     = 'sitedjpcms.appurls'
-import djpcms.utils.markups.install
+DEFAULT_TEMPLATE_NAME  = 'base.html'
+GOOGLE_ANALYTICS_ID    = PSETTINGS.id.GOOGLE_ANALYTICS_ID
+APPLICATION_URL_MODULE = 'sitedjpcms.appurls'
+

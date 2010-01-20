@@ -3,7 +3,7 @@
 =====================
 first official Alpha release.
 
-0.5
+0.5 (2010-01-13)
 =====================
 
  * Bug fixes
@@ -21,3 +21,7 @@ first official Alpha release.
  * Content text plugin is now wrapped into a div with class 'djpcms-text-content'.
  * Breadcrumbs name is given by view title
  * Created the DjpResponse object in views.response.
+ 
+0.6 alpha
+=======================
+ 

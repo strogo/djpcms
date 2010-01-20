@@ -25,6 +25,15 @@ def google_analytics():
         return u''
 register.simple_tag(google_analytics)
 
+
+def html_validator():
+    va = """
+    <a href="http://validator.w3.org/check?uri=referer"><img
+        src="http://www.w3.org/Icons/valid-xhtml10-blue"
+        alt="Valid XHTML 1.0 Transitional" height="31" width="88" /></a>
+    """
+    return mark_safe(va)
+
 def styling():
     murl = settings.MEDIA_URL
     css = ['<link rel="stylesheet" type="text/css" href="%sdjpcms/jquery-ui-css/%s.css"/>' % (murl,DJPCMS_SITE_STYLE),
