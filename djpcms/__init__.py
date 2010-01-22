@@ -15,6 +15,8 @@ def get_version():
     return v
 
 siteapp_choices = [('','-----------------')]
+
+
         
 
 __version__ = get_version()
