@@ -74,10 +74,11 @@ class FlowRepoApplication(tagurl.ArchiveTaggedApplication):
         return FlowItem.objects.public(user = request.user, model = self.model)
 
     def has_permission(self, request = None, obj=None):
-        if not obj:
+        '''
+        evaluate only if obj is an instance of flowitem
+        '''
+        if not isinstance(obj,FlowItem):
             return True
-        if not obj:
-            return False
         if not request:
             return obj.can_user_view()
         else:

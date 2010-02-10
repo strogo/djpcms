@@ -8,7 +8,7 @@ Required
 -----------
 
  * Python >= 2.5
- * django 1.1.1
+ * django >= 1.1.1
 
 Optional
 -----------

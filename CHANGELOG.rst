@@ -24,4 +24,6 @@ first official Alpha release.
  
 0.6 alpha
 =======================
+ * Compatible with django 1.2
+ * Bug in views.apps.flowrepo.appurl.FlowRepoApplication.has_permission fixed. Check if obj is a instance of FlowItem.
  

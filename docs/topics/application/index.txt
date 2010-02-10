@@ -1,9 +1,12 @@
 .. _topics-application-index:
 
+======================
 Dynamic Applications
 ======================
 
-A dynamic application is a url dedicated to a given model in the database.
+.. module:: djpcms.views.appview
+
+A dynamic application is represented by a set of urls dedicated to a given model in the database.
 
 
 .. toctree::
