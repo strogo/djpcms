@@ -30,7 +30,10 @@ class TagArchiveView(ArchiveView):
     
     def __init__(self, *args, **kwargs):
         super(TagArchiveView,self).__init__(*args, **kwargs)
-        
+    
+    def title(self, page, **urlargs):
+        return urlargs.get('tag1','')
+    
     def linkname(self, djp):
         urlargs = djp.urlargs
         return urlargs.get('tag1',None)
@@ -73,8 +76,7 @@ def tagurl(self, request, *tags):
 class TagApplication(appsite.ModelApplication):
     search  = SearchView(in_navigation = True)
     cloud   = SearchView(regex = 'tag', parent = 'search')
-    tag1    = TagView(regex = '(?P<tag1>%s)' % tag_regex,
-                      parent = 'cloud')
+    tag1    = TagView(regex = '(?P<tag1>%s)' % tag_regex, parent = 'cloud')
     
     def tagurl(self, request, *tags):
         return tagurl(self, request, *tags)

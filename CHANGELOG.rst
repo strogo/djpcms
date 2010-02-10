@@ -26,4 +26,4 @@ first official Alpha release.
 =======================
  * Compatible with django 1.2
  * Bug in views.apps.flowrepo.appurl.FlowRepoApplication.has_permission fixed. Check if obj is a instance of FlowItem.
- 
+ * TagArchiveView title reimplemented
