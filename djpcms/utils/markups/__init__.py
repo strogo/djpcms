@@ -25,3 +25,13 @@ def get(name):
 
 _default_markup = None
 MARKUP_HANDLERS = {}
+
+
+import creole
+def creole_text2html(text):
+    '''
+    Parse creole text to form HTML
+    '''
+    document = creole.Parser(text).parse()
+    return creole.HtmlEmitter(document).emit().encode('utf-8', 'ignore')
+add('crl','creole',creole_text2html)

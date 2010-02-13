@@ -66,7 +66,6 @@ loadwrappers(DJPCMS_WRAPPERS)
 #    site_urls += appsite.site.urls
     
 # Last the djpcms Handler
-#site_urls      += ((r'([\w/-]*)', 'djpcms.views.handlers.Handler'),)
 site_urls      += ((r'(.*)', 'djpcms.views.handlers.Handler'),)
 
 

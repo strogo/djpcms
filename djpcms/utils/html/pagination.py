@@ -37,13 +37,17 @@ class Paginator(object):
         
     def pagenumber(self, request):
         '''
-        Get information form request
+        Get page information form request
+        The page should be stored in the request dictionary
         '''
         if request.method == 'GET':
             data = dict(request.GET.items())
         else:
             data = dict(request.POST.items())
-        page = data.get('page',1)
+        try:
+            page = int(data.get('page',1))
+        except:
+            page = 1
         return max(min(page,self.pages),1) 
         
     def navigation(self):
