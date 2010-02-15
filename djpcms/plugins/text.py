@@ -3,6 +3,7 @@
 from django import forms
 from django.conf import settings
 from django.utils.safestring import mark_safe
+from django.template import RequestContext
 
 from djpcms.utils import json, form_kwargs
 from djpcms.models import SiteContent
@@ -157,6 +158,7 @@ class Html(DJPplugin):
             
     def render(self, djp, wrapper, prefix, content = None, **kwargs):
         if content:
+            #c = RequestContext(djp.request)
             return content
         else:
             return u''

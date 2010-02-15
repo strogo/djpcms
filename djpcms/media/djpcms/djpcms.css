@@ -332,3 +332,39 @@ div.djpcms-comment.djpcms-html-box .bd {
 .container_12 .grid_3 .flat-element .image-plugin {
 	width: 200px;
 }
+
+
+/* PAGINATION
+---------------------------------------------------------------------------*/
+.jquery-pagination {
+	overflow: hidden;
+	font-size: 80%;
+	margin-bottom: 10px;
+	height: 40px;
+}
+        
+.jquery-pagination a {
+    text-decoration: none;
+    border: solid 1px #AAE;
+    color: #15B;
+}
+
+.jquery-pagination a, .jquery-pagination span {
+    display: block;
+    float: left;
+    padding: 0.3em 0.5em;
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+
+.jquery-pagination .current {
+    background: #26B;
+    color: #fff;
+    border: solid 1px #AAE;
+}
+
+.jquery-pagination .current.prev, .jquery-pagination .current.next{
+    color:#999;
+    border-color:#999;
+    background:#fff;
+}

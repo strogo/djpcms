@@ -1,3 +1,5 @@
+from django.utils.safestring import mark_safe
+
 from djpcms.utils.func import data2url
 
 from base import htmlbase
@@ -12,7 +14,7 @@ class Paginator(object):
     navigate through the search.
     '''
     
-    def __init__(self, request, data = None, per_page = 20, maxentries = 15):
+    def __init__(self, request, data = None, per_page = 20, numends = 2, maxentries = 15):
         '''
         @param data:       queryset
         @param page:       page to display
@@ -20,6 +22,7 @@ class Paginator(object):
         @param maxentries: Max number of links in the pagination list
         '''
         self.hentries   = max(int(maxentries)/2,2)
+        self.numends    = numends
         self.total      = data.count()
         self.per_page   = max(int(per_page),1)
         tp              = self.total/self.per_page
@@ -41,14 +44,21 @@ class Paginator(object):
         The page should be stored in the request dictionary
         '''
         if request.method == 'GET':
-            data = dict(request.GET.items())
+            self._datadict = dict(request.GET.items())
         else:
-            data = dict(request.POST.items())
+            self._datadict = dict(request.POST.items())
         try:
-            page = int(data.get('page',1))
+            page = int(self._datadict.pop('page',1))
         except:
             page = 1
-        return max(min(page,self.pages),1) 
+        return max(min(page,self.pages),1)
+    
+    def datadict(self):
+        s = '?'
+        li = []
+        for k,v in self._datadict.items():
+            li.append('%s=%s' % (k,v))
+        return mark_safe('&'.join(li))
         
     def navigation(self):
         if self.pages == 1:

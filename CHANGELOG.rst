@@ -28,5 +28,7 @@ first official Alpha release.
  * Bug in views.apps.flowrepo.appurl.FlowRepoApplication.has_permission fixed. Check if obj is a instance of FlowItem.
  * TagArchiveView title overwritten
  * jQuery 1.4.1
+ * Added swfobject in media
  * added jstree from http://www.jstree.com/
+ * Added jquery.pagination for pagination of search results
  

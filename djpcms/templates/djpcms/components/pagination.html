@@ -1,5 +1,26 @@
 {% if form %}<div class="search-form">
 {{ form }}
-</div>{% endif %}
+</div>{% endif %}{% ifnotequal paginator.pages 1 %}
+<div id="Pagination" class="jquery-pagination"></div> 
+<script>
+$(document).ready(function(){
+    // Create pagination element with options from form
+    var optInit = {
+    		items_per_page: {{ paginator.per_page }},
+    		current_page: {{ paginator.page }} - 1,
+    		num_edge_entries: {{ paginator.numends }}, 
+    		callback: function(current_page, elem) {
+    			  var cp  = current_page + 1;
+    			  var data = "{{ paginator.datadict }}";
+    			  var url = "{{ url }}?page=" + cp;
+    			  if(data) {
+        			  url += '&' + data;
+    			  }
+    			  window.location = url;
+    		}
+    };
+    $(".jquery-pagination").pagination({{ paginator.total }}, optInit);
+});
+</script>{% endifnotequal %}
 {% for item in items %}
 {{ item }}{% endfor %}
