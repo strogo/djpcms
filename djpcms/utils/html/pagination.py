@@ -1,4 +1,5 @@
 from django.utils.safestring import mark_safe
+from django.utils.http import urlquote
 
 from djpcms.utils.func import data2url
 
@@ -57,7 +58,7 @@ class Paginator(object):
         s = '?'
         li = []
         for k,v in self._datadict.items():
-            li.append('%s=%s' % (k,v))
+            li.append('%s=%s' % (k,urlquote(v)))
         return mark_safe('&'.join(li))
         
     def navigation(self):
