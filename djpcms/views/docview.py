@@ -9,22 +9,31 @@ from django.utils.safestring import mark_safe
 
 from unipath import FSPath as Path
 
+from djpcms.models import Page
 from djpcms.views.baseview import djpcmsview
+from djpcms.views.appsite import ApplicationBase
 
 
 
-class DocView(djpcmsview):
+class DocView(djpcmsview, ApplicationBase):
     # Name the documents
     name             = None
-    baseurl          = '/docs/'
+    baseurl          = 'ksdjnbcksdncds'
     deflang          = 'en'
     DOCS_PICKLE_ROOT = None
     editurl          = None
     
     def make_urls(self):
+        '''
+        Create a tuple of urls
+        '''
         from django.conf.urls.defaults import url
+        try:
+            page = Page.objects.get(application = self.name)
+        except:
+            return None
         self.doc_index = '%s_doc_index' % self.name
-        b = self.baseurl[1:]
+        b = page.url[1:]
         return (url(r'^%s$' % b, self.index),
                 url(r'^%s(?P<lang>[a-z-]+)/$' % b, self.language),
                 url(r'^%s(?P<lang>[a-z-]+)/(?P<version>[\w.-]+)/$' % b,

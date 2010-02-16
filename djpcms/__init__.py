@@ -14,6 +14,7 @@ def get_version():
         v = '%s.%s' % VERSION[:2]
     return v
 
+# This list is updated by the views.appsite.appsite handler
 siteapp_choices = [('','-----------------')]
 
 

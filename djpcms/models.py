@@ -166,6 +166,7 @@ class Page(TimeStamp):
 
     class Meta:
         get_latest_by   = 'last_modified'
+        verbose_name_plural = "Sitemap"
 
     def __unicode__(self):
         return u'%s' % self.url
@@ -218,14 +219,14 @@ class Page(TimeStamp):
         app = appsite.site.getapp(self.application)
         # Application has a parent
         if app.parent:
-            # First check for url
-            #d = self.variabledictionary() or {}
-            #purl = app.parent.purl % d
             purl = app.parent.purl
-            try:
-                return Page.objects.get(url = purl)
-            except:
-                pass
+            parents = Page.objects.filter(url = purl, site = self.site)
+            if parents:
+                return parents[0]
+            else:
+                return self.parent
+        else:
+            return self.parent
 
     @lazyattr
     def get_parent_path(self):
@@ -256,32 +257,17 @@ class Page(TimeStamp):
             return v + self.parent.num_arguments()
         else:
             return v
-    
-    def variabledictionary(self):
-        return {}
-        if self.variables:
-            d = {}
-            vars = self.variables.split(',')
-            for var in vars:
-                kv = var.split('=')
-                if len(kv) == 2:
-                    d[str(kv[0])] = kv[1]
-            return d
         
     def unsafe_url(self):
         if self.application:
             from djpcms.views import appsite
             app = appsite.site.getapp(self.application)
-            dv  = self.variabledictionary()
-            if dv:
-                return app.purl % dv
-            else:
-                return app.purl
-        else:
-            url = u'/%s' % '/'.join([page.url_pattern for page in self.get_path() if page.parent])
-            if not url.endswith('/'):
-                url += '/'
-            return url
+            if app.purl:
+                self.url_pattern = app.purl[1:-1]
+        url = u'/%s' % '/'.join([page.url_pattern for page in self.get_path() if page.parent])
+        if not url.endswith('/'):
+            url += '/'
+        return url
 
     def get_absolute_url(self):
         try:
@@ -298,7 +284,7 @@ class Page(TimeStamp):
 
     def get_level(self):
         try:
-            url = self.unsafe_url()
+            url = self.url
             if url.startswith('/'):
                 url = url[1:]
             if url.endswith('/'):

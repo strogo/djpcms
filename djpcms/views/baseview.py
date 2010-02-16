@@ -15,11 +15,11 @@ from django.core.exceptions import PermissionDenied
 from djpcms.settings import HTML_CLASSES, GRID960_DEFAULT_FIXED, \
                             DEFAULT_TEMPLATE_NAME, DJPCMS_CONTENT_FUNCTION
 from djpcms.utils.ajax import jservererror, jredirect
-from djpcms.views.contentgenerator import BlockContentGen
 from djpcms.utils.html import grid960
 from djpcms.permissions import inline_editing
 from djpcms.utils import UnicodeObject, urlbits, urlfrombits, function_module
 from djpcms.views.response import DjpResponse
+from djpcms.views.contentgenerator import BlockContentGen
 
 more_content = lambda djp : {}
 build_base_context = function_module(DJPCMS_CONTENT_FUNCTION, more_content)
@@ -32,6 +32,8 @@ class djpcmsview(UnicodeObject):
     # This override the template name in the page object (if it exists)
     # hardly used but here just in case.
     template_name = None
+    parent        = None
+    purl          = None
     # methods handled by the current view. By default GET and POST only
     _methods      = ('get','post') 
     '''

@@ -15,11 +15,11 @@ from django.core.exceptions import PermissionDenied
 from djpcms.utils import form_kwargs, UnicodeObject
 from djpcms.utils.forms import add_hidden_field
 from djpcms.plugins import register_application
+from djpcms.settings import HTML_CLASSES
+from djpcms.utils.html import formlet, submit, form
+
 from djpcms.views.baseview import editview
 from djpcms.views.appview import AppView
-from djpcms.settings import HTML_CLASSES
-
-from djpcms.utils.html import formlet, submit, form
 
 
 class SearchForm(forms.Form):
@@ -61,7 +61,18 @@ class ModelAppMetaClass(type):
     
 
 
-class ModelApplicationBase(object):
+class ApplicationBase(object):
+    
+    def make_urls(self):
+        '''
+        Return a tuple of urls for the given application
+        '''
+        raise NotImplemented
+    
+
+
+
+class ModelApplicationBase(ApplicationBase):
     '''
     Base class for model applications
     This class implements the basic functionality for a general model
@@ -341,7 +352,6 @@ class ModelApplicationBase(object):
             urls.append(nurl)
                 
         return tuple(urls)
-    urls = property(fget = make_urls)
     
     # APPLICATION URLS
     # TODO: write it better (not use of application name)

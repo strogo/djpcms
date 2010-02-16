@@ -3,6 +3,8 @@
 {% block site-keywords %}cms, django, jquery, javascript, python, css{% endblock %}
 {% block site-description %}djpcms documentation site{% endblock %}
 
+{% block style-reset %}{% include "djpcms/bits/reset.html" %}{% endblock %}
+
 {% block style-block %}
 <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/djpcms.css"/>
 <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}site/layout.css"/>

@@ -45,15 +45,22 @@ class ApplicationSite(object):
             model_or_iterable = [model_or_iterable]
         
         editavailable = self.editavailable and editavailable
-        for model in model_or_iterable:
-            # Instantiate the admin class to save in the registry
-            if model in self._registry:
-                raise ValueError('Model %s already registered as application' % model)
-            appmodel = application_class(model, self, editavailable)
-            if appmodel.name in self._nameregistry:
-                raise ValueError('Model %s already registered as application' % model)
-            self._registry[model] = appmodel
-            self._nameregistry[appmodel.name] = appmodel
+        if model_or_iterable:
+            for model in model_or_iterable:
+                # Instantiate the admin class to save in the registry
+                if model in self._registry:
+                    raise ValueError('Model %s already registered as application' % model)
+                appmodel = application_class(model, self, editavailable)
+                if appmodel.name in self._nameregistry:
+                    raise ValueError('Model %s already registered as application' % model)
+                self._registry[model] = appmodel
+                self._nameregistry[appmodel.name] = appmodel
+        else:
+            app = application_class()
+            if app.name in self._nameregistry:
+                raise ValueError('Application %s already registered as application' % app.name)
+            self._nameregistry[app.name] = app
+            self.choices.append((app.name,app.name))
             
     def for_model(self, model):
         return self._registry.get(model,None)
@@ -69,12 +76,12 @@ class ApplicationSite(object):
             name     = names[0]
             app_code = names[1]
             appmodel = self._nameregistry.get(name,None)
-            if appmodel is None:
-                raise ValueError("App %r, model %r, not found." % (app_label, model_name))
-            return appmodel.getapp(app_code)
-        else:
+            if appmodel:
+                return appmodel.getapp(app_code)
+        appmodel = self._nameregistry.get(appname,None)
+        if appmodel is None:
             raise ValueError('Application name %s not recognized' % appname)
-            
+        return appmodel
     
     def count(self):
         return len(self._registry)
@@ -82,8 +89,10 @@ class ApplicationSite(object):
     def get_urls(self):
         aurls = []
         # Add in each model's views.
-        for appmodel in self._registry.values():
-            aurls.extend(appmodel.urls)
+        for app in self._nameregistry.values():
+            urls = app.make_urls()
+            if urls:
+                aurls.extend(urls)
         return tuple(aurls)
     urls = property(fget = get_urls)
     

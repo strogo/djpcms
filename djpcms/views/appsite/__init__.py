@@ -1,7 +1,7 @@
 from django import forms
 from django.utils.importlib import import_module
 
-from djpcms.views.appsite.options import ModelApplication
+from djpcms.views.appsite.options import ApplicationBase, ModelApplication
 from djpcms.views.appsite.appsites import ApplicationSite, site
 from djpcms.forms import LazyChoiceField
 from djpcms.views.appsite.appurls import *

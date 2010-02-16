@@ -7,10 +7,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from djpcms.settings import CONTENT_INLINE_EDITING
 from djpcms.models import Page
 from djpcms.views import appsite
-
-
-applications_url = appsite.site.urls
-
+from djpcms.views.response import DjpResponse
 
 
 def djpcmsHandler(request, url):
@@ -29,6 +26,7 @@ def djpcmsHandler(request, url):
         page = Page.objects.get_flat_page(url)
         return page.object(),(),{}
     except ObjectDoesNotExist:
+        applications_url = appsite.site.urls
         resolver = urlresolvers.RegexURLResolver(r'^/', applications_url)
         try:
             return resolver.resolve(url)
@@ -40,7 +38,11 @@ def Handler(request, url):
     view, args, kwargs = djpcmsHandler(request, url)
     if isinstance(view,HttpResponseRedirect):
         return view
-    return view(request, *args, **kwargs).response()
+    view = view(request, *args, **kwargs)
+    if isinstance(view,DjpResponse):
+        return view.response()
+    else:
+        return view
 
 
 def editHandler(request, url):
