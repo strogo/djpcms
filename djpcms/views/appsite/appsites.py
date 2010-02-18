@@ -16,8 +16,8 @@ class ApplicationSite(object):
         from djpcms.settings import APPLICATION_URL_PREFIX, CONTENT_INLINE_EDITING
         self.root_path     = APPLICATION_URL_PREFIX[1:]
         self.editavailable = CONTENT_INLINE_EDITING.get('available',False)
-        self._registry     = SortedDict()
-        self._nameregistry = {}
+        self._registry     = {}
+        self._nameregistry = SortedDict()
         self.parent_pages  = {}
         self.root_pages    = {}
         self.choices       = siteapp_choices

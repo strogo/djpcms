@@ -86,7 +86,7 @@ class djpcmsview(UnicodeObject):
     
     def parentresponse(self, djp):
         if djp.page.parent:
-            view = djp.page.parent.object()
+            view = pagecache.view_from_page(djp.request, djp.page.parent)
             return view(djp.request)
         else:
             return None
@@ -279,20 +279,14 @@ class djpcmsview(UnicodeObject):
     def permissionDenied(self, djp):
         raise PermissionDenied
     
-    def sortviewlist(self, views):
-        def comp(a,b):
-            if a.in_navigation() > b.in_navigation():
-                return 1
-            else:
-                return -1
-        views.sort(comp)
-        return views
-    
     def defaultredirect(self, djp):
         return djp.url
     
     def children(self, request, **kwargs):
-        from djpcms.views.handlers import view_from_page
+        '''
+        Return children permitted views for self.
+        It includes views not in navigation
+        '''
         views = []
         page      = self.get_page()
         if not page:
@@ -300,18 +294,15 @@ class djpcmsview(UnicodeObject):
         
         pchildren = pagecache.get_children(page)
         
-        # First check static childrens
         for child in pchildren:
             try:
-                cview = view_from_page(child)
+                cview = pagecache.view_from_page(request, child)
             except Exception, e:
                 continue
             if cview.has_permission(request):
                 djp = cview(request, **kwargs)
-                nav = djp.in_navigation()
-                if nav:
-                    views.append(djp)
-        return self.sortviewlist(views)
+                views.append(djp)
+        return views
 
 
 class pageview(djpcmsview):

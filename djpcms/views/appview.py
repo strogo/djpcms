@@ -70,7 +70,7 @@ class AppView(djpcmsview):
     regex = property(fget = __get_regex)
     
     def __get_purl(self):
-        return '%s%s' % (self.baseurl,self._regex)
+        return '%s%s' % (self.baseurl,self._purl)
     purl = property(__get_purl)
     
     def __get_model(self):
@@ -179,7 +179,8 @@ class AppView(djpcmsview):
             return self.__page
         else:
             try:
-                return pagecache.get_for_application(application = self.code)
+                self.__page = pagecache.get_for_application(self.code)
+                return self.__page
             except:
                 if self.parent:
                     return self.parent.get_page()

@@ -37,14 +37,19 @@ if SERVE_STATIC_FILES:
     import os
     djpcms_media_root = os.path.join(djpcms.__path__[0],'media','djpcms')
     murl = settings.MEDIA_URL.lstrip("/")
-    site_urls += (r'^%sdjpcms/(?P<path>.*)$' % murl, # r'^{0}djpcms/(?P<path>.*)$'.format(murl),
-                  'django.views.static.serve',
-                  {'document_root': djpcms_media_root, 'show_indexes': True}
-                  ),
-    site_urls += (r'^%ssite/(?P<path>.*)$' % murl, #r'^{0}site/(?P<path>.*)$'.format(murl),
-                  'django.views.static.serve',
-                  {'document_root': settings.MEDIA_ROOT, 'show_indexes': True}
-                  ),               
+    site_urls += (
+                    r'^%sdjpcms/(?P<path>.*)$' % murl, # r'^{0}djpcms/(?P<path>.*)$'.format(murl),
+                    'django.views.static.serve',
+                    {'document_root': djpcms_media_root, 'show_indexes': True}
+                  ),(
+                     r'^%ssite/(?P<path>.*)$' % murl, #r'^{0}site/(?P<path>.*)$'.format(murl),
+                     'django.views.static.serve',
+                     {'document_root': settings.MEDIA_ROOT, 'show_indexes': True}
+                  ),(
+                     r'^favicon.ico$',
+                     'django.views.static.serve',
+                     {'document_root': settings.MEDIA_ROOT, 'show_indexes': True}
+                  )
 
 # Sitemap
 site_urls      += (r'^sitemap.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': get_site_maps()}),

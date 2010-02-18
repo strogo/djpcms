@@ -17,10 +17,10 @@ from djpcms.utils.forms import add_hidden_field
 from djpcms.plugins import register_application
 from djpcms.settings import HTML_CLASSES
 from djpcms.utils.html import formlet, submit, form
-from djpcms.models import Page
 
 from djpcms.views.baseview import editview
 from djpcms.views.appview import AppView
+from djpcms.views.cache import pagecache
 
 
 class SearchForm(forms.Form):
@@ -68,11 +68,11 @@ class ApplicationBase(object):
         raise NotImplementedError
     
     def __get_baseurl(self):
-        try:
-            page = Page.objects.sitepage(application = self.get_root_code())
-        except:
+        page = pagecache.get_for_application(self.get_root_code())
+        if page:
+            return page.url
+        else:
             return None
-        return page.url
     baseurl = property(__get_baseurl)
     
     def make_urls(self):
@@ -315,16 +315,6 @@ class ModelApplicationBase(ApplicationBase):
                                 layout = 'flat-notag',
                                 submit = submit(value = 'search', name = 'search'))
         return fhtml
-    
-    def get_page(self):
-        from djpcms.models import Page
-        if self.haspage:
-            pages = Page.object.get_for_model(self.model).filter(app_type = '')
-            if not pages:
-                raise valueError
-            return page[0]
-        else:
-            return None
         
     def make_urls(self):
         '''
@@ -534,22 +524,14 @@ class ModelApplicationBase(ApplicationBase):
         '''
         Retrive the parent view
         '''
-        from djpcms.models import Page
-        pview = app.parent
-        if not pview:
-            if self.parent_url:
-                # First check for application pages
-                pview = self.application_site.root_pages.get(self.parent_url,None)
-                if not pview:
-                    # No parent check for flat pages
-                    try:
-                        page  = Page.objects.get_flat_page(self.parent_url)
-                        pview = page.object()
-                    except:
-                        return None
-            else:
-                return None
-        return pview(djp.request, **djp.urlargs)
+        if not app.parent:
+            page = app.get_page()
+            if page:
+                page = page.parent
+                if page:
+                    app.parent = pagecache.view_from_page(djp.request, page)
+        if app.parent:
+            return app.parent(djp.request, **djp.urlargs)
 
 
 class ModelApplication(ModelApplicationBase):

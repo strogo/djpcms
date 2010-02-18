@@ -5,29 +5,7 @@ from django.http import Http404, HttpResponseRedirect
 from djpcms.settings import CONTENT_INLINE_EDITING
 from djpcms.views import appsite
 from djpcms.views.cache import pagecache
-from djpcms.views.response import DjpResponse
-from djpcms.views.baseview import pageview
-
-applications_url = None
-
-def build_app_urls(force = True):
-    global applications_url
-    if force or applications_url is None:
-        applications_url = appsite.site.urls
-    return applications_url
-
-
-def view_from_page(page):
-    if page.application:
-        build_app_urls(False)
-        view = appsite.site.getapp(page.application)
-        if not view:
-            raise Http404
-        view.set_page(page)
-    else:
-        view = pageview(page)
-    return view
-    
+from djpcms.views.response import DjpResponse 
 
 
 def djpcmsHandler(request, url):
@@ -42,12 +20,11 @@ def djpcmsHandler(request, url):
         return url, (), {}
     
     # First we check for static pages
-    page = pagecache.get_from_url(url)
-    if page:
-        view = view_from_page(page)
+    view = pagecache.view_from_url(request, url)
+    if view:
         return view, (), {}
     else:
-        resolver = urlresolvers.RegexURLResolver(r'^/', build_app_urls())
+        resolver = urlresolvers.RegexURLResolver(r'^/', pagecache.build_app_urls(request))
         try:
             return resolver.resolve(url)
         except:

@@ -12,6 +12,7 @@ from djpcms.utils.html import form, formlet, submit, htmlcomp
 from djpcms.forms import ContentBlockForm
 from djpcms.plugins import get_plugin, DJPwrapper
 from djpcms.views import appsite, appview
+from djpcms.views.cache import pagecache
 
 
 # Generator of content block in editing mode.
@@ -288,7 +289,7 @@ class ContentSite(appsite.ModelApplication):
         pageid      = int(pageid)
         blocknumber = int(blocknumber)
         position    = int(position)
-        page        = self.pagemodel.objects.get(pk = pageid)
+        page        = pagecache.get_from_id(pageid)
         blocks      = self.model.objects.filter(page = page)
         inner       = page.inner_template
         if inner:
