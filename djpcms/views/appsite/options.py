@@ -17,6 +17,7 @@ from djpcms.utils.forms import add_hidden_field
 from djpcms.plugins import register_application
 from djpcms.settings import HTML_CLASSES
 from djpcms.utils.html import formlet, submit, form
+from djpcms.models import Page
 
 from djpcms.views.baseview import editview
 from djpcms.views.appview import AppView
@@ -63,6 +64,17 @@ class ModelAppMetaClass(type):
 
 class ApplicationBase(object):
     
+    def get_root_code(self):
+        raise NotImplementedError
+    
+    def __get_baseurl(self):
+        try:
+            page = Page.objects.sitepage(application = self.get_root_code())
+        except:
+            return None
+        return page.url
+    baseurl = property(__get_baseurl)
+    
     def make_urls(self):
         '''
         Return a tuple of urls for the given application
@@ -82,8 +94,6 @@ class ModelApplicationBase(ApplicationBase):
     ajax             = HTML_CLASSES
     # Name for this application. Optional (the model name will be used if None)
     name             = None
-    # Base URL for the application including trailing slashes. Optional
-    baseurl          = '/'
     # Does require authenticated user?
     autheinticated   = True
     # Form used for adding/editing objects.
@@ -100,7 +110,6 @@ class ModelApplicationBase(ApplicationBase):
     search_form      = None
     date_code        = None
     search_form      = SearchForm
-    search_item_template = '''<div>{{ item }}</div>'''
     # Number of arguments to create an instance of model
     num_obj_args     = 1
     # True if applications can go into navigation
@@ -113,36 +122,38 @@ class ModelApplicationBase(ApplicationBase):
     search_fields    = None
     
     def __init__(self, model, application_site, editavailable):
-        self.model = model
-        self.opts  = model._meta
+        self.model            = model
+        self.opts             = model._meta
         self.root_application = None
         self.application_site = application_site
         self.editavailable    = editavailable
         self.name             = self.name or self.opts.module_name
-        if not self.baseurl:
-            raise ModelApplicationUrlError('Base url for application %s not defined' % model)
         self.applications     = deepcopy(self.base_applications)
         self.edits            = []
+        self.parent_url       = None
         
         # In case the application is root, register with the
         # application site
-        if self.baseurl == '/':
-            parent_url = None
-        else:
-            parent_url = '/'.join(self.baseurl[1:-1].split('/')[:-1])
-            if not parent_url:
-                parent_url = '/'
-            else:
-                parent_url = '/%s/' % parent_url
-        self.parent_url = parent_url
-        
-        parents = self.application_site.parent_pages
-        children = parents.get(self.parent_url,None)
-        if not children:
-            children = []
-            parents[self.parent_url] = children
-        children.append(self)
+        #if self.baseurl == '/':
+        #    parent_url = None
+        #else:
+        #    parent_url = '/'.join(self.baseurl[1:-1].split('/')[:-1])
+        #    if not parent_url:
+        #        parent_url = '/'
+        #    else:
+        #        parent_url = '/%s/' % parent_url
+        #self.parent_url = parent_url
+        # 
+        #parents = self.application_site.parent_pages
+        #children = parents.get(self.parent_url,None)
+        #if not children:
+        #    children = []
+        #    parents[self.parent_url] = children
+        #children.append(self)
         self.create_applications()
+        
+    def get_root_code(self):
+        return self.root_application.code
         
     def create_applications(self):
         '''
@@ -218,12 +229,6 @@ class ModelApplicationBase(ApplicationBase):
             return self.model.objects.get(id = id)
         except:
             return None
-        
-    def get_baseurl(self):
-        if self.baseurl:
-            return self.baseurl
-        else:
-            return '/%s/' % self.name
     
     def getapp(self, code):
         return self.applications.get(code, None)
@@ -323,32 +328,20 @@ class ModelApplicationBase(ApplicationBase):
         
     def make_urls(self):
         '''
-        Loop over children and create the django url view objects
+        Loop over applications to build the urls
         '''
-        from django.conf.urls.defaults import patterns, url
-        from djpcms.settings import CONTENT_INLINE_EDITING
-        #if self.editavailable:
-        #    edit = CONTENT_INLINE_EDITING.get('preurl','edit')
-        #else:
-        #    edit = None
-            
+        from django.conf.urls.defaults import url
+        baseurl = self.baseurl
+        if baseurl == None:
+            return None
         urls  = []
         # Loop over childre application to form the urls
-        for child in self.applications.values():
-            view_name  = self.get_view_name(child.name)
-            #nurl = url(regex = child.regex,
-            #           view  = child.response,
-            #           name  = view_name)
-            nurl = url(regex = child.regex,
-                       view  = child,
+        for app in self.applications.values():
+            view_name  = self.get_view_name(app.name)
+            app.baseurl = baseurl
+            nurl = url(regex = app.regex,
+                       view  = app,
                        name  = view_name)
-            #if edit and child.isapp:
-            #    eview = editview(child, edit)
-            #    self.edits.append(eview)
-            #    eurl = url(regex = child.edit_regex(edit),
-            #               view  = eview.response,
-            #               name  = '%s_%s' % (edit,view_name))
-            #    urls.append(eurl)
             urls.append(nurl)
                 
         return tuple(urls)

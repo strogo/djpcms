@@ -1,30 +1,128 @@
+/* TREE LAYOUT */
+.tree li,
+.tree ul {
+    display: block;
+    overflow: hidden;
+    padding: 0;
+    list-style-type: none;
+}
+.tree ul {
+	margin:0 0 0 5px;
+	padding:0 0 0 0;
+	list-style-type:none;
+}
+.tree li {
+	padding:0 0 0 15px;
+	margin:0 0 0 0; /* Background fix */
+	clear:both; }
+.tree li ul {
+	display:none;
+}
+/* OPEN OR CLOSE */
+.tree li.open ul { display:block; }
+.tree li.closed ul { display:none !important; }
+
+/*
+.tree li a, .tree li span {
+	display:inline-block;line-height:16px;height:16px;color:black;white-space:nowrap;text-decoration:none;padding:1px 4px 1px 4px;margin:0; } 
+.tree li a:focus { outline: none; }
+.tree li a input, .tree li span input { margin:0;padding:0 0;display:inline-block;height:12px !important;border:1px solid white;background:white;font-size:10px;font-family:Verdana; }
+.tree li a input:not([class="xxx"]), .tree li span input:not([class="xxx"]) { padding:1px 0; }
+*/
+/* FOR DOTS */
+/*
+.tree .ltr li.last { float:left; } .tree > ul li.last { overflow:visible; }
+*/
+/* FOR DRAGGING */
+#jstree-dragged { position:absolute; top:-10px; left:-10px; margin:0; padding:0; }
+#jstree-dragged ul ul ul { display:none; }
+#jstree-marker { padding:0; margin:0; line-height:5px; font-size:1px; overflow:hidden; height:5px; position:absolute; left:-45px; top:-30px; z-index:1000; background-color:transparent; background-repeat:no-repeat; display:none; }
+#jstree-marker.marker { width:45px; background-position:-32px top; }
+#jstree-marker.marker_plus { width:5px; background-position:right top; }
+/* BACKGROUND DOTS */
+/*
+.tree li li { overflow:hidden; } .tree > .ltr > li { display:table; }
+*/
+/* ICONS */
+/*
+.tree ul ins { display:inline-block; text-decoration:none; width:16px; height:16px; } .tree .ltr ins { margin:0 4px 0 0px; } 
+*/
+.tree ul.header {
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	clear: both;
+}
+.tree li div.line {
+	overflow: hidden;
+	display: block;
+}
+.tree div.coltitle {
+    float: left;
+}
+.tree div.colsdata {
+	float: right;
+	display: inline;
+}
+.tree li a {
+    display: block;
+    height: 18px;
+    line-height: 18px;
+}
+.tree div.tcolumn {
+	float: left;
+	display: block;
+	text-align: center;
+	overflow: hidden;
+	padding:0 5px 0 0;
+	height: 18px;
+    line-height: 18px;
+}
+
+.tree ul.header li {
+    background:#E1E1E1;
+    border:1px solid #DDDDDD;
+    color:#666666;
+    font-size:11px;
+    font-weight:bold;
+}
+
+.tree li div.hover {
+    background: #e7f4f9;
+}
+
 /* LOCKED */
-.tree-default .locked li a { color:gray; }
+.tree .locked li a { color:gray; }
 /* DOTS */
-.tree-default ul { background-position:6px 1px; background-repeat:repeat-y; background-image:url(data:image/gif;base64,R0lGODlhAgACAIAAAB4dGf///yH5BAEAAAEALAAAAAACAAIAAAICRF4AOw==); _background-image:url("dot_for_ie.gif"); *background-image:url("dot_for_ie.gif"); }
-.tree-default li { background-position:-64px -16px; background-repeat:no-repeat; background-image:url("icons.png"); }
+.tree ul { background-position:6px 1px; background-repeat:repeat-y; background-image:url(data:image/gif;base64,R0lGODlhAgACAIAAAB4dGf///yH5BAEAAAEALAAAAAACAAIAAAICRF4AOw==); _background-image:url("dot_for_ie.gif"); *background-image:url("dot_for_ie.gif"); }
+.tree li { background-position:-64px -16px; background-repeat:no-repeat; background-image:url("icons.png"); }
 /* NO DOTS */
-.tree-default .no_dots, .tree-default .no_dots ul { background:transparent; }
-.tree-default .no_dots li.leaf { background-image:none; background-color:transparent; }
+.tree .no_dots, .tree .no_dots ul { background:transparent; }
+.tree .no_dots li.leaf { background-image:none; background-color:transparent; }
 /* OPEN or CLOSED */
-.tree-default li.open { background:url("icons.png") -32px -48px no-repeat; }
-.tree-default li.closed, #jstree-dragged.tree-default li li.open { background:url("icons.png") -48px -32px no-repeat; }
+.tree li.open { background:url("icons.png") -32px -48px no-repeat; }
+.tree li.closed, #jstree-dragged.tree li li.open { background:url("icons.png") -48px -32px no-repeat; }
 #jstree-marker { background-image:url("icons.png"); }
 /* DEFAULT, HOVER, CLICKED, LOADING STATES */
-.tree-default li a, .tree-default li span { border-radius:3px; -moz-border-radius:3px; -webkit-border-radius:3px; }
-.tree-default li a:hover, .tree-default li a.hover, .tree-default li span { background: #e7f4f9; border:1px solid #d8f0fa; padding:0px 3px 0px 3px; }
-.tree-default li a.clicked, .tree-default li a.clicked:hover, .tree-default li span.clicked { background: #beebff; border:1px solid #99defd; padding:0px 3px 0px 3px; }
+.tree li a.clicked, .tree li a.clicked:hover, .tree li span.clicked { background: #beebff; border:1px solid #99defd; padding:0px 3px 0px 3px; }
 /* ICONS */
-.tree-default ins { background-image:url("icons.png"); background-position:0 0; background-repeat:no-repeat; }
-.tree-default ul li a.loading ins { background-image:url("throbber.gif") !important; background-position:0 0 !important; } /* UL is added to make selector stronger */
-.tree-default li a ins.forbidden { background-position:-16px -16px; }
-.tree-default .locked li a ins { background-position:0 -48px; }
-.tree-default li span ins { background-position:-16px 0; }
-#jstree-dragged.tree-default ins { background:url("icons.png") -16px -32px no-repeat; }
-#jstree-dragged.tree-default ins.forbidden { background:url("icons.png") -16px -16px no-repeat; }
+.tree ins {
+	margin: 0 4px 0 0;
+    display:inline-block;
+    width: 16px;
+	background-image:url("icons.png");
+	background-position:0 0;
+	background-repeat:no-repeat;
+}
+.tree ul li a.loading ins { background-image:url("throbber.gif") !important; background-position:0 0 !important; } /* UL is added to make selector stronger */
+.tree li a ins.forbidden { background-position:-16px -16px; }
+.tree .locked li a ins { background-position:0 -48px; }
+.tree li span ins { background-position:-16px 0; }
+#jstree-dragged.tree ins { background:url("icons.png") -16px -32px no-repeat !important; }
+#jstree-dragged.tree ins.forbidden { background:url("icons.png") -16px -16px no-repeat !important; }
 
 /* CONTEXT MENU */
-.tree-default-context a ins { background-image:url("icons.png"); background-repeat:no-repeat; background-position:-64px -64px; }
-.tree-default-context a ins.create { background-position:0 -16px; }
-.tree-default-context a ins.rename { background-position:-16px 0px; }
-.tree-default-context a ins.remove { background-position:0 -32px; }
+.tree-context a ins { background-image:url("icons.png"); background-repeat:no-repeat; background-position:-64px -64px; }
+.tree-context a ins.create { background-position:0 -16px; }
+.tree-context a ins.rename { background-position:-16px 0px; }
+.tree-context a ins.remove { background-position:0 -32px; }

@@ -293,6 +293,64 @@ class djpcmsview(UnicodeObject):
         return djp.url
 
 
+class pageview(djpcmsview):
+    
+    def __init__(self, page):
+        self.page    = page
+        self.editurl = None  
+
+    def __unicode__(self):
+        return self.page.url
+    
+    def get_url(self, djp, **urlargs):
+        return self.page.url
+    
+    def get_page(self):
+        return self.page
+    
+    def has_permission(self, request = None, obj = None):
+        if self.page.requires_login:
+            if request:
+                return request.user.is_authenticated()
+            else:
+                return False
+        else:
+            return True
+        
+    def children(self, request, **kwargs):
+        views = []
+        page      = self.get_page()
+        pchildren = page.get_children()
+        
+        # First check static childrens
+        for child in pchildren:
+            try:
+                cview = child.object()
+            except Exception, e:
+                continue
+            if cview.has_permission(request):
+                djp = cview(request, **kwargs)
+                nav = djp.in_navigation()
+                if nav:
+                    views.append(djp)
+        #
+        # Now check for application children
+        appchildren = appsite.site.parent_pages.get(self.page.url,None)
+        
+        if appchildren:
+            for app in appchildren:
+                rootview = app.root_application
+                if rootview and rootview.has_permission(request): 
+                    djp = rootview(request, **kwargs)
+                    nav = djp.in_navigation()
+                    if nav:
+                        views.append(djp)
+        
+        return self.sortviewlist(views)
+        
+    
+
+
 class wrapview(djpcmsview):
     '''
     Create a view object that wrap another view object  

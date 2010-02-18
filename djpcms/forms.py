@@ -128,6 +128,7 @@ class PageForm(forms.ModelForm):
                 raise forms.ValidationError('Code must be specified')
             return code
         
+    @lazyattr
     def clean_site(self):
         '''
         Check for site.
@@ -159,7 +160,7 @@ class PageForm(forms.ModelForm):
             parent = self.get_parent()
             if not parent:
                 # No parent specified. Let's check that a root is not available
-                root = Page.objects.root()
+                root = Page.objects.root(self.clean_site())
                 if root and root != self.instance:
                     raise forms.ValidationError('Page root already avaiable')
         return app

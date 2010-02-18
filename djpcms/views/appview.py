@@ -44,14 +44,17 @@ class AppView(djpcmsview):
         self.parent   = parent
         self.name     = name
         self._regex   = ''
+        self._purl    = ''
         self.isapp    = isapp
         self.isplugin = isplugin
         self.func     = None
         self.appmodel = None
         self.code     = None
         self.editurl  = None
+        self.baseurl  = None
         self.splitregex = splitregex
         self.in_nav   = in_navigation
+        self.__page   = None
         if template_name:
             self.template_name = template_name
         # Increase the creation counter, and save our local copy.
@@ -62,8 +65,12 @@ class AppView(djpcmsview):
         return u'%s: %s' % (self.name,self.regex)
     
     def __get_regex(self):
-        return '^%s$' % self._regex
+        return '^%s%s$' % (self.baseurl[1:],self._regex)
     regex = property(fget = __get_regex)
+    
+    def __get_purl(self):
+        return '%s%s' % (self.baseurl,self._regex)
+    purl = property(__get_purl)
     
     def __get_model(self):
         return self.appmodel.model
@@ -102,12 +109,12 @@ class AppView(djpcmsview):
         self.ajax     = appmodel.ajax
         if self.parent:
             baseurl = self.parent._regex
-            purl    = self.parent.purl
+            purl    = self.parent._purl
             nargs   = self.parent.num_args
             targs   = self.parent.tot_args
         else:
-            baseurl = self.appmodel.baseurl[1:]
-            purl    = self.appmodel.baseurl
+            baseurl = ''
+            purl    = baseurl
             nargs   = 0
             targs   = 0
         
@@ -140,7 +147,7 @@ class AppView(djpcmsview):
             self._regex = baseurl
         
         self.breadcrumbs = breadcrumbs
-        self.purl     = purl
+        self._purl    = purl
         self.num_args = nargs
         self.tot_args = targs
         
@@ -152,9 +159,10 @@ class AppView(djpcmsview):
         get application url
         '''
         if kwargs:
-            return iri_to_uri(self.purl % kwargs)
+            pu = iri_to_uri(self._purl % kwargs)
         else:
-            return self.purl
+            pu = self._purl
+        return '%s%s' % (self.baseurl,pu)
     
     def parentresponse(self, djp):
         '''
@@ -162,13 +170,19 @@ class AppView(djpcmsview):
         '''
         return self.appmodel.parentresponse(djp, self)
     
+    def set_page(self, page):
+        self.__page = page
+    
     def get_page(self):
-        if self.code:
-            try:
-                return Page.objects.get_for_application(self.code)
-            except:
-                if self.parent:
-                    return self.parent.get_page()
+        if self.__page:
+            return self.__page
+        else:
+            if self.code:
+                try:
+                    return Page.objects.sitepage(application = self.code)
+                except:
+                    if self.parent:
+                        return self.parent.get_page()
     
     def basequery(self, request, **kwargs):
         '''

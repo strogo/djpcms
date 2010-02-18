@@ -169,7 +169,7 @@ class Page(TimeStamp):
         verbose_name_plural = "Sitemap"
 
     def __unicode__(self):
-        return u'%s' % self.url
+        return u'%s%s' % (self.site.domain,self.url)
     
     def save(self, **kwargs):
         self.url   = self.get_absolute_url()
@@ -190,26 +190,6 @@ class Page(TimeStamp):
                 return settings.DEFAULT_TEMPLATE_NAME
         else:
             return self.template
-    
-    def module(self):
-        '''
-        Same pattern as for get_template
-        '''
-        if not self.code_object:
-            if self.parent:
-                return self.parent.module()
-            else:
-                return settings.DEFAULT_VIEW_MODULE
-        else:
-            return self.code_object
-        
-    def object(self):
-        '''
-        Load a view class and create the view instance
-        '''
-        code_obj = self.module()
-        view = function_module(code_obj)
-        return view(self)
     
     def get_parent(self):
         '''
@@ -262,12 +242,12 @@ class Page(TimeStamp):
         if self.application:
             from djpcms.views import appsite
             app = appsite.site.getapp(self.application)
-            if app.purl:
-                self.url_pattern = app.purl[1:-1]
-        url = u'/%s' % '/'.join([page.url_pattern for page in self.get_path() if page.parent])
-        if not url.endswith('/'):
-            url += '/'
-        return url
+            return app.purl
+        else:
+            url = u'/%s' % '/'.join([page.url_pattern for page in self.get_path() if page.parent])
+            if not url.endswith('/'):
+                url += '/'
+            return url
 
     def get_absolute_url(self):
         try:

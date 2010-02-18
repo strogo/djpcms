@@ -25,8 +25,7 @@ class InnerTemplateAdmin(admin.ModelAdmin):
     list_display = ('name','numblocks','blocks','image')
 
 class PageAdmin(admin.ModelAdmin):
-    list_display        = ('application','in_navigation','parent',
-                           'link','redirect_to','requires_login','inner_template', 'cssinfo',
+    list_display        = ('url','application','in_navigation','link','redirect_to','requires_login','inner_template', 'cssinfo',
                            'is_published','get_template')
     inlines             = [AdditionalPageDataInline]
     save_on_top         = True

@@ -1,14 +1,5 @@
 /*
- * jsTree 0.9.9a
- * http://jstree.com/
- *
- * Copyright (c) 2009 Ivan Bozhanov (vakata.com)
- *
- * Dual licensed under the MIT and GPL licenses:
- *   http://www.opensource.org/licenses/mit-license.php
- *   http://www.gnu.org/licenses/gpl.html
- *
- * Date: 2009-10-06
+ * colTree
  *
  */
 
@@ -17,6 +8,7 @@
 	$.tree = {
 		datastores	: { },
 		plugins		: { },
+		
 		defaults	: {
 			data	: {
 				async	: false,		// Are async requests used to load open_branch contents
@@ -26,6 +18,7 @@
 			selected	: false,		// FALSE or STRING or ARRAY
 			opened		: [],			// ARRAY OF INITIALLY OPENED NODES
 			languages	: [],			// ARRAY of string values (which will be used as CSS classes - so they must be valid)
+			path		: false,		// FALSE or STRING (if false - will be autodetected)
 			ui		: {
 				dots		: true,		// BOOL - dots or no dots
 				animation	: 0,		// INT - duration of open/close animations in miliseconds
@@ -42,6 +35,7 @@
 					deletable	: true, // can be function
 					creatable	: true, // can be function
 					draggable	: true, // can be function
+					hoverable	: true,
 					max_children	: -1, // -1 - not set, 0 - no children, 1 - one child, etc // can be function
 					max_depth		: -1, // -1 - not set, 0 - no children, 1 - one level of children, etc // can be function
 					valid_children	: "all", // all, none, array of values // can be function
@@ -191,6 +185,20 @@
 				tree_component.inst[this.container.attr("id")] = tree_component.inst[this.cntr];
 				tree_component.focused = this.cntr;
 				this.settings = $.extend(true, {}, this.settings, conf);
+				
+				// PATH TO IMAGES AND XSL
+				if(this.settings.path == false) {
+					_this.path = "";
+					$("script").each( function () { 
+						if(!_this.path && this.src.toString().match(/jquery.tree.*?js$/)) {
+							_this.path = this.src.toString().replace(/jquery.tree.*?js$/, "");
+						}
+					});
+					this.path = _this.path;
+				}
+				else {
+					this.path = this.settings.path;
+				}
 
 				// DEAL WITH LANGUAGE VERSIONS
 				if(this.settings.languages && this.settings.languages.length) {
@@ -203,41 +211,66 @@
 					}
 				}
 				else this.current_lang = false;
+				
 				// THEMES
+				var ui = this.settings.ui;
+				if(ui.theme_name) {
+					if(ui.theme_path === false) ui.theme_path = this.path + "themes/";
+					this.theme = ui.theme_path + this.settings.ui.theme_name + "/";
+					this.add_sheet({url: ui.theme_path + "default/style.css"});
+					if(ui.theme_name != "default") this.add_sheet({url: this.theme + "style.css"});
+				}
+				else {
+					ui.theme = false;
+				}
 				this.container.addClass("tree");
-				if(this.settings.ui.theme_name !== false) {
-					if(this.settings.ui.theme_path === false) {
-						$("script").each(function () { 
-							if(this.src.toString().match(/jquery\.tree.*?js$/)) { _this.settings.ui.theme_path = this.src.toString().replace(/jquery\.tree.*?js$/, "") + "themes/" + _this.settings.ui.theme_name + "/style.css"; return false; }
-						});
-					}
-					if(this.settings.ui.theme_path != "" && $.inArray(this.settings.ui.theme_path, tree_component.themes) == -1) {
-						tree_component.add_sheet({ url : this.settings.ui.theme_path });
-						tree_component.themes.push(this.settings.ui.theme_path);
-					}
-					this.container.addClass("tree-" + this.settings.ui.theme_name);
-				}
-				// TYPE ICONS
-				var type_icons = "";
-				for(var t in this.settings.types) {
-					if(!this.settings.types.hasOwnProperty(t)) continue;
-					if(!this.settings.types[t].icon) continue;
-					if( this.settings.types[t].icon.image || this.settings.types[t].icon.position) {
-						if(t == "default")  type_icons += "#" + this.container.attr("id") + " li > a ins { ";
-						else type_icons += "#" + this.container.attr("id") + " li[rel=" + t + "] > a ins { ";
-						if(this.settings.types[t].icon.image) type_icons += " background-image:url(" + this.settings.types[t].icon.image + "); ";
-						if(this.settings.types[t].icon.position) type_icons += " background-position:" + this.settings.types[t].icon.position + "; ";
-						type_icons += "} ";
-					}
-				}
-				if(type_icons != "") tree_component.add_sheet({ str : type_icons });
-
+				if(ui.rtl) this.container.addClass("rtl");
 				if(this.settings.rules.multiple) this.selected_arr = [];
+				this.offset = false;
+				if(ui.dots == false) this.container.addClass("no_dots");
+				
 				this.offset = false;
 				this.hovered = false;
 				this.locked = false;
+				this.context = false;
+				
+				// CONTEXT MENU
+				if(ui.context != false) {
+					var str = '<div class="context">';
+					for(i in this.settings.ui.context) {
+						if(this.settings.ui.context[i] == "separator") {
+							str += "<span class='separator'>&nbsp;</span>";
+							continue;
+						}
+						var icn = "";
+						if(this.settings.ui.context[i].icon) icn = 'background-image:url(\'' + ( this.settings.ui.context[i].icon.indexOf("/") == -1 ? this.theme + this.settings.ui.context[i].icon : this.settings.ui.context[i].icon ) + '\');';
+						str += '<a rel="' + this.settings.ui.context[i].id + '" href="#" style="' + icn + '">' + this.settings.ui.context[i].label + '</a>';
+					}
+					str += '</div>';
+					this.context = jQuery(str);
+					this.context.hide();
+					this.context.append = false;
+				}
 
-				if(tree_component.drag_drop.marker === false) tree_component.drag_drop.marker = $("<div>").attr({ id : "jstree-marker" }).hide().appendTo("body");
+				// CREATE DUMMY FOR MOVING
+				if(this.settings.rules.draggable != "none" && this.settings.rules.dragrules != "none") {
+					var _this = this;
+					$("<img>")
+						.attr({
+							id  : "marker", 
+							src	: ui.theme_path + "default/marker.gif"
+						})
+						.css({
+							height		: "8px",
+							width		: "42px",
+							display		: "block",
+							position	: "absolute",
+							left		: "30px",
+							top			: "30px",
+							zIndex		: "1000"
+						}).hide().appendTo("body");
+				}
+				
 				this.callback("oninit", [this]);
 				this.refresh();
 				this.attach_events();
@@ -1799,18 +1832,6 @@
 			}
 		}
 	};
-	$(function () {
-		var u = navigator.userAgent.toLowerCase();
-		var v = (u.match( /.+(?:rv|it|ra|ie)[\/: ]([\d.]+)/ ) || [0,'0'])[1];
-		var css = '/* TREE LAYOUT */ .tree ul { margin:0 0 0 5px; padding:0 0 0 0; list-style-type:none; } .tree li { display:block; min-height:18px; line-height:18px; padding:0 0 0 15px; margin:0 0 0 0; /* Background fix */ clear:both; } .tree li ul { display:none; } .tree li a, .tree li span { display:inline-block;line-height:16px;height:16px;color:black;white-space:nowrap;text-decoration:none;padding:1px 4px 1px 4px;margin:0; } .tree li a:focus { outline: none; } .tree li a input, .tree li span input { margin:0;padding:0 0;display:inline-block;height:12px !important;border:1px solid white;background:white;font-size:10px;font-family:Verdana; } .tree li a input:not([class="xxx"]), .tree li span input:not([class="xxx"]) { padding:1px 0; } /* FOR DOTS */ .tree .ltr li.last { float:left; } .tree > ul li.last { overflow:visible; } /* OPEN OR CLOSE */ .tree li.open ul { display:block; } .tree li.closed ul { display:none !important; } /* FOR DRAGGING */ #jstree-dragged { position:absolute; top:-10px; left:-10px; margin:0; padding:0; } #jstree-dragged ul ul ul { display:none; } #jstree-marker { padding:0; margin:0; line-height:5px; font-size:1px; overflow:hidden; height:5px; position:absolute; left:-45px; top:-30px; z-index:1000; background-color:transparent; background-repeat:no-repeat; display:none; } #jstree-marker.marker { width:45px; background-position:-32px top; } #jstree-marker.marker_plus { width:5px; background-position:right top; } /* BACKGROUND DOTS */ .tree li li { overflow:hidden; } .tree > .ltr > li { display:table; } /* ICONS */ .tree ul ins { display:inline-block; text-decoration:none; width:16px; height:16px; } .tree .ltr ins { margin:0 4px 0 0px; } ';
-		if(/msie/.test(u) && !/opera/.test(u)) { 
-			if(parseInt(v) == 6) css += '.tree li { height:18px; zoom:1; } .tree li li { overflow:visible; } .tree .ltr li.last { margin-top: expression( (this.previousSibling && /open/.test(this.previousSibling.className) ) ? "-2px" : "0"); } .marker { width:45px; background-position:-32px top; } .marker_plus { width:5px; background-position:right top; }';
-			if(parseInt(v) == 7) css += '.tree li li { overflow:visible; } .tree .ltr li.last { margin-top: expression( (this.previousSibling && /open/.test(this.previousSibling.className) ) ? "-2px" : "0"); }';
-		}
-		if(/opera/.test(u)) css += '.tree > ul > li.last:after { content:"."; display: block; height:1px; clear:both; visibility:hidden; }';
-		if(/mozilla/.test(u) && !/(compatible|webkit)/.test(u) && v.indexOf("1.8") == 0) css += '.tree .ltr li a { display:inline; float:left; } .tree li ul { clear:both; }';
-		tree_component.css = tree_component.add_sheet({ str : css });
-	});
 })(jQuery);
 
 // Datastores

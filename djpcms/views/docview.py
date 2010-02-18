@@ -18,22 +18,23 @@ from djpcms.views.appsite import ApplicationBase
 class DocView(djpcmsview, ApplicationBase):
     # Name the documents
     name             = None
-    baseurl          = 'ksdjnbcksdncds'
     deflang          = 'en'
     DOCS_PICKLE_ROOT = None
     editurl          = None
+    
+    def get_root_code(self):
+        return self.name
     
     def make_urls(self):
         '''
         Create a tuple of urls
         '''
         from django.conf.urls.defaults import url
-        try:
-            page = Page.objects.get(application = self.name)
-        except:
+        baseurl = self.baseurl
+        if baseurl == None:
             return None
         self.doc_index = '%s_doc_index' % self.name
-        b = page.url[1:]
+        b = baseurl[1:]
         return (url(r'^%s$' % b, self.index),
                 url(r'^%s(?P<lang>[a-z-]+)/$' % b, self.language),
                 url(r'^%s(?P<lang>[a-z-]+)/(?P<version>[\w.-]+)/$' % b,
@@ -44,7 +45,6 @@ class DocView(djpcmsview, ApplicationBase):
                     self.document,
                     name = '%s_doc_details' % self.name),
                 )
-    urls = property(fget = make_urls)
     
     def get_path_args(self, lang, version):
         return (lang, version, "_build", "json")

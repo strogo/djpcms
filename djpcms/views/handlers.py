@@ -1,13 +1,12 @@
 import re
 
 from django.http import Http404, HttpResponseRedirect
-from django.core.cache import cache
-from django.core.exceptions import ObjectDoesNotExist
 
 from djpcms.settings import CONTENT_INLINE_EDITING
-from djpcms.models import Page
 from djpcms.views import appsite
+from djpcms.views.cache import pagecache
 from djpcms.views.response import DjpResponse
+from djpcms.views.baseview import pageview 
 
 
 def djpcmsHandler(request, url):
@@ -22,10 +21,17 @@ def djpcmsHandler(request, url):
         return url, (), {}
     
     # First we check for static pages
-    try:
-        page = Page.objects.get_flat_page(url)
-        return page.object(),(),{}
-    except ObjectDoesNotExist:
+    page = pagecache.get_from_url(url)
+    if page:
+        if page.application:
+            view = appsite.site.getapp(page.application)
+            if not view:
+                raise Http404
+            view.set_page(page)
+        else:
+            view = pageview(page)
+        return view, (), {}
+    else:
         applications_url = appsite.site.urls
         resolver = urlresolvers.RegexURLResolver(r'^/', applications_url)
         try:
