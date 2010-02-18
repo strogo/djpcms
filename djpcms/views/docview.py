@@ -9,7 +9,6 @@ from django.utils.safestring import mark_safe
 
 from unipath import FSPath as Path
 
-from djpcms.models import Page
 from djpcms.views.baseview import djpcmsview
 from djpcms.views.appsite import ApplicationBase
 

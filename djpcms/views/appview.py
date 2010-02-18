@@ -191,7 +191,7 @@ class AppView(djpcmsview):
         If this is the root view (no parents) it returns the default
         basequery
         '''
-        if self.parent:
+        if self.parent and self.parent.model == self.model:
             return self.parent.appquery(request)
         else:
             return self.appmodel.basequery(request)
