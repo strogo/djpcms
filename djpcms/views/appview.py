@@ -13,12 +13,13 @@ from django.utils.dateformat import format
 from django.utils.encoding import iri_to_uri
 from django.utils.text import smart_split
 
-from djpcms.models import Page
 from djpcms.utils.html import Paginator
-from djpcms.views.baseview import djpcmsview
 from djpcms.utils.func import force_number_insert
 from djpcms.utils.ajax import jremove, dialog, jredirect
 from djpcms.utils import form_kwargs
+
+from djpcms.views.cache import pagecache
+from djpcms.views.baseview import djpcmsview
 
 
 class AppView(djpcmsview):
@@ -177,12 +178,11 @@ class AppView(djpcmsview):
         if self.__page:
             return self.__page
         else:
-            if self.code:
-                try:
-                    return Page.objects.sitepage(application = self.code)
-                except:
-                    if self.parent:
-                        return self.parent.get_page()
+            try:
+                return pagecache.get_for_application(application = self.code)
+            except:
+                if self.parent:
+                    return self.parent.get_page()
     
     def basequery(self, request, **kwargs):
         '''
@@ -213,32 +213,6 @@ class AppView(djpcmsview):
         By default it renders the search application
         '''
         pass
-    
-    def children(self, request, instance = None, **kwargs):
-        views = []
-        appmodel = self.appmodel
-        djpr  = None
-        for view in appmodel.applications.values():
-            if view is self or not view.has_permission(request, instance):
-                continue
-            djp = view(request, **kwargs)
-            nav = djp.in_navigation()
-            if nav:
-                views.append(djp)
-                
-        if not self.parent:
-            sitereg = appmodel.application_site._registry
-            for app in sitereg.values():
-                if app is appmodel:
-                    continue
-                base = app.root_application
-                if base and not base.tot_args and app.parent_url == self.purl and base.has_permission(request):
-                    djp = base(request, **kwargs)
-                    nav = djp.in_navigation()
-                    if nav:
-                        views.append(djp)
-                    
-        return self.sortviewlist(views)
     
     def get_prefix(self, djp):
         return None

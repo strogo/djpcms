@@ -4,7 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.template import RequestContext, loader
 
 from djpcms.settings import HTML_CLASSES, CONTENT_INLINE_EDITING
-from djpcms.models import BlockContent, Page
+from djpcms.models import BlockContent
 from djpcms.utils import form_kwargs
 from djpcms.utils.func import isforminstance
 from djpcms.utils.ajax import jhtmls, jremove, dialog, jempty
@@ -245,7 +245,6 @@ class EditPluginView(appview.EditView):
 
 class ContentSite(appsite.ModelApplication):
     baseurl     = CONTENT_INLINE_EDITING.get('pagecontent', '/content/')
-    pagemodel   = Page
     form        = ContentBlockForm
     form_layout = 'onecolumn'
     

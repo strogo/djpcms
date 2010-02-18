@@ -18,6 +18,8 @@ from djpcms.utils.ajax import jservererror, jredirect
 from djpcms.utils.html import grid960
 from djpcms.permissions import inline_editing
 from djpcms.utils import UnicodeObject, urlbits, urlfrombits, function_module
+
+from djpcms.views.cache import pagecache
 from djpcms.views.response import DjpResponse
 from djpcms.views.contentgenerator import BlockContentGen
 
@@ -264,9 +266,6 @@ class djpcmsview(UnicodeObject):
         else:
             return 0
     
-    def children(self, request, **kwargs):
-        return None
-    
     def bodybits(self, page):
         b = u''
         if self.editurl:
@@ -291,6 +290,28 @@ class djpcmsview(UnicodeObject):
     
     def defaultredirect(self, djp):
         return djp.url
+    
+    def children(self, request, **kwargs):
+        from djpcms.views.handlers import view_from_page
+        views = []
+        page      = self.get_page()
+        if not page:
+            return views
+        
+        pchildren = pagecache.get_children(page)
+        
+        # First check static childrens
+        for child in pchildren:
+            try:
+                cview = view_from_page(child)
+            except Exception, e:
+                continue
+            if cview.has_permission(request):
+                djp = cview(request, **kwargs)
+                nav = djp.in_navigation()
+                if nav:
+                    views.append(djp)
+        return self.sortviewlist(views)
 
 
 class pageview(djpcmsview):
@@ -315,40 +336,7 @@ class pageview(djpcmsview):
             else:
                 return False
         else:
-            return True
-        
-    def children(self, request, **kwargs):
-        views = []
-        page      = self.get_page()
-        pchildren = page.get_children()
-        
-        # First check static childrens
-        for child in pchildren:
-            try:
-                cview = child.object()
-            except Exception, e:
-                continue
-            if cview.has_permission(request):
-                djp = cview(request, **kwargs)
-                nav = djp.in_navigation()
-                if nav:
-                    views.append(djp)
-        #
-        # Now check for application children
-        appchildren = appsite.site.parent_pages.get(self.page.url,None)
-        
-        if appchildren:
-            for app in appchildren:
-                rootview = app.root_application
-                if rootview and rootview.has_permission(request): 
-                    djp = rootview(request, **kwargs)
-                    nav = djp.in_navigation()
-                    if nav:
-                        views.append(djp)
-        
-        return self.sortviewlist(views)
-        
-    
+            return True    
 
 
 class wrapview(djpcmsview):

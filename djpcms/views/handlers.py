@@ -6,7 +6,28 @@ from djpcms.settings import CONTENT_INLINE_EDITING
 from djpcms.views import appsite
 from djpcms.views.cache import pagecache
 from djpcms.views.response import DjpResponse
-from djpcms.views.baseview import pageview 
+from djpcms.views.baseview import pageview
+
+applications_url = None
+
+def build_app_urls(force = True):
+    global applications_url
+    if force or applications_url is None:
+        applications_url = appsite.site.urls
+    return applications_url
+
+
+def view_from_page(page):
+    if page.application:
+        build_app_urls(False)
+        view = appsite.site.getapp(page.application)
+        if not view:
+            raise Http404
+        view.set_page(page)
+    else:
+        view = pageview(page)
+    return view
+    
 
 
 def djpcmsHandler(request, url):
@@ -23,17 +44,10 @@ def djpcmsHandler(request, url):
     # First we check for static pages
     page = pagecache.get_from_url(url)
     if page:
-        if page.application:
-            view = appsite.site.getapp(page.application)
-            if not view:
-                raise Http404
-            view.set_page(page)
-        else:
-            view = pageview(page)
+        view = view_from_page(page)
         return view, (), {}
     else:
-        applications_url = appsite.site.urls
-        resolver = urlresolvers.RegexURLResolver(r'^/', applications_url)
+        resolver = urlresolvers.RegexURLResolver(r'^/', build_app_urls())
         try:
             return resolver.resolve(url)
         except:
