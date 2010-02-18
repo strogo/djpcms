@@ -232,6 +232,8 @@ class Page(TimeStamp):
                         self.parent = pages[0]
                     else:
                         raise ValueError('Parent page not defined %s' % app.code)
+                    url = app._purl
+                    self.url_pattern = url[:-1]
             else:
                 url = self.url_pattern
             
