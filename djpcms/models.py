@@ -172,10 +172,10 @@ class Page(TimeStamp):
         return u'%s%s' % (self.site.domain,self.url)
     
     def save(self, **kwargs):
-        self.url   = self.get_absolute_url()
+        self.url   = self.calculate_url()
+        if self.url is None:
+            return
         self.level = self.get_level()
-        if self.application:
-            self.parent = self.get_parent()
         super(Page,self).save(**kwargs)
         
     def get_template(self):
@@ -190,23 +190,6 @@ class Page(TimeStamp):
                 return settings.DEFAULT_TEMPLATE_NAME
         else:
             return self.template
-    
-    def get_parent(self):
-        '''
-        For application parent is calculated here
-        '''
-        from djpcms.views import appsite
-        app = appsite.site.getapp(self.application)
-        # Application has a parent
-        if app.parent:
-            purl = app.parent.purl
-            parents = Page.objects.filter(url = purl, site = self.site)
-            if parents:
-                return parents[0]
-            else:
-                return self.parent
-        else:
-            return self.parent
 
     @lazyattr
     def get_parent_path(self):
@@ -238,25 +221,44 @@ class Page(TimeStamp):
         else:
             return v
         
-    def unsafe_url(self):
-        if self.application:
-            from djpcms.views import appsite
-            app = appsite.site.getapp(self.application)
-            return app.purl
-        else:
-            url = u'/%s' % '/'.join([page.url_pattern for page in self.get_path() if page.parent])
+    def calculate_url(self):
+        try:
+            if self.application:
+                from djpcms.views import appsite
+                app = appsite.site.getapp(self.application)
+                if app.isroot():
+                    if not self.parent:
+                        self.url_pattern = ''
+                        return '/'
+                    url = self.url_pattern
+                    if not url:
+                        url = app._purl
+                    elif app._purl:
+                        url = '%s/%s' % url, app._purl
+                    if not url:
+                        raise ValueError('No url available in %s' % app.code)
+                else:
+                    p = app.parent
+                    pages = Page.objects.filter(application = p.code, site = self.site)
+                    if pages:
+                        self.parent = pages[0]
+                    else:
+                        raise ValueError('Parent page not defined %s' % app.code)
+            else:
+                url = self.url_pattern
+            
+            if self.parent:
+                url = '%s%s' % (self.parent.url,url)
             if not url.endswith('/'):
                 url += '/'
+            if not url.startswith('/'):
+                url = '/%s' % url
             return url
+        except:
+            return None
 
-    def get_absolute_url(self):
-        try:
-            return self.unsafe_url()
-        except Exception, e:
-            return 'ERROR'
-
-    def get_children(self):
-        return Page.objects.filter(parent=self, in_navigation__gt = 0).order_by('in_navigation')
+    #def get_children(self):
+    #    return Page.objects.filter(parent=self)
     
     def get_next_position(self):
         children = Page.objects.filter(parent=self).order_by('-position')

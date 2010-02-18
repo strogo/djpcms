@@ -1,11 +1,11 @@
 from django import forms, template, http
 from django.forms.forms import pretty_name
 from django.contrib import admin
-from django.contrib.admin.util import lookup_field, display_for_field, label_for_field
 from django.contrib.sites.models import Site
 from django.shortcuts import get_object_or_404, render_to_response
 from django.views.decorators.csrf import csrf_protect
 from django.utils.encoding import force_unicode
+#from django.contrib.admin.util import display_for_field, label_for_field
 
 from djpcms import models
 from djpcms.forms import PageForm
@@ -58,7 +58,8 @@ class PageAdmin(admin.ModelAdmin):
             ctx = {}        
         data = [{'title': url}]
         for field_name in self.list_display[1:]:
-            header = label_for_field(field_name, cl.model, model_admin = cl.model_admin, return_attr = False)
+            header = cl.lookup_opts.get_field(field_name)
+            #header = label_for_field(field_name, cl.model, model_admin = cl.model_admin, return_attr = False)
             val = getattr(pg,field_name,None)
             if callable(val):
                 val = val()
@@ -87,7 +88,8 @@ class PageAdmin(admin.ModelAdmin):
             
             cols = ['url']
             for field_name in self.list_display[1:]:
-                header = label_for_field(field_name, cl.model, model_admin = cl.model_admin, return_attr = False)
+                header = cl.lookup_opts.get_field(field_name)
+                #header = label_for_field(field_name, cl.model, model_admin = cl.model_admin, return_attr = False)
                 cols.append(pretty_name(header))
             js = simplelem({'sites': sites,
                             'columns': cols})

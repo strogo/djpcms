@@ -61,6 +61,9 @@ class AppView(djpcmsview):
         self.creation_counter = AppView.creation_counter
         AppView.creation_counter += 1
     
+    def isroot(self):
+        return self.appmodel.root_application is self
+    
     def __unicode__(self):
         return u'%s: %s' % (self.name,self.regex)
     
