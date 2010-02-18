@@ -70,7 +70,10 @@ class ApplicationBase(object):
     def __get_baseurl(self):
         page = pagecache.get_for_application(self.get_root_code())
         if page:
-            return page.url
+            if not page.parent:
+                return '/'
+            else:
+                return page.url
         else:
             return None
     baseurl = property(__get_baseurl)
@@ -131,25 +134,6 @@ class ModelApplicationBase(ApplicationBase):
         self.applications     = deepcopy(self.base_applications)
         self.edits            = []
         self.parent_url       = None
-        
-        # In case the application is root, register with the
-        # application site
-        #if self.baseurl == '/':
-        #    parent_url = None
-        #else:
-        #    parent_url = '/'.join(self.baseurl[1:-1].split('/')[:-1])
-        #    if not parent_url:
-        #        parent_url = '/'
-        #    else:
-        #        parent_url = '/%s/' % parent_url
-        #self.parent_url = parent_url
-        # 
-        #parents = self.application_site.parent_pages
-        #children = parents.get(self.parent_url,None)
-        #if not children:
-        #    children = []
-        #    parents[self.parent_url] = children
-        #children.append(self)
         self.create_applications()
         
     def get_root_code(self):
@@ -178,8 +162,9 @@ class ModelApplicationBase(ApplicationBase):
             child.code = code
             #
             # View with no arguments. Store in parent pages
-            if not child.tot_args:
-                self.application_site.root_pages[child.purl] = child
+            #TODO: This is useless, remove it!
+            #if not child.tot_args:
+            #    self.application_site.root_pages[child.purl] = child
                 
             if child.isapp:
                 name = u'%s %s' % (self.name,child.name.replace('_',' '))
@@ -328,7 +313,6 @@ class ModelApplicationBase(ApplicationBase):
         # Loop over childre application to form the urls
         for app in self.applications.values():
             view_name  = self.get_view_name(app.name)
-            app.baseurl = baseurl
             nurl = url(regex = app.regex,
                        view  = app,
                        name  = view_name)

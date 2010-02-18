@@ -66,9 +66,7 @@ if CONTENT_INLINE_EDITING['available']:
 loadplugins(DJPCMS_PLUGINS)
 loadwrappers(DJPCMS_WRAPPERS)
 
-# Applications urls
-#if appsite.site.count():
-#    site_urls += appsite.site.urls
+
     
 # Last the djpcms Handler
 site_urls      += ((r'(.*)', 'djpcms.views.handlers.Handler'),)

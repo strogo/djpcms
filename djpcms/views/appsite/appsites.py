@@ -18,8 +18,8 @@ class ApplicationSite(object):
         self.editavailable = CONTENT_INLINE_EDITING.get('available',False)
         self._registry     = {}
         self._nameregistry = SortedDict()
-        self.parent_pages  = {}
-        self.root_pages    = {}
+        #self.parent_pages  = {}
+        #self.root_pages    = {}
         self.choices       = siteapp_choices
         
     def count(self):

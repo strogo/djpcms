@@ -31,4 +31,5 @@ first official Alpha release.
  * Added swfobject in media
  * added jstree from http://www.jstree.com/
  * Added jquery.pagination for pagination of search results
+ * Introduced the pagecache object for caching Pages
  

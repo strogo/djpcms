@@ -52,7 +52,6 @@ class AppView(djpcmsview):
         self.appmodel = None
         self.code     = None
         self.editurl  = None
-        self.baseurl  = None
         self.splitregex = splitregex
         self.in_nav   = in_navigation
         self.__page   = None
@@ -64,6 +63,10 @@ class AppView(djpcmsview):
     
     def __unicode__(self):
         return u'%s: %s' % (self.name,self.regex)
+    
+    def __get_baseurl(self):
+        return self.appmodel.baseurl
+    baseurl = property(__get_baseurl)
     
     def __get_regex(self):
         return '^%s%s$' % (self.baseurl[1:],self._regex)
