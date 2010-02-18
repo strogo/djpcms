@@ -104,7 +104,7 @@ class PageCache(object):
         key = '%s:pagecache:children:%s' % (self.domain,page.url)
         children = cache.get(key,None)
         if children == None:
-            children = list(page.get_children().order_by('in_navigation'))
+            children = list(page.children.all().order_by('in_navigation'))
             cache.set(key,children)
             for child in children:
                 cache.set(self.idkey(child.id),   child)

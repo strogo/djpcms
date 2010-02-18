@@ -209,18 +209,6 @@ class Page(TimeStamp):
     def on_path(self, super):
         return super in self.get_path()
         
-    @lazyattr
-    def num_arguments(self):
-        '''
-        Return the number of arguments needed by this page
-        '''
-        p = str(self.url_pattern)
-        v = self.num_relative_arguments()
-        if self.parent:
-            return v + self.parent.num_arguments()
-        else:
-            return v
-        
     def calculate_url(self):
         try:
             if self.application:
@@ -257,8 +245,12 @@ class Page(TimeStamp):
         except:
             return None
 
-    #def get_children(self):
-    #    return Page.objects.filter(parent=self)
+    def get_children(self):
+        '''
+        Same as self.children.all()
+        return all children of self
+        '''
+        return Page.objects.filter(parent=self)
     
     def get_next_position(self):
         children = Page.objects.filter(parent=self).order_by('-position')
