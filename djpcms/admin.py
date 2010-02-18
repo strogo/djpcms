@@ -3,8 +3,8 @@ from django.forms.forms import pretty_name
 from django.contrib import admin
 from django.contrib.sites.models import Site
 from django.shortcuts import get_object_or_404, render_to_response
-from django.views.decorators.csrf import csrf_protect
 from django.utils.encoding import force_unicode
+#from django.views.decorators.csrf import csrf_protect
 #from django.contrib.admin.util import display_for_field, label_for_field
 
 from djpcms import models
