@@ -118,7 +118,14 @@ class DJPwrapper(PluginBase):
 
 class DJPplugin(PluginBase):
     '''
-    Base class for plugins
+    Base class for Plug-ins.
+    At a glance
+     1) A Plug-in is dynamic application
+     2) It is rendered within a djpcms content block
+     3) Each content block display a plug-in
+     4) A plug-in can define style to include in the page
+     5) It can also add script to the page
+     6) It can have parameters to control its behaviour
     '''
     __metaclass__ = DJPpluginMeta
     form          = None
@@ -152,7 +159,7 @@ class DJPplugin(PluginBase):
         
     def processargs(self,kwargs):
         '''
-        You can use this hook to perfom some preprocessing on options
+        You can use this hook to perform pre-processing on parameters
         '''
         return kwargs
     

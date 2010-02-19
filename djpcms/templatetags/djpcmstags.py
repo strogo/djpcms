@@ -25,6 +25,20 @@ def google_analytics():
         return u''
 register.simple_tag(google_analytics)
 
+def lloogg_analytics():
+    #9100010c3694311
+    if LLOOGG_ANALYTICS_ID:
+        an = """
+    <script type="text/javascript">
+        lloogg_clientid = "%s";
+    </script>
+    <script type="text/javascript" src="http://lloogg.com/l.js?c=%s">
+    </script>
+        """ % (LLOOGG_ANALYTICS_ID,LLOOGG_ANALYTICS_ID)
+        return mark_safe(an)
+    else:
+        return ''
+register.simple_tag(lloogg_analytics)
 
 def html_validator():
     va = """

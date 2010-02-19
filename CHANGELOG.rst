@@ -32,4 +32,5 @@ first official Alpha release.
  * added jstree from http://www.jstree.com/
  * Added jquery.pagination for pagination of search results
  * Introduced the pagecache object for caching Pages
- 
+ * Sitemap handled by pagecache. For now only static pages and application pages without arguments are included.
+ * Added lloogg_analytics in template tags
