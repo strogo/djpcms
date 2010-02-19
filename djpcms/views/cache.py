@@ -113,5 +113,25 @@ class PageCache(object):
                     cache.set(self.appkey(child.application), child)
         return children
 
+    def sitemap(self):
+        from djpcms.views import appsite
+        key = '%s:pagecache:sitemap' % self.domain
+        map = cache.get(key,None)
+        if not map:
+            pages = Page.objects.sitepages(is_published = True, requires_login = False)
+            map = []
+            for page in pages:
+                if page.application:
+                    try:
+                        app = appsite.site.getapp(page.application)
+                    except:
+                        continue
+                    if not app.tot_args and app.has_permission():
+                        map.append(page)
+                        
+                else:
+                    map.append(page)
+            cache.set(key,map)
+        return map
 
 pagecache = PageCache()
