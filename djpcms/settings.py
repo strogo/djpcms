@@ -25,6 +25,7 @@ JS_START_END_PAGE        = getattr(settings, 'JS_START_END_PAGE', 101)
 
 EXTRA_CONTENT_PLUGIN     = getattr(settings, 'EXTRA_CONTENT_PLUGIN', None)
 GOOGLE_ANALYTICS_ID      = getattr(settings, 'GOOGLE_ANALYTICS_ID', None)
+LLOOGG_ANALYTICS_ID      = getattr(settings, 'LLOOGG_ANALYTICS_ID', None)
 
 ENABLE_BREADCRUMBS       = getattr(settings, 'ENABLE_BREADCRUMBS', 1)
 

@@ -1,7 +1,7 @@
 from django import template
 from django.utils.safestring import mark_safe
 
-from djpcms.settings import GOOGLE_ANALYTICS_ID, DJPCMS_SITE_STYLE
+from djpcms.settings import GOOGLE_ANALYTICS_ID, LLOOGG_ANALYTICS_ID, DJPCMS_SITE_STYLE
 from django.conf import settings
 
 register = template.Library()
@@ -26,7 +26,6 @@ def google_analytics():
 register.simple_tag(google_analytics)
 
 def lloogg_analytics():
-    #9100010c3694311
     if LLOOGG_ANALYTICS_ID:
         an = """
     <script type="text/javascript">
