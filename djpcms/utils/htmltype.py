@@ -2,10 +2,11 @@ from django.utils.safestring import mark_safe
 
 class htmldoc(object):
     
-    def __init__(self, name, html, vimg):
+    def __init__(self, name, html, vimg, slash = ""):
         self.name = name
         self.html = mark_safe(html)
         self.vimg = vimg
+        self.slash = slash
         
     def __unicode__(self):
         return u'%s' % self.name
@@ -14,7 +15,7 @@ class htmldoc(object):
         src = '#'
         if self.vimg:
             src= '''http://www.w3.org/Icons/%s%s.png''' % (self.vimg,extra)
-        src = '''<img alt="Valid %s" src="%s"''' % (self.name,src)
+        src = '''<img alt="Valid %s" src="%s"%s>''' % (self.name,src,self.slash)
         return mark_safe('''<a href="http://validator.w3.org/check?uri=referer">%s</a>''' % src)
     
     def bluevalidator(self):
@@ -50,12 +51,14 @@ htmldocs = (
              htmldoc('XHTML 1.0 Strict',
                      """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
                         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">""",
-                     "valid-xhtml10")),
+                     "valid-xhtml10",
+                     "/")),
             (4, 
              htmldoc('XHTML 1.0 Transitional',
                      """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
                         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">""",
-                     "valid-xhtml10")),
+                     "valid-xhtml10",
+                     "/")),
             (5, 
              htmldoc('HTML5',
                      """<!DOCTYPE html>""",
