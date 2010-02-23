@@ -42,7 +42,7 @@ class PageAdmin(admin.ModelAdmin):
         }),
         ('Custom', {
             'classes': ('collapse',),
-            'fields': ('doctype', 'soft_root', 'template',)
+            'fields': ('doctype', 'soft_root', 'insitemap', 'template',)
         }),
         )
     

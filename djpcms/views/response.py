@@ -132,9 +132,9 @@ class DjpResponse(http.HttpResponse):
         Robots
         '''
         if self.view.has_permission(None, self.instance):
-            return u'ALL'
-        else:
-            return u'NONE,NOARCHIVE'
+            if not self.page or self.page.insitemap:
+                return u'ALL'
+        return u'NONE,NOARCHIVE'
         
     def response(self):
         '''

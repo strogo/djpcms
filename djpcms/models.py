@@ -157,10 +157,14 @@ class Page(TimeStamp):
     
     code_object = models.CharField(max_length=200,
                                    blank=True,
+                                   verbose_name = 'in sitemap',
                                    help_text=_('Optional. Dotted path to a python class dealing with requests'))
     
     doctype = models.PositiveIntegerField(default = htmltype.htmldefault,
                                           choices = htmltype.htmldocs)
+    insitemap = models.BooleanField(default = True,
+                                    verbose_name = 'in sitemap',
+                                    help_text=_('If the page is public, include it in sidemap or not.'))
         
     # Denormalized level in the tree and url, for performance 
     level       = models.IntegerField(default = 0, editable = False)
