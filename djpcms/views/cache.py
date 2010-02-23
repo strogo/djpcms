@@ -118,7 +118,7 @@ class PageCache(object):
         key = '%s:pagecache:sitemap' % self.domain
         map = cache.get(key,None)
         if not map:
-            pages = Page.objects.sitepages(is_published = True, requires_login = False)
+            pages = Page.objects.sitepages(is_published = True, requires_login = False, insitemap = True)
             map = []
             for page in pages:
                 if page.application:
