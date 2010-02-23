@@ -226,13 +226,23 @@ class AppView(djpcmsview, ApplicationBase):
                 if self.parent:
                     return self.parent.get_page()
     
+    def modelparent(self):
+        '''
+        Return a parent with same model if it exists
+        '''
+        p = self.parent
+        if p:
+            if getattr(p,'model',None) == self.model:
+                return p
+        return None
+    
     def basequery(self, request, **kwargs):
         '''
         Base query for application
         If this is the root view (no parents) it returns the default
         basequery
         '''
-        if self.parent and self.parent.model == self.model:
+        if self.modelparent():
             return self.parent.appquery(request)
         else:
             return self.appmodel.basequery(request)
