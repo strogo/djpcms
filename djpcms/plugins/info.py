@@ -1,8 +1,6 @@
-
-
 from djpcms.plugins import DJPplugin
 from django.template import loader
-from djpcms.utils import version
+from djpcms.utils import version, timezone
 
 
 class PoweredBy(DJPplugin):
@@ -23,7 +21,6 @@ class PoweredBy(DJPplugin):
                                         'djpcms/bits/powered_by.html'],
                                         c)
         
-        
 class Deploy(DJPplugin):
     name = 'deploysite'
     description = 'Deploy Timestamp'
@@ -33,7 +30,6 @@ class Deploy(DJPplugin):
         Information about deployment
         '''
         from djpcms.models import DeploySite
-        from djpcms.utils import cdt
         try:
             latest = DeploySite.objects.latest()
         except:
@@ -41,4 +37,5 @@ class Deploy(DJPplugin):
         return loader.render_to_string(['/bits/deploy.html',
                                         'djpcms/bits/deploy.html'],
                                         {'latest':latest,
-                                         'cdt': cdt.link()})
+                                         'name': timezone.tzname(dt = latest.created),
+                                         'url': timezone.link()})

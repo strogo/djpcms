@@ -1,3 +1,4 @@
-<h3>Last site update:</h3>
+<h3>Site last built:</h3>
 {{ latest.created.date|date:"N j, Y" }}, {{ latest.created.time|time }}
-{% if cdt %}(<a href="{{ cdt }}" target="_blank">CDT</a>){% endif %}
+{% if url %}(<a href="{{ url }}" target="_blank">{{ name }}</a>){% else %}
+({{ name }}){% endif %}
