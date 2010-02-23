@@ -22,7 +22,40 @@ from djpcms.views.cache import pagecache
 from djpcms.views.baseview import djpcmsview
 
 
-class AppView(djpcmsview):
+class pageinfo(object):
+    
+    def __init__(self,url,last_modified):
+        self.url = url
+        self.last_modified = last_modified
+
+
+class ApplicationBase(object):
+    
+    def get_root_code(self):
+        raise NotImplementedError
+    
+    def __get_baseurl(self):
+        page = pagecache.get_for_application(self.get_root_code())
+        if page:
+            if not page.parent:
+                return '/'
+            else:
+                return page.url
+        else:
+            return None
+    baseurl = property(__get_baseurl)
+    
+    def make_urls(self):
+        '''
+        Return a tuple of urls for the given application
+        '''
+        raise NotImplemented
+    
+    def sitemapchildren(self):
+        return []
+
+
+class AppView(djpcmsview, ApplicationBase):
     '''
     Base class for application views
     '''
@@ -36,6 +69,7 @@ class AppView(djpcmsview):
                  isplugin  = False,
                  template_name = None,
                  in_navigation = False,
+                 insitemap  = True,
                  splitregex = True):
         # number of positional arguments in the url
         self.num_args = 0
@@ -55,6 +89,7 @@ class AppView(djpcmsview):
         self.splitregex = splitregex
         self.in_nav   = in_navigation
         self.__page   = None
+        self.insitemap = insitemap
         if template_name:
             self.template_name = template_name
         # Increase the creation counter, and save our local copy.
@@ -265,6 +300,7 @@ def isexact(bit):
     
     
     
+    
 class SearchView(AppView):
     '''
     Base class for searching objects in model
@@ -472,6 +508,9 @@ class ViewView(ObjectView):
         Render the add view
         '''
         return self.appmodel.render_object(djp)
+    
+    def sitemapchildren(self):
+        return self.appmodel.sitemapchildren(self)    
     
     
 # Delete an object. POST method only. not GET method should modify databse

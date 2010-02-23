@@ -27,6 +27,7 @@ from djpcms.utils.func import PathList
 from djpcms.uploads import upload_function, site_image_storage
 from djpcms import settings, markup
 from djpcms.managers import PageManager
+from djpcms.utils import htmltype
 
 import mptt
 
@@ -157,6 +158,9 @@ class Page(TimeStamp):
     code_object = models.CharField(max_length=200,
                                    blank=True,
                                    help_text=_('Optional. Dotted path to a python class dealing with requests'))
+    
+    doctype = models.PositiveIntegerField(default = htmltype.htmldefault,
+                                          choices = htmltype.htmldocs)
         
     # Denormalized level in the tree and url, for performance 
     level       = models.IntegerField(default = 0, editable = False)

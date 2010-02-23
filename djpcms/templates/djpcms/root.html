@@ -1,8 +1,7 @@
-{% block doctype_html %}{% load djpcmstags %}
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">{% endblock %}
+{% block doctype_html %}{{ htmldoc.html }}{% endblock %}{% load djpcmstags html %}
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-<title>{% block title %}{% endblock %}</title>
+<title>{% block title %}{% if djp.title %}{{ djp.title }} - {% endif %}{% block sitetitle %}{% endblock %}{% endblock %}</title>
 <!-- Global IE fix to avoid layout crash when single word size wider than column width -->
 <!--[if IE]><style type="text/css"> body {word-wrap: break-word;}</style><![endif]-->{% block meta-content %}
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />{% endblock %}{% block meta-language %}

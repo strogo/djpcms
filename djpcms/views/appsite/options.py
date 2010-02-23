@@ -19,7 +19,7 @@ from djpcms.settings import HTML_CLASSES
 from djpcms.utils.html import formlet, submit, form
 
 from djpcms.views.baseview import editview
-from djpcms.views.appview import AppView
+from djpcms.views.appview import AppView, ApplicationBase
 from djpcms.views.cache import pagecache
 
 
@@ -62,30 +62,6 @@ class ModelAppMetaClass(type):
     
 
 
-class ApplicationBase(object):
-    
-    def get_root_code(self):
-        raise NotImplementedError
-    
-    def __get_baseurl(self):
-        page = pagecache.get_for_application(self.get_root_code())
-        if page:
-            if not page.parent:
-                return '/'
-            else:
-                return page.url
-        else:
-            return None
-    baseurl = property(__get_baseurl)
-    
-    def make_urls(self):
-        '''
-        Return a tuple of urls for the given application
-        '''
-        raise NotImplemented
-    
-
-
 
 class ModelApplicationBase(ApplicationBase):
     '''
@@ -119,8 +95,6 @@ class ModelApplicationBase(ApplicationBase):
     in_navigation    = True
     # If set to True, base class views will be available
     inherit          = False
-    # True is application is added in sitemap
-    insitemap        = False
     #
     search_fields    = None
     
@@ -516,6 +490,9 @@ class ModelApplicationBase(ApplicationBase):
                     app.parent = pagecache.view_from_page(djp.request, page)
         if app.parent:
             return app.parent(djp.request, **djp.urlargs)
+        
+    def sitemapchildren(self, view):
+        return []
 
 
 class ModelApplication(ModelApplicationBase):

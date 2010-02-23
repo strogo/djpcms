@@ -33,4 +33,5 @@ first official Alpha release.
  * Added jquery.pagination for pagination of search results
  * Introduced the pagecache object for caching Pages
  * Sitemap handled by pagecache. For now only static pages and application pages without arguments are included.
- * Added lloogg_analytics in template tags
+ * Added lloogg_analytics and css_validators in template tags
+ * NEW FIELD IN PAGES!! Added doctype field for specifying document type (HTML 4.01, XHTML 1, HTML 5)

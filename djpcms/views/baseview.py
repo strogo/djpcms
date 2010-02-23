@@ -17,7 +17,7 @@ from djpcms.settings import HTML_CLASSES, GRID960_DEFAULT_FIXED, \
 from djpcms.utils.ajax import jservererror, jredirect
 from djpcms.utils.html import grid960
 from djpcms.permissions import inline_editing
-from djpcms.utils import UnicodeObject, urlbits, urlfrombits, function_module
+from djpcms.utils import UnicodeObject, urlbits, urlfrombits, function_module, htmltype
 
 from djpcms.views.cache import pagecache
 from djpcms.views.response import DjpResponse
@@ -131,6 +131,11 @@ class djpcmsview(UnicodeObject):
         
         # Inner template available, fill the context dictionary
         # with has many content keys as the number of blocks in the page
+        if page:
+            more_content['htmldoc'] = htmltype.get(page.doctype)
+        else:
+            more_content['htmldoc'] = htmltype.get()
+            
         if page and page.inner_template:
             cb = {'djp':  djp, 'grid': grid}
             blocks = page.inner_template.numblocks()

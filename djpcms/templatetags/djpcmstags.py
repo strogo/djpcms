@@ -39,13 +39,23 @@ def lloogg_analytics():
         return ''
 register.simple_tag(lloogg_analytics)
 
-def html_validator():
+def _css_validator(version = 2, color = ''):
+    if version == 1 or version == 2:
+        src = "http://www.w3.org/Icons/valid-css%s%s.png" % (version,color)
+    else:
+        src = "#"
     va = """
-    <a href="http://validator.w3.org/check?uri=referer"><img
-        src="http://www.w3.org/Icons/valid-xhtml10-blue"
-        alt="Valid XHTML 1.0 Transitional" height="31" width="88" /></a>
-    """
+    <a href="http://jigsaw.w3.org/css-validator/" title="Validate CSS code">
+    <img src="%s" alt="W3C CSS %s"/></a>
+    """ % (src,version)
     return mark_safe(va)
+
+def css_validator(level = 2):
+    return _css_validator(level)
+register.simple_tag(css_validator)
+def blue_css_validator(level = 2):
+    return _css_validator(level,"-blue")
+register.simple_tag(blue_css_validator)
 
 def styling():
     murl = settings.MEDIA_URL

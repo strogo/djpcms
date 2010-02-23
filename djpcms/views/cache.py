@@ -126,9 +126,13 @@ class PageCache(object):
                         app = appsite.site.getapp(page.application)
                     except:
                         continue
-                    if not app.tot_args and app.has_permission():
-                        map.append(page)
-                        
+                    if app.insitemap and app.has_permission():
+                        if not app.tot_args:
+                            map.append(page)
+                        else:
+                            appmodel = getattr(app,'appmodel',None)
+                            if appmodel:
+                                map.extend(app.sitemapchildren())
                 else:
                     map.append(page)
             cache.set(key,map)
