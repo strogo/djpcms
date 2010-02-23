@@ -1,4 +1,4 @@
-{% block doctype_html %}{{ htmldoc.html }}{% endblock %}{% load djpcmstags html %}
+{% block doctype_html %}{{ htmldoc.html }}{% endblock %}{% load djpcmstags %}
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <title>{% block title %}{% if djp.title %}{{ djp.title }} - {% endif %}{% block sitetitle %}{% endblock %}{% endblock %}</title>
