@@ -166,6 +166,9 @@ form.content-select table {margin:0; float: left;}
 	padding: 5px 10px;
 	margin-bottom: 10px;
 }
+.edit-contentblock .hd textarea {
+	width: 100%;
+}
 .edit-contentblock .hd .errorlist {
 	color: #FF906B;
 }

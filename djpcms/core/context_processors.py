@@ -9,6 +9,7 @@ def djpcms(request):
         djdeb = 'true'
     return {'jsdebug': djdeb,
             'debug': settings.DEBUG,
+            'release': not settings.DEBUG,
             'now': now,
             'site_admin_url': settings.ADMIN_URL_PREFIX,
             'login_url': settings.LOGIN_URL,

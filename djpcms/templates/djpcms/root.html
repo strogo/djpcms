@@ -45,8 +45,9 @@
 
 {% block ads-scripts %}{% endblock %}
 
-{% block analytics-scripts %}{% google_analytics %}
-{% lloogg_analytics %}{% endblock %} 
+{% block analytics-scripts %}{% if release %}
+{% google_analytics %}
+{% lloogg_analytics %}{% endif %}{% endblock %} 
 
 </body>
 </html>

@@ -375,16 +375,39 @@
 	
 	
 	/**
-	 * Cycle jQuery Plugin decorator
+	 * Cycle jQuery Plugin decorator, from django-flowrepo
 	 * 
 	 */ 
 	dj.addDecorator({
 		id:"image-cycle",
 		decorate: function($this, config) {
 			$('.image-cycle', $this).each(function() {
-				$(this).cycle({fx: 'fade',
-							  speed: 5000,
-							  timeout: 10000});
+				var this_ = $(this);
+				var w     = this_.width();
+				var h     = this_.height();
+				var classes = this.className.split(" ");
+				var type_  = 'fade';
+				var speed_ = 5000;
+				var timeout_ = 10000;
+				$('img',this_).width(w).height(h);
+				$.each(classes,function(i,v) {
+					if(v.substr(0,6) == "speed-"){
+						try {
+							speed_ = parseInt(v.substr(6));
+						} catch(e) {}
+					}
+					else if(v.substr(0,8) == "timeout-"){
+						try {
+							timeout_ = parseInt(v.substr(8));
+						} catch(e) {}
+					}
+					else if(v.substr(0,5) == "type-") {
+						type_ = v.substr(5);
+					}
+                });
+				this_.cycle({fx: type_,
+						  speed: speed_,
+						  timeout: timeout_});
 			});
 		}
 	});

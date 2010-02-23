@@ -134,6 +134,9 @@ class DJPplugin(PluginBase):
     storage       = _plugin_dictionary
     URL           = None
     
+    def js(self, **kwargs):
+        return None
+    
     def arguments(self, args):
         '''
         Process arguments string
