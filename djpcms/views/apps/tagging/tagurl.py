@@ -109,12 +109,6 @@ class ArchiveTaggedApplication(appsite.ArchiveApplication):
     month_archive2 = TagArchiveView(regex = '(?P<month>\w{3})', parent = 'year_archive2')
     day_archive2   = TagArchiveView(regex = '(?P<day>\d{2})',   parent = 'month_archive2')
     
-    #tagc2          =        AppView(regex = 'tags3/(?P<tag1>%s)/(?P<tag2>%s)' % (tag_regex,tag_regex))
-    #tag3           = TagArchiveView(regex = '(?P<tag3>%s)' % tag_regex, parent = 'tagc2')
-    #year_archive3  = TagArchiveView(regex = '(?P<year>\d{4})',  parent = 'tag3')
-    #month_archive3 = TagArchiveView(regex = '(?P<month>\w{3})', parent = 'year_archive3')
-    #day_archive3   = TagArchiveView(regex = '(?P<day>\d{2})',   parent = 'month_archive3')
-    
     def tagurl(self, request, *tags):
         return tagurl(self, request, *tags)
     

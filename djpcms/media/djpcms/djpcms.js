@@ -46,6 +46,16 @@
 				debug:			   false
 			};
 			
+			this.log = function(s) {
+				if(this.options.debug) {
+					if (typeof console != "undefined" && typeof console.debug != "undefined") {
+						console.log(s);
+					} else {
+						//alert(s);
+					}
+				}
+			}
+			
 			this.postparam = function(name) {
 				var reqdata = {submitkey: this.options.post_view_key};
 				if(name){
@@ -96,13 +106,15 @@
 			};
 	
 			this.construct = function() {
+				var this_ = $.djpcms;
 				return this.each(function() {
-					var config = $.djpcms.options;
+					var config = this_.options;
 					
 					// store common expression for speed					
 					var $this = $(this);
 					
 					$.each(decorators,function(n,decorator) {
+						this_.log('Adding decorator ' + decorator.id);
 						decorator.decorate($this,config);
 					});
 				});
@@ -304,6 +316,18 @@
 					f[0].clk = $(":submit[name='"+name+"']",f)[0];
 					f.ajaxSubmit(opts);
 				}
+			});
+		}
+	});
+	
+	/**
+	 * Autocomplete Off
+	 */
+	dj.addDecorator({
+		id:"autocomplete-off",
+		decorate: function($this,config) {
+			$('.autocomplete-off',$this).each(function() {
+				$(this).attr('autocomplete','off');
 			});
 		}
 	});

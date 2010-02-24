@@ -23,7 +23,7 @@ class PageCache(object):
         from djpcms.views import appsite
         b = request.session.get('application-urls-built',0)
         if not self.applications_url or (force and not b):
-            self.applications_url = appsite.site.urls
+            self.applications_url = appsite.site.get_urls()
             request.session['application-urls-built'] = 1
         return self.applications_url
     
@@ -54,12 +54,13 @@ class PageCache(object):
     
     def get_from_id(self, id):
         key = self.idkey(id)
-        return self._get_and_cache(key, pk = id)
+        page,created = self._get_and_cache(key, pk = id)
+        return page
         
     def get_from_url(self, url):
         key = self.urlkey(url)
-        page = self._get_and_cache(key, url = url)
-        if page and page.application:
+        page, created = self._get_and_cache(key, url = url)
+        if created and page.application:
             key = self.appkey(page.application)
             cache.set(key, page)
         return page
@@ -67,8 +68,8 @@ class PageCache(object):
     
     def get_for_application(self, code):
         key = self.appkey(code) 
-        page = self._get_and_cache(key, application = code)
-        if page and page.application:
+        page, created = self._get_and_cache(key, application = code)
+        if created and page.application:
             key = self.urlkey(page.url)
             cache.set(key, page)
         return page
@@ -76,17 +77,17 @@ class PageCache(object):
     def _get_and_cache(self, key, **kwargs):
         page = cache.get(key,None)
         if page:
-            return page
+            return page, False
         elif page is None:
             try:
                 page = Page.objects.sitepage(**kwargs)
                 cache.set(key, page)
-                return page
+                return page, True
             except:
                 cache.set(key, False)
-                return None
+                return None,False
         else:
-            return None
+            return None,False
         
     def _set_if_not(self, key, page, force = None):
         if force is None:
@@ -127,7 +128,7 @@ class PageCache(object):
                     except:
                         continue
                     if app.insitemap and app.has_permission():
-                        if not app.tot_args:
+                        if not app.regex.targs:
                             map.append(page)
                         else:
                             appmodel = getattr(app,'appmodel',None)

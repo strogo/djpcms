@@ -36,3 +36,6 @@ first official Alpha release.
  * Added lloogg_analytics and css_validators in template tags
  * NEW FIELD IN PAGE MODEL!! Added doctype field for specifying document type (HTML 4.01, XHTML 1, HTML 5)
  * NEW FIELD IN PAGE MODEL!! Added insidemap for disabling a page from sidemap and robots
+ * Refactored search form plugin
+ * Added autocomplete-off javascript decorator
+ * url resolver split between main urls and sub-applications

@@ -306,7 +306,8 @@ class djpcmsview(UnicodeObject):
                 continue
             if cview.has_permission(request):
                 djp = cview(request, **kwargs)
-                views.append(djp)
+                if isinstance(djp,DjpResponse):
+                    views.append(djp)
         return views
 
 

@@ -24,9 +24,11 @@ def djpcmsHandler(request, url):
     if view:
         return view, (), {}
     else:
+        # page not found, it must be a page with arguments
         resolver = urlresolvers.RegexURLResolver(r'^/', pagecache.build_app_urls(request))
         try:
-            return resolver.resolve(url)
+            apphandler, args, kwargs = resolver.resolve(url)
+            return apphandler(request, *args, **kwargs) 
         except:
             raise Http404
 

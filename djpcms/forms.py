@@ -11,7 +11,13 @@ from djpcms.plugins import get_plugin, plugingenerator, wrappergenerator
 
 
 class SearchForm(forms.Form):
-    text = forms.CharField(required = False)
+    '''
+    A simple search form used by plugins.apps.SearchBox.
+    The search_text name will be used by SearchViews to handle text search
+    '''
+    search_text = forms.CharField(required = False,
+                                  widget = forms.TextInput(attrs = {'class': 'sw_qbox autocomplete-off',
+                                                                    'title': 'Enter your search text'}))
     
 
 class LazyChoiceField(forms.ChoiceField):
@@ -240,15 +246,15 @@ class ContentBlockForm(forms.ModelForm):
 
 
 
-AS_Q_CHOICES = (
-    ('more:dev_docs', 'Latest'),
-    ('more:1.0_docs', '1.0'),
-    ('more:0.96_docs', '0.96'),
-    ('more:all_docs', 'All'),
-)
-
-class SearchForm(forms.Form):
-    q = forms.CharField(widget=forms.TextInput({'class': 'query'}))
-    as_q = forms.ChoiceField(choices=AS_Q_CHOICES, widget=forms.RadioSelect, initial='more:dev_docs')
+#AS_Q_CHOICES = (
+#   ('more:dev_docs', 'Latest'),
+#    ('more:1.0_docs', '1.0'),
+#    ('more:0.96_docs', '0.96'),
+#    ('more:all_docs', 'All'),
+#)
+#
+#class SearchForm(forms.Form):
+#    q = forms.CharField(widget=forms.TextInput({'class': 'query'}))
+#    as_q = forms.ChoiceField(choices=AS_Q_CHOICES, widget=forms.RadioSelect, initial='more:dev_docs')
 
 

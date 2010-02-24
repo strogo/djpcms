@@ -5,12 +5,13 @@ The main object handle several subviews used for searching, adding and manipulat
 '''
 from copy import deepcopy
 
-from django import forms
+from django import forms, http
 from django.forms.models import modelform_factory
 from django.utils.encoding import force_unicode
 from django.utils.datastructures import SortedDict
 from django.template import loader, Template, Context, RequestContext
 from django.core.exceptions import PermissionDenied
+from django.conf.urls.defaults import url
 
 from djpcms.utils import form_kwargs, UnicodeObject
 from djpcms.utils.forms import add_hidden_field
@@ -19,7 +20,7 @@ from djpcms.settings import HTML_CLASSES
 from djpcms.utils.html import formlet, submit, form
 
 from djpcms.views.baseview import editview
-from djpcms.views.appview import AppView, ApplicationBase
+from djpcms.views.appview import AppView
 from djpcms.views.cache import pagecache
 
 
@@ -50,8 +51,9 @@ def get_declared_applications(bases, attrs):
         for base in bases[::-1]:
             if hasattr(base, 'base_applications'):
                 apps = base.base_applications.items() + apps
+                
+    return SortedDict(data = apps)
 
-    return SortedDict(apps)
 
 class ModelAppMetaClass(type):
     
@@ -62,19 +64,53 @@ class ModelAppMetaClass(type):
     
 
 
+class ApplicationBase(object):
+    '''
+    Base class for djpcms applications
+    '''
+    ajax             = HTML_CLASSES
+    name             = None
+    autheinticated   = True
+    
+    def __init__(self, application_site, editavailable):
+        self.application_site = application_site
+        self.editavailable    = editavailable
+        self.root_application = None
+        
+    def get_root_code(self):
+        raise NotImplementedError
+    
+    def __get_baseurl(self):
+        page = pagecache.get_for_application(self.get_root_code())
+        if page:
+            return page.url
+        else:
+            return None
+    baseurl = property(__get_baseurl)
+    
+    def __call__(self, request, rurl):
+        from django.core import urlresolvers
+        resolver = urlresolvers.RegexURLResolver(r'^', self.urls)
+        return resolver.resolve(rurl)
+    
+    def isroot(self):
+        return True
+    
+    def get_the_view(self):
+        return self.root_application
+    
+    def has_permission(self, request = None, obj = None):
+        return True
+
+
 
 class ModelApplicationBase(ApplicationBase):
     '''
-    Base class for model applications
+    Base class for Django Model Applications
     This class implements the basic functionality for a general model
     User should subclass this for full control on the model application.
     Each one of the class attributes are optionals
     '''
-    ajax             = HTML_CLASSES
-    # Name for this application. Optional (the model name will be used if None)
-    name             = None
-    # Does require authenticated user?
-    autheinticated   = True
     # Form used for adding/editing objects.
     # This can be overritten with a function
     form             = forms.ModelForm
@@ -89,8 +125,6 @@ class ModelApplicationBase(ApplicationBase):
     search_form      = None
     date_code        = None
     search_form      = SearchForm
-    # Number of arguments to create an instance of model
-    num_obj_args     = 1
     # True if applications can go into navigation
     in_navigation    = True
     # If set to True, base class views will be available
@@ -99,16 +133,22 @@ class ModelApplicationBase(ApplicationBase):
     search_fields    = None
     
     def __init__(self, model, application_site, editavailable):
+        super(ModelApplicationBase,self).__init__(application_site, editavailable)
         self.model            = model
         self.opts             = model._meta
-        self.root_application = None
-        self.application_site = application_site
-        self.editavailable    = editavailable
         self.name             = self.name or self.opts.module_name
         self.applications     = deepcopy(self.base_applications)
         self.edits            = []
         self.parent_url       = None
         self.create_applications()
+        urls = []
+        for app in self.applications.values():
+            view_name  = self.get_view_name(app.name)
+            nurl = url(regex = str(app.regex),
+                       view  = app,
+                       name  = view_name)
+            urls.append(nurl)
+        self.urls = tuple(urls)
         
     def get_root_code(self):
         return self.root_application.code
@@ -274,25 +314,6 @@ class ModelApplicationBase(ApplicationBase):
                                 layout = 'flat-notag',
                                 submit = submit(value = 'search', name = 'search'))
         return fhtml
-        
-    def make_urls(self):
-        '''
-        Loop over applications to build the urls
-        '''
-        from django.conf.urls.defaults import url
-        baseurl = self.baseurl
-        if baseurl == None:
-            return None
-        urls  = []
-        # Loop over childre application to form the urls
-        for app in self.applications.values():
-            view_name  = self.get_view_name(app.name)
-            nurl = url(regex = app.regex,
-                       view  = app,
-                       name  = view_name)
-            urls.append(nurl)
-                
-        return tuple(urls)
     
     # APPLICATION URLS
     # TODO: write it better (not use of application name)
@@ -344,8 +365,6 @@ class ModelApplicationBase(ApplicationBase):
     
     # PERMISSIONS
     #-----------------------------------------------------------------------------------------
-    def has_permission(self, request = None, obj = None):
-        return True
     def has_add_permission(self, request = None, obj=None):
         if not request:
             return False

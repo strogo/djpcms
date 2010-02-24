@@ -3,10 +3,10 @@ from django.contrib.auth.models import User
 from djpcms.views.user import UserApplication
 from djpcms.views import appsite
 
-from djpcms.views.docview import DocView
+from djpcms.views.docview import DocApplication
 
 #_________________________________________________ Create the documentation view handler
-class DjpcmsDoc(DocView):
+class DjpcmsDoc(DocApplication):
     name = 'djpcms-documentation'
     #baseurl = '/docs/'
     DOCS_PICKLE_ROOT = '../docs/'

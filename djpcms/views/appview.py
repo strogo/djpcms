@@ -10,7 +10,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.template import loader, RequestContext
 from django.utils.dates import MONTHS_3_REV
 from django.utils.dateformat import format
-from django.utils.encoding import iri_to_uri
 from django.utils.text import smart_split
 
 from djpcms.utils.html import Paginator
@@ -18,6 +17,7 @@ from djpcms.utils.func import force_number_insert
 from djpcms.utils.ajax import jremove, dialog, jredirect
 from djpcms.utils import form_kwargs
 
+from djpcms.views.regex import RegExUrl 
 from djpcms.views.cache import pagecache
 from djpcms.views.baseview import djpcmsview
 
@@ -29,33 +29,50 @@ class pageinfo(object):
         self.last_modified = last_modified
 
 
-class ApplicationBase(object):
+class AppViewBase(djpcmsview):
     
-    def get_root_code(self):
-        raise NotImplementedError
-    
+    def __init__(self,
+                 name   = None,
+                 parent = None,
+                 regex = None,
+                 splitregex = False,
+                 insitemap = True):
+        self.__page    = None
+        self.name      = name
+        self.parent    = parent
+        self.appmodel  = None
+        self.insitemap = insitemap
+        self.urlbit    = RegExUrl(regex,splitregex)
+        self.regex     = None
+        
     def __get_baseurl(self):
-        page = pagecache.get_for_application(self.get_root_code())
-        if page:
-            if not page.parent:
-                return '/'
-            else:
-                return page.url
-        else:
-            return None
+        return self.appmodel.baseurl
     baseurl = property(__get_baseurl)
+        
+    def set_page(self, page):
+        self.__page = page
+        
+    def get_page(self):
+        if self.__page:
+            return self.__page
+        else:
+            try:
+                self.__page = pagecache.get_for_application(self.code)
+                return self.__page
+            except:
+                if self.parent:
+                    return self.parent.get_page()
     
-    def make_urls(self):
+    def has_permission(self, request = None, obj = None):
         '''
-        Return a tuple of urls for the given application
+        Delegate to appmodel
         '''
-        raise NotImplemented
+        return self.appmodel.has_permission(request, obj)
     
-    def sitemapchildren(self):
-        return []
+    
 
 
-class AppView(djpcmsview, ApplicationBase):
+class AppView(AppViewBase):
     '''
     Base class for application views
     '''
@@ -71,25 +88,18 @@ class AppView(djpcmsview, ApplicationBase):
                  in_navigation = False,
                  insitemap  = True,
                  splitregex = True):
-        # number of positional arguments in the url
-        self.num_args = 0
-        # total number of arguments, including positional and key-worded
-        self.tot_args = 0
-        self.urlbit   = regex or u''
-        self.parent   = parent
-        self.name     = name
-        self._regex   = ''
-        self._purl    = ''
+        AppViewBase.__init__(self,
+                             name = name,
+                             regex = regex,
+                             splitregex = splitregex,
+                             parent = parent,
+                             insitemap = insitemap)
         self.isapp    = isapp
         self.isplugin = isplugin
         self.func     = None
-        self.appmodel = None
         self.code     = None
         self.editurl  = None
-        self.splitregex = splitregex
         self.in_nav   = in_navigation
-        self.__page   = None
-        self.insitemap = insitemap
         if template_name:
             self.template_name = template_name
         # Increase the creation counter, and save our local copy.
@@ -101,18 +111,6 @@ class AppView(djpcmsview, ApplicationBase):
     
     def __unicode__(self):
         return u'%s: %s' % (self.name,self.regex)
-    
-    def __get_baseurl(self):
-        return self.appmodel.baseurl
-    baseurl = property(__get_baseurl)
-    
-    def __get_regex(self):
-        return '^%s%s$' % (self.baseurl[1:],self._regex)
-    regex = property(fget = __get_regex)
-    
-    def __get_purl(self):
-        return '%s%s' % (self.baseurl,self._purl)
-    purl = property(__get_purl)
     
     def __get_model(self):
         return self.appmodel.model
@@ -141,7 +139,11 @@ class AppView(djpcmsview, ApplicationBase):
             return page.title
     
     def edit_regex(self, edit):
-        return r'^%s/%s$' % (edit,self._regex)
+        baseurl = self.baseurl
+        if baseurl:
+            return r'^%s/%s%s$' % (edit,baseurl[1:],self.regex)
+        else:
+            return None
     
     def processurlbits(self, appmodel):
         '''
@@ -150,81 +152,22 @@ class AppView(djpcmsview, ApplicationBase):
         self.appmodel = appmodel
         self.ajax     = appmodel.ajax
         if self.parent:
-            baseurl = self.parent._regex
-            purl    = self.parent._purl
-            nargs   = self.parent.num_args
-            targs   = self.parent.tot_args
+            self.regex = self.parent.regex + self.urlbit
         else:
-            baseurl = ''
-            purl    = baseurl
-            nargs   = 0
-            targs   = 0
-        
-        breadcrumbs = []
-        if self.urlbit:
-            if self.splitregex:
-                bits = self.urlbit.split('/')
-            else:
-                bits = ['%s' % self.urlbit]
-            for bit in bits:
-                if bit:
-                    if bit.startswith('('):
-                        targs += 1
-                        st = bit.find('<') + 1
-                        en = bit.find('>')
-                        if st and en:
-                            name = bit[st:en]
-                        else:
-                            nargs += 1
-                            name   = 'arg_no_key_%s' % nargs
-                            
-                        name  = '%(' + name + ')s'
-                        purl += name + '/'
-                        breadcrumbs.append(name)
-                    else:
-                        breadcrumbs.append(bit)
-                        purl += '%s/' % bit
-            self._regex = '%s%s/' % (baseurl,self.urlbit)
-        else:
-            self._regex = baseurl
-        
-        self.breadcrumbs = breadcrumbs
-        self._purl    = purl
-        self.num_args = nargs
-        self.tot_args = targs
+            self.regex = self.urlbit
         
     def content_dict(self, cl):
         return copy.copy(cl.urlargs)
         
     def get_url(self, request, **kwargs):
-        '''
-        get application url
-        '''
-        if kwargs:
-            pu = iri_to_uri(self._purl % kwargs)
-        else:
-            pu = self._purl
-        return '%s%s' % (self.baseurl,pu)
+        purl = self.regex.get_url(request, **kwargs)
+        return '%s%s' % (self.baseurl,purl)
     
     def parentresponse(self, djp):
         '''
         Retrive the parent response
         '''
         return self.appmodel.parentresponse(djp, self)
-    
-    def set_page(self, page):
-        self.__page = page
-    
-    def get_page(self):
-        if self.__page:
-            return self.__page
-        else:
-            try:
-                self.__page = pagecache.get_for_application(self.code)
-                return self.__page
-            except:
-                if self.parent:
-                    return self.parent.get_page()
     
     def modelparent(self):
         '''
@@ -274,14 +217,11 @@ class AppView(djpcmsview, ApplicationBase):
             if sv and k.endswith('-prefix'):
                 return sv
     
-    def has_permission(self, request = None, obj = None):
-        '''
-        Delegate to appmodel
-        '''
-        return self.appmodel.has_permission(request, obj)
-    
     def permissionDenied(self, djp):
         return self.appmodel.permissionDenied(djp)
+    
+    def sitemapchildren(self):
+        return []
     
     def __deepcopy__(self, memo):
         return copy.copy(self)
@@ -312,6 +252,7 @@ def isexact(bit):
     
     
 class SearchView(AppView):
+    search_text = 'search_text'
     '''
     Base class for searching objects in model
     '''
@@ -334,7 +275,7 @@ class SearchView(AppView):
             data = dict(request.GET.items())
         else:
             data = dict(request.POST.items())
-        search_string = data.get('q',None)
+        search_string = data.get(self.search_text,None)
         if slist and search_string:
             bits  = smart_split(search_string)
             #bits  = search_string.split(' ')
@@ -486,15 +427,16 @@ class ObjectView(AppView):
         If instance not defined it return None
         '''
         if instance:
-            return self.purl % self.appmodel.objectbits(instance)
+            urlargs = self.appmodel.objectbits(instance)
         else:
             instance = self.appmodel.get_object(**urlargs)
-            if instance:
-                url = self.purl % urlargs
-                djp.instance = instance
-                return url
-            else:
-                raise http.Http404
+        
+        if not instance:
+            raise http.Http404
+        
+        djp.instance = instance
+        return super(ObjectView,self).get_url(djp, **urlargs)
+    
     
     def title(self, page, instance = None, **urlargs):
         return self.appmodel.title_object(instance)

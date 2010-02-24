@@ -18,8 +18,6 @@ class ApplicationSite(object):
         self.editavailable = CONTENT_INLINE_EDITING.get('available',False)
         self._registry     = {}
         self._nameregistry = SortedDict()
-        #self.parent_pages  = {}
-        #self.root_pages    = {}
         self.choices       = siteapp_choices
         
     def count(self):
@@ -56,7 +54,9 @@ class ApplicationSite(object):
                 self._registry[model] = appmodel
                 self._nameregistry[appmodel.name] = appmodel
         else:
-            app = application_class()
+            app = application_class(self, editavailable)
+            if not app.name:
+                raise ValueError('Application %s without a name' % app)
             if app.name in self._nameregistry:
                 raise ValueError('Application %s already registered as application' % app.name)
             self._nameregistry[app.name] = app
@@ -81,21 +81,22 @@ class ApplicationSite(object):
         appmodel = self._nameregistry.get(appname,None)
         if appmodel is None:
             raise ValueError('Application name %s not recognized' % appname)
-        return appmodel
+        return appmodel.root_application
     
     def count(self):
         return len(self._registry)
             
     def get_urls(self):
-        aurls = []
+        from django.conf.urls.defaults import url
+        urls = ()
         # Add in each model's views.
         for app in self._nameregistry.values():
-            urls = app.make_urls()
-            if urls:
-                aurls.extend(urls)
-        return tuple(aurls)
-    urls = property(fget = get_urls)
-    
+            baseurl = app.baseurl
+            if baseurl:
+                urls += url(regex = '^%s(.*)' % baseurl[1:],
+                            name = app.name,
+                            view = app),
+        return urls    
         
         
 site = ApplicationSite()

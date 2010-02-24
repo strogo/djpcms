@@ -1,6 +1,6 @@
 <form method="{{ method }}" action="{{ url }}">
-  <div class="sw_b">
-	<input {% if html.text.id %} id="{{ html.text.id }}" {% endif %}class="sw_qbox" type="text" value="{{ html.text.value }}" title="{{ title }}" autocomplete="off" name="q"/>
+  <div class="sw_b">{% for field in html %}
+    {{ field }}{% endfor %}
 	<input id="sb_form_go" class="sw_qbtn" type="submit" value="" title="Search" tabindex="0" name="go"/>
   </div>
 </form> 

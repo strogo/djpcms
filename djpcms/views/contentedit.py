@@ -1,3 +1,8 @@
+'''
+Application for handling inline editing of blocks
+The application derives from the base appsite.ModelApplication
+and defines several subviews 
+'''
 from django import http
 from django import forms
 from django.utils.translation import ugettext_lazy as _
@@ -286,12 +291,12 @@ class ContentSite(appsite.ModelApplication):
         @param position:  position number within the block (a string to be converted into an integer)
         @return None
         '''
-        pageid      = int(pageid)
-        blocknumber = int(blocknumber)
-        position    = int(position)
-        page        = pagecache.get_from_id(pageid)
-        blocks      = self.model.objects.filter(page = page)
-        inner       = page.inner_template
+        pageid       = int(pageid)
+        blocknumber  = int(blocknumber)
+        position     = int(position)
+        page         = pagecache.get_from_id(pageid)
+        blocks       = self.model.objects.filter(page = page)
+        inner        = page.inner_template
         if inner:
             nblocks     = inner.numblocks()
         else:

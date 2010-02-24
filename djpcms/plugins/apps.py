@@ -39,7 +39,7 @@ class SearchBox(DJPplugin):
     A search box for a model
     '''
     name = 'search-box'
-    description = 'Search Model'
+    description = 'Search a Django Model'
     form = SearchModelForm
     
     def render(self, djp, wrapper, prefix, for_model = None, title = None, **kwargs):

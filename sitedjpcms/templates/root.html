@@ -2,10 +2,8 @@
 {% block title-block %}djpcms - {% block extra-title %}dynamic CMS for django and jQuery{% endblock %}{% endblock %}
 {% block site-keywords %}cms, django, jquery, javascript, python, css{% endblock %}
 {% block site-description %}djpcms documentation site{% endblock %}
-
 {% block style-reset %}{% include "djpcms/bits/reset.html" %}{% endblock %}
-
-{% block style-block %}
+{% block extrastyle %}
 <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/djpcms.css"/>
 <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}site/layout.css"/>
 <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}site/text.css"/>

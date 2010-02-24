@@ -18,9 +18,7 @@ from django.template import Template
 
 #from djcms.middleware.threadlocals import get_current_user
 from djpcms.fields import SlugCode
-from djpcms.plugins import wrappergenerator, get_wrapper, \
-                           default_content_wrapper, get_plugin, \
-                           get_wrapper
+from djpcms.plugins import get_wrapper, default_content_wrapper, get_plugin
 from djpcms.utils.models import TimeStamp
 from djpcms.utils import lazyattr, function_module
 from djpcms.utils.func import PathList
@@ -222,15 +220,16 @@ class Page(TimeStamp):
             if self.application:
                 from djpcms.views import appsite
                 app = appsite.site.getapp(self.application)
+                purl = app.urlbit.url
                 if app.isroot():
                     if not self.parent:
                         self.url_pattern = ''
                         return '/'
                     url = self.url_pattern
                     if not url:
-                        url = app._purl
-                    elif app._purl:
-                        url = '%s/%s' % url, app._purl
+                        url = purl
+                    elif purl:
+                        url = '%s/%s' % url, purl
                     if not url:
                         raise ValueError('No url available in %s' % app.code)
                 else:
@@ -240,8 +239,7 @@ class Page(TimeStamp):
                         self.parent = pages[0]
                     else:
                         raise ValueError('Parent page not defined %s' % app.code)
-                    url = app._purl
-                    self.url_pattern = url[:-1]
+                    url = purl
             else:
                 url = self.url_pattern
             
@@ -379,9 +377,7 @@ class BlockContent(models.Model):
     plugin_name    = models.CharField(blank = True,
                                       max_length = 100)
     arguments      = models.TextField(blank = True)
-    container_type = models.CharField(choices = wrappergenerator(),
-                                      default = default_content_wrapper.name,
-                                      max_length = 30,
+    container_type = models.CharField(max_length = 30,
                                       blank = False,
                                       verbose_name=_('container'))
     title          = models.CharField(blank = True, max_length = 100)
