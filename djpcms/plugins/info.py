@@ -39,3 +39,23 @@ class Deploy(DJPplugin):
                                         {'latest':latest,
                                          'name': timezone.tzname(dt = latest.created),
                                          'url': timezone.link()})
+
+
+class MemCachePannel(DJPplugin):
+    name = 'memcached'
+    description = 'Memcached Pannel'
+    
+    def render(self, djp, wrapper, prefix, **kwargs):
+        '''
+        Information about deployment
+        '''
+        from djpcms.models import DeploySite
+        try:
+            latest = DeploySite.objects.latest()
+        except:
+            return ''
+        return loader.render_to_string(['/bits/deploy.html',
+                                        'djpcms/bits/deploy.html'],
+                                        {'latest':latest,
+                                         'name': timezone.tzname(dt = latest.created),
+                                         'url': timezone.link()})

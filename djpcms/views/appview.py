@@ -308,8 +308,10 @@ class SearchView(AppView):
         p  = Paginator(request, query)
         c  = self.content_dict(djp)
         c.update({'paginator': p,
-                  'url': djp.url,
-                  'items': self.appmodel.data_generator(djp, p.qs)})
+                  'url': djp.url})
+        if p.qs:
+            c['items'] = self.appmodel.data_generator(djp, p.qs)
+            
         return loader.render_to_string(['components/pagination.html',
                                         'djpcms/components/pagination.html'],
                                         c)

@@ -346,10 +346,13 @@ class ModelApplicationBase(ApplicationBase):
         Get the view url if available
         '''
         #TODO: change this so that we are not tide up with name
-        view = self.getapp('view')
-        if view and self.has_view_permission(request, obj):
-            djp = view(request, instance = obj)
-            return djp.url
+        try:
+            view = self.getapp('view')
+            if view and self.has_view_permission(request, obj):
+                djp = view(request, instance = obj)
+                return djp.url
+        except:
+            return None
     
     def searchurl(self, request):
         '''
