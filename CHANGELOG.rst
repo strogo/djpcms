@@ -35,7 +35,7 @@ first official Alpha release.
  * Sitemap handled by pagecache. For now only static pages and application pages without arguments are included.
  * Added lloogg_analytics and css_validators in template tags
  * NEW FIELD IN PAGE MODEL!! Added doctype field for specifying document type (HTML 4.01, XHTML 1, HTML 5)
- * NEW FIELD IN PAGE MODEL!! Added insidemap for disabling a page from sidemap and robots
+ * NEW FIELD IN PAGE MODEL!! Added insitemap for disabling a page from sidemap and robots
  * Refactored search form plugin
  * Added autocomplete-off javascript decorator
  * url resolver split between main urls and sub-applications
