@@ -75,7 +75,7 @@ def tagurl(self, request, *tags):
 
 class TagApplication(appsite.ModelApplication):
     search  = SearchView(in_navigation = True)
-    cloud   = SearchView(regex = 'tag', parent = 'search')
+    cloud   = SearchView(regex = 'tags', parent = 'search', in_navigation = True)
     tag1    = TagView(regex = '(?P<tag1>%s)' % tag_regex, parent = 'cloud')
     
     def tagurl(self, request, *tags):
