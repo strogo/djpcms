@@ -72,20 +72,22 @@ class ApplicationBase(object):
     name             = None
     autheinticated   = True
     
-    def __init__(self, application_site, editavailable):
+    def __init__(self, baseurl, application_site, editavailable):
         self.application_site = application_site
         self.editavailable    = editavailable
         self.root_application = None
+        self.__baseurl = baseurl
         
     def get_root_code(self):
         raise NotImplementedError
     
     def __get_baseurl(self):
-        page = pagecache.get_for_application(self.get_root_code())
-        if page:
-            return page.url
-        else:
-            return None
+        return self.__baseurl
+    #    page = pagecache.get_for_application(self.get_root_code())
+    #    if page:
+    #        return page.url
+    #    else:
+    #        return None
     baseurl = property(__get_baseurl)
     
     def __call__(self, request, rurl):
@@ -123,6 +125,7 @@ class ModelApplicationBase(ApplicationBase):
     # if True add/edit/delete will be performed via AJAX xhr POST requests
     form_ajax        = True
     search_form      = None
+    #
     date_code        = None
     search_form      = SearchForm
     # True if applications can go into navigation
@@ -132,8 +135,8 @@ class ModelApplicationBase(ApplicationBase):
     #
     search_fields    = None
     
-    def __init__(self, model, application_site, editavailable):
-        super(ModelApplicationBase,self).__init__(application_site, editavailable)
+    def __init__(self, baseurl, application_site, editavailable, model = None):
+        super(ModelApplicationBase,self).__init__(baseurl, application_site, editavailable)
         self.model            = model
         self.opts             = model._meta
         self.name             = self.name or self.opts.module_name

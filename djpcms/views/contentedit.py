@@ -250,7 +250,6 @@ class EditPluginView(appview.EditView):
 
 
 class ContentSite(appsite.ModelApplication):
-    baseurl     = CONTENT_INLINE_EDITING.get('pagecontent', '/content/')
     form        = ContentBlockForm
     form_layout = 'onecolumn'
     
@@ -324,5 +323,9 @@ class ContentSite(appsite.ModelApplication):
     
     
 if appsite.site.editavailable:
-    appsite.site.register(BlockContent,ContentSite,False)
+    baseurl     = CONTENT_INLINE_EDITING.get('pagecontent', '/content/')
+    appsite.site.register(baseurl,
+                          ContentSite,
+                          model = BlockContent,
+                          editavailable = False)
     

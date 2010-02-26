@@ -17,8 +17,9 @@ class ArchiveApplication(ModelApplication):
     '''
     An application urls wich define a search and archive views
     '''
+    date_code     = None    # this must be specified in implementations
     split_days    = False
-    search        = ArchiveView()
+    search        = ArchiveView(in_navigation = True)
     year_archive  = ArchiveView(regex = '(?P<year>\d{4})')
     month_archive = ArchiveView(regex = '(?P<month>\w{3})', parent = 'year_archive')
     day_archive   = ArchiveView(regex = '(?P<day>\d{2})',   parent = 'month_archive')

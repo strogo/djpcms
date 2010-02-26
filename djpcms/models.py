@@ -15,6 +15,7 @@ from django.utils.datastructures import SortedDict
 from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext_lazy as _
 from django.template import Template
+from django.contrib import messages
 
 #from djcms.middleware.threadlocals import get_current_user
 from djpcms.fields import SlugCode
@@ -178,7 +179,7 @@ class Page(TimeStamp):
         return u'%s%s' % (self.site.domain,self.url)
     
     def save(self, **kwargs):
-        self.url   = self.calculate_url()
+        self.url   = self.__calculate_url()
         if self.url is None:
             return
         self.level = self.get_level()
@@ -215,30 +216,39 @@ class Page(TimeStamp):
     def on_path(self, super):
         return super in self.get_path()
         
-    def calculate_url(self):
+    def __calculate_url(self):
+        '''
+        Calculate the url.
+        '''
         try:
             if self.application:
                 from djpcms.views import appsite
                 app = appsite.site.getapp(self.application)
                 purl = app.urlbit.url
                 if app.isroot():
-                    if not self.parent:
-                        self.url_pattern = ''
-                        return '/'
-                    url = self.url_pattern
-                    if not url:
-                        url = purl
-                    elif purl:
-                        url = '%s/%s' % url, purl
-                    if not url:
-                        raise ValueError('No url available in %s' % app.code)
+                    baseurl = app.baseurl
+                    root    = Page.objects.filter(site = self.site, level = 0)
+                    if baseurl == '/':
+                        if root:
+                            messages.error("Root page already available, cannot set application as root. Delete the flat root page first")
+                            return
+                        self.parent = None
+                    else:
+                        root = Page.objects.filter(site = self.site, level = 0)
+                        if root:
+                            self.parent = root[0]
+                        else:
+                            messages.error("Root page not available, cannot set application %s" % baseurl)
+                            return
+                    return baseurl
                 else:
                     p = app.parent
                     pages = Page.objects.filter(application = p.code, site = self.site)
                     if pages:
                         self.parent = pages[0]
                     else:
-                        raise ValueError('Parent page not defined %s' % app.code)
+                        messages.error('Parent page not defined %s' % app.code)
+                        return
                     url = purl
             else:
                 url = self.url_pattern
@@ -568,4 +578,4 @@ class Application(models.Model):
     
 
 
-mptt.register(Page)
+#mptt.register(Page)

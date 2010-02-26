@@ -30,6 +30,12 @@ class DjpResponse(http.HttpResponse):
         self.wrapper    = None
         self.prefix     = None
     
+    def __repr__(self):
+        return self.url
+    
+    def __str__(self):
+        return self.url
+    
     def __call__(self, prefix = None, wrapper = None):
         djp = copy.copy(self)
         djp.prefix  = prefix

@@ -23,10 +23,14 @@ class ApplicationSite(object):
     def count(self):
         return len(self._registry)
         
-    def register(self, model_or_iterable, application_class=None,
-                 editavailable = True, **options):
+    def register(self,
+                 baseurl,
+                 application_class = None,
+                 model = None,
+                 editavailable = True,
+                 **options):
         """
-        Registers the given model(s) with the given admin class.
+        Registers an application to a baseurl.
 
         The model(s) should be Model classes, not instances.
 
@@ -39,8 +43,10 @@ class ApplicationSite(object):
         if not application_class:
             application_class = ModelApplication
         
-        if isinstance(model_or_iterable, ModelBase):
-            model_or_iterable = [model_or_iterable]
+        if isinstance(model, ModelBase):
+            model_or_iterable = [model]
+        else:
+            model_or_iterable = model
         
         editavailable = self.editavailable and editavailable
         if model_or_iterable:
@@ -48,13 +54,13 @@ class ApplicationSite(object):
                 # Instantiate the admin class to save in the registry
                 if model in self._registry:
                     raise ValueError('Model %s already registered as application' % model)
-                appmodel = application_class(model, self, editavailable)
+                appmodel = application_class(baseurl, self, editavailable, model)
                 if appmodel.name in self._nameregistry:
                     raise ValueError('Model %s already registered as application' % model)
                 self._registry[model] = appmodel
                 self._nameregistry[appmodel.name] = appmodel
         else:
-            app = application_class(self, editavailable)
+            app = application_class(baseurl, self, editavailable)
             if not app.name:
                 raise ValueError('Application %s without a name' % app)
             if app.name in self._nameregistry:
