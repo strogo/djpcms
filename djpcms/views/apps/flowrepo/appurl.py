@@ -7,6 +7,7 @@
 from django.contrib.contenttypes.models import ContentType
 from django.forms.models import modelform_factory
 from django import http
+from django.utils.encoding import force_unicode
 
 from flowrepo.models import FlowItem
 from flowrepo.forms import FlowItemForm
@@ -22,7 +23,20 @@ class ContentView(appview.SearchView):
     
     def __init__(self, *args, **kwargs):
         super(ContentView,self).__init__(*args,**kwargs)
-    
+        
+    def title(self, page, content = None, **urlargs):
+        if content:
+            cmodels  = self.appmodel.content_models
+            contents = content.split('+')
+            titles   = []
+            for content in contents:
+                model = cmodels.get(content,None)
+                if model:
+                    titles.append(force_unicode(model._meta.verbose_name_plural))
+            return '+'.join(titles)
+        else:
+            return super(ContentView,self).title(page,**urlargs)
+        
     def appquery(self, request, content = None, **kwargs):
         qs = self.basequery(request, **kwargs)
         if content:
