@@ -1,6 +1,10 @@
 import datetime
 import re
 
+try:
+    from django.contrib import messages
+except:
+    messages = None
 from django.utils.encoding import force_unicode
 from django.utils.safestring import mark_safe
 from django.http import Http404
@@ -15,7 +19,6 @@ from django.utils.datastructures import SortedDict
 from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext_lazy as _
 from django.template import Template
-from django.contrib import messages
 
 #from djcms.middleware.threadlocals import get_current_user
 from djpcms.fields import SlugCode
@@ -230,7 +233,8 @@ class Page(TimeStamp):
                     root    = Page.objects.filter(site = self.site, level = 0)
                     if baseurl == '/':
                         if root:
-                            messages.error("Root page already available, cannot set application as root. Delete the flat root page first")
+                            if messages:
+                                messages.error("Root page already available, cannot set application as root. Delete the flat root page first")
                             return
                         self.parent = None
                     else:
@@ -238,7 +242,8 @@ class Page(TimeStamp):
                         if root:
                             self.parent = root[0]
                         else:
-                            messages.error("Root page not available, cannot set application %s" % baseurl)
+                            if messages:
+                                messages.error("Root page not available, cannot set application %s" % baseurl)
                             return
                     return baseurl
                 else:
@@ -247,7 +252,8 @@ class Page(TimeStamp):
                     if pages:
                         self.parent = pages[0]
                     else:
-                        messages.error('Parent page not defined %s' % app.code)
+                        if messages:
+                            messages.error('Parent page not defined %s' % app.code)
                         return
                     url = purl
             else:
