@@ -69,6 +69,7 @@ setup(
         long_description = read('README.rst'),
         packages     = packages,
         data_files   = data_files,
+        install_requires = ['pytz>2009'],
         classifiers = [
             'Development Status :: 3 - Alpha',
             'Environment :: Web Environment',
