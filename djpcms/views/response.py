@@ -180,6 +180,7 @@ class DjpResponse(http.HttpResponse):
         if more_context:
             d.update(more_context)
         d['djp']   = self
+        d['page']   = self.page
         if settings.ENABLE_BREADCRUMBS:
             d['breadcrumbs'] = Breadcrumbs(self,settings.ENABLE_BREADCRUMBS)
         d['sitenav'] = Navigator(self)

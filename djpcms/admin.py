@@ -26,7 +26,7 @@ class InnerTemplateAdmin(admin.ModelAdmin):
 
 class PageAdmin(admin.ModelAdmin):
     list_display        = ('url','application','in_navigation','link','redirect_to','requires_login','inner_template', 'cssinfo',
-                           'is_published','get_template')
+                           'is_published','get_template','level')
     inlines             = [AdditionalPageDataInline]
     save_on_top         = True
     form                = PageForm

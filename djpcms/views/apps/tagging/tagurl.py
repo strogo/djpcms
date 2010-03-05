@@ -17,7 +17,10 @@ class TagView(SearchView):
     
     def __init__(self, *args, **kwargs):
         super(TagView,self).__init__(*args, **kwargs)
-        
+    
+    def title(self, page, **urlargs):
+        return urlargs.get('tag1','')
+    
     def appquery(self, request, **tags):
         qs = self.basequery(request)
         if tags:

@@ -1,14 +1,14 @@
 #
 #    Utility for managing grid 960 css templates
 #
-from django.utils.safestring import mark_safe
+from djpcms.conf import settings
+from djpcms.utils import mark_safe
 
 __all__ = ['grid960']
 
 def grid960(columns = 12, fixed = None):
     if fixed is None:
-        from djpcms.settings import GRID960_DEFAULT_FIXED
-        fixed = GRID960_DEFAULT_FIXED
+        fixed = settings.GRID960_DEFAULT_FIXED
         
     if columns == 16:
         return grid960_16(fixed)
