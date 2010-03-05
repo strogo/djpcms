@@ -1,7 +1,6 @@
 import json
 import datetime
 
-from django.conf import settings
 from django import http
 from django.shortcuts import render_to_response
 from django.template import loader, RequestContext

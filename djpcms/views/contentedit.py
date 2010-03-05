@@ -8,7 +8,7 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.template import RequestContext, loader
 
-from djpcms.settings import HTML_CLASSES, CONTENT_INLINE_EDITING
+from djpcms.conf import settings
 from djpcms.models import BlockContent
 from djpcms.utils import form_kwargs
 from djpcms.utils.func import isforminstance
@@ -230,8 +230,8 @@ class EditPluginView(appview.EditView):
         d = dialog(hd = f.instance.code,
                    bd = f.render(),
                    modal  = True,
-                   width  = CONTENT_INLINE_EDITING.get('width','auto'),
-                   height = CONTENT_INLINE_EDITING.get('height','auto'))
+                   width  = settings.CONTENT_INLINE_EDITING.get('width','auto'),
+                   height = settings.CONTENT_INLINE_EDITING.get('height','auto'))
         d.addbutton('Ok', url = djp.url, func = 'save')
         d.addbutton('Cancel', url = djp.url, func = 'cancel')
         d.addbutton('Save', url = djp.url, func = 'save', close = False)
@@ -323,7 +323,7 @@ class ContentSite(appsite.ModelApplication):
     
     
 if appsite.site.editavailable:
-    baseurl     = CONTENT_INLINE_EDITING.get('pagecontent', '/content/')
+    baseurl     = settings.CONTENT_INLINE_EDITING.get('pagecontent', '/content/')
     appsite.site.register(baseurl,
                           ContentSite,
                           model = BlockContent,

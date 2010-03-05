@@ -11,10 +11,10 @@ def load():
     '''
     Load dynamic applications and create urls
     '''
-    from djpcms.settings import APPLICATION_URL_MODULE
+    from djpcms.conf import settings
     import djpcms.views.contentedit
-    if APPLICATION_URL_MODULE:
-        app_module = import_module(APPLICATION_URL_MODULE)
+    if settings.APPLICATION_URL_MODULE:
+        app_module = import_module(settings.APPLICATION_URL_MODULE)
         
 
         

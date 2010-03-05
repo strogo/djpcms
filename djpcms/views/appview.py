@@ -2,7 +2,6 @@ import operator
 import copy
 from datetime import datetime
 
-from django.conf import settings
 from django import http
 from django.db.models import Q
 from django.db.models.query import QuerySet
@@ -12,6 +11,7 @@ from django.utils.dates import MONTHS_3_REV
 from django.utils.dateformat import format
 from django.utils.text import smart_split
 
+from djpcms.conf import settings
 from djpcms.utils.html import Paginator
 from djpcms.utils.func import force_number_insert
 from djpcms.utils.ajax import jremove, dialog, jredirect

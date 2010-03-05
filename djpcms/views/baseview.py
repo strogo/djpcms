@@ -3,7 +3,6 @@ Base class for djpcms views.
 '''
 import copy
 
-from django.conf import settings
 from django import http
 from django.utils.safestring import mark_safe
 from django.utils.encoding import force_unicode
@@ -12,8 +11,7 @@ from django.template import RequestContext, Context, loader
 from django.core.exceptions import PermissionDenied
 
 
-from djpcms.settings import HTML_CLASSES, GRID960_DEFAULT_FIXED, \
-                            DEFAULT_TEMPLATE_NAME, DJPCMS_CONTENT_FUNCTION
+from djpcms.conf import settings
 from djpcms.utils.ajax import jservererror, jredirect
 from djpcms.utils.html import grid960
 from djpcms.permissions import inline_editing
@@ -24,7 +22,7 @@ from djpcms.views.response import DjpResponse
 from djpcms.views.contentgenerator import BlockContentGen
 
 more_content = lambda djp : {}
-build_base_context = function_module(DJPCMS_CONTENT_FUNCTION, more_content)
+build_base_context = function_module(settings.DJPCMS_CONTENT_FUNCTION, more_content)
 
 
 
@@ -69,7 +67,7 @@ class djpcmsview(UnicodeObject):
             if page:
                 return page.get_template()
             else:
-                return DEFAULT_TEMPLATE_NAME
+                return settings.DEFAULT_TEMPLATE_NAME
         
     def title(self, page, **urlargs):
         if page:
@@ -194,7 +192,7 @@ class djpcmsview(UnicodeObject):
         request   = djp.request
         post      = request.POST
         params    = dict(post.items())
-        ajax_key  = params.get(HTML_CLASSES.post_view_key, None)
+        ajax_key  = params.get(settings.HTML_CLASSES.post_view_key, None)
         def_ajax  = False
         
         # check if this is an ajax request with no ajax_key

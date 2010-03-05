@@ -2,7 +2,7 @@ import re
 
 from django.http import Http404, HttpResponseRedirect
 
-from djpcms.settings import CONTENT_INLINE_EDITING
+from djpcms.conf import settings
 from djpcms.views import appsite
 from djpcms.views.cache import pagecache
 from djpcms.views.response import DjpResponse 
@@ -52,7 +52,7 @@ def editHandler(request, url):
     view, args, kwargs = djpcmsHandler(request, url)
     if isinstance(view,HttpResponseRedirect):
         return view
-    view = editview(view, CONTENT_INLINE_EDITING['preurl'])
+    view = editview(view, settings.CONTENT_INLINE_EDITING['preurl'])
     return view(request, *args, **kwargs).response()
 
 
@@ -82,3 +82,4 @@ def clean_url(path):
         #    url = url[1:]
             
     return url
+

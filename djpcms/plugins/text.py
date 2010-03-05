@@ -1,16 +1,15 @@
 #
 #
 from django import forms
-from django.conf import settings
-from django.utils.safestring import mark_safe
 from django.template import RequestContext
 
-from djpcms.utils import json, form_kwargs
+from djpcms.conf import settings
+from djpcms.utils import json, form_kwargs, mark_safe
 from djpcms.models import SiteContent
 from djpcms.plugins import DJPplugin
 from djpcms.forms import SlugField
 from djpcms.utils.html import formlet
-from djpcms import markup
+from djpcms.markup import markuplib
 
 
 class NewContentCode(SlugField):
@@ -36,8 +35,8 @@ class ChangeTextContent(forms.Form):
                                   label = 'New content unique code',
                                   help_text = 'When creating a new content give a unique name you like',
                                   required = False)
-    markup       = forms.ChoiceField(choices = markup.choices(),
-                                     initial = markup.default(),
+    markup       = forms.ChoiceField(choices = markuplib.choices,
+                                     initial = markuplib.default,
                                      required = False)
     
     def __init__(self, *args, **kwargs):

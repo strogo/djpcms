@@ -21,7 +21,7 @@ def _inline_editing(request, view):
     
 
 def inline_editing(request, view):
-    from djpcms import settings
+    from djpcms.conf import settings
     editing = settings.CONTENT_INLINE_EDITING
     if editing.get('available',False):
         func = function_module(editing.get('permission',None),_inline_editing)

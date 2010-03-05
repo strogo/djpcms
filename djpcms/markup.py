@@ -1,21 +1,39 @@
 #
 # Load the markup module
-# This hook is provided so that third-party murkup libraries
-# to process murkup languages can be used rather than the limited one
-# in djpcms
-from djpcms.settings import DJPCMS_MARKUP_MODULE
-
-markup_module = __import__(DJPCMS_MARKUP_MODULE,globals(),locals(),[''])
-
+# This hook is provided so that third-party markup libraries
+# can be used rather than the limited one in djpcms
 #
-# The murkup module must provide the following 3 methods
 
+class mchoices(object):
+    
+    def __init__(self, lib):
+        self.lib = lib
+    
+    def __iter__(self):
+        return [].__iter__()
+    
+    def __next__(self):
+        c = self.lib.markup_module().choices
+        return c.__iter__()
 
-# list of 2-elements tuples to use in Report model markup choice
-choices = markup_module.choices
+class MarkupLib(object):
+    
+    def __init__(self):
+        self._module = None
+        self.choices = mchoices(self)
+        
+    def markup_module(self):
+        if not self._module:
+            from djpcms.conf import settings
+            self._module = __import__(settings.DJPCMS_MARKUP_MODULE,globals(),locals(),[''])
+        return self._module
 
-# default markup, a string
-default = markup_module.default
+    def default(self):
+        # default markup, a string
+        return self.markup_module().default
 
-# get method to obtain the markup handler
-get = markup_module.get
+    def get(self, code):
+        # get method to obtain the markup handler
+        return self.markup_module().get(code)
+
+markuplib = MarkupLib()

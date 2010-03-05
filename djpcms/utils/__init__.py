@@ -1,5 +1,5 @@
 from django.utils.encoding import smart_str, force_unicode, smart_unicode
-
+from django.utils.safestring import mark_safe
 
 def form_kwargs(request, instance = None, withrequest = False, **kwargs):
     '''

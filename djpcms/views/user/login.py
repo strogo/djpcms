@@ -1,9 +1,7 @@
 from django.contrib.auth import authenticate, login, logout
 from django import http
 
-from djpcms.settings import HTML_CLASSES
 from djpcms.views import appview
-
 from djpcms.utils.html import form, formlet, submit
 from djpcms.utils import form_kwargs
 from djpcms.utils.ajax import jredirect
@@ -40,7 +38,8 @@ class LoginApp(appview.AppView):
     This object can be used to login users
     '''
     def __init__(self, regex = 'login', parent = None, insitemap = False, **kwargs):
-        super(LoginApp,self).__init__(regex = regex, parent = parent, insitemap = insitemap, **kwargs)
+        super(LoginApp,self).__init__(regex = regex, parent = parent,
+                                      insitemap = insitemap, **kwargs)
         
     def title(self, page, **kwargs):
         if page:

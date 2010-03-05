@@ -3,7 +3,7 @@ from django.db import models
 from django.contrib.sites.models import Site
 from django.utils.translation import ugettext_lazy as _
 
-from djpcms.settings import HTML_CLASSES
+from djpcms.conf import settings
 from djpcms.models import Page, BlockContent, SiteContent
 from djpcms.utils import lazyattr
 from djpcms import siteapp_choices
@@ -47,7 +47,7 @@ class LazyAjaxChoice(LazyChoiceField):
         super(LazyAjaxChoice,self).__init__(*args, **kwargs)
         
     def widget_attrs(self, widget):
-        return {'class': HTML_CLASSES.ajax}
+        return {'class': settings.HTML_CLASSES.ajax}
     
 
 class ModelCharField(forms.CharField):

@@ -1,14 +1,13 @@
 from django import template
-from django.utils.safestring import mark_safe
 
-from djpcms.settings import GOOGLE_ANALYTICS_ID, LLOOGG_ANALYTICS_ID, DJPCMS_SITE_STYLE
-from django.conf import settings
+from djpcms.utils import mark_safe
+from djpcms.conf import settings
 
 register = template.Library()
 
 
 def google_analytics():
-    if GOOGLE_ANALYTICS_ID:
+    if settings.GOOGLE_ANALYTICS_ID:
         an = """
     <script type="text/javascript">
         var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
@@ -19,21 +18,21 @@ def google_analytics():
         pageTracker._initData();
         pageTracker._trackPageview();
     </script>
-        """ % GOOGLE_ANALYTICS_ID
+        """ % settings.GOOGLE_ANALYTICS_ID
         return mark_safe(an)
     else:
         return u''
 register.simple_tag(google_analytics)
 
 def lloogg_analytics():
-    if LLOOGG_ANALYTICS_ID:
+    if settings.LLOOGG_ANALYTICS_ID:
         an = """
     <script type="text/javascript">
         lloogg_clientid = "%s";
     </script>
     <script type="text/javascript" src="http://lloogg.com/l.js?c=%s">
     </script>
-        """ % (LLOOGG_ANALYTICS_ID,LLOOGG_ANALYTICS_ID)
+        """ % (settings.LLOOGG_ANALYTICS_ID,settings.LLOOGG_ANALYTICS_ID)
         return mark_safe(an)
     else:
         return ''

@@ -49,7 +49,7 @@ class MemCachePannel(DJPplugin):
         '''
         Information about deployment
         '''
-        from djpcms.models import DeploySite
+        from djpcms.conf import settings
         try:
             latest = DeploySite.objects.latest()
         except:

@@ -8,7 +8,7 @@ from djpcms.utils.plugin import PluginBase, loadobjects
 from djpcms.utils import json, form_kwargs
 from djpcms.utils.formjson import form2json
 from djpcms.utils.deco import response_wrap
-from djpcms import settings
+from djpcms.conf import settings
     
 
 _plugin_dictionary = {}
@@ -46,7 +46,7 @@ def loadplugins(plist):
     for p in _plugin_dictionary.values():
         if p.URL:
             urls.append((r'^%s' % p.URL.lstrip('/'), p.response))
-    urls.append((r'^%s([\w/-]*)' % settings.DJPCMS_PLUGIN_BASE_URL.lstrip('/'), generic_plugin_response))
+    #urls.append((r'^%s([\w/-]*)' % settings.DJPCMS_PLUGIN_BASE_URL.lstrip('/'), generic_plugin_response))
     return tuple(urls)
 
 

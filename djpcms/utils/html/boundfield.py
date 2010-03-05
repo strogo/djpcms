@@ -3,7 +3,7 @@ from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from django import forms
 
-from djpcms.settings import HTML_CLASSES
+from djpcms.conf import settings
 
 
 __all__ = ['BoundField','ErrorList']
@@ -20,7 +20,7 @@ class ErrorList(forms.util.ErrorList):
 
 
 class BoundField(object):
-    ajax = HTML_CLASSES
+    ajax = settings.HTML_CLASSES
     '''
     Wrapper for django Forms BoundField
     '''

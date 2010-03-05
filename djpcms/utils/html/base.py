@@ -4,12 +4,12 @@ from django.forms.util import flatatt
 from django.utils.datastructures import SortedDict
 from django.utils.safestring import mark_safe
 
-from djpcms.settings import HTML_CLASSES
+from djpcms.conf import settings
 from djpcms.utils import UnicodeObject
 
 
 class htmlbase(UnicodeObject):
-    ajax = HTML_CLASSES
+    ajax = settings.HTML_CLASSES
     
     def get_template(self):
         template = getattr(self,'template',None)

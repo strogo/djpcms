@@ -5,12 +5,9 @@ try:
     from django.contrib import messages
 except:
     messages = None
-from django.utils.encoding import force_unicode
-from django.utils.safestring import mark_safe
 from django.http import Http404
 from django.utils.dateformat import DateFormat
 from django.db import models
-from django.db.models import Q
 from django.utils import translation
 from django.utils import html
 from django.contrib.auth.models import User
@@ -24,14 +21,11 @@ from django.template import Template
 from djpcms.fields import SlugCode
 from djpcms.plugins import get_wrapper, default_content_wrapper, get_plugin
 from djpcms.utils.models import TimeStamp
-from djpcms.utils import lazyattr, function_module
+from djpcms.utils import lazyattr, function_module, force_unicode, mark_safe, htmltype
 from djpcms.utils.func import PathList
 from djpcms.uploads import upload_function, site_image_storage
-from djpcms import settings, markup
 from djpcms.managers import PageManager
-from djpcms.utils import htmltype
-
-import mptt
+from djpcms.markup import markuplib
 
 protocol_re = re.compile('^\w+://')
 
@@ -197,7 +191,7 @@ class Page(TimeStamp):
             if self.parent:
                 return self.parent.get_template()
             else:
-                return settings.DEFAULT_TEMPLATE_NAME
+                return 'base.html'
         else:
             return self.template
 
@@ -513,8 +507,8 @@ class SiteContent(models.Model):
     description   = models.TextField(blank = True)
     body          = models.TextField(_('body'),blank=True)
     markup        = models.CharField(max_length = 3,
-                                     choices = markup.choices(),
-                                     default = markup.default(),
+                                     choices = markuplib.choices,
+                                     default = markuplib.default,
                                      null = False)
     
     objects = SiteContentManager()
@@ -578,8 +572,8 @@ class Application(models.Model):
     javascript  = models.TextField(blank=True)
     mark        = models.IntegerField(default = 0)
     markup      = models.CharField(max_length = 3,
-                                   choices = markup.choices(),
-                                   default = markup.default(),
+                                   choices = markuplib.choices,
+                                   default = markuplib.default,
                                    null = False)
     
 

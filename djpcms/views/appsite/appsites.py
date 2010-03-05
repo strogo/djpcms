@@ -13,9 +13,9 @@ class ApplicationSite(object):
     registered django applications.
     '''
     def __init__(self):
-        from djpcms.settings import APPLICATION_URL_PREFIX, CONTENT_INLINE_EDITING
-        self.root_path     = APPLICATION_URL_PREFIX[1:]
-        self.editavailable = CONTENT_INLINE_EDITING.get('available',False)
+        from djpcms.conf import settings
+        self.root_path     = settings.APPLICATION_URL_PREFIX[1:]
+        self.editavailable = settings.CONTENT_INLINE_EDITING.get('available',False)
         self._registry     = {}
         self._nameregistry = SortedDict()
         self.choices       = siteapp_choices

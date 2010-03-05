@@ -1,6 +1,5 @@
 import datetime
-from django.conf import settings
-from djpcms.settings import HTML_CLASSES
+from djpcms.conf import settings
 
 def djpcms(request):
     now = datetime.datetime.now()

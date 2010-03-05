@@ -1,9 +1,8 @@
-from django.conf import settings
 from django.contrib import admin
 from django.conf.urls.defaults import *
 
 import djpcms
-from djpcms.settings import SERVE_STATIC_FILES, DJPCMS_PLUGINS, DJPCMS_WRAPPERS, CONTENT_INLINE_EDITING
+from djpcms.conf import settings
 from djpcms.views import appsite
 from djpcms.sitemap import get_site_maps
 
@@ -13,8 +12,8 @@ if not settings.DEBUG:
 
 from djpcms.plugins import loadplugins, loadwrappers
     
-plugin_urls = loadplugins(DJPCMS_PLUGINS)
-loadwrappers(DJPCMS_WRAPPERS)
+plugin_urls = loadplugins(settings.DJPCMS_PLUGINS)
+loadwrappers(settings.DJPCMS_WRAPPERS)
 admin.autodiscover()
 appsite.load()
 
@@ -32,7 +31,7 @@ else:
     
 
 # MEDIA FILES ONLY IF REQUESTED
-if SERVE_STATIC_FILES:
+if settings.SERVE_STATIC_FILES:
     import djpcms
     import os
     djpcms_media_root = os.path.join(djpcms.__path__[0],'media','djpcms')
@@ -57,14 +56,14 @@ site_urls      += (r'^sitemap.xml$', 'django.contrib.sitemaps.views.sitemap', {'
 # Plugins
 site_urls      += plugin_urls
 
-if CONTENT_INLINE_EDITING['available']:
-    edit = CONTENT_INLINE_EDITING['preurl']
+if settings.CONTENT_INLINE_EDITING['available']:
+    edit = settings.CONTENT_INLINE_EDITING['preurl']
     #site_urls += ((r'{0}/([\w/-]*)'.format(edit), 'djpcms.views.handlers.editHandler'),)
     site_urls += ((r'%s/([\w/-]*)' % edit, 'djpcms.views.handlers.editHandler'),)
     
     
-loadplugins(DJPCMS_PLUGINS)
-loadwrappers(DJPCMS_WRAPPERS)
+loadplugins(settings.DJPCMS_PLUGINS)
+loadwrappers(settings.DJPCMS_WRAPPERS)
 
 
     

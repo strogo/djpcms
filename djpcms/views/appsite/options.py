@@ -13,10 +13,10 @@ from django.template import loader, Template, Context, RequestContext
 from django.core.exceptions import PermissionDenied
 from django.conf.urls.defaults import url
 
+from djpcms.conf import settings
 from djpcms.utils import form_kwargs, UnicodeObject
 from djpcms.utils.forms import add_hidden_field
 from djpcms.plugins import register_application
-from djpcms.settings import HTML_CLASSES
 from djpcms.utils.html import formlet, submit, form
 
 from djpcms.views.baseview import editview
@@ -68,7 +68,7 @@ class ApplicationBase(object):
     '''
     Base class for djpcms applications
     '''
-    ajax             = HTML_CLASSES
+    ajax             = settings.HTML_CLASSES
     name             = None
     autheinticated   = True
     

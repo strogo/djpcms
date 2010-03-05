@@ -3,7 +3,6 @@ from django.forms.formsets import formset_factory
 from django.template import RequestContext, loader
 from django.utils.safestring import mark_safe
 
-from djpcms.settings import HTML_CLASSES
 from djpcms.utils import UnicodeObject
 
 

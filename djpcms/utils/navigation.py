@@ -2,7 +2,7 @@
 Utility module for creating a navigation list
 '''
 
-from djpcms.settings import HTML_CLASSES
+from djpcms.conf import settings
 from djpcms.utils import lazyattr    
 
 
@@ -62,6 +62,7 @@ class Navigator(lazycounter):
             return djp
         
     def _items(self, urlselects = None, secondary_after = 100, **kwargs):
+        HTML_CLASSES = settings.HTML_CLASSES
         djp        = self.djp
         if urlselects is None:
             urlselects = []

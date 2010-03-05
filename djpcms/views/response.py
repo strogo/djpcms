@@ -5,7 +5,7 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.utils.encoding import smart_str
 
-from djpcms import settings
+from djpcms.conf import settings
 from djpcms.utils import lazyattr
 from djpcms.utils.navigation import Navigator, Breadcrumbs
 
