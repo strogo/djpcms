@@ -96,11 +96,11 @@ class DocApplication(ApplicationBase):
     defversion       = 'dev'
     DOCS_PICKLE_ROOT = None
     
-    def __init__(self, application_site, editavailable):
+    def __init__(self, baseurl, application_site, editavailable):
         '''
         Create a tuple of urls
         '''
-        super(DocApplication,self).__init__(application_site, editavailable)       
+        super(DocApplication,self).__init__(baseurl, application_site, editavailable)       
         self.root_application   = Index(self)
         self.language           = Language(self,self.root_application)
         self.document           = Document(self,self.language)

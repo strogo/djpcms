@@ -2,9 +2,13 @@ from djpcms.views import appsite
 from djpcms.models import SiteContent
 
 class ContentArchiveApplication(appsite.ArchiveApplication):
+    '''
+    Simple ArchiveApplication based on the SiteContent model in djpcms
+    '''
     inherit    = True
     name       = 'content'
-    baseurl    = '/content/'
     date_code  = 'last_modified'
-appsite.site.register(SiteContent,ContentArchiveApplication)
+    
+    
+appsite.site.register('/content/', ContentArchiveApplication, model = SiteContent)
 

@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 
+from djpcms.conf import settings
 from djpcms.views.user import UserApplication
 from djpcms.views import appsite
 
@@ -16,5 +17,5 @@ class DjpcmsDoc(DocApplication):
 
 
 #__________________________________________________ Add user account support
-appsite.site.register(User,UserApplication)
-appsite.site.register(None,DjpcmsDoc)
+appsite.site.register(settings.USER_ACCOUNT_HOME_URL, UserApplication, model = User)
+appsite.site.register('/docs/',DjpcmsDoc)
