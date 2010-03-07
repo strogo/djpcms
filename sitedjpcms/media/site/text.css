@@ -8,6 +8,10 @@ body {
 	font-weight:normal;
 	line-height:1.4em;
 }
+#brandline {
+	font-weight: bold;
+	font-size: 150%;
+}
 #tag-line {
 	font-size: 20px;
 	line-height: 50px;
@@ -22,8 +26,9 @@ p.rubric {
 	font-family:Georgia,"Times New Roman","Bitstream Charter",Times,serif;
 	font-weight: bold;
 	font-size: 40px;
-	line-height: 80px;
+	line-height: 60px;
 }
+
 
 h1 {
 	font-size:218%;

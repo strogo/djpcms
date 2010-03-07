@@ -1,3 +1,39 @@
+#page-header {
+	background: transparent url(img/header2.gif) repeat-x scroll 0 0;
+    height:328px;
+}
+.site-logo {
+    padding: 0 30px;
+}
+#navigation {
+background:transparent url(images/brd.gif) no-repeat scroll 0 8px;
+display:inline;
+float:left;
+height:44px;
+margin-left:270px;
+padding-left:8px;
+padding-top:14px;
+}
+#brandline {
+    padding: 30px 10px;   
+}
+#tagline {
+	background:transparent url(img/bg.gif) repeat-x;
+	height:82px;
+}
+#page-main {
+	min-height: 500px;
+}
+#footer {
+    background: transparent url(img/ftr.gif) repeat-x;
+    color:#FFFFFF;
+    height:53px;
+}
+#navigation li a:hover {
+    background:transparent url(img/hover.gif) repeat-x;
+    text-decoration:none;
+}
+
 a, a.link {
 	text-decoration: none;
 }
@@ -13,9 +49,6 @@ h2 {
 	margin-bottom: 40px;
 	overflow: hidden;
 }
-#footer {
-	min-height: 200px;
-}
 #documentation h2, #documentation h3, #documentation h4 {
 	margin-top:1.4em;
 }
@@ -25,9 +58,6 @@ h2 {
 p {
 	line-height: 1.2em;
 	margin-bottom: 0.6em;
-}
-.site-logo {
-	padding: 0 20px;
 }
 .section {
 	margin-top: 20px;
