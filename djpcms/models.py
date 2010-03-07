@@ -523,7 +523,7 @@ class SiteContent(models.Model):
         text = self.body
         if not text:
             html = u''
-        mkp = markup.get(self.markup)
+        mkp = markuplib.get(self.markup)
         if mkp:
             handler = mkp.get('handler')
             html = force_unicode(handler(text))
