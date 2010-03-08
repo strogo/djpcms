@@ -6,6 +6,39 @@ from djpcms.conf import settings
 register = template.Library()
 
 
+class DummyCompressorNode(template.Node):
+    def __init__(self, nodelist):
+        self.nodelist = nodelist
+
+    def render(self, context):
+        return self.nodelist.render(context)
+
+@register.tag
+def compress_if_you_can(parser, token):
+    '''
+    Compress media if django_compressor is available
+    '''
+    nodelist = parser.parse(('endcompress',))
+    parser.delete_first_token()
+    if 'compressor' in settings.INSTALLED_APPS:
+        from compressor.templatetags.compress import CompressorNode
+
+        args = token.split_contents()
+
+        if not len(args) == 2:
+            raise template.TemplateSyntaxError("%r tag requires either 1, 3 or 5 arguments." % args[0])
+
+        kind = args[1]
+        if not kind in ['css', 'js']:
+            raise template.TemplateSyntaxError("%r's argument must be 'js' or 'css'." % args[0])
+
+        return CompressorNode(nodelist, kind)
+    else:
+        return DummyCompressorNode(nodelist)
+    
+    
+
+
 def google_analytics():
     if settings.GOOGLE_ANALYTICS_ID:
         an = """

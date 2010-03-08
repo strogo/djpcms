@@ -445,6 +445,7 @@ class BlockContent(models.Model):
         plugin  = self.plugin
         wrapper = self.wrapper
         if plugin:
+            djp.add_pluginmedia(plugin)
             #prefix  = 'bd_%s' % self.pluginid()
             prefix = None
             html   = plugin(djp, self.arguments, wrapper = wrapper, prefix = prefix)
@@ -522,12 +523,12 @@ class SiteContent(models.Model):
     def htmlbody(self):
         text = self.body
         if not text:
-            html = u''
+            return ''
         mkp = markuplib.get(self.markup)
         if mkp:
             handler = mkp.get('handler')
-            html = force_unicode(handler(text))
-        return mark_safe(html)
+            text = handler(text)
+        return mark_safe(force_unicode(text))
     
     def update(self, user = None, body = ''):
         self.body = body

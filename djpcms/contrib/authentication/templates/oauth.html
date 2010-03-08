@@ -1,0 +1,11 @@
+<div class="oauth-authentication ui-tabs">
+ <ul>{% for item in items %}
+  <li><a href="#{{ item.id }}">{{ item.name }}</a></li>{% endfor %}
+ </ul>{% for item in items %}
+ <div id="{{ item.id }}">
+  <form {% if item.formclass %} class="{{ item.formclass }}"{% endif %} action="{{ url }}" method="post">
+  {{ item.render }}
+  <input type="submit" value="login" class="submit" name="{{ item.name }}">
+  </form>
+ </div>{% endfor %}
+</div>

@@ -1,6 +1,7 @@
 
 0.6 beta
 =======================
+ * Added `compress_if_you_can` template tag for compressing media files using third party libraries.
  * Started decoupling from django. Still very much a django app right now.
  * Compatible with django 1.2 and multidatabase
  * Bug in views.apps.flowrepo.appurl.FlowRepoApplication.has_permission fixed.

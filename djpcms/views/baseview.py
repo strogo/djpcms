@@ -191,18 +191,18 @@ class djpcmsview(UnicodeObject):
         '''
         request   = djp.request
         post      = request.POST
-        params    = dict(post.items())
-        ajax_key  = params.get(settings.HTML_CLASSES.post_view_key, None)
-        def_ajax  = False
+        is_ajax   = request.is_ajax()
+        ajax_key  = False
+        mimetype  = None
         
-        # check if this is an ajax request with no ajax_key
-        if not ajax_key:
-            ajax_key = request.is_ajax()
-            def_ajax = True
-        else:
-            ajax_key = ajax_key.replace('-','_').lower()
-        
-        # If post_view key is defined, it means this is a AJAX-JSON request
+        if is_ajax:
+            mimetype = 'application/javascript'
+            params   = dict(post.items())
+            ajax_key = params.get(settings.HTML_CLASSES.post_view_key, None)
+            if ajax_key:
+                ajax_key = ajax_key.replace('-','_').lower()
+            
+        # If ajax_key is defined, it means this is a AJAX-JSON request
         if ajax_key:
             #
             # Handle the cancel request redirect.
@@ -213,15 +213,12 @@ class djpcmsview(UnicodeObject):
                     url = self.defaultredirect(djp)
                 res = jredirect(url)
             else:    
-                if def_ajax:
-                    ajax_view_function = self.default_ajax_view
-                else:
-                    ajax_view = 'ajax__%s' % ajax_key
-                    ajax_view_function  = getattr(self,str(ajax_view),None)
+                ajax_view = 'ajax__%s' % ajax_key
+                ajax_view_function  = getattr(self,str(ajax_view),None)
                 
-                    # No post view function found. Let's try the default ajax post view
-                    if not ajax_view_function:
-                        ajax_view_function = self.default_ajax_view;
+                # No post view function found. Let's try the default ajax post view
+                if not ajax_view_function:
+                    ajax_view_function = self.default_ajax_view;
             
                 try:
                     res  = ajax_view_function(djp)
@@ -235,9 +232,11 @@ class djpcmsview(UnicodeObject):
             
             return http.HttpResponse(res.dumps(), mimetype='application/javascript')
         #
-        # Otherwise it is a standard POST response
+        # Otherwise it is the default POST response
         else:
-            return self.default_post(djp)
+            dpost = self.default_post(djp)
+            return dpost
+            
     
     def default_ajax_view(self, djp):
         '''

@@ -397,6 +397,15 @@
 		}
 	});
 	
+	/**
+	 * jQuery UI Tabs
+	 */
+	dj.addDecorator({
+		id:"ui-tabs",
+		decorate: function($this, config) {
+			$('.ui-tabs',$this).tabs();
+		}
+	});
 	
 	/**
 	 * Cycle jQuery Plugin decorator, from django-flowrepo

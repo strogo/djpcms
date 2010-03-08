@@ -10,10 +10,16 @@
 {% block blockkeywords %}<meta name="keywords" content="{% block site-keywords %}{% endblock %}"/>{% endblock %}
 {% block blockdescriptions %}<meta name="description" content="{% block site-description %}{% endblock %}"/>{% endblock %}{% if djp.page %}{% for head in djp.page.additional_head %}
 {{ head|safe }}{% endfor %}{% endif %}
+<!--  STYLING -->
+{% compress_if_you_can css %}
 {% block style-reset %}{% endblock %}
 {% block extrastyle %}{% endblock %}
-<style type="text/css">{% block body-extra-style %}{% endblock %}
-</style>{% block script-block %}{% endblock %}{% block extra-head %}{% endblock %}
+<style type="text/css">
+{% block body-extra-style %}{{ plugincss }}{% endblock %}
+</style>
+{% endcompress %}
+<!-- END OF STYLING -->
+{% block script-block %}{% endblock %}{% block extra-head %}{% endblock %}
 <script type="text/javascript" src="{{ MEDIA_URL }}djpcms/modernizr-1.1.min.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}djpcms/jquery-1.4.1.min.js"></script>
 </head>

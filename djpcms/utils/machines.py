@@ -43,7 +43,7 @@ class machine(object):
         self._machines[name] = self
         
     def media_root(self):
-        m = os.path.join(self.LOCDIR,'media','site')
+        m = os.path.join(self.LOCDIR,'media')
         if self.servs or not self._media_root:
             return m
         else:

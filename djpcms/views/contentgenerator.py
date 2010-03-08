@@ -33,7 +33,7 @@ class BlockContentGen(UnicodeObject):
         
     def render(self):
         '''
-        Render the Block.
+        Render the Content Block by looping over of the block items
         @return: HTML safe unicode for the block
         '''
         html = [u'<div id="%s" class="djpcms-block">' % self.htmlid()]

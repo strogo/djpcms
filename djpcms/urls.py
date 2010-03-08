@@ -36,18 +36,19 @@ if settings.SERVE_STATIC_FILES:
     import os
     djpcms_media_root = os.path.join(djpcms.__path__[0],'media','djpcms')
     murl = settings.MEDIA_URL.lstrip("/")
+    site_root = os.path.join(settings.MEDIA_ROOT,'site')
     site_urls += (
                     r'^%sdjpcms/(?P<path>.*)$' % murl, # r'^{0}djpcms/(?P<path>.*)$'.format(murl),
                     'django.views.static.serve',
                     {'document_root': djpcms_media_root, 'show_indexes': True}
                   ),(
-                     r'^%ssite/(?P<path>.*)$' % murl, #r'^{0}site/(?P<path>.*)$'.format(murl),
+                     r'^%s(?P<path>.*)$' % murl, #r'^{0}site/(?P<path>.*)$'.format(murl),
                      'django.views.static.serve',
                      {'document_root': settings.MEDIA_ROOT, 'show_indexes': True}
                   ),(
                      r'^favicon.ico$',
                      'django.views.static.serve',
-                     {'document_root': settings.MEDIA_ROOT, 'show_indexes': True}
+                     {'document_root': site_root, 'show_indexes': True}
                   )
 
 # Sitemap

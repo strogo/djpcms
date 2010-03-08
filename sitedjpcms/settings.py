@@ -70,10 +70,17 @@ INSTALLED_APPS = ['django.contrib.auth',
                   'django.contrib.contenttypes',
                   'django.contrib.sessions',
                   'django.contrib.admin',
-                  'djpcms']
+                  'djpcms',
+                  'djpcms.contrib.authentication',
+                  'compressor']
 
-# djpcms settings
+# DJPCMS settings
 DEFAULT_TEMPLATE_NAME  = 'base.html'
 GOOGLE_ANALYTICS_ID    = PSETTINGS.id.GOOGLE_ANALYTICS_ID
 APPLICATION_URL_MODULE = 'sitedjpcms.appurls'
+DJPCMS_PLUGINS  = ['djpcms.plugins.*',
+                   'djpcms.contrib.authentication.plugins']
+
+TWITTER_CONSUMER_KEY     = PSETTINGS.id.TWITTER_CONSUMER_KEY
+TWITTER_CONSUMER_SECRET  = PSETTINGS.id.TWITTER_CONSUMER_SECRET
 

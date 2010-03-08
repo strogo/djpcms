@@ -28,3 +28,6 @@ class Identity(object):
         self.SECRET_KEY          = 'q*+zqx@*%r_&7)iney)od2j*9py=n6l#_u^vms^(om&avn_8=='
         self.ADMIN_URL_PREFIX    = '/admin/'
         self.GOOGLE_ANALYTICS_ID = None
+        
+        self.TWITTER_CONSUMER_KEY       = ''
+        self.TWITTER_CONSUMER_SECRET    = ''

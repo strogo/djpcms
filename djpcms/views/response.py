@@ -6,7 +6,7 @@ from django.template import RequestContext
 from django.utils.encoding import smart_str
 
 from djpcms.conf import settings
-from djpcms.utils import lazyattr
+from djpcms.utils import lazyattr, mark_safe
 from djpcms.utils.navigation import Navigator, Breadcrumbs
 
 
@@ -29,6 +29,7 @@ class DjpResponse(http.HttpResponse):
         self.kwargs     = kwargs
         self.wrapper    = None
         self.prefix     = None
+        self._plugincss = {}
     
     def __repr__(self):
         return self.url
@@ -181,6 +182,7 @@ class DjpResponse(http.HttpResponse):
             d.update(more_context)
         d['djp']   = self
         d['page']   = self.page
+        d['plugincss'] = self.get_plugincss()
         if settings.ENABLE_BREADCRUMBS:
             d['breadcrumbs'] = Breadcrumbs(self,settings.ENABLE_BREADCRUMBS)
         d['sitenav'] = Navigator(self)
@@ -188,3 +190,14 @@ class DjpResponse(http.HttpResponse):
         self.content = res.content
         return self
 
+    def add_pluginmedia(self, plugin):
+        if plugin:
+            p = self._plugincss.get(plugin.name, None)
+            if p is None:
+                css = plugin.css()
+                if css:
+                    self._plugincss[plugin.name] = css
+                    
+    def get_plugincss(self):
+        return mark_safe(''.join(self._plugincss.values()))
+        

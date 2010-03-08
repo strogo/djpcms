@@ -32,7 +32,14 @@ def get_wrapper(name, default = None):
 
 
 def register_application(app):
-    ApplicationPlugin(app).register()
+    '''
+    Register an application view as a plugin
+    '''
+    if hasattr(app,'get_plugin'):
+        p = app.get_plugin()
+    else:
+        p = ApplicationPlugin(app)
+    p.register()
 
 
 def loadplugins(plist):
@@ -135,6 +142,9 @@ class DJPplugin(PluginBase):
     URL           = None
     
     def js(self, **kwargs):
+        return None
+    
+    def css(self):
         return None
     
     def arguments(self, args):
