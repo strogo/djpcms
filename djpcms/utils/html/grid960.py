@@ -6,9 +6,10 @@ from djpcms.utils import mark_safe
 
 __all__ = ['grid960']
 
-def grid960(columns = 12, fixed = None):
+def grid960(columns = None, fixed = None):
     if fixed is None:
         fixed = settings.GRID960_DEFAULT_FIXED
+    columns = columns or settings.GRID960_DEFAULT_COLUMNS
         
     if columns == 16:
         return grid960_16(fixed)

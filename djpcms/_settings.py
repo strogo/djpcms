@@ -43,6 +43,7 @@ def configure(settings):
 
     #---------------------------------- Styling
     # Default grid
+    settings.GRID960_DEFAULT_COLUMNS  = getattr(settings, 'GRID960_DEFAULT_COLUMNS', 12)
     settings.GRID960_DEFAULT_FIXED    = getattr(settings, 'GRID960_DEFAULT_FIXED', True)
     # Style css name
     #settings.DJPCMS_SITE_STYLE        = getattr(settings, 'DJPCMS_SITE_STYLE', 'smoothness')

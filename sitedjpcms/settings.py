@@ -80,7 +80,9 @@ GOOGLE_ANALYTICS_ID    = PSETTINGS.id.GOOGLE_ANALYTICS_ID
 APPLICATION_URL_MODULE = 'sitedjpcms.appurls'
 DJPCMS_PLUGINS  = ['djpcms.plugins.*',
                    'djpcms.contrib.authentication.plugins']
+GRID960_DEFAULT_COLUMNS = 16
 
+# djpcms.contrib.authentication settings
 TWITTER_CONSUMER_KEY     = PSETTINGS.id.TWITTER_CONSUMER_KEY
 TWITTER_CONSUMER_SECRET  = PSETTINGS.id.TWITTER_CONSUMER_SECRET
 

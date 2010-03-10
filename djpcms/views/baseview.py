@@ -4,8 +4,6 @@ Base class for djpcms views.
 import copy
 
 from django import http
-from django.utils.safestring import mark_safe
-from django.utils.encoding import force_unicode
 from django.shortcuts import render_to_response
 from django.template import RequestContext, Context, loader
 from django.core.exceptions import PermissionDenied
@@ -15,7 +13,8 @@ from djpcms.conf import settings
 from djpcms.utils.ajax import jservererror, jredirect
 from djpcms.utils.html import grid960
 from djpcms.permissions import inline_editing
-from djpcms.utils import UnicodeObject, urlbits, urlfrombits, function_module, htmltype
+from djpcms.utils import UnicodeObject, urlbits, urlfrombits, function_module, \
+                         htmltype, mark_safe, force_unicode
 
 from djpcms.views.cache import pagecache
 from djpcms.views.response import DjpResponse
