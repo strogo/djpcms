@@ -40,6 +40,10 @@ def configure(settings):
     settings.DJPCMS_MARKUP_MODULE     = getattr(settings, 'DJPCMS_MARKUP_MODULE', 'djpcms.utils.markups')
 
     #settings.DJPCMS_PLUGIN_BASE_URL   = getattr(settings, 'DJPCMS_PLUGIN_BASE_URL', '/plugin/')
+    
+    #
+    # API url prefix
+    settings.API_PREFIX               = getattr(settings, 'API_PREFIX', 'api')
 
     #---------------------------------- Styling
     # Default grid

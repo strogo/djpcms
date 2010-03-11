@@ -71,8 +71,20 @@ INSTALLED_APPS = ['django.contrib.auth',
                   'django.contrib.sessions',
                   'django.contrib.admin',
                   'djpcms',
-                  'djpcms.contrib.authentication',
+                  'djpcms.contrib.djp_oauth',
+                  #'piston',
+                  'django_openid',
                   'compressor']
+
+# EMAILS
+SEND_BROKEN_LINK_EMAILS = True
+EMAIL_HOST             = PSETTINGS.id.EMAIL_HOST
+EMAIL_PORT             = PSETTINGS.id.EMAIL_PORT
+EMAIL_SUBJECT_PREFIX   = PSETTINGS.id.EMAIL_SUBJECT_PREFIX
+EMAIL_HOST_USER        = PSETTINGS.id.EMAIL_HOST_USER
+EMAIL_HOST_PASSWORD    = PSETTINGS.id.EMAIL_HOST_PASSWORD
+EMAIL_USE_TLS          = PSETTINGS.id.EMAIL_USE_TLS
+DEFAULT_FROM_EMAIL     = PSETTINGS.id.DEFAULT_FROM_EMAIL
 
 # DJPCMS settings
 DEFAULT_TEMPLATE_NAME  = 'base.html'

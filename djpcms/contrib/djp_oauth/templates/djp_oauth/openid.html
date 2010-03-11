@@ -1,0 +1,9 @@
+<form{% if classes %} class="{{ classes }}"{% endif %} action="{{ url }}" method="post">{% if inline %}
+<input type="text" class="openid" id="id_openid_url-login" name="openid_url">
+<input type="submit" value="login" class="submit">{% else %}
+<div>
+<label>OpenID</label>
+<input type="text" class="openid" id="id_openid_url-login" name="openid_url">
+</div>
+<input type="submit" value="login" class="submit">{% endif %}
+</form>

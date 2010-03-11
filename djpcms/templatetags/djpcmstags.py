@@ -1,6 +1,7 @@
 from django import template
 
 from djpcms.utils import mark_safe
+from djpcms.plugins import get_plugin
 from djpcms.conf import settings
 
 register = template.Library()
@@ -36,7 +37,17 @@ def compress_if_you_can(parser, token):
     else:
         return DummyCompressorNode(nodelist)
     
-    
+
+#@register.filter
+#def djplugin(name,args = None):
+#    '''
+#    display a plugin
+#    '''
+#    plugin = get_plugin(name)
+#    if plugin:
+#        return plugin.render()
+#    else:
+#        return ''
 
 
 def google_analytics():

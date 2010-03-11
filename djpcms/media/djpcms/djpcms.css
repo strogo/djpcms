@@ -371,3 +371,11 @@ div.djpcms-comment.djpcms-html-box .bd {
     border-color:#999;
     background:#fff;
 }
+
+input.openid {
+    background: url(img/icons/openid-icon.png) no-repeat 0 50%;
+    background-color:#FFFFFF;
+    padding:0.2em;
+    padding-left:1.5em;
+    border:1px solid #B7C6CE;
+}

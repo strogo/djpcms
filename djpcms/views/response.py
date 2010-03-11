@@ -3,10 +3,10 @@ import copy
 from django import http
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from django.utils.encoding import smart_str
 
 from djpcms.conf import settings
-from djpcms.utils import lazyattr, mark_safe
+from djpcms.template import Template, Context
+from djpcms.utils import lazyattr, mark_safe, smart_str
 from djpcms.utils.navigation import Navigator, Breadcrumbs
 
 
@@ -199,5 +199,9 @@ class DjpResponse(http.HttpResponse):
                     self._plugincss[plugin.name] = css
                     
     def get_plugincss(self):
-        return mark_safe(''.join(self._plugincss.values()))
+        css = ''.join(self._plugincss.values())
+        if css:
+            return Template(css).render(Context({'MEDIA_URL': settings.MEDIA_URL}))
+        else:
+            return ''
         

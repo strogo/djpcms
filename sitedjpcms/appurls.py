@@ -5,7 +5,7 @@ from djpcms.views.user import UserApplication
 from djpcms.views import appsite
 
 from djpcms.views.docview import DocApplication
-from djpcms.contrib.authentication.appurl import OAuthApplication
+from djpcms.contrib.djp_oauth.appurl import OAuthApplication
 
 #_________________________________________________ Create the documentation view handler
 class DjpcmsDoc(DocApplication):

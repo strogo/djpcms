@@ -1,0 +1,6 @@
+.oauth-authentication {
+    height: 200px;
+}
+.oauth-authentication .openid {
+    background:url({{ MEDIA_URL }}djpcms/img/icons/openid-icon.png) no-repeat 0 50%;
+}

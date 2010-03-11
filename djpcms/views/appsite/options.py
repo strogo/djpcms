@@ -70,7 +70,8 @@ class ApplicationBase(object):
     '''
     ajax             = settings.HTML_CLASSES
     name             = None
-    autheinticated   = True
+    authenticated    = True
+    has_api          = False
     
     def __init__(self, baseurl, application_site, editavailable):
         self.application_site = application_site

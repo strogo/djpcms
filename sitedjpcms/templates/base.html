@@ -1,4 +1,4 @@
-{% extends "root.html" %}
+{% extends "root.html" %}{% load djpcmstags %}
 {% block body-container-bits %}{% endblock %}
 
 {% block html-container %}
@@ -8,7 +8,7 @@
    <a id="menu-site" class="site-logo" href="/">djpcms</a>
   </div>
   <div class="{{ grid.column_2_3 }}">
-   <div class="user-box">
+   <div class="user-box">{% if user.is_authenticated %}
     <ul class="user-nav">{% if edit_content_url %}
     <li><a href="{{ edit_content_url }}">edit</a></li>{% else %}{% if exit_edit_url %}
     <li><a href="{{ exit_edit_url }}">exit</a></li>{% endif %}{% endif %}{% if user.is_authenticated %}
@@ -19,7 +19,12 @@
     <li><a href="{{ logout_url }}?next={{ cl.url }}">logout</a></li> {% else %}{% if login_url %}
     <li><a href="{{ login_url }}?next={{ cl.url }}">login</a></li>{% if register_url %} 
     <li><a href="{{ register_url }}">register</a></li>{% endif %}{% endif %}{% endif %}
-    </ul>
+    </ul>{% else %}
+        <form action="/accounts/login/openid/" method="post">
+            <input type="text" class="openid" name="openid_url">
+            <input type="submit" value="login" class="submit">
+        </form>
+    {% endif %}
    </div>
   </div>
  </div>

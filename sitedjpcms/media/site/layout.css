@@ -68,6 +68,8 @@ h2.deck {
 }
 .user-box {
 	float: right;
+	height: 60px;
+	line-height: 60px;
 }
 li.toctree-l2 {
 	margin-left: 20px;
