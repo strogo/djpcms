@@ -460,9 +460,10 @@ class ObjectView(AppView):
         return self.appmodel.title_object(instance)
     
 
-# View and object
 class ViewView(ObjectView):
-    
+    '''
+    Home page for an object
+    '''
     def __init__(self, regex = '(\d+)', parent = None, name = 'view', **kwargs):
         '''
         By default the relative url is given by the databse id number
