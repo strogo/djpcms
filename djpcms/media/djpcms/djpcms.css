@@ -379,3 +379,37 @@ input.openid {
     padding-left:1.5em;
     border:1px solid #B7C6CE;
 }
+
+/* SEARCH FORM
+------------------------------------------------------------*/
+.sw_b {
+    background: #ffffff;
+    border:1px solid #ACBABD;
+    margin:0;
+    padding:0;
+    overflow:hidden;
+    padding: 2px;
+    height:24px;
+}
+.sw_b input.sw_qbox {
+	border:0 none;
+    color:#333333;
+    float:left;
+    font-size:14px;
+    height:20px;
+    line-height:20px;
+    height: 20px;
+    padding: 2px 5px;
+}
+.sw_b input.sw_qbtn {
+    background:#F9761D url("img/icons/search.png") no-repeat;
+    border: 0 none;
+    cursor:pointer;
+    height:24px;
+    overflow:hidden;
+    padding:24px 0 0;
+    width:24px;   
+}
+.container_12 .grid_4 input.sw_qbox {
+	width: 260px;
+}
