@@ -1,7 +1,25 @@
 {% if form %}<div class="search-form">
 {{ form }}
-</div>{% endif %}{% ifnotequal paginator.pages 1 %}
-<div id="Pagination" class="jquery-pagination"></div> 
+</div>{% endif %}{% if headers %}
+<div id="Pagination" class="jquery-pagination"></div>
+<table class="{{ css.ajax_table }}">
+ <thead>
+  <tr>{% for header in headers %}
+   <th>{{ header }}</th>{% endfor %}
+  </tr>
+ </thead>
+ <tbody>{% for item in items %}
+  <tr>{% for header in headers %}
+   <td>
+    {{ header }}
+   </td>{% endfor %}
+  </tr>{% endfor %}
+ </tbody>
+</table>
+{% else %}{% ifnotequal paginator.pages 1 %}
+<div id="Pagination" class="jquery-pagination"></div>{% endifnotequal %}
+{% for item in items %}
+{{ item }}{% endfor %}{% endif %}
 <script>
 $(document).ready(function(){
     // Create pagination element with options from form
@@ -21,5 +39,4 @@ $(document).ready(function(){
     };
     $(".jquery-pagination").pagination({{ paginator.total }}, optInit);
 });
-</script>{% endifnotequal %}{% if items %}{% for item in items %}
-{{ item }}{% endfor %}{% endif %}
+</script>

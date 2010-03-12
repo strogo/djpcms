@@ -1,6 +1,7 @@
 
 0.6 beta
 =======================
+ * Added `list_as_table` in `views.appsite` so that lists of objects can be displayed as a table.
  * Added `compress_if_you_can` template tag for compressing media files using third party libraries.
  * Started decoupling from django. Still very much a django app right now.
  * Compatible with django 1.2 and multidatabase
@@ -20,10 +21,6 @@
  * url resolver split between main urls and sub-applications
  * Better title in flowrepo contentview
  
-0.4 (2009-12-24)
-=====================
-first official Alpha release.
-
 0.5 (2010-01-13)
 =====================
 

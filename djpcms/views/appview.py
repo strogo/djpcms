@@ -298,7 +298,8 @@ class SearchView(AppView):
         @param wrapper: html wrapper object
         @see: djpcms.utils.html.pagination for pagination
         '''
-        request = djp.request
+        request  = djp.request
+        appmodel = self.appmodel
         if kwargs:
             urlargs = djp.urlargs
             urlargs.update(kwargs)
@@ -308,7 +309,9 @@ class SearchView(AppView):
         p  = Paginator(request, query)
         c  = self.content_dict(djp)
         c.update({'paginator': p,
-                  'url': djp.url})
+                  'url': djp.url,
+                  'css': appmodel.ajax,
+                  'headers': appmodel.list_display})
         if p.qs:
             c['items'] = self.appmodel.data_generator(djp, p.qs)
             

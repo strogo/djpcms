@@ -13,6 +13,7 @@ from django.template import loader, Template, Context, RequestContext
 from django.core.exceptions import PermissionDenied
 from django.conf.urls.defaults import url
 
+
 from djpcms.conf import settings
 from djpcms.utils import form_kwargs, UnicodeObject
 from djpcms.utils.forms import add_hidden_field
@@ -135,6 +136,8 @@ class ModelApplicationBase(ApplicationBase):
     inherit          = False
     #
     search_fields    = None
+    #
+    list_display     = None
     
     def __init__(self, baseurl, application_site, editavailable, model = None):
         super(ModelApplicationBase,self).__init__(baseurl, application_site, editavailable)
