@@ -49,13 +49,13 @@ class MemCachePannel(DJPplugin):
         '''
         Information about deployment
         '''
-        from djpcms.conf import settings
         try:
-            latest = DeploySite.objects.latest()
+            from django.core.cache import cache
+            cobj = cache._cache
         except:
-            return ''
-        return loader.render_to_string(['/bits/deploy.html',
-                                        'djpcms/bits/deploy.html'],
+            return 'Memcached not installed'
+        return loader.render_to_string(['/bits/memcached.html',
+                                        'djpcms/bits/memcached.html'],
                                         {'latest':latest,
                                          'name': timezone.tzname(dt = latest.created),
                                          'url': timezone.link()})

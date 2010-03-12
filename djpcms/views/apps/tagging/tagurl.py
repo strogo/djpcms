@@ -5,7 +5,7 @@ Battery included plugins and application for tagging and tagging with archive
 '''
 from django.utils.http import urlquote
 from djpcms.views import appsite
-from djpcms.views.appview import AppView, ArchiveView, SearchView
+from djpcms.views import appview
 
 from tagging.models import TaggedItem
 
@@ -13,7 +13,7 @@ from tagging.models import TaggedItem
 tag_regex = '[-\.\+\#\'\:\w]+'
 
 
-class TagView(SearchView):
+class TagView(appview.SearchView):
     
     def __init__(self, *args, **kwargs):
         super(TagView,self).__init__(*args, **kwargs)
@@ -29,7 +29,7 @@ class TagView(SearchView):
             return qs
 
 
-class TagArchiveView(ArchiveView):
+class TagArchiveView(appview.ArchiveView):
     
     def __init__(self, *args, **kwargs):
         super(TagArchiveView,self).__init__(*args, **kwargs)
@@ -77,8 +77,8 @@ def tagurl(self, request, *tags):
 
 
 class TagApplication(appsite.ModelApplication):
-    search  = SearchView(in_navigation = True)
-    cloud   = SearchView(regex = 'tags', parent = 'search', in_navigation = True)
+    search  = appview.SearchView(in_navigation = True)
+    cloud   = appview.SearchView(regex = 'tags', parent = 'search', in_navigation = True)
     tag1    = TagView(regex = '(?P<tag1>%s)' % tag_regex, parent = 'cloud')
     
     def tagurl(self, request, *tags):
@@ -94,19 +94,18 @@ class ArchiveTaggedApplication(appsite.ArchiveApplication):
     '''
     Comprehensive Tagged Archive Application urls
     '''
-    search         =    ArchiveView(in_navigation = True)    
+    search        = appview.ArchiveView(in_navigation = True)
+    year_archive  = appview.YearArchiveView(regex = '(?P<year>\d{4})')
+    month_archive = appview.MonthArchiveView(regex = '(?P<month>\w{3})', parent = 'year_archive')
+    day_archive   = appview.DayArchiveView(regex = '(?P<day>\d{2})',   parent = 'month_archive')
     
-    year_archive   =    ArchiveView(regex = '(?P<year>\d{4})')
-    month_archive  =    ArchiveView(regex = '(?P<month>\w{3})', parent = 'year_archive')
-    day_archive    =    ArchiveView(regex = '(?P<day>\d{2})',   parent = 'month_archive')
-    
-    tagc0          =        AppView(regex = 'tags', in_navigation = True)
+    tagc0          = appview.AppView(regex = 'tags', in_navigation = True)
     tag1           = TagArchiveView(regex = '(?P<tag1>%s)' % tag_regex, parent = 'tagc0')
     year_archive1  = TagArchiveView(regex = '(?P<year>\d{4})',  parent = 'tag1')
     month_archive1 = TagArchiveView(regex = '(?P<month>\w{3})', parent = 'year_archive1')
     day_archive1   = TagArchiveView(regex = '(?P<day>\d{2})',   parent = 'month_archive1')
     
-    tagc1          =        AppView(regex = 'tags2/(?P<tag1>%s)' % tag_regex)
+    tagc1          = appview.AppView(regex = 'tags2/(?P<tag1>%s)' % tag_regex)
     tag2           = TagArchiveView(regex = '(?P<tag2>%s)' % tag_regex, parent = 'tagc1')
     year_archive2  = TagArchiveView(regex = '(?P<year>\d{4})',  parent = 'tag2')
     month_archive2 = TagArchiveView(regex = '(?P<month>\w{3})', parent = 'year_archive2')

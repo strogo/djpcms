@@ -1,3 +1,4 @@
+{% load djpmodutils %}
 {% if form %}<div class="search-form">
 {{ form }}
 </div>{% endif %}{% if headers %}
@@ -5,14 +6,12 @@
 <table class="{{ css.ajax_table }}">
  <thead>
   <tr>{% for header in headers %}
-   <th>{{ header }}</th>{% endfor %}
+   <th>{{ model|nicefield:header }}</th>{% endfor %}
   </tr>
  </thead>
- <tbody>{% for item in items %}
+ <tbody>{% for item in paginator.qs %}
   <tr>{% for header in headers %}
-   <td>
-    {{ header }}
-   </td>{% endfor %}
+   <td>{{ item|objvalue:header }}</td>{% endfor %}
   </tr>{% endfor %}
  </tbody>
 </table>

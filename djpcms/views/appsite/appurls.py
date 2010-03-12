@@ -4,11 +4,11 @@ Define some application urls templates as example
 import copy
 
 from django.template import loader, Context
-from django.utils.dates import MONTHS_3, WEEKDAYS_ABBR, MONTHS
+from django.utils.dates import MONTHS_3, MONTHS_3_REV, WEEKDAYS_ABBR, MONTHS
 from django.utils.encoding import force_unicode
 
 from djpcms.views.appsite.options import ModelApplication
-from djpcms.views.appview import ArchiveView
+from djpcms.views import appview
 
 __all__ = ['ArchiveApplication']
 
@@ -19,13 +19,19 @@ class ArchiveApplication(ModelApplication):
     '''
     date_code     = None    # this must be specified in implementations
     split_days    = False
-    search        = ArchiveView(in_navigation = True)
-    year_archive  = ArchiveView(regex = '(?P<year>\d{4})')
-    month_archive = ArchiveView(regex = '(?P<month>\w{3})', parent = 'year_archive')
-    day_archive   = ArchiveView(regex = '(?P<day>\d{2})',   parent = 'month_archive')
+    search        = appview.ArchiveView(in_navigation = True)
+    year_archive  = appview.YearArchiveView(regex = '(?P<year>\d{4})')
+    month_archive = appview.MonthArchiveView(regex = '(?P<month>\w{3})', parent = 'year_archive')
+    day_archive   = appview.DayArchiveView(regex = '(?P<day>\d{2})',   parent = 'month_archive')
     
     def get_month_value(self, month):
         return force_unicode(MONTHS_3.get(month))
+
+    def get_month_number(self, month):
+        try:
+            return int(month)
+        except:
+            return MONTHS_3_REV.get(month,None)
         
     def yearurl(self, request, year, **kwargs):
         view = self.getapp('year_archive')

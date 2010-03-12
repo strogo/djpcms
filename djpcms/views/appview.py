@@ -7,7 +7,6 @@ from django.db.models import Q
 from django.db.models.query import QuerySet
 from django.core.exceptions import ObjectDoesNotExist
 from django.template import loader, RequestContext
-from django.utils.dates import MONTHS_3_REV
 from django.utils.dateformat import format
 from django.utils.text import smart_split
 
@@ -310,6 +309,7 @@ class SearchView(AppView):
         c  = self.content_dict(djp)
         c.update({'paginator': p,
                   'url': djp.url,
+                  'model': self.model,
                   'css': appmodel.ajax,
                   'headers': appmodel.list_display})
         if p.qs:
@@ -334,10 +334,7 @@ class ArchiveView(SearchView):
         c = super(ArchiveView,self).content_dict(djp)
         month = c.get('month',None)
         if month:
-            try:
-                c['month'] = int(month)
-            except:
-                c['month'] = MONTHS_3_REV.get(month,None)
+            c['month'] = self.appmodel.get_month_number(month)
         year = c.get('year',None)
         day  = c.get('day',None)
         if year:
@@ -353,10 +350,7 @@ class ArchiveView(SearchView):
             dateargs['%s__year' % dt] = int(year)
         
         if month:
-            try:
-                month = int(month)
-            except:
-                month = MONTHS_3_REV.get(str(month),None)
+            month = self.appmodel.get_month_number(month)
             if month:
                 dateargs['%s__month' % dt] = month
     
@@ -367,7 +361,26 @@ class ArchiveView(SearchView):
         if dateargs:
             return qs.filter(**dateargs)
         else:
-            return qs 
+            return qs
+
+class DayArchiveView(ArchiveView):
+    def __init__(self, *args, **kwargs):
+        super(DayArchiveView,self).__init__(*args,**kwargs)
+    def title(self, page, **urlargs):
+        return urlargs.get('day',None)
+    
+class MonthArchiveView(ArchiveView):
+    def __init__(self, *args, **kwargs):
+        super(MonthArchiveView,self).__init__(*args,**kwargs)
+    def title(self, page, **urlargs):
+        return urlargs.get('month',None)
+    
+class YearArchiveView(ArchiveView):
+    def __init__(self, *args, **kwargs):
+        super(YearArchiveView,self).__init__(*args,**kwargs)
+    def title(self, page, **urlargs):
+        return urlargs.get('year',None)
+    
         
         
 
