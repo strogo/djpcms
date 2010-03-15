@@ -6,6 +6,19 @@ from djpcms.utils import force_unicode, smart_str
 register = template.Library()
 
 @register.filter
+def site_address(request):
+    host = request.environ.get('HTTP_HOST','')
+    if host:
+        if request.is_secure():
+            return 'https://%s' % host
+        else:
+            return 'http://%s' % host
+    else:
+        return ''
+    
+
+
+@register.filter
 def nicefield(model,name):
     opts = model._meta
     try:
