@@ -4,6 +4,7 @@ from django.template import loader
 
 from tagging.forms import TagField
 
+from djpcms.conf import settings
 from djpcms.plugins import DJPplugin
 from djpcms.forms import SearchForm
 
@@ -45,7 +46,13 @@ class SearchBox(DJPplugin):
     def render(self, djp, wrapper, prefix, for_model = None, title = None, **kwargs):
         from djpcms.views import appsite
         if for_model:
-            ct = ContentType.objects.get(id = int(for_model))
+            try:
+                ct = ContentType.objects.get(id = int(for_model))
+            except:
+                if settings.DEBUG:
+                    return 'Content type %s not available' % for_model
+                else:
+                    return ''
             model = ct.model_class()
             appmodel = appsite.site.for_model(model)
             if appmodel:
