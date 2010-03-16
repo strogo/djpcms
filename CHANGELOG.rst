@@ -4,6 +4,7 @@
  * Added `list_display` a la django admin in `views.appsite` so that lists of objects can be displayed as a table.
  * Added tablesorter jQuery plugin from http://tablesorter.com
  * Added `compress_if_you_can` template tag for compressing media files using third party libraries.
+ * Added `django-compressor` to contrib.
  * Started decoupling from django. Still very much a django app right now.
  * Compatible with django 1.2 and multidatabase
  * Bug in views.apps.flowrepo.appurl.FlowRepoApplication.has_permission fixed.

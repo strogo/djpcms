@@ -74,7 +74,7 @@ def configure(settings):
     libpath = os.path.join(os.path.dirname(__file__),'libs')
     if libpath not in sys.path:
         sys.path.append(libpath)
-        
+            
     settings._djpcms_is_set         = True
     
 
