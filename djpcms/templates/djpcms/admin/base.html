@@ -1,9 +1,9 @@
-{% extends "djpcms/root.html" %}{% load i18n djpmodutils %}
+{% extends "root.html" %}{% load i18n djpmodutils %}
 {% block analytics-scripts %}{% endblock %}
 {% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}
 {% block blockkeywords %}{% endblock %}
 {% block blockdescriptions %}{% endblock %}
-{% block style-reset %}
+{% block style-reset %}{{ block.super }}
 <link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% load adminmedia %}{% admin_media_prefix %}css/base.css{% endblock %}" />{% endblock %}
 {% block bodybits %}class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}"{% endblock %}
 {% block body-container-id %} id="container" {% endblock %}
@@ -12,7 +12,8 @@
     {% if not is_popup %}
     <!-- Header -->
     <div id="header">
-        <div id="branding">
+      <div class="{{ grid.container_class }}">
+        <div class="{{ grid.column1 }}">
         {% block branding %}{% endblock %}
         </div>
         {% if user.is_active and user.is_staff %}
@@ -38,9 +39,8 @@
                 {% endif %}
                 {% trans 'Log out' %}</a>
             {% endblock %}
-        </div>
-        {% endif %}
-        {% block nav-global %}{% endblock %}
+        </div>{% endif %}{% block nav-global %}{% endblock %}
+      </div>
     </div>
     <!-- END Header -->
     {% block breadcrumbs %}<div class="breadcrumbs"><a href="/">{% trans 'Home' %}</a>{% if title %} &rsaquo; {{ title }}{% endif %}</div>{% endblock %}

@@ -58,16 +58,15 @@ if settings.SERVE_STATIC_FILES:
                           ),
     
     mediapath = os.path.join(settings.MEDIA_ROOT,'site')
-    if os.path.isdir(mediapath):
-        site_urls += (
-                     r'^%s(?P<path>.*)$' % murl, #r'^{0}site/(?P<path>.*)$'.format(murl),
-                     'django.views.static.serve',
-                     {'document_root': settings.MEDIA_ROOT, 'show_indexes': True}
-                     ),(
-                     r'^favicon.ico$',
-                     'django.views.static.serve',
-                     {'document_root': mediapath, 'show_indexes': True}
-                     )
+    site_urls += (
+                  r'^%s(?P<path>.*)$' % murl, #r'^{0}site/(?P<path>.*)$'.format(murl),
+                  'django.views.static.serve',
+                  {'document_root': settings.MEDIA_ROOT, 'show_indexes': True}
+                 ),(
+                  r'^favicon.ico$',
+                  'django.views.static.serve',
+                  {'document_root': mediapath, 'show_indexes': True}
+                 )
 
 # Sitemap
 site_urls      += (r'^sitemap.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': get_site_maps()}),
