@@ -1,7 +1,10 @@
-from django.contrib import admin
+import os
+
+from django.utils.importlib import import_module
 from django.conf.urls.defaults import *
 
 import djpcms
+from djpcms.contrib import admin
 from djpcms.conf import settings
 from djpcms.views import appsite
 from djpcms.sitemap import get_site_maps
@@ -34,22 +37,37 @@ else:
 if settings.SERVE_STATIC_FILES:
     import djpcms
     import os
-    djpcms_media_root = os.path.join(djpcms.__path__[0],'media','djpcms')
     murl = settings.MEDIA_URL.lstrip("/")
-    site_root = os.path.join(settings.MEDIA_ROOT,'site')
-    site_urls += (
-                    r'^%sdjpcms/(?P<path>.*)$' % murl, # r'^{0}djpcms/(?P<path>.*)$'.format(murl),
-                    'django.views.static.serve',
-                    {'document_root': djpcms_media_root, 'show_indexes': True}
-                  ),(
+    
+    # Add application media directories if they exists
+    for app in settings.INSTALLED_APPS:
+        if app.startswith('django.'):
+            continue
+        try:
+            module = import_module(app)
+        except:
+            continue
+        path   = module.__path__[0]
+        app    = app.split('.')[-1]
+        mediapath = os.path.join(path,'media',app)
+        if os.path.isdir(mediapath):
+            site_urls += (
+                          r'^%s%s/(?P<path>.*)$' % (murl,app),
+                          'django.views.static.serve',
+                          {'document_root': mediapath, 'show_indexes': True}
+                          ),
+    
+    mediapath = os.path.join(settings.MEDIA_ROOT,'site')
+    if os.path.isdir(mediapath):
+        site_urls += (
                      r'^%s(?P<path>.*)$' % murl, #r'^{0}site/(?P<path>.*)$'.format(murl),
                      'django.views.static.serve',
                      {'document_root': settings.MEDIA_ROOT, 'show_indexes': True}
-                  ),(
+                     ),(
                      r'^favicon.ico$',
                      'django.views.static.serve',
-                     {'document_root': site_root, 'show_indexes': True}
-                  )
+                     {'document_root': mediapath, 'show_indexes': True}
+                     )
 
 # Sitemap
 site_urls      += (r'^sitemap.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': get_site_maps()}),

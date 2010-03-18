@@ -37,6 +37,14 @@ def compress_if_you_can(parser, token):
     else:
         return DummyCompressorNode(nodelist)
     
+@register.filter
+def cleanjs(media):
+    try:
+        media._js.remove('%sjs/jquery.min.js' % settings.ADMIN_MEDIA_PREFIX)
+    except Exception, e:
+        pass
+    jss = media.render_js()
+    return mark_safe(u'\n'.join(jss))
 
 #@register.filter
 #def djplugin(name,args = None):

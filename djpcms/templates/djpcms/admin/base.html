@@ -4,7 +4,7 @@
 {% block blockkeywords %}{% endblock %}
 {% block blockdescriptions %}{% endblock %}
 {% block style-reset %}
-<link rel="stylesheet" type="text/css" href="{% block stylesheet %}{{ request|site_address }}{% load adminmedia %}{% admin_media_prefix %}css/base.css{% endblock %}" />{% endblock %}
+<link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% load adminmedia %}{% admin_media_prefix %}css/base.css{% endblock %}" />{% endblock %}
 {% block bodybits %}class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}"{% endblock %}
 {% block body-container-id %} id="container" {% endblock %}
 

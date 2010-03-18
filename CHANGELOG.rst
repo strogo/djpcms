@@ -1,6 +1,7 @@
 
 0.6 beta
 =======================
+ * When serving media files add applications media roots in `urls`
  * Added `list_display` a la django admin in `views.appsite` so that lists of objects can be displayed as a table.
  * Added tablesorter jQuery plugin from http://tablesorter.com
  * Added `compress_if_you_can` template tag for compressing media files using third party libraries.

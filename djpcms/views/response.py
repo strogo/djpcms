@@ -180,12 +180,13 @@ class DjpResponse(http.HttpResponse):
         d = context.push()
         if more_context:
             d.update(more_context)
-        d['djp']   = self
-        d['page']   = self.page
-        d['plugincss'] = self.get_plugincss()
+        d.update({'djp':        self,
+                  'page':       self.page,
+                  'cssajax':    self.css,
+                  'plugincss':  self.get_plugincss(),
+                  'sitenav':    Navigator(self)})
         if settings.ENABLE_BREADCRUMBS:
             d['breadcrumbs'] = Breadcrumbs(self,settings.ENABLE_BREADCRUMBS)
-        d['sitenav'] = Navigator(self)
         res = render_to_response(self.template_file, context_instance=context, **kwargs)
         self.content = res.content
         return self

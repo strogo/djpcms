@@ -18,15 +18,17 @@
 <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/fluid960gs/grid.css"/>{% endif %}
 <!--[if IE 6]><link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/fluid960gs/ie6.css" media="screen" /><![endif]-->
 <!--[if IE 7]><link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/fluid960gs/ie.css" media="screen" /><![endif]-->{% endblock %}
-{% block extrastyle %}{% endblock %}
+{% block extrastyle %}{% if media %}{% for css in media.render_css %}
+{{ css|safe }}{% endfor %}{% endif %}{% endblock %}
 <style type="text/css">
 {% block body-extra-style %}{{ plugincss }}{% endblock %}
-</style>
-{% endcompress %}
+</style>{% endcompress %}
 <!-- END OF STYLING -->
-{% block script-block %}{% endblock %}{% block extra-head %}{% endblock %}
-<script type="text/javascript" src="{{ request|site_address }}{{ MEDIA_URL }}djpcms/modernizr-1.1.min.js"></script>
-<script type="text/javascript" src="{{ request|site_address }}{{ MEDIA_URL }}djpcms/jquery-1.4.1.min.js"></script>
+{% compress_if_you_can js %}
+<script type="text/javascript" src="{{ MEDIA_URL }}djpcms/modernizr-1.1.min.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}djpcms/jquery-1.4.1.min.js"></script>
+<script type="text/javascript" src="{{ site_admin_url }}jsi18n/"></script>
+{% block extra-head %}{% endblock %}{% endcompress %}
 </head>
 
 <body {% block bodybits %}{{ djp.bodybits }}{% endblock %}>{% block pre-body %}{% if prebody %}
@@ -39,18 +41,21 @@
 <!-- END OF BODY CONTAINER -->
 
 <!-- START END-BODY SCRIPTS -->{% block end-page-scripts %}
-<script type="text/javascript" src="{{ request|site_address }}{{ MEDIA_URL }}djpcms/jquery-ui-1.7.2.custom.min.js"></script>
-<script type="text/javascript" src="{{ request|site_address }}{{ MEDIA_URL }}djpcms/jquery.pagination.js"></script>
-<script type="text/javascript" src="{{ request|site_address }}{{ MEDIA_URL }}djpcms/form.js"></script>{% block extra-scripts %}{% endblock %}
-<script type="text/javascript" src="{{ request|site_address }}{{ MEDIA_URL }}djpcms/djpcms.js"></script>{% endblock %}{% block body-scripts %}
+<script type="text/javascript" src="{{ MEDIA_URL }}djpcms/jquery-ui-1.7.2.custom.min.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}djpcms/jquery.pagination.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}djpcms/form.js"></script>{% block extra-scripts %}{% endblock %}
+<script type="text/javascript" src="{{ MEDIA_URL }}djpcms/djpcms.js"></script>{% if media %}
+{{ media|cleanjs }}{% endif %}{% endblock %}{% block body-scripts %}
 <script type="text/javascript">
+(function($) {
   $(document).ready(function() {
-	{% if djp %}var options = {{ djp.css.tojson }};{% else %}var options = {};{% endif %}
+	{% if cssajax %}var options = {{ cssajax.tojson }};{% else %}var options = {};{% endif %}
 	options.media_url = "{{ MEDIA_URL }}";
 	options.debug     = {{ jsdebug }};
 	$.djpcms.set_options(options);
 	$(document).djpcms();{% block body-extra-scripts %}{% endblock %}
 	});
+})(jQuery);
 </script>{% endblock %}
 <!-- END END-BODY SCRIPTS -->
 
