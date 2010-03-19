@@ -184,9 +184,11 @@ class DjpResponse(http.HttpResponse):
                   'page':       self.page,
                   'cssajax':    self.css,
                   'plugincss':  self.get_plugincss(),
+                  'is_popup':   False,
+                  'admin_site': False,
                   'sitenav':    Navigator(self)})
         if settings.ENABLE_BREADCRUMBS:
-            d['breadcrumbs'] = Breadcrumbs(self,settings.ENABLE_BREADCRUMBS)
+            d['breadcrumbs'] = Breadcrumbs(self,min_length = settings.ENABLE_BREADCRUMBS)
         res = render_to_response(self.template_file, context_instance=context, **kwargs)
         self.content = res.content
         return self

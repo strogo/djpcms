@@ -9,7 +9,9 @@ CSS_ARGUMENTS = getattr(settings, 'COMPRESS_YUI_CSS_ARGUMENTS', '')
 JS_ARGUMENTS = getattr(settings, 'COMPRESS_YUI_JS_ARGUMENTS', '')
 
 class YUICompressorFilter(FilterBase):
-
+    '''
+    http://yuilibrary.com/projects/yuicompressor/
+    '''
     def output(self, **kwargs):
         arguments = ''
         if self.type == 'js':

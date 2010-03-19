@@ -1,7 +1,6 @@
 '''
 Utility module for creating a navigation list
 '''
-
 from djpcms.conf import settings
 from djpcms.utils import lazyattr    
 
@@ -10,7 +9,7 @@ class lazycounter(object):
     '''
     A lazy view counter used to build navigations type iterators
     '''
-    def __new__(cls, djp, *args, **kwargs):
+    def __new__(cls, djp, **kwargs):
         obj = super(lazycounter, cls).__new__(cls)
         obj.djp     = djp
         obj.kwargs  = kwargs
@@ -92,8 +91,8 @@ class Breadcrumbs(lazycounter):
     Breadcrumbs for current page
     '''
     
-    def __init__(self, djp, min_length = 1):
-        self.min_length = min_length
+    def __init__(self, *args, **kwargs):
+        self.min_length = self.kwargs.pop('min_length',1)
     
     def make_item(self, djp, classes, first):
         parent = djp.parent
