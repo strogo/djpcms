@@ -391,7 +391,8 @@
 	dj.addDecorator({
 		id:"Date-Picker",
 		decorate: function($this, config) {
-			$('.calendar-input',$this).each(function() {
+			var ajaxclass = config.calendar_class ? config.calendar_class : 'vDateField';
+			$('.'+ajaxclass,$this).each(function() {
 				$(this).datepicker();
 			});
 		}
