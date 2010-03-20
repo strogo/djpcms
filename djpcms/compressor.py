@@ -18,7 +18,3 @@ class CompressorFileStorage(FileSystemStorage):
             base_url = settings.MEDIA_URL
         super(CompressorFileStorage, self).__init__(location, base_url,
                                                     *args, **kwargs)
-
-
-class ApplicationFileStorage(CompressorFileStorage):
-    pass

@@ -1,2 +1,29 @@
 {# BATTERY INCLUDED TEMPLATE FOR QUICK DEVELOPMENT #}
+{# YOU NEED TO DEFINE YOUR root.html TEMPLATE TO USE THIS #}
+{% extends "root.html" %}{% load djpcmstags %}
+
+{% block html-container %}{% if not is_popup %}
+<div id="page-header">{% block pre-banner %}{% endblock %} 
+ <div id="branding-banner">{% block branding-banner %}{% endblock %}
+ </div>{% block post-banner %}{% endblock %}
+</div>{% endif %}
+
+<div id="page-body">
+ <div id="site-content"{% block site-content-class %}{% endblock %}>{% block page-prebody %}
+  <div id="bread-crumbs">{% block breadcrumbs %}{% if page.level %}
+   {% include "djpcms/bits/breadcrumbs.html" %}{% else %}
+   {{ djp.title }}{% endif %}{% endblock %}
+  </div>{% endblock %}
+{% block page-body %}{{ inner }}{% endblock %}
+{% block page-postbody %}{% endblock %}
+ </div>
+</div>
+
+<div id="page-footer">{% block page-footer %}{% endblock %}
+</div>{% endblock %}
+
+
+
+
+
 
