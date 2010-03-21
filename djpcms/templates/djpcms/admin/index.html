@@ -5,9 +5,8 @@
 {% block style-reset %}{{ block.super }}
 <link rel="stylesheet" type="text/css" href="{% load adminmedia %}{% admin_media_prefix %}css/dashboard.css" />{% endblock %}
 
-{% block coltype %}colMS{% endblock %}
-
-{% block bodyclass %}dashboard{% endblock %}
+{#{% block coltype %}colMS{% endblock %}#}
+{#{% block bodyclass %}dashboard{% endblock %}#}
 
 {% block content %}
 <div class="{{ grid.column_2_3 }}">

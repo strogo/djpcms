@@ -66,7 +66,7 @@ class djpcmsview(UnicodeObject):
             if page:
                 return page.get_template()
             else:
-                return settings.DEFAULT_TEMPLATE_NAME
+                return 'base.html'
         
     def title(self, page, **urlargs):
         if page:

@@ -11,7 +11,7 @@
 {% block site-content-class %}{% endblock %}
 {% block page-body %}{% if messages %}
   <ul class="messagelist">{% for message in messages %}<li>{{ message }}</li>{% endfor %}</ul>{% endif %}
-  <div id="content" class="{% block coltype %}colM{% endblock %}">
+  <div id="content" class="{% block coltype %}{{ grid.container_class }}{% endblock %}">
   {% block pretitle %}{% endblock %}
   {% block content %}
   {% block object-tools %}{% endblock %}
