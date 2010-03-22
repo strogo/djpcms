@@ -6,4 +6,8 @@
 {% blocktrans with app.name as name %}{{ name }}{% endblocktrans %}
 {% endfor %}{% endblock %}
 
-{% block sidebar %}{% endblock %}
+{% block sidebar %}
+<div class="{{ grid.column_1_3 }}">
+{{ grid.empty }}
+</div>
+{{ grid.clear }}{% endblock %}
