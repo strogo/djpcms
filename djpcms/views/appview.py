@@ -416,17 +416,32 @@ class AddView(AppView):
         f = self.get_form(djp)
         return f.render()
     
-    def default_ajax_view(self, djp):
+    def default_post(self, djp):
+        '''
+        Add new model instance
+        '''
+        request    = djp.request
+        is_ajax    = request.is_ajax()
         djp.prefix = self.get_prefix(djp)
         f = self.get_form(djp)
         if f.is_valid():
             try:
                 instance = self.save(f)
             except Exception, e:
-                return f.errorpost('%s' % e)
-            return f.messagepost('%s added' % instance)
+                if is_ajax:
+                    return f.errorpost('%s' % e)
+                else:
+                    return self.handle_response(djp)
+                return f.errorpost(msg)
+            if is_ajax:
+                return f.messagepost('%s added' % instance)
+            else:
+                return self.handle_response(djp)
         else:
-            return f.jerrors
+            if is_ajax:
+                return f.jerrors
+            else:
+                return self.handle_response(djp)
         
         
 # Application views which requires an object

@@ -37,8 +37,9 @@ class form(htmlcomp):
     def __init__(self, method = 'post', url = None, **attrs):
         super(form,self).__init__('form', **attrs)
         self.url = url or '.'
-        self._attrs['method'] = method
-        self._attrs['action'] = self.url
+        self._attrs['method']  = method
+        self._attrs['action']  = self.url
+        self._attrs['enctype'] = 'multipart/form-data'
         self.jerrors   = None
     
     def messagepost(self, html):
