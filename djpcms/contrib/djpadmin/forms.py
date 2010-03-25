@@ -4,8 +4,10 @@ from django.utils.safestring import mark_safe
 from django.conf import settings
 
 
-basemedia   = '%sautocomplete' % settings.MEDIA_URL
-base_plugin = '%s/jquery-autocomplete' % basemedia
+basemedia          = '%sdjpadmin' % settings.MEDIA_URL
+base_plugin        = '%s/jquery-autocomplete' % basemedia
+autocomplete_class = 'djp-autocomplete'
+ADMIN_URL_PREFIX   = getattr(settings,"ADMIN_URL_PREFIX","/admin/")
 
 
 class AutocompleteForeignKeyInput(forms.HiddenInput):
@@ -35,17 +37,29 @@ class AutocompleteForeignKeyInput(forms.HiddenInput):
 
     def render(self, name, value, attrs=None):
         attrs = attrs or {}
-        rendered = super(AutocompleteForeignKeyInput, self).render(name, value, attrs)
         if value:
             label = self.label_for_value(value)
         else:
             label = u''
-            return rendered + mark_safe(u'''
+        sf = ''.join(['<span>%s</span>' % s for s in self.search_fields])
+        meta = self.rel.to._meta
+        url = '%s%s/%s/' % (ADMIN_URL_PREFIX,meta.app_label,meta.module_name)
+        return mark_safe(u'''
+<div class="%(klass)s">
 <input type="text" id="lookup_%(name)s" value="%(label)s" size="40"/>
+ <dim style="display:none">
+  <input type="text" name="%(name)s">
+  <a href="%(url)s"></a>
+  %(span)s
+ </div>
+</div>
             ''' % {
                    'label': label,
                    'name': name,
-                   'value': value
+                   'value': value,
+                   'span': sf,
+                   'url': url,
+                   'klass': autocomplete_class
                    })
 
 

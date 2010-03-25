@@ -7,7 +7,7 @@ from django.core.exceptions import PermissionDenied
 from django.utils.translation import ugettext_lazy, ugettext as _
 
 from djpcms.utils import force_unicode
-from djpcms.contrib.admin.options import _add_to_context
+from djpcms.contrib.djpadmin.options import _add_to_context
 
 
 def delete_selected(modeladmin, request, queryset):

@@ -1,40 +1,102 @@
-from django.contrib.admin import site, autodiscover
+from django.db.models import Q
+from django import http
+
+from django.contrib.admin import site, autodiscover, widgets
 from django.contrib.admin import ACTION_CHECKBOX_NAME
 from django.contrib.admin import ModelAdmin, HORIZONTAL, VERTICAL
 from django.contrib.admin import StackedInline, TabularInline
 from django.contrib.admin import AdminSite, site, import_module
 
-from djpcms.contrib.admin import actions
-from djpcms.contrib.admin.options import _add_to_context
+from djpcms.contrib.djpadmin import actions
+from djpcms.contrib.djpadmin.forms import AutocompleteForeignKeyInput
+from djpcms.contrib.djpadmin.options import _add_to_context, construct_search
+
 
 class Autocomplete(object):
+    '''
+    Register a model for autocomplete widget
+    Usage, somewhere like urls:
     
+    from djpcms.contrib.djpadmin import autocomplete
+    
+    autocomplete.register(MyModel,['field1,',field2',...])
+    '''
     def __init__(self):
         self._register = {}
     
-    def register(self, model):
+    def register(self, model, search_list):
         if model not in self._register:
-            self._register.append(model)
+            self._register[model] = search_list
+    
+    def get(self, model):
+        return self._register.get(model,None)
 
 autocomplete = Autocomplete()
 
 
 #Inject to ModelAdmin class. Nice. Because Python is cool!!!!!!!!!!!!!
 
-_old_render_change_form = ModelAdmin.render_change_form
-_old_changelist_view    = ModelAdmin.changelist_view
-_old_delete_view        = ModelAdmin.delete_view
+_old_render_change_form         = ModelAdmin.render_change_form
+_old_changelist_view            = ModelAdmin.changelist_view
+_old_delete_view                = ModelAdmin.delete_view
 
 def new_render_change_form(self, request, context, **kwargs):
     return _old_render_change_form(self, request, _add_to_context(request, context), **kwargs)
-def new_changelist_view(self, request, extra_context=None):
-    return _old_changelist_view(self, request, _add_to_context(request, extra_context))
 def new_delete_view(self, request, object_id, extra_context=None):
     return _old_delete_view(self, request, object_id, _add_to_context(request, extra_context))
+
+
+def new_changelist_view(self, request, extra_context=None):
+    if request.is_ajax():
+        # we are searching
+        if request.method == "GET":
+            params = dict(request.GET.items())
+            query = request.GET.get('q', None)
+            search_fields = autocomplete.get(self.model)
+            if query and search_fields:
+                q = None
+                for field_name in search_fields:
+                    name = construct_search(field_name)
+                    if q:
+                        q = q | Q( **{str(name):query} )
+                    else:
+                        rel_name = name.split('__')[0]
+                        q = Q( **{str(name):query} )
+                qs = self.model.objects.filter(q)                    
+                data = ''.join([u'%s|%s\n' % (getattr(f,rel_name),f.pk) for f in qs])
+                return http.HttpResponse(data)
+            return http.HttpResponseNotFound()
+        else:
+            return http.HttpResponseNotFound()
+    else:
+        return _old_changelist_view(self, request, _add_to_context(request, extra_context))
+
+
+def new_formfield_for_foreignkey(self, db_field, request=None, **kwargs):
+        """
+        Get a form Field for a ForeignKey.
+        """
+        db = kwargs.get('using')
+        search_fields = autocomplete.get(db_field.rel.to)
+        if search_fields:
+            kwargs['widget'] = AutocompleteForeignKeyInput(db_field.rel,search_fields)
+        elif db_field.name in self.raw_id_fields:
+            kwargs['widget'] = widgets.ForeignKeyRawIdWidget(db_field.rel, using=db)
+        elif db_field.name in self.radio_fields:
+            kwargs['widget'] = widgets.AdminRadioSelect(attrs={
+                'class': get_ul_class(self.radio_fields[db_field.name]),
+            })
+            kwargs['empty_label'] = db_field.blank and _('None') or None
+        
+        return db_field.formfield(**kwargs)
+            
 
 ModelAdmin.render_change_form   = new_render_change_form
 ModelAdmin.changelist_view      = new_changelist_view
 ModelAdmin.delete_view          = new_delete_view
+ModelAdmin.formfield_for_foreignkey = new_formfield_for_foreignkey
+TabularInline.formfield_for_foreignkey = new_formfield_for_foreignkey
+StackedInline.formfield_for_foreignkey = new_formfield_for_foreignkey
 
 
 

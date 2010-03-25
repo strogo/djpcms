@@ -38,6 +38,7 @@ def configure(settings):
     settings.DJPCMS_WRAPPERS          = getattr(settings, 'DJPCMS_WRAPPERS', ['djpcms.plugins.extrawrappers'])
     settings.DJPCMS_CONTENT_FUNCTION  = getattr(settings, 'DJPCMS_CONTENT_FUNCTION', None)
     settings.DJPCMS_MARKUP_MODULE     = getattr(settings, 'DJPCMS_MARKUP_MODULE', 'djpcms.utils.markups')
+    settings.USE_DJPADMIN             = getattr(settings, 'USE_DJPADMIN', True)
 
     #settings.DJPCMS_PLUGIN_BASE_URL   = getattr(settings, 'DJPCMS_PLUGIN_BASE_URL', '/plugin/')
     
