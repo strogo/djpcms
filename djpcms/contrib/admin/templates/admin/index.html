@@ -3,7 +3,7 @@
 {% block breadcrumbs %}Administration{% endblock %}
 
 {% block style-reset %}{{ block.super }}
-<link rel="stylesheet" type="text/css" href="{% load adminmedia %}{% admin_media_prefix %}css/dashboard.css" />{% endblock %}
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}admin/css/dashboard.css" />{% endblock %}
 
 {#{% block coltype %}colMS{% endblock %}#}
 {% block bodyclass %}admin-dashboard{% endblock %}

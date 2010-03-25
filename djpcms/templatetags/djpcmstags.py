@@ -21,8 +21,8 @@ def compress_if_you_can(parser, token):
     '''
     nodelist = parser.parse(('endcompress',))
     parser.delete_first_token()
-    if 'compressor' in settings.INSTALLED_APPS:
-        from compressor.templatetags.compress import CompressorNode
+    if 'djpcms.contrib.compressor' in settings.INSTALLED_APPS:
+        from djpcms.contrib.compressor.templatetags.compress import CompressorNode
 
         args = token.split_contents()
 
