@@ -54,7 +54,7 @@ def configure(settings):
     #settings.DJPCMS_SITE_STYLE        = getattr(settings, 'DJPCMS_SITE_STYLE', 'smoothness')
 
     # Django Compressor
-    settings.COMPRESS_STORAGE         = getattr(settings, 'COMPRESS_STORAGE', 'djpcms.compressor.CompressorFileStorage')
+    settings.COMPRESS_STORAGE         = getattr(settings, 'COMPRESS_STORAGE', 'djpcms.compstorage.CompressorFileStorage')
     # Inline editing configuration
     # By default it is switch on
     #
