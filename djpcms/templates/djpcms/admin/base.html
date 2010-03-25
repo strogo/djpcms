@@ -5,18 +5,18 @@
 {% block blockdescriptions %}{% endblock %}
 {% block style-reset %}{{ block.super }}
 <link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% load adminmedia %}{% admin_media_prefix %}css/base.css{% endblock %}" />{% endblock %}
+{% block extrastyle %}
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL}}djpcms/admin.css" />
+{{ block.super }}{% endblock %}
+
 {% block bodybits %}class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}"{% endblock %}
 {% block body-container-id %} id="container" {% endblock %}
 
-{% block site-content-class %}{% endblock %}
-{% block page-body %}{% if messages %}
-  <ul class="messagelist">{% for message in messages %}<li>{{ message }}</li>{% endfor %}</ul>{% endif %}
-  <div id="content" class="{% block coltype %}{{ grid.container_class }}{% endblock %}">
+{% block page-body %}
   {% block pretitle %}{% endblock %}
   {% block content %}
   {% block object-tools %}{% endblock %}
   {{ content }}
   {% endblock %}
   {% block sidebar %}{% endblock %}
-  </div>
 {% endblock %}

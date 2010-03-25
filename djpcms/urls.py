@@ -3,8 +3,10 @@ import os
 from django.utils.importlib import import_module
 from django.conf.urls.defaults import *
 
-import djpcms
 from djpcms.contrib import admin
+##from django.contrib import admin
+
+import djpcms
 from djpcms.conf import settings
 from djpcms.views import appsite
 from djpcms.sitemap import get_site_maps

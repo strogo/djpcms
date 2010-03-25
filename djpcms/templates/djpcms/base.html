@@ -9,13 +9,21 @@
 </div>{% endif %}
 
 <div id="page-body">
- <div id="site-content"{% block site-content-class %}{% endblock %}>{% block page-prebody %}
-  <div id="bread-crumbs">{% block breadcrumbs %}{% if page.level %}
-   {% include "djpcms/bits/breadcrumbs.html" %}{% else %}
-   {{ djp.title }}{% endif %}{% endblock %}
-  </div>{% endblock %}
-{% block page-body %}{{ inner }}{% endblock %}
-{% block page-postbody %}{% endblock %}
+ <div id="site-content"{% block site-content-class %} class="{{ grid.container_class }}"{% endblock %}>{% block page-prebody %}
+   <div id="bread-crumbs" class="{{ grid.column1 }}">{% block breadcrumbs %}{% if page.level %}
+    {% include "djpcms/bits/breadcrumbs.html" %}{% else %}
+    {{ djp.title }}{% endif %}{% endblock %}
+   </div>
+   {{ grid.clear }}{% endblock %}
+   {% block django-messages %}{% if messages %}
+    <div class="{{ grid.column1 }}">
+     <ul class="messagelist">{% for message in messages %}<li>{{ message }}</li>{% endfor %}</ul>
+    </div>
+   {{ grid.clear }}{% endif %}{% endblock %}
+   <div id="content"{% block contentbits %}{% endblock %}>{% block page-body %}
+   {{ inner }}{% endblock %}
+   </div>
+   {% block page-postbody %}{% endblock %}
  </div>
 </div>
 
