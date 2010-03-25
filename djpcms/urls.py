@@ -8,11 +8,6 @@ from djpcms.conf import settings
 from djpcms.views import appsite
 from djpcms.sitemap import get_site_maps
 
-if settings.USE_DJPADMIN:
-    from djpcms.contrib import djpadmin as admin
-else:
-    from django.contrib import admin
-
 if not settings.DEBUG:
     handler404 = 'djpcms.views.specials.http404view'
     handler500 = 'djpcms.views.specials.http500view'
@@ -21,21 +16,30 @@ from djpcms.plugins import loadplugins, loadwrappers
     
 plugin_urls = loadplugins(settings.DJPCMS_PLUGINS)
 loadwrappers(settings.DJPCMS_WRAPPERS)
-admin.autodiscover()
-appsite.load()
 
+site_urls = ()
 
-# Admin Site
-if 'django.contrib.admin' in settings.INSTALLED_APPS:
+#ADMIN SITE
+if 'djpcms.contrib.admin' in settings.INSTALLED_APPS:
+    from djpcms.contrib import admin
+elif 'django.contrib.admin' in settings.INSTALLED_APPS:
+    from django.contrib import admin
+else:
+    admin = None
+
+if admin:
+    admin.autodiscover()
     try:
         admin_url_prefix = settings.ADMIN_URL_PREFIX
         #site_urls  = url(r'^{0}(.*)'.format(admin_url_prefix[1:]),    admin.site.root),
         site_urls  = url(r'^%s(.*)' % admin_url_prefix[1:],    admin.site.root),
     except:
         site_urls  = ()
-else:
-    site_urls  = ()
-    
+
+appsite.load()
+
+
+
 
 # MEDIA FILES ONLY IF REQUESTED
 if settings.SERVE_STATIC_FILES:

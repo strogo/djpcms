@@ -7,9 +7,9 @@ from django.contrib.admin import ModelAdmin, HORIZONTAL, VERTICAL
 from django.contrib.admin import StackedInline, TabularInline
 from django.contrib.admin import AdminSite, site, import_module
 
-from djpcms.contrib.djpadmin import actions
-from djpcms.contrib.djpadmin.forms import AutocompleteForeignKeyInput
-from djpcms.contrib.djpadmin.options import _add_to_context, construct_search
+from djpcms.contrib.admin import actions
+from djpcms.contrib.admin.forms import AutocompleteForeignKeyInput
+from djpcms.contrib.admin.options import _add_to_context, construct_search
 
 
 class Autocomplete(object):

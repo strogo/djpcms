@@ -4,7 +4,7 @@ from django.utils.safestring import mark_safe
 from django.conf import settings
 
 
-basemedia          = '%sdjpadmin' % settings.MEDIA_URL
+basemedia          = '%sadmin' % settings.MEDIA_URL
 base_plugin        = '%s/jquery-autocomplete' % basemedia
 autocomplete_class = 'djp-autocomplete'
 ADMIN_URL_PREFIX   = getattr(settings,"ADMIN_URL_PREFIX","/admin/")

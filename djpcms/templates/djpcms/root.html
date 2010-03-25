@@ -27,8 +27,8 @@
 {% compress_if_you_can js %}
 <script type="text/javascript" src="{{ MEDIA_URL }}djpcms/modernizr-1.1.min.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}djpcms/jquery-1.4.1.min.js"></script>
-<script type="text/javascript" src="{{ site_admin_url }}jsi18n/"></script>
 {% block extra-head %}{% endblock %}{% endcompress %}
+<script type="text/javascript" src="{{ site_admin_url }}jsi18n/"></script>
 </head>
 
 <body {% block bodybits %}{{ djp.bodybits }}{% endblock %}>{% block pre-body %}{% if prebody %}
