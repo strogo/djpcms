@@ -62,9 +62,11 @@ class Compressor(object):
         if not url.startswith(self.storage.base_url):
             raise UncompressableFileError('"%s" is not in COMPRESS_URL ("%s") and can not be compressed' % (url, self.storage.base_url))
         basename = url.replace(self.storage.base_url, "", 1)
-        if not self.storage.exists(basename):
-            raise UncompressableFileError('"%s" does not exist' % self.storage.path(basename))
-        return self.storage.path(basename)
+        filename = self.storage.path(basename)
+        exist = os.path.exists(filename)
+        if not exist:
+            raise UncompressableFileError('"%s" does not exist' % filename)
+        return filename
 
     @lazyproperty
     def mtimes(self):

@@ -26,7 +26,7 @@ class AutocompleteForeignKeyInput(forms.HiddenInput):
             }
             js = (
                     '%s/jquery.autocomplete.js' % base_plugin,
-                    '%s/autocomplete.js ' % basemedia
+                    '%s/autocomplete.js' % basemedia
                 )
 
     def label_for_value(self, value):

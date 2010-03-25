@@ -8,6 +8,8 @@
 {% block extrastyle %}
 <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL}}djpcms/admin.css" />
 {{ block.super }}{% endblock %}
+{% block uncompressed-head %}
+<script type="text/javascript" src="{{ site_admin_url }}jsi18n/"></script>{% endblock %}
 
 {% block bodybits %}class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}"{% endblock %}
 {% block body-container-id %} id="container" {% endblock %}

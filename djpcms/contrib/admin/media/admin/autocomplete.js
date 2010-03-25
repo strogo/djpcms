@@ -1,3 +1,4 @@
+
 (function($) {
 	
 	$.djpcms.addDecorator({
