@@ -11,8 +11,7 @@
 {% block blockdescriptions %}<meta name="description" content="{% block site-description %}{% endblock %}"/>{% endblock %}{% if djp.page %}{% for head in djp.page.additional_head %}
 {{ head|safe }}{% endfor %}{% endif %}
 <!--  STYLING -->
-{% compress_if_you_can css %}
-{% block style-reset %}
+{% compress_if_you_can css %}{% block style-reset %}
 <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/reset-min.css"/>{% if grid.fixed %}
 <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/fluid960gs/960.css"/>{% else %}
 <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/fluid960gs/grid.css"/>{% endif %}
@@ -41,7 +40,7 @@
 </div>
 <!-- END OF BODY CONTAINER -->
 
-<!-- START END-BODY SCRIPTS -->{% block end-page-scripts %}
+<!-- START END-BODY SCRIPTS -->{% compress_if_you_can js %}{% block end-page-scripts %}
 <script type="text/javascript" src="{{ MEDIA_URL }}djpcms/jquery-ui-1.7.2.custom.min.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}djpcms/jquery.pagination.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}djpcms/form.js"></script>{% block extra-scripts %}{% endblock %}
@@ -57,7 +56,7 @@
 	$(document).djpcms();{% block body-extra-scripts %}{% endblock %}
 	});
 })(jQuery);
-</script>{% endblock %}
+</script>{% endblock %}{% endcompress %}
 <!-- END END-BODY SCRIPTS -->
 
 {% block ads-scripts %}{% endblock %}
