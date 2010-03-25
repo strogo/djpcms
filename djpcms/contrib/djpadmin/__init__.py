@@ -7,6 +7,17 @@ from django.contrib.admin import AdminSite, site, import_module
 from djpcms.contrib.admin import actions
 from djpcms.contrib.admin.options import _add_to_context
 
+class Autocomplete(object):
+    
+    def __init__(self):
+        self._register = {}
+    
+    def register(self, model):
+        if model not in self._register:
+            self._register.append(model)
+
+autocomplete = Autocomplete()
+
 
 #Inject to ModelAdmin class. Nice. Because Python is cool!!!!!!!!!!!!!
 
