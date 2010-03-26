@@ -42,7 +42,8 @@
 <!-- START END-BODY SCRIPTS -->{% compress_if_you_can js %}{% block end-page-scripts %}
 <script type="text/javascript" src="{{ MEDIA_URL }}djpcms/jquery-ui-1.7.2.custom.min.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}djpcms/jquery.pagination.js"></script>
-<script type="text/javascript" src="{{ MEDIA_URL }}djpcms/form.js"></script>{% block extra-scripts %}{% endblock %}
+<script type="text/javascript" src="{{ MEDIA_URL }}djpcms/form.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}djpcms/tablesorter/jquery.tablesorter.min.js"></script>{% block extra-scripts %}{% endblock %}
 <script type="text/javascript" src="{{ MEDIA_URL }}djpcms/djpcms.js"></script>{% if media %}
 {{ media|cleanjs }}{% endif %}{% endblock %}{% block body-scripts %}
 <script type="text/javascript">

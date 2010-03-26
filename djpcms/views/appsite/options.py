@@ -412,6 +412,7 @@ class ModelApplicationBase(ApplicationBase):
         if editurl:
             editurl = '%s?next=%s' % (editurl,djp.url)
         return {'item':      obj,
+                'djp':       djp,
                 'user':      request.user,
                 'editurl':   editurl,
                 'deleteurl': self.deleteurl(request, obj),

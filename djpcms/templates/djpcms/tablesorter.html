@@ -1,0 +1,12 @@
+<table class="tablesorter">{% if labels %}
+<thead>
+ <tr>{% for label in labels %}
+  <th>{{ label }}</th>{% endfor %}
+ </tr>
+</thead>{% endif %}
+<tbody>{% for item in items %}
+ <tr>{% for val in item %}
+   <td>{{ val }}</td>{% endfor %}
+ </tr>{% endfor %}
+</tbody>
+</table>

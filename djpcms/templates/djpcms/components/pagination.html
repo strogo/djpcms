@@ -3,7 +3,7 @@
 {{ form }}
 </div>{% endif %}{% if headers %}
 <div id="Pagination" class="jquery-pagination"></div>
-<table class="{{ css.ajax_table }}">
+<table class="tablesorter">
  <thead>
   <tr>{% for header in headers %}
    <th>{{ model|nicefield:header }}</th>{% endfor %}
