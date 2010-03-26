@@ -32,46 +32,72 @@ from django.contrib.auth import authenticate
 from fabric.api import *
 
 from models import DeploySite
-import settings
-
-
 
 #___________________________________________________________ SETTINGS DEFAULT
-env.module_name      = None              # Specify the module which contain the settings file
-env.server_name      = '127.0.0.1'       # servername
-env.project_name     = None              # if None it will be set to server_name, only used for local testing really!
+env.module_name      = None          # Specify the module which contain the settings file
+env.project_name     = None          # if None it will be set to server_name, only used for local testing really!
 env.no_site_packages = False
 
-context = {}
-context.update({'server_type':      settings.SERVER_TYPE,
-                'server_user':      settings.SERVER_USER,
-                'server_group':     settings.SERVER_GROUP,
-                'threads':          settings.SERVER_THREADS,
-                'apache_port':      settings.APACHE_PORT,
-                'version':          settings.PYTHON_VERSION})
+# Target machine settings and configuration
+target = {'system':             'p',          #p for POSIX, w for WINDOWS  
+          'server_type':        'mod_wsgi',   #mod_wsgi or mod_python for now
+          'server_user':        'www-data',
+          'server_group':       'www-data',
+          'server_name':        None,
+          'threads':            15,
+          'apache_port':        90,
+          'python_version':     '2.6',
+          'path':               None,
+          'project_name':       None,
+          'no_site_packages':   False,
+          'server_admin':       None}
 
+
+def initialize():
+    base  = target.get('path',None)
+    pname = target.get('project_name',None)
+    if base and pname:
+        path = '%s/%s' % (base,pname)
+        #if target.get('system','p') == 'p':
+        #    path = os.path.join(base,pname)
+        #else:
+        #    path = '%s//%s' % (base,pname)
+        env.path = path
+    else:
+        raise ValueError('Target path not specified')
+    env.host_string = target.get('host',target.get('server_name',None))
+    
 
 def clear():
     '''
     remove the environment
     '''
-    sudo('rm -rf %(path)s' % env)
-    
-    
+    run('cd {0[path]}'.format(target))
+    #initialize()
+    #comm = run
+    #if target.get('system','p') == 'p':
+    #    comm = sudo
+        
+    #comm('rm -rf {0[path]}'.format(env))
+    #run('cd {0[path]}'.format(target))
+    #run('pwd')
+    #comm('mkdir {0[project_name]}'.format(target))
+
+
 def setup():
     '''
     Initialize the virtual environment
     '''
     clear()
-    if env.no_site_packages:
-        run('virtualenv --no-site-packages %(path)s' % env)
-    else:
-        run('virtualenv {0[path]}'.format(env))
-    run('mkdir {0[path]}/releases'.format(env))
-    run('mkdir {0[path]}/media'.format(env))        # create a media directory for django_admin static files
-    env.logdir = '{0[path]}/logs'.format(env)
-    run('mkdir {0}'.format(env.logdir))
-    sudo('chown {0[server_user]}:{0[server_group]} -R {0[logdir]}'.format(env))
+    #if target.get('no_site_packages',False):
+    #    run('virtualenv --no-site-packages %(path)s' % env)
+    #else:
+    #    run('virtualenv {0[project_name]}'.format(target))
+    #run('mkdir {0[path]}/releases'.format(env))
+    #target['logdir'] = '{0[path]}/logs'.format(env)
+    #run('mkdir {0}'.format(env.logdir))
+    #if target.get('server_user',None):
+    #    sudo('chown {0[server_user]}:{0[server_group]} -R {0[logdir]}'.format(target))
     
 
 def install_site():
@@ -116,13 +142,12 @@ def install_site():
         pass
     sudo('ln -s /etc/nginx/sites-available/{0} /etc/nginx/sites-enabled/{0}'.format(nginx))
 
-    
+
 def clearanddeploy():
     setup()
     deploy()    
 
 
-    
 def reboot():
     "Reboot web servers"
     sudo("/etc/init.d/nginx restart")
@@ -160,6 +185,7 @@ def deploy():
 
 
 def python_version():
+    initialize()
     return run('python --version')
 
 def python_path():
