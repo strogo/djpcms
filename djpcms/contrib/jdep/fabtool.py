@@ -24,29 +24,31 @@
 #
 #
 from __future__ import with_statement # needed for python 2.5
-
 import os
 
+from django.template import loader
 from django.contrib.auth import authenticate
 
-from djpcms.models import DeploySite
-
 from fabric.api import *
+
+from models import DeploySite
+import settings
 
 
 
 #___________________________________________________________ SETTINGS DEFAULT
 env.module_name      = None              # Specify the module which contain the settings file
-env.server_type      = 'mod_wsgi'        # Apache deployment type ('mod_python' or 'mod_wsgi')
 env.server_name      = '127.0.0.1'       # servername
 env.project_name     = None              # if None it will be set to server_name, only used for local testing really!
 env.no_site_packages = False
 
-env.server_user     = 'www-data'
-env.server_group    = env.server_user 
-env.threads         = 15
-env.apache_port     = 90
-env.version         = '2.5'
+context = {}
+context.update({'server_type':      settings.SERVER_TYPE,
+                'server_user':      settings.SERVER_USER,
+                'server_group':     settings.SERVER_GROUP,
+                'threads':          settings.SERVER_THREADS,
+                'apache_port':      settings.APACHE_PORT,
+                'version':          settings.PYTHON_VERSION})
 
 
 def clear():
@@ -54,6 +56,7 @@ def clear():
     remove the environment
     '''
     sudo('rm -rf %(path)s' % env)
+    
     
 def setup():
     '''
@@ -194,8 +197,8 @@ def config_file(fname, ext = 'conf', dir = None):
     @param dir: directory containing the file or None. If none the __file__ directory is used
     @return: file name
     '''
-    filename = '{0[project_name]}_{1}.{2}'.format(env,fname,ext)
-    
+    filename = 'jdep/{0[project_name]}_{1}.{2}'.format(env,fname,ext)
+    data = loader.render_to_string(filename,env)
     dir = dir or os.path.dirname(__file__)
     data = open('{2}/{0}.{1}'.format(fname,ext,dir),'r').read()
     ngdata = data.format(env)
