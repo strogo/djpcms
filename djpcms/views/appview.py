@@ -9,12 +9,14 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.template import loader, RequestContext
 from django.utils.dateformat import format
 from django.utils.text import smart_split
+from django.contrib import messages
+from django.utils.translation import ugettext as _
 
 from djpcms.conf import settings
 from djpcms.utils.html import Paginator
 from djpcms.utils.func import force_number_insert
 from djpcms.utils.ajax import jremove, dialog, jredirect
-from djpcms.utils import form_kwargs
+from djpcms.utils import form_kwargs, force_unicode
 
 from djpcms.views.regex import RegExUrl 
 from djpcms.views.cache import pagecache
@@ -541,6 +543,7 @@ class EditView(ObjectView):
     
     def render(self, djp):
         f = self.get_form(djp)
+        djp.media = djp.media + f.media
         return f.render()
     
     def save(self, f):
@@ -550,28 +553,41 @@ class EditView(ObjectView):
         '''
         Save and redirect to default redirect
         '''
-        return self.default_ajax_view(djp,True)
+        return self.default_post(djp,True)
     
     def ajax__save_and_continue(self, djp):
         '''
         Save and redirect to default redirect
         '''
-        return self.default_ajax_view(djp,False)
+        return self.default_post(djp,False)
     
-    def default_ajax_view(self, djp, redirect = False):
+    def default_post(self, djp, redirect = False):
+        request = djp.request
+        cont = request.POST.has_key("_continue")
         djp.prefix = self.get_prefix(djp)
         f = self.get_form(djp)
+        is_ajax = request.is_ajax()
         if f.is_valid():
             try:
                 instance = self.save(f)
+                dt = datetime.now()
+                c = {'name': force_unicode(instance._meta.verbose_name),
+                     'obj': instance,
+                     'dt': format(dt,settings.DATETIME_FORMAT)}
+                msg = _('The %(name)s "%(obj)s" was succesfully saved %(dt)s') % c
             except Exception, e:
                 return f.errorpost('%s' % e)
-            if redirect:
-                url = self.defaultredirect(djp)
-                if url != djp.url:
-                    return jredirect(url)
-            dt = datetime.now()
-            return f.messagepost('Saved at %s' % format(dt,settings.DATETIME_FORMAT))
+            
+            if is_ajax:
+                if redirect:
+                    url = self.defaultredirect(djp)
+                    if url != djp.url:
+                        messages.info(djp.request, msg)
+                        return jredirect(url)
+                return f.messagepost(force_unicode(msg))
+            else:
+                messages.info(djp.request, msg)
+                pass
         else:
             return f.jerrors
 

@@ -211,7 +211,7 @@ class djpcmsview(UnicodeObject):
                 ajax_key = ajax_key.replace('-','_').lower()
             
         # If ajax_key is defined, it means this is a AJAX-JSON request
-        if ajax_key:
+        if is_ajax:
             #
             # Handle the cancel request redirect.
             # Check for next in the parameters, If not there redirect to self.defaultredirect
@@ -220,9 +220,11 @@ class djpcmsview(UnicodeObject):
                 if not url:
                     url = self.defaultredirect(djp)
                 res = jredirect(url)
-            else:    
-                ajax_view = 'ajax__%s' % ajax_key
-                ajax_view_function  = getattr(self,str(ajax_view),None)
+            else:
+                ajax_view_function = None
+                if ajax_key:
+                    ajax_view = 'ajax__%s' % ajax_key
+                    ajax_view_function  = getattr(self,str(ajax_view),None)
                 
                 # No post view function found. Let's try the default ajax post view
                 if not ajax_view_function:
@@ -242,8 +244,7 @@ class djpcmsview(UnicodeObject):
         #
         # Otherwise it is the default POST response
         else:
-            dpost = self.default_post(djp)
-            return dpost
+            return self.default_post(djp)
 
 
     def grid960(self, page = None):

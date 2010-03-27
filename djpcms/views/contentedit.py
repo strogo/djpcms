@@ -168,21 +168,26 @@ class ChangeContentView(appview.EditView):
     def ajax__container_type(self, djp):
         return self.ajax__plugin_name(djp)
     
-    def default_ajax_view(self, djp):
+    def default_post(self, djp):
         '''
-        Ajax view called when changing the content plugin values.
+        View called when changing the content plugin values.
         The instance.plugin object is maintained but its fields may change
+        Only ajax post working for now.
         
         @param request: django HttpRequest instance
         @return JSON serializable object 
         '''
         # First get the plugin name
+        is_ajax = djp.request.is_ajax()
         form = self.get_form(djp, all = False)
         if form.is_valid():
             plugin = form.cleaned_data.get('plugin_name',None)
             djp.instance.plugin_name = plugin.name
         else:
-            return form.jerrors
+            if is_ajax:
+                return form.jerrors
+            else:
+                pass
         
         form      =  self.get_form(djp)
         if form.is_valid(): 
@@ -191,12 +196,18 @@ class ChangeContentView(appview.EditView):
             instance.arguments = instance.plugin.save(pform)
             instance.save()
             # We now serialize the argument form
-            ret = jhtmls(identifier = '#%s' % self.plugin_preview_id(instance),
-                         html = instance.render(djp))
-            ret.update(form.messagepost("Plugin changed to %s" % instance.plugin.description))
-            return ret 
+            if is_ajax:
+                ret = jhtmls(identifier = '#%s' % self.plugin_preview_id(instance),
+                             html = instance.render(djp))
+                ret.update(form.messagepost("Plugin changed to %s" % instance.plugin.description))
+                return ret
+            else:
+                pass 
         else:
-            return form.jerrors
+            if is_ajax:
+                return form.jerrors
+            else:
+                pass
         
 
 class EditPluginView(appview.EditView):
@@ -225,17 +236,22 @@ class EditPluginView(appview.EditView):
                 f['form'] = flet
                 return f
     
-    def default_ajax_view(self, djp):
+    def default_post(self, djp):
+        is_ajax = djp.request.is_ajax()
         f = self.get_form(djp, withdata = False)
-        d = dialog(hd = f.instance.code,
-                   bd = f.render(),
-                   modal  = True,
-                   width  = settings.CONTENT_INLINE_EDITING.get('width','auto'),
-                   height = settings.CONTENT_INLINE_EDITING.get('height','auto'))
-        d.addbutton('Ok', url = djp.url, func = 'save')
-        d.addbutton('Cancel', url = djp.url, func = 'cancel')
-        d.addbutton('Save', url = djp.url, func = 'save', close = False)
-        return d
+        if is_ajax:
+            d = dialog(hd = f.instance.code,
+                       bd = f.render(),
+                       modal  = True,
+                       width  = settings.CONTENT_INLINE_EDITING.get('width','auto'),
+                       height = settings.CONTENT_INLINE_EDITING.get('height','auto'))
+            d.addbutton('Ok', url = djp.url, func = 'save')
+            d.addbutton('Cancel', url = djp.url, func = 'cancel')
+            d.addbutton('Save', url = djp.url, func = 'save', close = False)
+            return d
+        else:
+            #todo write the non-ajax POST view
+            pass
     
     def ajax__save(self, djp):
         f = self.get_form(djp)

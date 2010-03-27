@@ -15,11 +15,11 @@
     {{ djp.title }}{% endif %}{% endblock %}
    </div>
    {{ grid.clear }}{% endblock %}
-   {% block django-messages %}{% if messages %}
-    <div class="{{ grid.column1 }}">
-     <ul class="messagelist">{% for message in messages %}<li>{{ message }}</li>{% endfor %}</ul>
+   {% block django-messages %}
+    <div id="page-messages" class="{{ grid.column1 }}">{% if messages %}
+     <ul class="messagelist">{% for message in messages %}<li>{{ message }}</li>{% endfor %}</ul>{% endif %}
     </div>
-   {{ grid.clear }}{% endif %}{% endblock %}
+   {{ grid.clear }}{% endblock %}
    <div id="content"{% block contentbits %}{% endblock %}>{% block page-body %}
    {{ inner }}{% endblock %}
    </div>
