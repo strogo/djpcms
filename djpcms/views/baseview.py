@@ -7,6 +7,7 @@ from django import http
 from django.shortcuts import render_to_response
 from django.template import RequestContext, Context, loader
 from django.core.exceptions import PermissionDenied
+from django.forms import MediaDefiningClass
 
 
 from djpcms.conf import settings
@@ -28,6 +29,7 @@ build_base_context = function_module(settings.DJPCMS_CONTENT_FUNCTION, more_cont
 # THE DJPCMS INTERFACE CLASS for handling views
 # the response method handle all the views in djpcms
 class djpcmsview(UnicodeObject):
+    __metaclass__ = MediaDefiningClass
     # This override the template name in the page object (if it exists)
     # hardly used but here just in case.
     template_name = None
@@ -89,6 +91,11 @@ class djpcmsview(UnicodeObject):
             return None
     
     def render(self, djp, **kwargs):
+        '''
+        Render the Current View plugin.
+        Return safe unicode
+        This function is implemented by application views
+        '''
         return u''
     
     def preget(self, djp):
@@ -134,7 +141,8 @@ class djpcmsview(UnicodeObject):
             more_content['htmldoc'] = htmltype.get()
             
         if page and page.inner_template:
-            cb = {'djp':  djp, 'grid': grid}
+            cb = {'djp':  djp,
+                  'grid': grid}
             blocks = page.inner_template.numblocks()
             for b in range(0,blocks):
                 cb['content%s' % b] = BlockContentGen(djp, b)
@@ -153,7 +161,7 @@ class djpcmsview(UnicodeObject):
             inner = self.render(djp)
             if isinstance(inner,http.HttpResponse):
                 return inner
-            
+        
         more_content['inner'] = inner
         return djp.render_to_response(more_content)
     
@@ -161,6 +169,7 @@ class djpcmsview(UnicodeObject):
         return self.handle_response(djp)
     
     def default_post(self, djp):
+        raise NotImplementedError('Default Post view not implemented')
         return self.handle_response(djp)
     
     def post_response(self, djp):
@@ -217,7 +226,7 @@ class djpcmsview(UnicodeObject):
                 
                 # No post view function found. Let's try the default ajax post view
                 if not ajax_view_function:
-                    ajax_view_function = self.default_ajax_view;
+                    ajax_view_function = self.default_post;
             
                 try:
                     res  = ajax_view_function(djp)
@@ -235,15 +244,7 @@ class djpcmsview(UnicodeObject):
         else:
             dpost = self.default_post(djp)
             return dpost
-            
-    
-    def default_ajax_view(self, djp):
-        '''
-        This function is called by the self.post_view method when the
-        ajax key is available but no ajax function was found.
-        By default it raises an error
-        '''
-        raise NotImplementedError('Default ajax response not implemented')
+
 
     def grid960(self, page = None):
         if page and page.cssinfo:

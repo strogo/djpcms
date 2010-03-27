@@ -3,6 +3,7 @@
 #changelist {
     position: relative;
     width: 100%;
+    border:1px solid #CCCCCC;
 }
 
 #changelist table {

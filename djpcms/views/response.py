@@ -29,6 +29,7 @@ class DjpResponse(http.HttpResponse):
         self.kwargs     = kwargs
         self.wrapper    = None
         self.prefix     = None
+        self.media      = view.media
         self._plugincss = {}
     
     def __repr__(self):
@@ -181,6 +182,7 @@ class DjpResponse(http.HttpResponse):
         if more_context:
             d.update(more_context)
         d.update({'djp':        self,
+                  'media':      self.media,
                   'page':       self.page,
                   'cssajax':    self.css,
                   'plugincss':  self.get_plugincss(),

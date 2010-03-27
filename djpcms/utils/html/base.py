@@ -1,8 +1,8 @@
-
 from django.template import loader, Context
 from django.forms.util import flatatt
 from django.utils.datastructures import SortedDict
 from django.utils.safestring import mark_safe
+from django.forms import Media
 
 from djpcms.conf import settings
 from djpcms.utils import UnicodeObject
@@ -150,7 +150,20 @@ class htmlcomp(htmltag):
     def items(self):
         for v in self.inner.values():
             yield v
-            
+    
+    def _get_media(self):
+        """
+        Provide a description of all media required to render the widgets on this form
+        """
+        media = Media()
+        items = self.items()
+        for item in items:
+            m = getattr(item,'media',None)
+            if m:
+                media = media + m
+        return media
+    media = property(_get_media)
+    
     def getplugins(self, ftype):
         '''
         Return a list of plugings of type ftype

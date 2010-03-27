@@ -130,6 +130,13 @@ class formlet(htmlattr):
             self.submits = submit
         else:
             self.submits  = []
+    
+    def _get_media(self):
+        if self.form:
+            return self.form.media
+        else:
+            return None
+    media = property(_get_media)            
             
     def __getattr__(self, fname):
         form = self.form

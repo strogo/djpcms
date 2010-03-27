@@ -414,6 +414,7 @@ class AddView(AppView):
         Render the add view
         '''
         f = self.get_form(djp)
+        djp.media = djp.media + f.media
         return f.render()
     
     def default_post(self, djp):
