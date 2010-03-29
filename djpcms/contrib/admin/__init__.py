@@ -35,7 +35,7 @@ class Autocomplete(object):
 
 autocomplete = Autocomplete()
 
-
+import temp
 #Inject to ModelAdmin class. Nice. Because Python is cool!!!!!!!!!!!!!
 
 _old_render_change_form         = ModelAdmin.render_change_form
