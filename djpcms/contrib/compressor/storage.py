@@ -9,8 +9,11 @@ from django.conf import settings
 
 
 class pathHandler(object):
-    def __init__(self, path):
-        self._path = path
+    def __init__(self, name, path):
+        self.name  = name
+        self.base  = path
+        self._path = mediapath = os.path.join(path,'media')
+        self.exists = os.path.exists(self._path)
     
     def path(self, name):
         return safe_join(self._path, name)
@@ -24,6 +27,8 @@ class djangoAdminHandler(pathHandler):
 def application_map():
     map = {}
     for app in settings.INSTALLED_APPS:
+        sapp = app.split('.')
+        name = sapp[-1]
         if app.startswith('django.'):
             if app == 'django.contrib.admin':
                 base = settings.ADMIN_MEDIA_PREFIX[1:-1].split('/')[-1]
@@ -31,7 +36,7 @@ def application_map():
             else:
                 continue
         else:
-            base = app.split('.')[-1]
+            base    = name
             handler = pathHandler
             
         try:
@@ -40,8 +45,7 @@ def application_map():
             continue
 
         path   = module.__path__[0]
-        mediapath = os.path.join(path,'media')
-        map[base] = handler(mediapath)
+        map[base] = handler(name,path)
     return map
 
 

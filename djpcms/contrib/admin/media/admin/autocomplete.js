@@ -9,11 +9,11 @@
 				var el = $(this);
 				var inputs  = $('input',el);
 				var url    = $('a',el).attr('href');
-				var search = [];
-				$('span',el).each(function(i) {
-					search[i] = this.innerHTML;
-				});
-				if(inputs.length == 2 && url && search) {
+				//var search = [];
+				//$('span',el).each(function(i) {
+				//	search[i] = this.innerHTML;
+				//});
+				if(inputs.length == 2 && url) {
 					var display = $(inputs[0]);
 					var input   = $(inputs[1]).hide();
 					el.after(display).remove();

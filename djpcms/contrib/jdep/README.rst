@@ -2,11 +2,12 @@ JDEP
 ===================
 
 Django module for managing deployment of applications using fabric, virtualenv and pip.
+The favorite configuration is djago served by Apache using `mod_wsgi`.
 
 
 Requirements
 =========================
- * Fabric
+ * fabric
  * pip
  * djpcms
  

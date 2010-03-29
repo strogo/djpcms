@@ -41,23 +41,20 @@ class AutocompleteForeignKeyInput(forms.HiddenInput):
             label = self.label_for_value(value)
         else:
             label = u''
-        sf = ''.join(['<span>%s</span>' % s for s in self.search_fields])
         meta = self.rel.to._meta
         url = '%s%s/%s/' % (ADMIN_URL_PREFIX,meta.app_label,meta.module_name)
         return mark_safe(u'''
 <div class="%(klass)s">
 <input type="text" id="lookup_%(name)s" value="%(label)s" size="40"/>
- <dim style="display:none">
-  <input type="text" name="%(name)s">
+ <div style="display:none">
+  <input type="text" name="%(name)s" value="%(value)s">
   <a href="%(url)s"></a>
-  %(span)s
  </div>
 </div>
             ''' % {
                    'label': label,
                    'name': name,
                    'value': value,
-                   'span': sf,
                    'url': url,
                    'klass': autocomplete_class
                    })

@@ -1,3 +1,5 @@
+import time
+
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -12,3 +14,6 @@ class DeploySite(models.Model):
     
     class Meta:
         get_latest_by = "created"
+        
+    def getval(self):
+        return int(time.mktime(self.created.timetuple()))
