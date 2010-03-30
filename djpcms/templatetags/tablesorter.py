@@ -6,6 +6,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils.html import escape, conditional_escape
 
 from djpcms.utils import force_unicode, smart_str
+from djpcms.views.appsite import ChangeList
 
 EMPTY_VALUE = '(None)'
 
@@ -15,6 +16,7 @@ register = template.Library()
 def totable(queryset, djp):
     request = djp.request
     model = queryset.model
+    cl    = ChangeList(model)
     model_admin = site._registry.get(model,None)
     if not model_admin:
         return ''
@@ -61,7 +63,7 @@ def totable(queryset, djp):
             if force_unicode(result_repr) == '':
                 result_repr = mark_safe('&nbsp;')
             # If list_display_links not defined, add the link tag to the first field
-            if (first and not cl.list_display_links) or field_name in cl.list_display_links:
+            if (first and not model_admin.list_display_links) or field_name in model_admin.list_display_links:
                 table_tag = {True:'th', False:'td'}[first]
                 first = False
                 url = cl.url_for_result(result)
