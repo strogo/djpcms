@@ -56,15 +56,6 @@ def get_declared_applications(bases, attrs):
     return SortedDict(data = apps)
 
 
-class ModelAppMetaClass(type):
-    
-    def __new__(cls, name, bases, attrs):
-        attrs['base_applications'] = get_declared_applications(bases, attrs)
-        new_class = super(ModelAppMetaClass, cls).__new__(cls, name, bases, attrs)
-        return new_class
-    
-
-
 class ApplicationBase(object):
     '''
     Base class for djpcms applications
@@ -166,8 +157,8 @@ class ModelApplicationBase(ApplicationBase):
         '''
         roots = []
         for app_name,child in self.applications.items():
-            child.name = app_name
-            pkey       = child.parent
+            child.name   = app_name
+            pkey         = child.parent
             if pkey:
                 parent  = self.applications.get(pkey,None)
                 if not parent:
@@ -525,6 +516,16 @@ class ModelApplicationBase(ApplicationBase):
         return []
 
 
+class ModelAppMetaClass(forms.MediaDefiningClass):
+    
+    def __new__(cls, name, bases, attrs):
+        attrs['base_applications'] = get_declared_applications(bases, attrs)
+        new_class = super(ModelAppMetaClass, cls).__new__(cls, name, bases, attrs)
+        return new_class
+    
+
+
 class ModelApplication(ModelApplicationBase):
     __metaclass__ = ModelAppMetaClass
     
+

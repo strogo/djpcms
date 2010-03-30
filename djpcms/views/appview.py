@@ -16,7 +16,7 @@ from djpcms.conf import settings
 from djpcms.utils.html import Paginator
 from djpcms.utils.func import force_number_insert
 from djpcms.utils.ajax import jremove, dialog, jredirect
-from djpcms.utils import form_kwargs, force_unicode
+from djpcms.utils import form_kwargs, force_unicode, construct_search, isexact
 
 from djpcms.views.regex import RegExUrl 
 from djpcms.views.cache import pagecache
@@ -106,6 +106,9 @@ class AppView(AppViewBase):
         # Increase the creation counter, and save our local copy.
         self.creation_counter = AppView.creation_counter
         AppView.creation_counter += 1
+    
+    def get_media(self):
+        return self.appmodel.media
     
     def isroot(self):
         return self.appmodel.root_application is self
@@ -225,30 +228,7 @@ class AppView(AppViewBase):
         return []
     
     def __deepcopy__(self, memo):
-        return copy.copy(self)
-
-
-def construct_search(field_name):
-    if field_name.startswith('^'):
-        return "%s__istartswith" % field_name[1:]
-    elif field_name.startswith('='):
-        return "%s__iexact" % field_name[1:]
-    elif field_name.startswith('@'):
-        return "%s__search" % field_name[1:]
-    else:
-        return "%s__icontains" % field_name
-    
-def isexact(bit):
-    if not bit:
-        return bit
-    N = len(bit)
-    Nn = N - 1
-    bc = '%s%s' % (bit[0],bit[Nn])
-    if bc == '""' or bc == "''":
-        return bit[1:Nn]
-    else:
-        return bit
-    
+        return copy.copy(self)   
     
     
     

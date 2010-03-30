@@ -24,7 +24,7 @@ class LogoutApp(appview.AppView):
     def preget(self, djp):
         request = djp.request
         params  = dict(request.GET.items())
-        url     = params.get('next','/')
+        url     = params.get('next',None) or '/'
         user    = request.user
         if user.is_authenticated():
             logout(request)

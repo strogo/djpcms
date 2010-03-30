@@ -29,7 +29,7 @@ class DjpResponse(http.HttpResponse):
         self.kwargs     = kwargs
         self.wrapper    = None
         self.prefix     = None
-        self.media      = view.media
+        self.media      = view.get_media()
         self._plugincss = {}
     
     def __repr__(self):

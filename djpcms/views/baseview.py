@@ -7,7 +7,7 @@ from django import http
 from django.shortcuts import render_to_response
 from django.template import RequestContext, Context, loader
 from django.core.exceptions import PermissionDenied
-from django.forms import MediaDefiningClass
+from django.forms import Media, MediaDefiningClass
 
 
 from djpcms.conf import settings
@@ -29,7 +29,6 @@ build_base_context = function_module(settings.DJPCMS_CONTENT_FUNCTION, more_cont
 # THE DJPCMS INTERFACE CLASS for handling views
 # the response method handle all the views in djpcms
 class djpcmsview(UnicodeObject):
-    __metaclass__ = MediaDefiningClass
     # This override the template name in the page object (if it exists)
     # hardly used but here just in case.
     template_name = None
@@ -40,7 +39,10 @@ class djpcmsview(UnicodeObject):
     '''
     Base class for handling django views.
     No views should use this class directly.
-    '''    
+    '''
+    def get_media(self):
+        return Media()
+    
     def get_url(self, djp, **urlargs):
         return None
     

@@ -1,6 +1,29 @@
 from django.utils.encoding import smart_str, force_unicode, smart_unicode
 from django.utils.safestring import mark_safe
 
+
+def construct_search(field_name):
+    # use different lookup methods depending on the notation
+    if field_name.startswith('^'):
+        return "%s__istartswith" % field_name[1:]
+    elif field_name.startswith('='):
+        return "%s__iexact" % field_name[1:]
+    elif field_name.startswith('@'):
+        return "%s__search" % field_name[1:]
+    else:
+        return "%s__icontains" % field_name
+
+def isexact(bit):
+    if not bit:
+        return bit
+    N = len(bit)
+    Nn = N - 1
+    bc = '%s%s' % (bit[0],bit[Nn])
+    if bc == '""' or bc == "''":
+        return bit[1:Nn]
+    else:
+        return bit
+
 def form_kwargs(request, instance = None, withrequest = False, **kwargs):
     '''
     Quick form arguments aggregator
