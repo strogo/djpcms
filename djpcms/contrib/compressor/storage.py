@@ -10,10 +10,11 @@ from django.conf import settings
 
 class pathHandler(object):
     def __init__(self, name, path):
-        self.name  = name
-        self.base  = path
-        self._path = mediapath = os.path.join(path,'media')
-        self.exists = os.path.exists(self._path)
+        self.name     = name
+        self.base     = path
+        self._path    = os.path.join(path,'media')
+        self.fullpath = self.path(name)
+        self.exists   = os.path.exists(self._path)
     
     def path(self, name):
         return safe_join(self._path, name)
