@@ -1,6 +1,7 @@
 
 0.6 beta
 =======================
+ * Added color picker jquery plugin from http://www.eyecon.ro/colorpicker/
  * When serving media files add applications media roots in `urls`
  * Added `list_display` a la django admin in `views.appsite` so that lists of objects can be displayed as a table.
  * Added tablesorter jQuery plugin from http://tablesorter.com

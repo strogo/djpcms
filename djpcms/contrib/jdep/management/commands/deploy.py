@@ -72,13 +72,14 @@ class Command(BaseCommand):
                    'server_group': server_group,
                    'project_name': '%s_%s' % (settings.PROJECT_NAME,depid),
                    'threads': settings.SERVER_THREADS}
-        # Nginx
+        
+        # Create an Nginx configuration file
         data = loader.render_to_string('jdep/nginx.conf', context)
         f = open(os.path.join(base,'prospero_nginx_%s.conf' % depid),'w')
         f.write(data)
         context.pop('server_name',None)
         
-        # Apache
+        # Create Apache mod_wsgi configuration file
         data = loader.render_to_string('jdep/mod_wsgi.conf', context)
         f = open(os.path.join(base,'prospero_apache_%s.conf' % depid),'w')
         f.write(data)

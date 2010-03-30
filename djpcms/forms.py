@@ -27,8 +27,6 @@ class LazyChoiceField(forms.ChoiceField):
     This allows for dynamic choices generation every time an instance of a Form is created.
     '''
     def __init__(self, *args, **kwargs):
-        # remove choices from kwargs.
-        # choices should be an iterable
         self._lazy_choices = kwargs.pop('choices',())
         super(LazyChoiceField,self).__init__(*args, **kwargs)
         

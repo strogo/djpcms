@@ -495,10 +495,7 @@ class SiteContent(models.Model):
                              help_text  = _("Unique name for the content. Choose one you like"))
     description   = models.TextField(blank = True)
     body          = models.TextField(_('body'),blank=True)
-    markup        = models.CharField(max_length = 3,
-                                     choices = markuplib.choices,
-                                     default = markuplib.default,
-                                     null = False)
+    markup        = models.CharField(max_length = 3, null = False)
     
     objects = SiteContentManager()
     
@@ -560,10 +557,7 @@ class Application(models.Model):
     stylesheet  = models.TextField(blank=True)
     javascript  = models.TextField(blank=True)
     mark        = models.IntegerField(default = 0)
-    markup      = models.CharField(max_length = 3,
-                                   choices = markuplib.choices,
-                                   default = markuplib.default,
-                                   null = False)
+    markup      = models.CharField(max_length = 3, null = False)
     
 
 
