@@ -110,7 +110,7 @@ class ChangeContentView(appview.EditView):
     def plugin_preview_id(self, instance):
         return '%s-preview' % instance.pluginid()
             
-    def get_form(self, djp, all = True):
+    def get_form(self, djp, all = True, **kwargs):
         '''
         Get the contentblock editing form
         This form is composed of two formlet,
@@ -223,7 +223,7 @@ class EditPluginView(appview.EditView):
                                             isapp = False,
                                             name = 'edit_plugin')
     
-    def get_form(self, djp, withdata = True):
+    def get_form(self, djp, withdata = True, **kwargs):
         instance = djp.instance
         p = instance.plugin
         if p:
@@ -273,7 +273,7 @@ class ContentSite(appsite.ModelApplication):
     delete      = appview.DeleteView(parent = 'edit')
     plugin      = EditPluginView(regex = 'plugin', parent = 'edit')
     
-    def submit(self, instance):
+    def submit(self, *args, **kwargs):
         return None
     
     def objectbits(self, obj):

@@ -252,15 +252,30 @@ class ApplicationPlugin(DJPplugin):
         This function needs to be implemented
         '''
         app  = self.app
-        args = copy.copy(djp.urlargs)
-        args.update(kwargs)
-        instance = args.pop('instance',None)
-        if instance and not isinstance(instance,app.model):
-            instance = None 
-        ndjp = self.app(djp.request, instance = instance, **args)
-        ndjp.wrapper = wrapper
-        ndjp.prefix  = prefix
-        return self.app.render(ndjp)
+        request = djp.request
+        if app.has_permission(request):
+            if djp.view != app:
+                args = copy.copy(djp.urlargs)
+                args.update(kwargs)
+                djp = self.app(djp.request, **args)
+            djp.wrapper = wrapper
+            djp.prefix  = prefix
+            return self.app.render(djp)
+        else:
+            return ''
+        #args = copy.copy(djp.urlargs)
+        #args.update(kwargs)
+        # Application plugin with instance are not supported!!
+        #instance = args.pop('instance',None)
+        #if instance and not isinstance(instance,app.model):
+        #    instance = None 
+        #ndjp = self.app(djp.request, instance = instance, **args)
+        #ndjp.wrapper = wrapper
+        #ndjp.prefix  = prefix
+        #if app.has_permission(request):
+        #    return self.app.render(ndjp)
+        #else:
+        #    return ''
     
                     
 

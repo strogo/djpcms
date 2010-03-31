@@ -6,7 +6,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils.html import escape, conditional_escape
 
 from djpcms.utils import force_unicode, smart_str
-from djpcms.views.appsite import ChangeList
+from djpcms.views.changelist import ChangeList
 
 EMPTY_VALUE = '(None)'
 
@@ -15,25 +15,22 @@ register = template.Library()
 @register.inclusion_tag('djpcms/tablesorter.html')
 def totable(queryset, djp):
     request = djp.request
-    model = queryset.model
-    cl    = ChangeList(model)
-    model_admin = site._registry.get(model,None)
-    if not model_admin:
+    cl    = ChangeList(queryset.model)
+    if not cl.list_display:
         return ''
-    list_display = model_admin.list_display
     labels = []
     items  = []
-    for name in list_display:
-        labels.append(label_for_field(name, model, model_admin))
+    for name in cl.list_display:
+        labels.append(label_for_field(name, cl.model, cl.model_admin))
     first = True
     #pk = cl.lookup_opts.pk.attname
     for result in queryset:
         display = []
         items.append(display)
-        for field_name in list_display:
+        for field_name in cl.list_display:
             row_class = ''
             try:
-                f, attr, value = lookup_field(field_name, result, model_admin)
+                f, attr, value = lookup_field(field_name, result, cl.model_admin)
             except (AttributeError, ObjectDoesNotExist):
                 result_repr = EMPTY_VALUE
             else:
@@ -63,7 +60,7 @@ def totable(queryset, djp):
             if force_unicode(result_repr) == '':
                 result_repr = mark_safe('&nbsp;')
             # If list_display_links not defined, add the link tag to the first field
-            if (first and not model_admin.list_display_links) or field_name in model_admin.list_display_links:
+            if (first and not cl.list_display_links) or field_name in cl.list_display_links:
                 table_tag = {True:'th', False:'td'}[first]
                 first = False
                 url = cl.url_for_result(result)

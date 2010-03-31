@@ -109,6 +109,8 @@ class ModelApplicationBase(ApplicationBase):
     # Form used for adding/editing objects.
     # This can be overritten with a function
     form             = forms.ModelForm
+    _form_add        = 'add'
+    _form_edit       = 'change'
     # Form layout.
     form_layout      = None
     # Whether the form requires the request object to be passed to the constructor
@@ -129,6 +131,8 @@ class ModelApplicationBase(ApplicationBase):
     search_fields    = None
     #
     list_display     = None
+    #
+    list_display_links = None
     
     def __init__(self, baseurl, application_site, editavailable, model = None):
         super(ModelApplicationBase,self).__init__(baseurl, application_site, editavailable)
@@ -230,10 +234,12 @@ class ModelApplicationBase(ApplicationBase):
     def getapp(self, code):
         return self.applications.get(code, None)
     
-    def update_initial(self, request, mform, initial = None):
-        if request.method == 'GET' and request.GET:
+    def update_initial(self, request, mform, initial = None, own_view = True):
+        if request.method == 'GET':
             params = dict(request.GET.items())
-            next   = params.get('next')
+            next   = params.get('next',None)
+            if not next and not own_view:
+                next = request.path
             if next:
                 mform = add_hidden_field(mform,'next')
                 initial = initial or {}
@@ -254,13 +260,14 @@ class ModelApplicationBase(ApplicationBase):
         '''
         instance = djp.instance
         request  = djp.request
+        own_view = djp.url == request.path
         
         if isinstance(self.form,type):
             mform = modelform_factory(self.model, self.form)
         else:
             mform = self.form(request = request, instance = instance)
         
-        initial = self.update_initial(request, mform, initial)
+        initial = self.update_initial(request, mform, initial, own_view = own_view)
         
         wrapper  = djp.wrapper
                 
@@ -274,7 +281,7 @@ class ModelApplicationBase(ApplicationBase):
             layout = wrapper.form_layout
         else:
             layout = None
-        fl = formlet(form = f, layout = layout, submit = self.submit(instance))
+        fl = formlet(form = f, layout = layout, submit = self.submit(instance, own_view))
         
         if wrapped:
             fhtml  = form(method = self.form_method, url = djp.url)
@@ -285,7 +292,7 @@ class ModelApplicationBase(ApplicationBase):
         else:
             return fl
         
-    def submit(self, instance):
+    def submit(self, instance, own_view):
         '''
         Submits elements
         '''
@@ -293,8 +300,9 @@ class ModelApplicationBase(ApplicationBase):
             sb = [submit(value = 'done', name = 'save'),
                   submit(value = 'save', name = 'save_and_continue')]
         else:
-            sb = [submit(value = 'add', name = 'add')]
-        sb.append(submit(value = 'cancel', name = 'cancel'))
+            sb = [submit(value = self._form_add, name = 'add')]
+        if own_view:
+            sb.append(submit(value = 'cancel', name = 'cancel'))
         return sb
     
     def get_searchform(self,

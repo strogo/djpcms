@@ -391,7 +391,7 @@ class AddView(AppView):
     def save(self, f):
         return self.appmodel.object_from_form(f)
     
-    def render(self, djp):
+    def render(self, djp, **kwargs):
         '''
         Render the add view
         '''
@@ -406,6 +406,7 @@ class AddView(AppView):
         request    = djp.request
         is_ajax    = request.is_ajax()
         djp.prefix = self.get_prefix(djp)
+        next       = request.POST.get('next',None)
         f = self.get_form(djp)
         if f.is_valid():
             try:
@@ -419,12 +420,18 @@ class AddView(AppView):
             if is_ajax:
                 return f.messagepost('%s added' % instance)
             else:
-                return self.handle_response(djp)
+                if next:
+                    return http.HttpResponseRedirect(next)
+                else:
+                    return self.handle_response(djp)
         else:
             if is_ajax:
                 return f.jerrors
             else:
-                return self.handle_response(djp)
+                if next:
+                    return http.HttpResponseRedirect(next)
+                else:
+                    return self.handle_response(djp)
         
         
 # Application views which requires an object
