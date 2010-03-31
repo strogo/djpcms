@@ -67,6 +67,11 @@ class ApplicationSite(object):
                 raise ValueError('Application %s already registered as application' % app.name)
             self._nameregistry[app.name] = app
             self.choices.append((app.name,app.name))
+    
+    def unregister(self, model):
+        appmodel = self._registry.pop(model,None)
+        if appmodel:
+            self._nameregistry.pop(appmodel.name,None)
             
     def for_model(self, model):
         return self._registry.get(model,None)
