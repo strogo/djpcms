@@ -4,8 +4,9 @@ from django.contrib.admin import site
 from django.contrib.admin.util import label_for_field, display_for_field, lookup_field
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.html import escape, conditional_escape
+from django.contrib.admin.templatetags.admin_list import _boolean_icon
 
-from djpcms.utils import force_unicode, smart_str
+from djpcms.utils import force_unicode, smart_str, mark_safe, smart_unicode
 from djpcms.views.changelist import ChangeList
 
 EMPTY_VALUE = '(None)'
@@ -15,13 +16,13 @@ register = template.Library()
 @register.inclusion_tag('djpcms/tablesorter.html')
 def totable(queryset, djp):
     request = djp.request
-    cl    = ChangeList(queryset.model)
+    cl    = ChangeList(queryset.model, request)
     if not cl.list_display:
         return ''
     labels = []
     items  = []
     for name in cl.list_display:
-        labels.append(label_for_field(name, cl.model, cl.model_admin))
+        labels.append(cl.label_for_field(name))
     first = True
     #pk = cl.lookup_opts.pk.attname
     for result in queryset:
@@ -32,7 +33,7 @@ def totable(queryset, djp):
             try:
                 f, attr, value = lookup_field(field_name, result, cl.model_admin)
             except (AttributeError, ObjectDoesNotExist):
-                result_repr = EMPTY_VALUE
+                result_repr = cl.get_value(result, field_name, EMPTY_VALUE)
             else:
                 if f is None:
                     allow_tags = getattr(attr, 'allow_tags', False)
@@ -50,7 +51,7 @@ def totable(queryset, djp):
                         result_repr = mark_safe(result_repr)
                 else:
                     if value is None:
-                        result_repr = EMPTY_CHANGELIST_VALUE
+                        result_repr = EMPTY_VALUE
                     if isinstance(f.rel, models.ManyToOneRel):
                         result_repr = escape(getattr(result, f.name))
                     else:
@@ -61,31 +62,16 @@ def totable(queryset, djp):
                 result_repr = mark_safe('&nbsp;')
             # If list_display_links not defined, add the link tag to the first field
             if (first and not cl.list_display_links) or field_name in cl.list_display_links:
-                table_tag = {True:'th', False:'td'}[first]
                 first = False
                 url = cl.url_for_result(result)
-                # Convert the pk to something that can be used in Javascript.
-                # Problem cases are long ints (23L) and non-ASCII strings.
-                if cl.to_field:
-                    attr = str(cl.to_field)
-                else:
-                    attr = pk
-                value = result.serializable_value(attr)
-                result_id = repr(force_unicode(value))[1:]
-                #yield mark_safe(u'<%s%s><a href="%s"%s>%s</a></%s>' % \
-                #                (table_tag, row_class, url, (cl.is_popup and ' onclick="opener.dismissRelatedLookupPopup(window, %s); return false;"' % result_id or ''), conditional_escape(result_repr), table_tag))
             else:
-                # By default the fields come from ModelAdmin.list_editable, but if we pull
-                # the fields out of the form instead of list_editable custom admins
-                # can provide fields on a per request basis
-                if form and field_name in form.fields:
-                    bf = form[field_name]
-                    result_repr = mark_safe(force_unicode(bf.errors) + force_unicode(bf))
-                else:
-                    result_repr = conditional_escape(result_repr)
-                
-            display.append({'class':row_class,
-                            'result': result_repr})
+                url = None
+            
+            if url:
+                var = mark_safe(u'<a href="%s">%s</a>' % (url, conditional_escape(result_repr)))
+            else:
+                var = conditional_escape(result_repr)
+            display.append(var)
     return {'labels':labels,
             'items':items}
     

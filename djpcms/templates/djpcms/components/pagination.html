@@ -1,20 +1,9 @@
 {% load djpmodutils %}
 {% if form %}<div class="search-form">
 {{ form }}
-</div>{% endif %}{% if headers %}
+</div>{% endif %}{% if headers %}{% load tablesorter %}
 <div id="Pagination" class="jquery-pagination"></div>
-<table class="tablesorter">
- <thead>
-  <tr>{% for header in headers %}
-   <th>{{ model|nicefield:header }}</th>{% endfor %}
-  </tr>
- </thead>
- <tbody>{% for item in paginator.qs %}
-  <tr>{% for header in headers %}
-   <td>{{ item|objvalue:header }}</td>{% endfor %}
-  </tr>{% endfor %}
- </tbody>
-</table>
+{% totable paginator.qs djp %}
 {% else %}{% ifnotequal paginator.pages 1 %}
 <div id="Pagination" class="jquery-pagination"></div>{% endifnotequal %}
 {% for item in items %}

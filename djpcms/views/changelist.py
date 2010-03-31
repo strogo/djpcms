@@ -1,10 +1,15 @@
-from djpcms.views import appsite
 from django.contrib.admin import site
+from django.contrib.admin.util import label_for_field
 
+from djpcms.views import appsite
+
+
+EMPTY_VALUE = '(None)'
 
 class ChangeList(object):
     
-    def __init__(self, model):
+    def __init__(self, model, request):
+        self.request = request
         appmodel = appsite.site.for_model(model)
         model_admin  = site._registry.get(model,None)
         self.appmodel = appmodel
@@ -37,4 +42,28 @@ class ChangeList(object):
             return None
         
     def url_for_result(self, instance):
-        pass
+        if self.appmodel:
+            return self.appmodel.viewurl(self.request, instance)
+        else:
+            return None
+        
+    def appfuncname(self, name):
+        return 'extrafunction__%s' % name
+    
+    def get_value(self, instance, name, default = EMPTY_VALUE):
+        func = getattr(self.appmodel,self.appfuncname(name),None)
+        if func:
+            return func(self.request, instance)
+        else:
+            return default
+    
+    def label_for_field(self, name):
+        try:
+            return label_for_field(name, self.model, self.model_admin)
+        except:
+            if self.appmodel:
+                func = getattr(self.appmodel,self.appfuncname(name),None)
+                if func:
+                    return name
+            raise AttributeError("Attribute %s not available" % name)
+            

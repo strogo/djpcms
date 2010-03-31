@@ -290,6 +290,7 @@ class SearchView(AppView):
         p  = Paginator(request, query)
         c  = self.content_dict(djp)
         c.update({'paginator': p,
+                  'djp': djp,
                   'url': djp.url,
                   'model': self.model,
                   'css': appmodel.ajax,
