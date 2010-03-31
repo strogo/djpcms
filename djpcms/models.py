@@ -220,14 +220,20 @@ class Page(TimeStamp):
                             return
                         self.parent = None
                     else:
-                        root = Page.objects.filter(site = self.site, level = 0)
+                        urls = baseurl[1:-1].split('/')
+                        if len(urls) > 1:
+                            parent_url = '/%s/' % '/'.join(urls[:-1])
+                            root    = Page.objects.filter(site = self.site, url = parent_url)
+                        else:
+                            parent_url = '/'
+                            
                         if root:
                             self.parent = root[0]
                         else:
                             if messages:
-                                messages.error("Root page not available, cannot set application %s" % baseurl)
+                                messages.error('Parent page "%s" not available, cannot set application %s' % (parent_url,baseurl))
                             return
-                    return baseurl
+                        return baseurl
                 else:
                     p = app.parent
                     pages = Page.objects.filter(application = p.code, site = self.site)
