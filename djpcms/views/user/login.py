@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate, login, logout
+from django.contrib import messages
 from django import http
 
 from djpcms.views import appview
@@ -91,20 +92,21 @@ class LoginApp(appview.AppView):
                 url = '%s?next=%s' % (url,next)
         return url
     
-    def ajax__login_user(self, djp):
+    def default_post(self, djp):
         '''
         Try to log in
         '''
+        request = djp.request
+        is_ajax = request.is_ajax()
         f = self.get_form(djp)
         if f.is_valid():
             error = self.process_login_data(djp.request,f.cleaned_data)
             if not error:
-                next = f.cleaned_data.get('next','/')
-                return jredirect(url = next)
+                return djp.redirect(f.cleaned_data.get('next','/'))
             else:
-                return self.errorpost(error)
+                return djp.errormessage(error)
         else:
-            return f.jerrors
+            return djp.formerrors(f)
         
     def process_login_data(self, request, data):
         '''

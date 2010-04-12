@@ -1,7 +1,3 @@
-from django.db.models import Q
-from django import http
-from django.core.exceptions import ImproperlyConfigured
-
 from django.contrib.admin import autodiscover, widgets
 from django.contrib.admin import ACTION_CHECKBOX_NAME
 from django.contrib.admin import ModelAdmin, HORIZONTAL, VERTICAL
@@ -9,9 +5,14 @@ from django.contrib.admin import StackedInline, TabularInline
 from django.contrib.admin import AdminSite, site, import_module
 
 from djpcms.contrib.admin import actions
-from djpcms.contrib.admin.forms import AutocompleteForeignKeyInput
+from djpcms.contrib.admin.forms import AutocompleteForeignKeyInput, AutocompleteManyToManyInput
 from djpcms.contrib.admin.options import _add_to_context, construct_search
 from djpcms.contrib.admin.options import log_addition, log_change, log_deletion, history_view
+
+from django.db.models import Q
+from django import http, forms
+from django.core.exceptions import ImproperlyConfigured
+
 
 
 class Autocomplete(object):
@@ -64,7 +65,7 @@ def new_changelist_view(self, request, extra_context=None):
                         rel_name = name.split('__')[0]
                         q = Q( **{str(name):query} )
                 qs = self.model.objects.filter(q)                    
-                data = ''.join([u'%s|%s\n' % (getattr(f,rel_name),f.pk) for f in qs])
+                data = ''.join([u'%s|%s|%s\n' % (getattr(f,rel_name),f,f.pk) for f in qs])
                 return http.HttpResponse(data)
             return http.HttpResponseNotFound()
         else:
@@ -74,33 +75,57 @@ def new_changelist_view(self, request, extra_context=None):
 
 
 def new_formfield_for_foreignkey(self, db_field, request=None, **kwargs):
-        """
-        Get a form Field for a ForeignKey.
-        """
-        db = kwargs.get('using')
-        search_fields = autocomplete.get(db_field.rel.to)
-        if search_fields:
-            kwargs['widget'] = AutocompleteForeignKeyInput(db_field.rel,search_fields)
-        elif db_field.name in self.raw_id_fields:
-            kwargs['widget'] = widgets.ForeignKeyRawIdWidget(db_field.rel, using=db)
-        elif db_field.name in self.radio_fields:
-            kwargs['widget'] = widgets.AdminRadioSelect(attrs={
-                'class': get_ul_class(self.radio_fields[db_field.name]),
-            })
-            kwargs['empty_label'] = db_field.blank and _('None') or None
+    """
+    Get a form Field for a ForeignKey.
+    """
+    db = kwargs.get('using')
+    search_fields = autocomplete.get(db_field.rel.to)
+    if search_fields:
+        kwargs['widget'] = AutocompleteForeignKeyInput(db_field.rel,search_fields)
+    elif db_field.name in self.raw_id_fields:
+        kwargs['widget'] = widgets.ForeignKeyRawIdWidget(db_field.rel, using=db)
+    elif db_field.name in self.radio_fields:
+        kwargs['widget'] = widgets.AdminRadioSelect(attrs={
+            'class': get_ul_class(self.radio_fields[db_field.name]),
+        })
+        kwargs['empty_label'] = db_field.blank and _('None') or None
         
-        return db_field.formfield(**kwargs)
+    return db_field.formfield(**kwargs)
 
+def new_formfield_for_manytomany(self, db_field, request=None, **kwargs):
+    """
+    Get a form Field for a ManyToManyField.
+    """
+    # If it uses an intermediary model that isn't auto created, don't show
+    # a field in admin.
+    if not db_field.rel.through._meta.auto_created:
+        return None
+    db = kwargs.get('using')
+
+    if db_field.name in self.raw_id_fields:
+        kwargs['widget'] = widgets.ManyToManyRawIdWidget(db_field.rel, using=db)
+        kwargs['help_text'] = ''
+    elif db_field.name in (list(self.filter_vertical) + list(self.filter_horizontal)):
+        kwargs['widget'] = widgets.FilteredSelectMultiple(db_field.verbose_name, (db_field.name in self.filter_vertical))
+
+
+# Injecting!!! 
+#
 ModelAdmin.render_change_form       = new_render_change_form
 ModelAdmin.changelist_view          = new_changelist_view
 ModelAdmin.delete_view              = new_delete_view
-ModelAdmin.formfield_for_foreignkey = new_formfield_for_foreignkey
 ModelAdmin.history_view             = history_view
 ModelAdmin.log_addition             = log_addition
 ModelAdmin.log_change               = log_change
 ModelAdmin.log_deletion             = log_deletion
+
+ModelAdmin.formfield_for_foreignkey    = new_formfield_for_foreignkey
 TabularInline.formfield_for_foreignkey = new_formfield_for_foreignkey
 StackedInline.formfield_for_foreignkey = new_formfield_for_foreignkey
+
+ModelAdmin.formfield_for_manytomany    = new_formfield_for_manytomany
+TabularInline.formfield_for_manytomany = new_formfield_for_manytomany
+StackedInline.formfield_for_manytomany = new_formfield_for_manytomany
 
 
 
@@ -138,3 +163,15 @@ site.check_dependencies = new_check_dependencies
 
 
  
+# a new ModelMultipleChoiceField
+#
+class ModelMultipleChoiceField(forms.ModelMultipleChoiceField):
+    
+    def __init__(self, model, widget = None, **kwargs):
+        if not widget:
+            search_fields = autocomplete.get(model)
+            if search_fields:
+                widget = AutocompleteManyToManyInput(model, search_fields)
+        self.widget = widget
+        super(ModelMultipleChoiceField,self).__init__(model, **kwargs)
+

@@ -28,12 +28,12 @@
 		                selectFirst:true,
 		                maxItemsToShow:10,
 		                formatItem: function(data, i, total) {
-		        			return data[0];
+		        			return data[1];
 		        		}
 					};
 					display.autocomplete(url, opts);
 					display.bind("result", function(el,data,bo) {
-						input.val(data[1]);
+						input.val(data[2]);
 					});
 				}
 			});

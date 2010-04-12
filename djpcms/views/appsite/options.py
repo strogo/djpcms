@@ -170,6 +170,8 @@ class ModelApplicationBase(ApplicationBase):
                 child.parent = parent
             else:
                 if not child.urlbit:
+                    if self.root_application:
+                        raise ValueError('Could not resolve root application')
                     self.root_application = child
                 else:
                     roots.append(child)
@@ -189,11 +191,9 @@ class ModelApplicationBase(ApplicationBase):
                 register_application(child)
         #
         # Check for parents
-        if len(roots) > 1:
-            #TODO. Authomatic parent selections
-            if self.root_application:
-                for app in roots:
-                    app.parent = self.root_application
+        if roots and self.root_application:
+            for app in roots:
+                app.parent = self.root_application
                                 
     def get_search_fields(self):
         if self.search_fields:
@@ -246,6 +246,9 @@ class ModelApplicationBase(ApplicationBase):
                 initial['next'] = next
         return initial
     
+    def get_extra_forms(self):
+        return None
+    
     #  FORMS FOR EDITING AND SEARCHING
     #---------------------------------------------------------------------------------
     def get_form(self, djp, prefix = None, initial = None, wrapped = True):
@@ -267,6 +270,8 @@ class ModelApplicationBase(ApplicationBase):
         else:
             mform = self.form(request = request, instance = instance)
         
+        extraforms = self.get_extra_forms()
+        
         initial = self.update_initial(request, mform, initial, own_view = own_view)
         
         wrapper  = djp.wrapper
@@ -276,12 +281,19 @@ class ModelApplicationBase(ApplicationBase):
                                     instance    = instance,
                                     prefix      = prefix,
                                     withrequest = self.form_withrequest))
-        
-        if wrapper:
+
+        layout = self.form_layout
+        if not layout and wrapper:
             layout = wrapper.form_layout
-        else:
-            layout = None
         fl = formlet(form = f, layout = layout, submit = self.submit(instance, own_view))
+
+        if extraforms:
+            for name, eform in extraforms.items():
+                f = eform(**form_kwargs(request     = request,
+                                        initial     = initial,
+                                        instance    = instance,
+                                        prefix      = prefix))
+                fl.add_extra(name, f)
         
         if wrapped:
             fhtml  = form(method = self.form_method, url = djp.url)

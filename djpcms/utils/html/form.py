@@ -99,11 +99,10 @@ class form(htmlcomp):
 
 class formlet(htmlattr):
     '''
-    Simple wrapper for a django Form
+    Wrapper for a django Form
     '''
     def __init__(self,
                  form = None,
-                 template = None,
                  layout = None,
                  submit = None, **attrs):
         '''
@@ -115,14 +114,11 @@ class formlet(htmlattr):
                         custom:      custom template
         '''
         super(formlet,self).__init__(**attrs)
-        if template is None:
-            layout   = layout or 'twocolumns'
-            template = FORMLET_TEMPLATES.get(layout,None)
-        if not template:
-            template = FORMLET_TEMPLATES.get('twocolumns',None)
-        self.template = template
+        layout        = layout or 'twocolumns'
+        self.template = FORMLET_TEMPLATES.get(layout,layout)
         self.form     = form
         self.jerrors  = None
+        self.extras   = {}
         
         if submit:
             if not isinstance(submit,list):
@@ -130,6 +126,14 @@ class formlet(htmlattr):
             self.submits = submit
         else:
             self.submits  = []
+            
+    def add_extra(self, name, extra):
+        self.extras[name] = formlet(extra)
+        
+    def get_content(self):
+        c = super(formlet,self).get_content()
+        c.update(self.extras)
+        return c
     
     def _get_media(self):
         if self.form:

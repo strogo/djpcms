@@ -5,6 +5,7 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 
 from djpcms.conf import settings
+from djpcms.utils.ajax import jredirect, jhtmls
 from djpcms.template import Template, Context
 from djpcms.utils import lazyattr, mark_safe, smart_str
 from djpcms.utils.navigation import Navigator, Breadcrumbs
@@ -29,6 +30,7 @@ class DjpResponse(http.HttpResponse):
         self.kwargs     = kwargs
         self.wrapper    = None
         self.prefix     = None
+        self._errors    = None
         self.media      = view.get_media()
         self._plugincss = {}
     
@@ -43,6 +45,13 @@ class DjpResponse(http.HttpResponse):
         djp.prefix  = prefix
         djp.wrapper = wrapper
         return djp
+    
+    def adderror(self, msg):
+        err = self._errors
+        if not err:
+            err = []
+        err.append(msg)
+        self._errors = err
     
     def get_linkname(self):
         return self.view.linkname(self)
@@ -164,9 +173,7 @@ class DjpResponse(http.HttpResponse):
         if not func:
             raise ValueError("Allowed view method %s does not exist in %s." % (method,view))
         
-        return func(self)
-        
-        
+        return func(self)        
     
     def render_to_response(self, more_context = None, **kwargs):
         """
@@ -210,3 +217,27 @@ class DjpResponse(http.HttpResponse):
         else:
             return ''
         
+    def redirect(self, url):
+        if self.request.is_ajax():
+            return jredirect(url = url)
+        else:
+            return http.HttpResponseRedirect(url)
+        
+    def errormessage(self, msg):
+        if self.request.is_ajax():
+            self.adderror(msg)
+            errs = '</li><li>'.join(self._errors)
+            html = '<ul class="messagelist"><li>%s</li></ul>' % errs
+            return jhtmls(html = html, identifier = '#page-messages')
+        else:
+            messages.error(djp.request,error)
+        return self.view.handle_response(self)
+        
+    def formerrors(self, f, error_message = None):
+        if self.request.is_ajax():
+            return f.errorpost(error)
+        else:
+            if error_message:
+                messages.error(djp.request,error)
+            return self.view.handle_response(self)
+    
