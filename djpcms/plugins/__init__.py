@@ -245,7 +245,9 @@ class ApplicationPlugin(DJPplugin):
     '''
     def __init__(self, app):
         self.app  = app
+        opts      = app.appmodel.model._meta
         self.name = '%s %s' % (app.appmodel.name,app.name)
+        self.description = u'%s %s' % (opts.verbose_name, app.name)
     
     def render(self, djp, wrapper, prefix, **kwargs):
         '''

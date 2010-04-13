@@ -55,10 +55,14 @@ class Navigator(lazycounter):
     def buildselects(self, djp, urlselects):
         parent = djp.parent
         if parent:
-            urlselects.append(djp.url)
+            try:
+                url = djp.url
+                if url:
+                    urlselects.append(url)
+            except:
+                pass
             return self.buildselects(parent, urlselects)
-        else:
-            return djp
+        return djp
         
     def _items(self, urlselects = None, secondary_after = 100, **kwargs):
         HTML_CLASSES = settings.HTML_CLASSES
@@ -100,7 +104,10 @@ class Breadcrumbs(lazycounter):
             c = {'name':    djp.title,
                  'classes': u' '.join(classes)}
             if not first:
-                c['url'] = djp.url
+                try:
+                    c['url'] = djp.url
+                except:
+                    pass
             return c
         
     def _items(self, **kwargs):

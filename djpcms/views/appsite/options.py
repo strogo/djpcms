@@ -111,6 +111,8 @@ class ModelApplicationBase(ApplicationBase):
     form             = forms.ModelForm
     _form_add        = 'add'
     _form_edit       = 'change'
+    _form_save       = 'done'
+    _form_continue   = 'save'
     # Form layout.
     form_layout      = None
     # Whether the form requires the request object to be passed to the constructor
@@ -285,7 +287,9 @@ class ModelApplicationBase(ApplicationBase):
         layout = self.form_layout
         if not layout and wrapper:
             layout = wrapper.form_layout
-        fl = formlet(form = f, layout = layout, submit = self.submit(instance, own_view))
+            
+        submit = self.submit(instance, own_view)
+        fl = formlet(form = f, layout = layout, submit = submit)
 
         if extraforms:
             for name, eform in extraforms.items():
@@ -309,8 +313,8 @@ class ModelApplicationBase(ApplicationBase):
         Submits elements
         '''
         if instance:
-            sb = [submit(value = 'done', name = 'save'),
-                  submit(value = 'save', name = 'save_and_continue')]
+            sb = [submit(value = self._form_save, name = 'save'),
+                  submit(value = self._form_continue, name = 'save_and_continue')]
         else:
             sb = [submit(value = self._form_add, name = 'add')]
         if own_view:

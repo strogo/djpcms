@@ -408,18 +408,20 @@ class AddView(AppView):
         is_ajax    = request.is_ajax()
         djp.prefix = self.get_prefix(djp)
         next       = request.POST.get('next',None)
-        f = self.get_form(djp)
+        f          = self.get_form(djp)
         if f.is_valid():
             try:
                 instance = self.save(f)
+                msg = _('%s added' % instance)
+                messages.info(request, msg)
             except Exception, e:
                 if is_ajax:
                     return f.errorpost('%s' % e)
                 else:
                     return self.handle_response(djp)
-                return f.errorpost(msg)
             if is_ajax:
-                return f.messagepost('%s added' % instance)
+                return jredirect(url = next or djp.url)
+                #    return f.messagepost('%s added' % instance)
             else:
                 if next:
                     return http.HttpResponseRedirect(next)
