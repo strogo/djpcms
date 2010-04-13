@@ -5,7 +5,7 @@ from django.contrib.admin import StackedInline, TabularInline
 from django.contrib.admin import AdminSite, site, import_module
 
 from djpcms.contrib.admin import actions
-from djpcms.contrib.admin.forms import AutocompleteForeignKeyInput, AutocompleteManyToManyInput
+from djpcms.contrib.admin.widgets import AutocompleteForeignKeyInput, AutocompleteManyToManyInput
 from djpcms.contrib.admin.options import _add_to_context, construct_search
 from djpcms.contrib.admin.options import log_addition, log_change, log_deletion, history_view
 
@@ -35,6 +35,7 @@ class Autocomplete(object):
         return self._register.get(model,None)
 
 autocomplete = Autocomplete()
+
 
 import temp
 #Inject to ModelAdmin class. Nice. Because Python is cool!!!!!!!!!!!!!
