@@ -430,16 +430,13 @@ class BlockContent(models.Model):
     
     def render(self, djp):
         '''
-        @param cl: instance of djpcms.views.baseview.ResponseBase
-         
         Render the plugin.
-        This function is called when the plugin needs to be rendered
-        This function call the plugin render function passing three arguments
+        This function call the plugin render function
         '''
         plugin  = self.plugin
         wrapper = self.wrapper
         if plugin:
-            djp.add_pluginmedia(plugin)
+            djp.media += plugin.media
             #prefix  = 'bd_%s' % self.pluginid()
             prefix = None
             html   = plugin(djp, self.arguments, wrapper = wrapper, prefix = prefix)

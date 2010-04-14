@@ -19,8 +19,7 @@
 <!--[if IE 7]><link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/fluid960gs/ie.css" media="screen" /><![endif]-->{% endblock %}
 {% block extrastyle %}{% if media %}{% for css in media.render_css %}
 {{ css|safe }}{% endfor %}{% endif %}{% endblock %}
-<style type="text/css">
-{% block body-extra-style %}{{ plugincss }}{% endblock %}
+<style type="text/css">{% block body-extra-style %}{% endblock %}
 </style>{% endcompress %}
 <!-- END OF STYLING -->
 {% compress_if_you_can js %}
@@ -43,9 +42,9 @@
 <script type="text/javascript" src="{{ MEDIA_URL }}djpcms/jquery-ui-1.7.2.custom.min.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}djpcms/jquery.pagination.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}djpcms/form.js"></script>
-<script type="text/javascript" src="{{ MEDIA_URL }}djpcms/tablesorter/jquery.tablesorter.min.js"></script>{% block extra-scripts %}{% endblock %}
-<script type="text/javascript" src="{{ MEDIA_URL }}djpcms/djpcms.js"></script>{% if media %}
-{{ media|cleanjs }}{% endif %}{% endblock %}{% block body-scripts %}
+<script type="text/javascript" src="{{ MEDIA_URL }}djpcms/tablesorter/jquery.tablesorter.min.js"></script>{% block extra-scripts %}{% endblock %}{% if media %}
+{{ media|cleanjs }}{% endif %}{% endblock %}{% block decorator-scripts %}
+<script type="text/javascript" src="{{ MEDIA_URL }}djpcms/djpcms.js"></script>{% endblock %}{% block body-scripts %}
 <script type="text/javascript">
 (function($) {
   $(document).ready(function() {

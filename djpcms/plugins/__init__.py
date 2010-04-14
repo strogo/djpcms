@@ -2,7 +2,7 @@ import os
 import logging
 import copy
 
-from django import http
+from django import http, forms
 from django.utils.safestring import mark_safe
 from djpcms.utils.plugin import PluginBase, loadobjects
 from djpcms.utils import json, form_kwargs
@@ -81,7 +81,7 @@ def generic_plugin_response(request, url):
 
 ####    IMPLEMENTATION
 
-class DJPpluginMeta(type):
+class DJPpluginMeta(forms.MediaDefiningClass):
     '''
     Just a metaclass to differentiate plugins from other calsses
     '''

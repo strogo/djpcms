@@ -13,7 +13,6 @@ Required
 Optional
 -----------
  * django-tagging	http://code.google.com/p/django-tagging/
- * django_compressor 
  
 
 Running tests

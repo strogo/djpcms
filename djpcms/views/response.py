@@ -192,7 +192,6 @@ class DjpResponse(http.HttpResponse):
                   'media':      self.media,
                   'page':       self.page,
                   'cssajax':    self.css,
-                  'plugincss':  self.get_plugincss(),
                   'is_popup':   False,
                   'admin_site': False,
                   'sitenav':    Navigator(self)})
@@ -201,21 +200,6 @@ class DjpResponse(http.HttpResponse):
         res = render_to_response(self.template_file, context_instance=context, **kwargs)
         self.content = res.content
         return self
-
-    def add_pluginmedia(self, plugin):
-        if plugin:
-            p = self._plugincss.get(plugin.name, None)
-            if p is None:
-                css = plugin.css()
-                if css:
-                    self._plugincss[plugin.name] = css
-                    
-    def get_plugincss(self):
-        css = ''.join(self._plugincss.values())
-        if css:
-            return Template(css).render(Context({'MEDIA_URL': settings.MEDIA_URL}))
-        else:
-            return ''
         
     def redirect(self, url):
         if self.request.is_ajax():
