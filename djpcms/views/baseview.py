@@ -35,7 +35,7 @@ class djpcmsview(UnicodeObject):
     parent        = None
     purl          = None
     # methods handled by the current view. By default GET and POST only
-    _methods      = ('get','post') 
+    _methods      = ('get','post')
     '''
     Base class for handling django views.
     No views should use this class directly.
