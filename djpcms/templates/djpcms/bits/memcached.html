@@ -1,0 +1,12 @@
+{% for server in servers %}
+<p>{{ server.name }}</p>
+<table class='plain'>
+<tbody>
+<tr><td>Version</td><td>{{ server.stats.version }}</td></tr>
+<tr><td>Connections</td><td>{{ server.stats.curr_connections }}</td></tr>
+<tr><td>Items</td><td>{{ server.stats.curr_items }}</td></tr>
+<tr><td>Megabytes Used</td><td>{{ server.stats.megabytes }}</td></tr>
+<tr><td>Uptime</td><td>{{ server.stats.uptime }}</td></tr>
+</tbody>
+</table>{% endfor %}
+<p><a class="ajax" href="{{ url }}">Flush all servers</a></p>

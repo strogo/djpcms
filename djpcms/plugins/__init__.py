@@ -31,14 +31,14 @@ def get_wrapper(name, default = None):
     return _wrapper_dictionary.get(name,default)
 
 
-def register_application(app):
+def register_application(app, name = None, description = None):
     '''
     Register an application view as a plugin
     '''
     if hasattr(app,'get_plugin'):
         p = app.get_plugin()
     else:
-        p = ApplicationPlugin(app)
+        p = ApplicationPlugin(app,name,description)
     p.register()
 
 
@@ -243,11 +243,20 @@ class ApplicationPlugin(DJPplugin):
     '''
     Plugin formed by application views
     '''
-    def __init__(self, app):
+    def __init__(self, app, name = None, description = None):
         self.app  = app
-        opts      = app.appmodel.model._meta
-        self.name = '%s %s' % (app.appmodel.name,app.name)
-        self.description = u'%s %s' % (opts.verbose_name, app.name)
+        try:
+            opts = app.appmodel.model._meta
+        except:
+            opts = None
+        if not name:
+            self.name = '%s %s' % (app.appmodel.name,app.name)
+        else:
+            self.name = name
+        if not description:
+            self.description = u'%s %s' % (opts.verbose_name, app.name)
+        else:
+            self.description = description
     
     def render(self, djp, wrapper, prefix, **kwargs):
         '''

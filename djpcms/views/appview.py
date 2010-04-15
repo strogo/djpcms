@@ -70,6 +70,14 @@ class AppViewBase(djpcmsview):
         '''
         return self.appmodel.has_permission(request, obj)
     
+    def render(self, djp, **kwargs):
+        '''
+        Render the application child.
+        This method is reimplemented by subclasses.
+        By default it renders the search application
+        '''
+        pass
+    
     
 
 
@@ -204,14 +212,6 @@ class AppView(AppViewBase):
         @return: a queryset
         '''
         return self.basequery(request)
-    
-    def render(self, djp, **kwargs):
-        '''
-        Render the application child.
-        This method is reimplemented by subclasses.
-        By default it renders the search application
-        '''
-        pass
     
     def get_prefix(self, djp):
         return None
