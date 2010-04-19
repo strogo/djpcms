@@ -2,7 +2,8 @@ from django.contrib.admin import autodiscover, widgets
 from django.contrib.admin import ACTION_CHECKBOX_NAME
 from django.contrib.admin import ModelAdmin, HORIZONTAL, VERTICAL
 from django.contrib.admin import StackedInline, TabularInline
-from django.contrib.admin import AdminSite, site, import_module
+from django.contrib.admin import AdminSite, site
+from django.utils.importlib import import_module
 
 from djpcms.contrib.admin import actions
 from djpcms.contrib.admin.widgets import AutocompleteForeignKeyInput, AutocompleteManyToManyInput

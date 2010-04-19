@@ -336,19 +336,28 @@
 	 * box decorator
 	 * 
 	 */
-	/*
 	dj.addDecorator({
 		id:"djpcms-box",
 		decorate: function($this,config) {
-			$('.djpcms-html-box',$this).each(function() {
+			var cname = '.djpcms-html-box';
+			$(cname,$this).each(function() {
 				var el = $(this);
-				if(el.hasClass('rounded')) {
-					el.addClass('ui-corner-all');
+				if(el.hasClass('collapsable')) {
+					var c = $('<a class="collapse" href="#"></a>');
+					$('.hd',el).append(c);
+					c.mousedown(function (e) {
+	                    e.stopPropagation();    
+	                });
+					c.toggle(function () {
+						$(this).addClass('collapsed').parents(cname).find('.bd').hide();						
+					},
+					function() {
+						$(this).removeClass('collapsed').parents(cname).find('.bd').show();
+					});
 				}
 			});
 		}
 	});
-	*/
 	
 	
 	/**

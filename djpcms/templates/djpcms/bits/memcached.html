@@ -1,4 +1,5 @@
-{% for server in servers %}
+{% for server in servers %}{% if url %}
+<div id="memcached-panel">{% endif %}
 <p>{{ server.name }}</p>
 <table class='plain'>
 <tbody>
@@ -8,5 +9,6 @@
 <tr><td>Megabytes Used</td><td>{{ server.stats.megabytes }}</td></tr>
 <tr><td>Uptime</td><td>{{ server.stats.uptime }}</td></tr>
 </tbody>
-</table>{% endfor %}
-<p><a class="ajax" href="{{ url }}">Flush all servers</a></p>
+</table>{% endfor %}{% if url %}
+</div>
+<p><a class="ajax" href="{{ url }}">Flush all servers</a></p>{% endif %}

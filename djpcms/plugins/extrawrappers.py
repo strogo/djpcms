@@ -25,6 +25,17 @@ class BoxWrapper(DJPwrapper):
             return box(hd = hd, bd = html, id = id).render()
         else:
             return u''
+        
+class CollapseWrapper(DJPwrapper):
+    name = 'box-collapse'
+    description = 'Collapsable Box'
+    def wrap(self, djp, cblock, html):
+        if html:
+            id = cblock.htmlid()
+            hd = cblock.title
+            return box(hd = hd, bd = html, id = id, collapsable = True).render()
+        else:
+            return u''
     
     
 class BoxWrapper2(DJPwrapper):

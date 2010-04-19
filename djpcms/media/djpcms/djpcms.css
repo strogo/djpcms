@@ -4,6 +4,7 @@
 table.plain td,
 table.plain th {padding: 3px 15px 3px 0; text-align: left;}
 
+
 /*		BOX and CONTENT BLOCKS
 -------------------------------------------------*/
 div.djpcms-block-element {
@@ -13,9 +14,22 @@ div.djpcms-block-element {
 div.flat-element {
 	padding: 10px;
 }
-	
+
+.djpcms-html-box .hd h2 {
+	float: left;
+}
+.djpcms-html-box .hd a.collapse {
+	float: right;
+	background:transparent url(img/buttons.gif) no-repeat scroll -52px 0;
+	display:inline;
+	height:14px;
+	width:14px;
+}
+.djpcms-html-box .hd a.collapse.collapsed {
+	background:transparent url(img/buttons.gif) no-repeat scroll -38px 0;
+}
+
 .djpcms-html-box .hd {
-	color:rgb(10,10,10);
 	padding:6px 12px;
 	min-height: 8px;
 	overflow:hidden;
@@ -26,6 +40,7 @@ div.flat-element {
 }
 .djpcms-html-box .bd {
 	padding: 10px 10px;
+	overflow: hidden;
 }
 
 .djpcms-text-content ul {

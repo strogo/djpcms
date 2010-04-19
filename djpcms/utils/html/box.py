@@ -8,14 +8,11 @@ class box(htmlcomp):
         header, body and footer
     '''
     def __init__(self, hd = None, bd = None, ft = None, minimize = False,
-                 rounded = True, hideshow = False, **kwargs):
+                 rounded = True, collapsable = False, **kwargs):
         super(box,self).__init__('div', **kwargs)
         self.addClass('djpcms-html-box')
-        if hideshow:
-            self.addClass('hideshow')
-        else:
-            if rounded:
-                self.addClass('rounded')
+        if collapsable:
+            self.addClass('collapsable')
         self.paginatePanel(hd, bd, ft)
     
     def paginatePanel(self, hd, bd, ft):
