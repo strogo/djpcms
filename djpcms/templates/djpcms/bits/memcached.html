@@ -1,5 +1,4 @@
-{% for server in servers %}{% if url %}
-<div id="memcached-panel">{% endif %}
+{% if url %}<div id="memcached-panel">{% endif %}{% for server in servers %}
 <p>{{ server.name }}</p>
 <table class='plain'>
 <tbody>

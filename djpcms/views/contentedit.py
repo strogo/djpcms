@@ -122,7 +122,7 @@ class ChangeContentView(appview.EditView):
         fhtml    = form(method = app.form_method, url = djp.url)
         if app.form_ajax:
             fhtml.addClass(app.ajax.ajax)
-        fhtml['topform'] = app.get_form(djp, wrapped = False)
+        fhtml['topform'] = app.get_form(djp, wrapped = False, formhelper = False)
         # We wrap the bottom part of the form with a div for ajax interaction
         div = htmlcomp('div', id = self.plugin_form_id(instance))
         fhtml['plugin']  = div

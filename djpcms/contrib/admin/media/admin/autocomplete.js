@@ -14,7 +14,7 @@
 				//	search[i] = this.innerHTML;
 				//});
 				if(inputs.length == 2 && url) {
-					var display = $(inputs[0]);
+					var display = $(inputs[0]).attr('autocomplete','off');
 					var input   = $(inputs[1]).hide();
 					el.after(display).remove();
 					display.after(input);
@@ -31,9 +31,22 @@
 		        			return data[1];
 		        		}
 					};
+					if(display.hasClass('multi')) {
+						opts.multiple = true;
+						opts.multipleSeparator = ", ";
+					}
 					display.autocomplete(url, opts);
 					display.bind("result", function(el,data,bo) {
-						input.val(data[2]);
+						var me = $(this);
+						var next = me.next();
+						var d    = data[2];
+						if(me.hasClass("multi")) {
+							var val = next.val();
+							if(val) {
+								d    = val + ',' + d;
+							}
+						}
+						next.val(d);
 					});
 				}
 			});

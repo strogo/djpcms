@@ -65,10 +65,13 @@ class Index(AppViewBase):
     def render(self, djp, **kwargs):
         try:
             servers  = get_stats()
-            flashurl = '%sflush/' % self.appmodel.baseurl
-            return loader.render_to_string('djpcms/bits/memcached.html',
-                                           {'servers':servers,
-                                            'url': flashurl})
+            if servers:
+                flashurl = '%sflush/' % self.appmodel.baseurl
+                return loader.render_to_string('djpcms/bits/memcached.html',
+                                               {'servers':servers,
+                                                'url': flashurl})
+            else:
+                return u''
         except:
             return 'Memcached not installed'
     

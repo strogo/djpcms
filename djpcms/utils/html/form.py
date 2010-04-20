@@ -34,12 +34,12 @@ class submit(htmltiny):
 
 class form(htmlcomp):
     
-    def __init__(self, method = 'post', url = None, **attrs):
+    def __init__(self, method = 'post', url = None, enctype = 'multipart/form-data', **attrs):
         super(form,self).__init__('form', **attrs)
         self.url = url or '.'
         self._attrs['method']  = method
         self._attrs['action']  = self.url
-        self._attrs['enctype'] = 'multipart/form-data'
+        self._attrs['enctype'] = enctype
         self.jerrors   = None
     
     def messagepost(self, html):
@@ -111,14 +111,13 @@ class formlet(htmlattr):
                         onecolumn:   render as 1 column table
                         twocolumns:  render as a 2 columns table (default)
                         flat:        render as one row
-                        custom:      custom template
+                        othewise:    a custom template
         '''
         super(formlet,self).__init__(**attrs)
         layout        = layout or 'twocolumns'
         self.template = FORMLET_TEMPLATES.get(layout,layout)
         self.form     = form
         self.jerrors  = None
-        self.extras   = {}
         
         if submit:
             if not isinstance(submit,list):
@@ -126,14 +125,6 @@ class formlet(htmlattr):
             self.submits = submit
         else:
             self.submits  = []
-            
-    def add_extra(self, name, extra):
-        self.extras[name] = formlet(extra)
-        
-    def get_content(self):
-        c = super(formlet,self).get_content()
-        c.update(self.extras)
-        return c
     
     def _get_media(self):
         if self.form:

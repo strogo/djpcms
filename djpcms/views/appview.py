@@ -364,7 +364,58 @@ class YearArchiveView(ArchiveView):
     def title(self, page, **urlargs):
         return urlargs.get('year',None)
     
+    
+def render_form(form, djp):
+    djp.media = djp.media + form.media
+    helper = getattr(form,'helper',None)
+    if helper:
+        return helper.render(form)
+    else:
+        return form.render()
+    
+def saveform(self,djp,editing = False):
+    request    = djp.request
+    is_ajax    = request.is_ajax()
+    djp.prefix = self.get_prefix(djp)
+    cont       = request.POST.has_key("_save_and_continue")
+    url        = djp.url
+    if not cont:
+        url = request.POST.get('next',None) or url
+    if request.POST.has_key("_cancel"):
+        if is_ajax:
+            return jredirect(url = url)                
+        else:
+            return http.HttpResponseRedirect(url)
+    
+    f          = self.get_form(djp)
+    if f.is_valid():
+        try:
+            mch        = 'added'
+            if editing:
+                mch = 'changed'
+            instance = self.save(f)
+            dt = datetime.now()
+            c = {'name': force_unicode(instance._meta.verbose_name),
+                 'obj': instance,
+                 'dt': format(dt,settings.DATETIME_FORMAT),
+                 'mch': mch}
+            msg = _('The %(name)s "%(obj)s" was succesfully %(mch)s %(dt)s') % c
+            messages.info(request, msg)
+        except Exception, e:
+            if is_ajax:
+                return f.errorpost('%s' % e)
+            else:
+                return self.handle_response(djp)
         
+        if is_ajax:
+            return jredirect(url = url)                
+        else:
+            return http.HttpResponseRedirect(url)
+    else:
+        if is_ajax:
+            return f.jerrors
+        else:
+            return self.handle_response(djp)
         
 
 class AddView(AppView):
@@ -397,44 +448,14 @@ class AddView(AppView):
         Render the add view
         '''
         f = self.get_form(djp)
-        djp.media = djp.media + f.media
-        return f.render()
+        return render_form(f,djp)
     
     def default_post(self, djp):
         '''
         Add new model instance
         '''
-        request    = djp.request
-        is_ajax    = request.is_ajax()
-        djp.prefix = self.get_prefix(djp)
-        next       = request.POST.get('next',None)
-        f          = self.get_form(djp)
-        if f.is_valid():
-            try:
-                instance = self.save(f)
-                msg = _('%s added' % instance)
-                messages.info(request, msg)
-            except Exception, e:
-                if is_ajax:
-                    return f.errorpost('%s' % e)
-                else:
-                    return self.handle_response(djp)
-            if is_ajax:
-                return jredirect(url = next or djp.url)
-                #    return f.messagepost('%s added' % instance)
-            else:
-                if next:
-                    return http.HttpResponseRedirect(next)
-                else:
-                    return self.handle_response(djp)
-        else:
-            if is_ajax:
-                return f.jerrors
-            else:
-                if next:
-                    return http.HttpResponseRedirect(next)
-                else:
-                    return self.handle_response(djp)
+        return saveform(self,djp)
+    
         
         
 # Application views which requires an object
@@ -533,8 +554,7 @@ class EditView(ObjectView):
     
     def render(self, djp):
         f = self.get_form(djp)
-        djp.media = djp.media + f.media
-        return f.render()
+        return render_form(f,djp)
     
     def save(self, f):
         return self.appmodel.object_from_form(f)
@@ -551,35 +571,8 @@ class EditView(ObjectView):
         '''
         return self.default_post(djp,False)
     
-    def default_post(self, djp, redirect = False):
-        request = djp.request
-        cont = request.POST.has_key("_continue")
-        djp.prefix = self.get_prefix(djp)
-        f = self.get_form(djp)
-        is_ajax = request.is_ajax()
-        if f.is_valid():
-            try:
-                instance = self.save(f)
-                dt = datetime.now()
-                c = {'name': force_unicode(instance._meta.verbose_name),
-                     'obj': instance,
-                     'dt': format(dt,settings.DATETIME_FORMAT)}
-                msg = _('The %(name)s "%(obj)s" was succesfully saved %(dt)s') % c
-            except Exception, e:
-                return f.errorpost('%s' % e)
-            
-            if is_ajax:
-                if redirect:
-                    url = self.defaultredirect(djp)
-                    if url != djp.url:
-                        messages.info(djp.request, msg)
-                        return jredirect(url)
-                return f.messagepost(force_unicode(msg))
-            else:
-                messages.info(djp.request, msg)
-                pass
-        else:
-            return f.jerrors
+    def default_post(self, djp):
+        return saveform(self,djp,True)
 
     def defaultredirect(self, djp):
         return self.appmodel.viewurl(djp.request, djp.instance) or djp.url

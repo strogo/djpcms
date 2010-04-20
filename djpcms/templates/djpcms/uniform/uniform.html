@@ -1,0 +1,4 @@
+{% if helper.tag %}<form {{ helper.flatattr }}>{% endif %}
+{% csrf_token %}
+{{ helper.render_layout }}
+{% if helper.tag %}</form>{% endif %}

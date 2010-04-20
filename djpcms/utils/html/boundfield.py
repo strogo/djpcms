@@ -1,3 +1,4 @@
+from django.template import loader
 from django.utils.encoding import StrAndUnicode, smart_unicode, force_unicode
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
@@ -183,12 +184,13 @@ class BoundField(object):
         return mark_safe(u'\n'.join(html))
     
     def as_divs(self):
-        html = ['''<div>%s</div>''' % self.label_tag(),
-                self.errordiv(),
-                '''<div>%s</div>''' % force_unicode(self.field)]
-        if self.field.help_text:
-            html.append(self.helpdiv())
-        return mark_safe(u'\n'.join(html))
+        return loader.render_to_string('djpcms/form/uni_field.html',{'field':self.field})
+        #html = ['''<div class="crtlHolder">%s</div>''' % self.label_tag(),
+        #        self.errordiv(),
+        #        '''<div>%s</div>''' % force_unicode(self.field)]
+        #if self.field.help_text:
+        #    html.append(self.helpdiv())
+        #return mark_safe(u'\n'.join(html))
     
     def as_divnolabel(self):
         html = [self.errordiv(),

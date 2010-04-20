@@ -6,7 +6,7 @@ from django.contrib.admin import AdminSite, site
 from django.utils.importlib import import_module
 
 from djpcms.contrib.admin import actions
-from djpcms.contrib.admin.widgets import AutocompleteForeignKeyInput, AutocompleteManyToManyInput
+from djpcms.utils.html.autocomplete import AutocompleteForeignKeyInput, AutocompleteManyToManyInput
 from djpcms.contrib.admin.options import _add_to_context, construct_search
 from djpcms.contrib.admin.options import log_addition, log_change, log_deletion, history_view
 
@@ -170,10 +170,14 @@ site.check_dependencies = new_check_dependencies
 class ModelMultipleChoiceField(forms.ModelMultipleChoiceField):
     
     def __init__(self, model, widget = None, **kwargs):
+        autoc = False
         if not widget:
             search_fields = autocomplete.get(model)
             if search_fields:
+                autoc = True
                 widget = AutocompleteManyToManyInput(model, search_fields)
-        self.widget = widget
-        super(ModelMultipleChoiceField,self).__init__(model, **kwargs)
+                self.widget = widget
+        if not autoc and isinstance(model,type):
+            model = model.objects.all()
+        super(ModelMultipleChoiceField,self).__init__(model, widget = widget, **kwargs)
 

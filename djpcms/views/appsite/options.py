@@ -18,7 +18,7 @@ from djpcms.conf import settings
 from djpcms.utils import form_kwargs, UnicodeObject
 from djpcms.utils.forms import add_hidden_field
 from djpcms.plugins import register_application
-from djpcms.utils.html import formlet, submit, form
+from djpcms.utils.html import formlet, submit, form, FormHelper
 
 from djpcms.views.baseview import editview
 from djpcms.views.appview import AppView
@@ -253,7 +253,7 @@ class ModelApplicationBase(ApplicationBase):
     
     #  FORMS FOR EDITING AND SEARCHING
     #---------------------------------------------------------------------------------
-    def get_form(self, djp, prefix = None, initial = None, wrapped = True):
+    def get_form(self, djp, prefix = None, initial = None, wrapped = True, formhelper = True):
         '''
         Build an add/edit form for the application model
         @param djp: instance of djpcms.views.DjpRequestWrap 
@@ -272,8 +272,6 @@ class ModelApplicationBase(ApplicationBase):
         else:
             mform = self.form(request = request, instance = instance)
         
-        extraforms = self.get_extra_forms()
-        
         initial = self.update_initial(request, mform, initial, own_view = own_view)
         
         wrapper  = djp.wrapper
@@ -284,20 +282,25 @@ class ModelApplicationBase(ApplicationBase):
                                     prefix      = prefix,
                                     withrequest = self.form_withrequest))
 
+        if formhelper:
+            helper = getattr(f,'helper',None)
+            if not helper:
+                helper = FormHelper()
+                f.helper = helper
+            
+            helper.attr['action'] = djp.url
+            if self.form_ajax:
+                helper.addClass(self.ajax.ajax)
+            helper.inputs = self.submit(instance, own_view)
+            return f
+        
+        
         layout = self.form_layout
         if not layout and wrapper:
             layout = wrapper.form_layout
             
         submit = self.submit(instance, own_view)
         fl = formlet(form = f, layout = layout, submit = submit)
-
-        if extraforms:
-            for name, eform in extraforms.items():
-                f = eform(**form_kwargs(request     = request,
-                                        initial     = initial,
-                                        instance    = instance,
-                                        prefix      = prefix))
-                fl.add_extra(name, f)
         
         if wrapped:
             fhtml  = form(method = self.form_method, url = djp.url)
@@ -313,12 +316,13 @@ class ModelApplicationBase(ApplicationBase):
         Submits elements
         '''
         if instance:
-            sb = [submit(value = self._form_save, name = 'save'),
-                  submit(value = self._form_continue, name = 'save_and_continue')]
+            sb = [submit(value = self._form_save, name = '_save')]
         else:
-            sb = [submit(value = self._form_add, name = 'add')]
+            sb = [submit(value = self._form_add, name = '_save')]
+        if self._form_continue:
+            sb.append(submit(value = self._form_continue, name = '_save_and_continue'))
         if own_view:
-            sb.append(submit(value = 'cancel', name = 'cancel'))
+            sb.append(submit(value = 'cancel', name = '_cancel'))
         return sb
     
     def get_searchform(self,

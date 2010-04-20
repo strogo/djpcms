@@ -42,9 +42,9 @@
 <script type="text/javascript" src="{{ MEDIA_URL }}djpcms/jquery-ui-1.7.2.custom.min.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}djpcms/jquery.pagination.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}djpcms/form.js"></script>
-<script type="text/javascript" src="{{ MEDIA_URL }}djpcms/tablesorter/jquery.tablesorter.min.js"></script>{% block extra-scripts %}{% endblock %}{% if media %}
-{{ media|cleanjs }}{% endif %}{% endblock %}{% block decorator-scripts %}
-<script type="text/javascript" src="{{ MEDIA_URL }}djpcms/djpcms.js"></script>{% endblock %}{% block body-scripts %}
+<script type="text/javascript" src="{{ MEDIA_URL }}djpcms/tablesorter/jquery.tablesorter.min.js"></script>{% endblock %}{% block decorator-scripts %}
+<script type="text/javascript" src="{{ MEDIA_URL }}djpcms/djpcms.js"></script>{% endblock %}{% if media %}
+{{ media|cleanjs }}{% endif %}{% block body-scripts %}
 <script type="text/javascript">
 (function($) {
   $(document).ready(function() {
