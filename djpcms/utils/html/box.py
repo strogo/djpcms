@@ -8,11 +8,13 @@ class box(htmlcomp):
         header, body and footer
     '''
     def __init__(self, hd = None, bd = None, ft = None, minimize = False,
-                 rounded = True, collapsable = False, **kwargs):
+                 rounded = True, collapsable = False, collapsed = False, **kwargs):
         super(box,self).__init__('div', **kwargs)
         self.addClass('djpcms-html-box')
         if collapsable:
             self.addClass('collapsable')
+            if collapsed:
+                self.addClass('collapsed')
         self.paginatePanel(hd, bd, ft)
     
     def paginatePanel(self, hd, bd, ft):
@@ -25,11 +27,13 @@ class box(htmlcomp):
         
         # The body
         if not isinstance(bd,htmlbase):
-            self['bd'] = htmlwrap('div', bd or u'', cn = 'bd')
+            bd = htmlwrap('div', bd or u'', cn = 'bd')
         else:
-            self['bd'] = htmlcomp('div', cn = 'bd', inner = bd)
+            bd = htmlcomp('div', cn = 'bd', inner = bd)
+        
+        self['bd'] = bd
         
         # The footer
-        if ft:
-            self['ft'] = htmlcomp('div', cn = 'ft', inner = ft)
+        #if ft:
+        #    self['ft'] = htmlcomp('div', cn = 'ft', inner = ft)
         

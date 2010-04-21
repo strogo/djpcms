@@ -70,7 +70,13 @@ class htmlattr(htmlbase):
     
     def attrs(self):
         return self._attrs
-        
+    
+    def addClasses(self, cn):
+        cns = cn.split(' ')
+        for cn in cns:
+            self.addClass(cn)
+        return self
+    
     def addClass(self, cn):
         if cn:
             cn = str(cn).replace(' ','')

@@ -14,7 +14,7 @@ from django.forms.forms import BoundField
 from django.utils.safestring import mark_safe
 
 
-__all__ = ['FormHelper','FormLayout','Fieldset','Row']
+__all__ = ['FormHelper','FormLayout','Fieldset','Row','HtmlForm']
 
 
 
@@ -94,21 +94,36 @@ example:
             html += helper.render_inputs()
             return mark_safe(html)
 
+def_renderer = lambda x: x
 
-class Fieldset(object):
+class FormElement(object):
+    
+    def __new__(cls, *args, **kwargs):
+        obj = super(FormElement,cls).__new__(cls)
+        obj.renderer = kwargs.pop('renderer',def_renderer)
+        obj.key = kwargs.pop('key',None)
+        return obj
+
+    def render(self, form):
+        return self.renderer(self._render(form))
+    
+    def _render(self, form):
+        raise NotImplementedError
+
+class Fieldset(FormElement):
 
     ''' Fieldset container. Renders to a <fieldset>. '''
     inlineLabels = 'inlineLabels'
+    blockLabels  = 'blockLabels'
     
     def __init__(self, *fields, **kwargs):
         self.css = kwargs.get('css_class','blockLabels2')
-        self.key = kwargs.get('key',None)
         self.legend_html = kwargs.get('legend','')
         if self.legend_html:
             self.legend_html = '<legend>%s</legend>' % unicode(self.legend_html)
         self.fields = fields
 
-    def render(self, form):
+    def _render(self, form):
         if self.css:
             html = u'<fieldset class="%s">' % self.css
         else:
@@ -120,7 +135,7 @@ class Fieldset(object):
         return mark_safe(html)
 
 
-class Row(object):
+class Row(FormElement):
     ''' row container. Renders to a set of <div>'''
     def __init__(self, *fields, **kwargs):
         self.fields = fields
@@ -129,14 +144,14 @@ class Row(object):
         else:
             self.css = "formRow"
 
-    def render(self, form):
+    def _render(self, form):
         output = u'<div class="%s">' % self.css
         for field in self.fields:
             output += render_field(field, form)
         output += u'</div>'
         return u''.join(output)
 
-class Column(object):
+class Column(FormElement):
     ''' column container. Renders to a set of <div>'''
     def __init__(self, *fields, **kwargs):
         self.fields = fields
@@ -145,21 +160,21 @@ class Column(object):
         else:
             self.css = "formColumn"
 
-    def render(self, form):
+    def _render(self, form):
         output = u'<div class="%s">' % self.css
         for field in self.fields:
             output += render_field(field, form)
         output += u'</div>'
         return u''.join(output)
 
-class HTML(object):
+class HtmlForm(FormElement):
 
     ''' HTML container '''
 
-    def __init__(self, html):
-        self.html = unicode(html)
+    def __init__(self, html, **kwargs):
+        self.html = html
 
-    def render(self, form):
+    def _render(self, form):
         return self.html
 
 

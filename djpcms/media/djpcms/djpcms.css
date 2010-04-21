@@ -25,7 +25,7 @@ div.flat-element {
 	height:14px;
 	width:14px;
 }
-.djpcms-html-box .hd a.collapse.collapsed {
+.djpcms-html-box.collapsed .hd a.collapse {
 	background:transparent url(img/buttons.gif) no-repeat scroll -38px 0;
 }
 
@@ -41,6 +41,9 @@ div.flat-element {
 .djpcms-html-box .bd {
 	padding: 10px 10px;
 	overflow: hidden;
+}
+.djpcms-html-box.collapsed .bd {
+	display: none;
 }
 
 .djpcms-text-content ul {
@@ -436,4 +439,28 @@ input.openid {
 }
 .container_12 .grid_4 input.sw_qbox {
 	width: 260px;
+}
+
+/* Autocomplete
+-------------------------------------------------------*/
+.djp-autocomplete {
+	overflow: hidden;
+}
+.djp-autocomplete input.multi {
+	clear: both;
+}
+.djp-autocomplete div.selected {
+	float: left;
+	width: 98%;
+}
+.djp-autocomplete a.deletable {
+	float: left;
+	cursor:pointer;
+	padding-left:14px;
+	background: url("img/icons/cross.png") no-repeat;
+}
+	
+.djp-autocomplete div.to_delete {
+	margin-top: 3px;
+	overflow: hidden;
 }

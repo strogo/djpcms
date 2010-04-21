@@ -348,11 +348,8 @@
 					c.mousedown(function (e) {
 	                    e.stopPropagation();    
 	                });
-					c.toggle(function () {
-						$(this).addClass('collapsed').parents(cname).find('.bd').hide();						
-					},
-					function() {
-						$(this).removeClass('collapsed').parents(cname).find('.bd').show();
+					c.click(function () {
+						$(this).parents(cname).toggleClass('collapsed');
 					});
 				}
 			});

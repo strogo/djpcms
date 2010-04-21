@@ -1,14 +1,40 @@
 from django import forms
 from django.template import loader
+from django.utils.datastructures import MultiValueDict, MergeDict
 from django.db import models
 from django.utils.safestring import mark_safe
 from djpcms.conf import settings
 
 
-__all__ = ['AutocompleteForeignKeyInput','AutocompleteManyToManyInput']
+__all__ = ['autocomplete',
+           'AutocompleteForeignKeyInput',
+           'AutocompleteManyToManyInput',
+           'ModelMultipleChoiceField']
 
 
-basemedia                = '%sadmin' % settings.MEDIA_URL
+class Autocomplete(object):
+    '''
+    Register a model for autocomplete widget
+    Usage, somewhere like urls:
+    
+    from djpcms.contrib.djpadmin import autocomplete
+    
+    autocomplete.register(MyModel,['field1,',field2',...])
+    '''
+    def __init__(self):
+        self._register = {}
+    
+    def register(self, model, search_list):
+        if model not in self._register:
+            self._register[model] = search_list
+    
+    def get(self, model):
+        return self._register.get(model,None)
+
+autocomplete = Autocomplete()
+
+
+basemedia                = 'djpcms'
 base_plugin              = '%s/jquery-autocomplete' % basemedia
 autocomplete_class       = 'djp-autocomplete'
 multi_autocomplete_class = '%s multi' % autocomplete_class
@@ -92,6 +118,11 @@ class AutocompleteManyToManyInput(forms.TextInput):
         meta = self.model._meta
         return '%s%s/%s/' % (ADMIN_URL_PREFIX,meta.app_label,meta.module_name)
     
+    def value_from_datadict(self, data, files, name):
+        if isinstance(data, (MultiValueDict, MergeDict)):
+            return data.getlist(name)
+        return data.get(name, None)        
+    
     def render(self, name, value, attrs=None):
         if attrs is None:
             attrs = {}
@@ -108,11 +139,28 @@ class AutocompleteManyToManyInput(forms.TextInput):
         if value:
             key = self.search_fields[0].split('__')[0]
             for id in value:
-                obj   = self.model.objects.get(pk=id)
+                try:
+                    obj   = self.model.objects.get(pk=id)
+                except:
+                    continue
                 label = getattr(obj,key)
-                selected.selected.append({'label': label,
-                                          'name':  name,
-                                          'value': obj.id})
+                selected.append({'label': label,
+                                 'name':  name,
+                                 'value': obj.id})
                 
         return loader.render_to_string('djpcms/autocomplete/multi.html',ctx)
     
+    
+# a new ModelMultipleChoiceField
+#
+class ModelMultipleChoiceField(forms.ModelMultipleChoiceField):
+    
+    def __init__(self, queryset, widget = None, **kwargs):
+        if not widget:
+            model = queryset.model
+            search_fields = autocomplete.get(model)
+            if search_fields:
+                widget = AutocompleteManyToManyInput(model, search_fields)
+                self.widget = widget
+        super(ModelMultipleChoiceField,self).__init__(queryset, widget = widget, **kwargs)
+

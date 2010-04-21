@@ -6,36 +6,13 @@ from django.contrib.admin import AdminSite, site
 from django.utils.importlib import import_module
 
 from djpcms.contrib.admin import actions
-from djpcms.utils.html.autocomplete import AutocompleteForeignKeyInput, AutocompleteManyToManyInput
 from djpcms.contrib.admin.options import _add_to_context, construct_search
 from djpcms.contrib.admin.options import log_addition, log_change, log_deletion, history_view
+from djpcms.utils.html import autocomplete
 
 from django.db.models import Q
 from django import http, forms
 from django.core.exceptions import ImproperlyConfigured
-
-
-
-class Autocomplete(object):
-    '''
-    Register a model for autocomplete widget
-    Usage, somewhere like urls:
-    
-    from djpcms.contrib.djpadmin import autocomplete
-    
-    autocomplete.register(MyModel,['field1,',field2',...])
-    '''
-    def __init__(self):
-        self._register = {}
-    
-    def register(self, model, search_list):
-        if model not in self._register:
-            self._register[model] = search_list
-    
-    def get(self, model):
-        return self._register.get(model,None)
-
-autocomplete = Autocomplete()
 
 
 import temp
@@ -131,10 +108,6 @@ StackedInline.formfield_for_manytomany = new_formfield_for_manytomany
 
 
 
-
-
-
-
 #Inject to site object. Nice. Because Python is sooooooooo cool!!!!!!!!!!!!!
 
 _old_index              = site.index
@@ -164,20 +137,4 @@ site.app_index = new_app_index
 site.check_dependencies = new_check_dependencies
 
 
- 
-# a new ModelMultipleChoiceField
-#
-class ModelMultipleChoiceField(forms.ModelMultipleChoiceField):
-    
-    def __init__(self, model, widget = None, **kwargs):
-        autoc = False
-        if not widget:
-            search_fields = autocomplete.get(model)
-            if search_fields:
-                autoc = True
-                widget = AutocompleteManyToManyInput(model, search_fields)
-                self.widget = widget
-        if not autoc and isinstance(model,type):
-            model = model.objects.all()
-        super(ModelMultipleChoiceField,self).__init__(model, widget = widget, **kwargs)
 

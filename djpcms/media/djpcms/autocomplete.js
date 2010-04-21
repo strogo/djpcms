@@ -7,17 +7,11 @@
 		decorate: function($this,config) {
 			$('.djp-autocomplete',$this).each(function() {
 				var el = $(this);
-				var inputs  = $('input',el);
-				var url    = $('a',el).attr('href');
-				//var search = [];
-				//$('span',el).each(function(i) {
-				//	search[i] = this.innerHTML;
-				//});
-				if(inputs.length == 2 && url) {
-					var display = $(inputs[0]).attr('autocomplete','off');
-					var input   = $(inputs[1]).hide();
-					el.after(display).remove();
-					display.after(input);
+				var display  = $('input.lookup',el).attr('autocomplete','off');
+				var divo    = $('div.options',el);
+				var url     = $('a',divo).attr('href');
+				divo.remove();
+				if(display && url) {
 					var opts = 	{
 						delay:10,
 		                minChars:2,
@@ -34,19 +28,29 @@
 					if(display.hasClass('multi')) {
 						opts.multiple = true;
 						opts.multipleSeparator = ", ";
+						el.click(function(e) {
+							var al = $(e.originalTarget);
+							if(al.hasClass('deletable')) {
+								al.parent().remove();
+							}	
+						});
 					}
 					display.autocomplete(url, opts);
 					display.bind("result", function(el,data,bo) {
-						var me = $(this);
+						var me   = $(this);
+						var name = me.attr("id").split("-")[1];
 						var next = me.next();
-						var d    = data[2];
+						var v    = data[2];
 						if(me.hasClass("multi")) {
-							var val = next.val();
-							if(val) {
-								d    = val + ',' + d;
-							}
+							var lbl = data[0];
+							var td  = $('<div class="to_delete"><input type="hidden" name="'+name+'" value="'+v+'"/><a href="#" class="deletable"></a>'+lbl+'</div>');
+							next.append(td);
+							//next.append(new Option(lbl,v,true));
+							me.val("");
 						}
-						next.val(d);
+						else {
+							next.val(v);
+						}
 					});
 				}
 			});

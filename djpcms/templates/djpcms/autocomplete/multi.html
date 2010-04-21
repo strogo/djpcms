@@ -1,0 +1,13 @@
+<div class="djp-autocomplete">
+ <input type="text" id="lookup-{{ name }}"{% if widget_class %} class="{{ widget_class }} lookup multi"{% endif %} value=""/>
+ <div id="box-{{ name }}" class="selected">{% for item in items %}
+   <div class="to_delete">
+     <input type="hidden" name="{{ name }}" value="{{ item.value }}"/>
+     <a href="#" class="{{ css.delete }}"></a>
+      <span>{{ item.label }}</span>
+   </div>{% endfor %}
+ </div>
+ <div class='options' style="display:none">
+  <a href="{{ url }}"></a>
+ </div>
+</div>
