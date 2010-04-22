@@ -15,9 +15,12 @@ div.flat-element {
 	padding: 10px;
 }
 
-.djpcms-html-box .hd h2 {
-	float: left;
+/* BOX
+------------------------------------------------*/
+.djpcms-html-box {
+    padding: 2px;
 }
+
 .djpcms-html-box .hd a.collapse {
 	float: right;
 	background:transparent url(img/buttons.gif) no-repeat scroll -52px 0;
@@ -30,13 +33,18 @@ div.flat-element {
 }
 
 .djpcms-html-box .hd {
+    background: transparent;
 	padding:6px 12px;
 	min-height: 8px;
 	overflow:hidden;
 }
 .djpcms-html-box .hd  h2 {
-	padding: 0;
+	float: left;
 	margin:0;
+	padding:0;
+	font-size:1em;
+	font-weight:normal;
+	text-transform:uppercase;
 }
 .djpcms-html-box .bd {
 	padding: 10px 10px;

@@ -13,10 +13,12 @@ from django.core.urlresolvers import reverse, NoReverseMatch
 from django.forms.forms import BoundField
 from django.utils.safestring import mark_safe
 
+from djpcms.utils.ajax import jhtmls
 
 __all__ = ['FormHelper','FormLayout','Fieldset','Row','HtmlForm']
 
-
+#_required_tag = mark_safe('<em>*</em>')
+_required_tag = mark_safe('')
 
 def render_field(field, form):
     if isinstance(field, str):
@@ -36,7 +38,7 @@ def render_form_field(form, field):
     except KeyError:
         raise Exception("Could not resolve form field '%s'." % field)
     bound_field = BoundField(form, field_instance, field)
-    html = loader.render_to_string("djpcms/uniform/field.html", {'field': bound_field})
+    html = loader.render_to_string("djpcms/uniform/field.html", {'field': bound_field, 'required': _required_tag})
     rendered_fields = get_rendered_fields(form)
     if not field in rendered_fields:
         rendered_fields.append(field)
@@ -62,14 +64,15 @@ example:
 >>> helper.add_layout(layout)
 '''
     def __init__(self, *fields, **kwargs):
-        self._allfields = fields
-        self.fields = []
+        self.template = kwargs.get('template',None)
+        self._allfields = []
+        self.add(*fields)
+    
+    def add(self,*fields):
         for field in fields:
+            self._allfields.append(field)
             if field.key:
                 setattr(self,field.key,field)
-            else:
-                self.fields.append(field)
-        self.template = kwargs.get('template',None)
 
     def render(self, helper):
         form = helper.form
@@ -181,61 +184,6 @@ class HtmlForm(FormElement):
 
 
 class FormHelper(object):
-    """
-By setting attributes to me you can easily create the text that goes
-into the uni_form template tag. One use case is to add to your form
-class.
-
-Special attribute behavior:
-
-method: Defaults to POST but you can also do 'GET'
-
-form_action: applied to the form action attribute. Can be a named url in
-your urlconf that can be executed via the *url* default template tag or can
-simply point to another URL.
-
-id: Generates a form id for dom identification.
-If no id provided then no id attribute is created on the form.
-
-class: add space seperated classes to the class list.
-Defaults to uniForm.
-Always starts with uniForm even do specify classes.
-
-form_tag: Defaults to True. If set to False it renders the form without the form tags.
-
-use_csrf_protection: Defaults to False. If set to True a CSRF protection token is
-rendered in the form. This should only be left as False for forms targeting
-external sites or internal sites without CSRF protection (as described in the
-Django documentation).
-Requires the presence of a csrf token in the current context with the identifier
-"csrf_token" (which is automatically added to your context when using RequestContext).
-
-
-Demonstration:
-
-First we create a MyForm class and instantiate it
-
->>> from django import forms
->>> from uni_form.helpers import FormHelper, Submit, Reset
->>> from django.utils.translation import ugettext_lazy as _
->>> class MyForm(forms.Form):
-... title = forms.CharField(label=_("Title"), max_length=30, widget=forms.TextInput())
-... # this displays how to attach a formHelper to your forms class.
-... helper = FormHelper()
-... helper.form_id = 'this-form-rocks'
-... helper.form_class = 'search'
-... submit = Submit('search','search this site')
-... helper.add_input(submit)
-... reset = Reset('reset','reset button')
-... helper.add_input(reset)
-
-After this in the template::
-
-{% load uni_form_tags %}
-{% uni_form form form.helper %}
-
-
-"""
 
     def __init__(self, enctype = 'multipart/form-data'):
         self.attr = {}
@@ -245,7 +193,7 @@ After this in the template::
         self.attr['id']      = ''
         self.attr['class']   = 'uniForm'
         self.inputs = []
-        self.layout = None
+        self.layout = FormLayout()
         self.tag    = True
         self.use_csrf_protection = False
         self.form   = None
@@ -253,14 +201,8 @@ After this in the template::
     def add_input(self, input_object):
         self.inputs.append(input_object)
 
-    def add_layout(self, layout):
-        self.layout = layout
-
     def render_layout(self):
-        layout = self.layout
-        if not layout:
-            layout = FormLayout()
-        return mark_safe(layout.render(self))
+        return mark_safe(self.layout.render(self))
     
     def render_inputs(self):
         if self.inputs:
@@ -297,3 +239,22 @@ After this in the template::
             else:
                 attrs['class'] = cn
         return self
+    
+    def json_errors(self, form):
+        '''
+        Serialize form errors for AJAX-JSON interaction
+        '''
+        jerr = jhtmls()
+        for name,errs in form.errors.items():
+            field_instance = form.fields.get(name,None)
+            if field_instance:
+                bound_field = BoundField(form, field_instance, name)
+                jerr.add('#%s-errors' % bound_field.auto_id,str(errs),alldocument = False)
+        return jerr
+    
+    def json_form_error(self, form, e):
+        return jhtmls(identifier = '.form-messages',
+                      html = '<div class="errorlist">%s</div>' % e,
+                      alldocument = False)
+        
+        

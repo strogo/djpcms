@@ -14,15 +14,21 @@ from djpcms.conf import settings
 _plugin_dictionary = {}
 _wrapper_dictionary = {}
 
+def ordered_generator(di):
+    def cmp(x,y):
+        if x.description > y.description:
+            return 1
+        else:
+            return -1
+    ordered = sorted(di.values(),cmp)
+    for c in ordered:
+        yield (c.name,c.description)
 
 def plugingenerator():
-    for p in _plugin_dictionary.values():
-        yield (p.name,p.description)
+    return ordered_generator(_plugin_dictionary)
         
 def wrappergenerator():
-    for p in _wrapper_dictionary.values():
-        yield (p.name,p.description)
-
+    return ordered_generator(_wrapper_dictionary)
         
 def get_plugin(name, default = None):
     return _plugin_dictionary.get(name,default)
@@ -30,15 +36,17 @@ def get_plugin(name, default = None):
 def get_wrapper(name, default = None):
     return _wrapper_dictionary.get(name,default)
 
-
 def register_application(app, name = None, description = None):
     '''
     Register an application view as a plugin
+    app is instance of an application view
     '''
     if hasattr(app,'get_plugin'):
         p = app.get_plugin()
     else:
         p = ApplicationPlugin(app,name,description)
+    media = p.media + app.get_media()
+    p.__class__.media = media
     p.register()
 
 
@@ -268,10 +276,15 @@ class ApplicationPlugin(DJPplugin):
             if djp.view != app:
                 args = copy.copy(djp.urlargs)
                 args.update(kwargs)
-                djp = self.app(djp.request, **args)
+                t_djp = self.app(djp.request, **args)
+            else:
+                t_djp = djp
             djp.wrapper = wrapper
             djp.prefix  = prefix
-            return self.app.render(djp)
+            html = self.app.render(t_djp)
+            if djp is not t_djp:
+                djp.media += t_djp.media
+            return html
         else:
             return ''
         #args = copy.copy(djp.urlargs)

@@ -1,6 +1,8 @@
 #
 #    Utility for managing django forms
 #
+#    OBSOLETE BUT STILL SUPPORTED.... USE uniforms instead!
+#
 from django.utils.encoding import force_unicode
 from django import forms
 
@@ -94,7 +96,13 @@ class form(htmlcomp):
             id_ = flet.save(commit = commit)
             if id_:
                 id = id_
-        return id    
+        return id
+    
+    def json_errors(self, form):
+        return self.jerrors
+    
+    def json_form_error(self, form, e):
+        return self.errorpost('%s' % e)
         
 
 class formlet(htmlattr):

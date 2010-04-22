@@ -29,10 +29,13 @@
 						opts.multiple = true;
 						opts.multipleSeparator = ", ";
 						el.click(function(e) {
-							var al = $(e.originalTarget);
-							if(al.hasClass('deletable')) {
-								al.parent().remove();
-							}	
+							var originalElement = e.originalTarget || e.srcElement;
+							try {
+								var al = $(originalElement);
+								if(al.hasClass('deletable')) {
+									al.parent().remove();
+								}
+							} catch(err) {}
 						});
 					}
 					display.autocomplete(url, opts);

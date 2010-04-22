@@ -8,7 +8,7 @@
 /* Keep in mind that wherever you see 'Required property' it means that the property must exist */
 /* -------------------------------------------------------------------------------------------- */
 
-.uniForm{ margin: 0; padding: 0; position: relative; z-index: 1; } /* reset stuff */
+.uniForm{ margin: 0; padding: 0; position: relative; } /* reset stuff */
 
   /* Some generals and more resets */
   .uniForm fieldset{ border: none; margin: 0; padding: 0; }
@@ -312,3 +312,20 @@ YOU CAN VERY EASILY REVERT TO A GENERIC STYLE OF UNI-FORM. BEST OF LUCK...
         .uniForm .blockLabels2 .multiField .blockLabel .textInput,
         .uniForm .blockLabels2 .multiField .blockLabel .selectInput,
         .uniForm .blockLabels2 .multiField .blockLabel select{ width: 100%; margin: .3em 0 0 0; }
+
+.uniForm .buttonHolder {
+	text-align: center;
+	margin: 0;
+	padding: 15px;
+}
+.uniForm .ctrlHolder {
+	padding: 5px;
+	border-bottom: none;
+}
+
+.uniForm .errorlist{
+	color: #af4c4c;
+	margin: 0 0 6px 0;
+	padding: 4px;
+	background: #ffbfbf;
+}

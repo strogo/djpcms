@@ -4,7 +4,9 @@ register = template.Library()
 
 class_converter = {
     "textinput":"textinput textInput",
-    "fileinput":"fileinput fileUpload"
+    "fileinput":"fileinput fileUpload",
+    "datetimeinput": "datetimeinput textInput",
+    "dateinput": "dateinput textInput"
 }
 
 def get_class_name(field):

@@ -38,6 +38,7 @@
 				ajax_server_error: "ajax-server-error",
 				errorlist:		   "errorlist",
 				formmessages:	   "form-messages",
+				date_format: 	   "d M yy",
 				bitly_key:		   null,
 				twitter_user:	   null,
 				fadetime:		   200,
@@ -397,9 +398,9 @@
 	dj.addDecorator({
 		id:"Date-Picker",
 		decorate: function($this, config) {
-			var ajaxclass = config.calendar_class ? config.calendar_class : 'vDateField';
-			$('.'+ajaxclass,$this).each(function() {
-				$(this).datepicker();
+			var ajaxclass = config.calendar_class ? config.calendar_class : 'dateinput';
+			$('input.'+ajaxclass,$this).each(function() {
+				$(this).datepicker({dateFormat: config.date_format});
 			});
 		}
 	});

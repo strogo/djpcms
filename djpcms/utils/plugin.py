@@ -2,7 +2,8 @@ import os
 import glob
 import logging
 
-from djpcms.utils import UnicodeObject
+from django.utils.text import capfirst
+from djpcms.utils import UnicodeObject, force_unicode
 
 log = logging.getLogger("djpcms.utils.plugins")
 
@@ -21,7 +22,8 @@ class PluginBase(UnicodeObject):
             return self
         storage = self.storage
         if not storage.has_key(self.name):
-            self.description = self.description or self.name
+            description = self.description or self.name
+            self.description   = force_unicode(capfirst(description))
             storage[self.name] = self
         return self
             
@@ -68,6 +70,12 @@ class content_tuple(object):
     '''
     storage = None
     def __iter__(self):
-        for c in self.storage.values():
+        def cmp(x,y):
+            if x.description > y.description:
+                return 1
+            else:
+                return -1
+        ordered = self.storage.values().sort(cmp)
+        for c in ordered:
             yield (c.name,c.description)
             

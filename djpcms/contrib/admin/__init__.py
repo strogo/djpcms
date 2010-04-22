@@ -8,7 +8,7 @@ from django.utils.importlib import import_module
 from djpcms.contrib.admin import actions
 from djpcms.contrib.admin.options import _add_to_context, construct_search
 from djpcms.contrib.admin.options import log_addition, log_change, log_deletion, history_view
-from djpcms.utils.html import autocomplete
+from djpcms.utils.html import autocomplete, AutocompleteForeignKeyInput
 
 from django.db.models import Q
 from django import http, forms

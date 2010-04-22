@@ -366,7 +366,7 @@ class YearArchiveView(ArchiveView):
     
     
 def render_form(form, djp):
-    djp.media = djp.media + form.media
+    djp.media += form.media
     helper = getattr(form,'helper',None)
     if helper:
         return helper.render(form)
@@ -387,7 +387,8 @@ def saveform(self,djp,editing = False):
         else:
             return http.HttpResponseRedirect(url)
     
-    f          = self.get_form(djp)
+    f = self.get_form(djp)
+    helper = getattr(f,'helper',f)
     if f.is_valid():
         try:
             mch        = 'added'
@@ -403,7 +404,7 @@ def saveform(self,djp,editing = False):
             messages.info(request, msg)
         except Exception, e:
             if is_ajax:
-                return f.errorpost('%s' % e)
+                return helper.json_form_error(f,e)
             else:
                 return self.handle_response(djp)
         
@@ -413,7 +414,7 @@ def saveform(self,djp,editing = False):
             return http.HttpResponseRedirect(url)
     else:
         if is_ajax:
-            return f.jerrors
+            return helper.json_errors(f)
         else:
             return self.handle_response(djp)
         

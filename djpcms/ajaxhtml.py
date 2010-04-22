@@ -18,7 +18,7 @@ class ajaxhtml(object):
         d['field_separator']         = 'field-separator'
         
         # css decorators
-        d['calendar_class']          = 'vDateField'
+        d['calendar_class']          = 'dateinput'
         d['currency_input']          = 'currency-input'
         d['edit']                    = 'editable'
         d['delete']                  = 'deletable'

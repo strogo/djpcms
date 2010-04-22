@@ -120,7 +120,7 @@ class jhtmls(HeaderBody):
         else:
             objr['html'] += obj['html']
         
-    def add(self, identifier, html, type = 'replace', alldocument = False):
+    def add(self, identifier, html, type = 'replace', alldocument = True):
         obj = {'identifier':    identifier,
                'html':          html,
                'type':          type,

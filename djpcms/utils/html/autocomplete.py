@@ -9,6 +9,7 @@ from djpcms.conf import settings
 __all__ = ['autocomplete',
            'AutocompleteForeignKeyInput',
            'AutocompleteManyToManyInput',
+           'ModelChoiceField',
            'ModelMultipleChoiceField']
 
 
@@ -41,7 +42,7 @@ multi_autocomplete_class = '%s multi' % autocomplete_class
 ADMIN_URL_PREFIX         = getattr(settings,"ADMIN_URL_PREFIX","/admin/")
 
 
-class AutocompleteForeignKeyInput(forms.HiddenInput):
+class AutocompleteForeignKeyInputOld(forms.HiddenInput):
     """
     A Widget for displaying ForeignKeys in an autocomplete search input 
     instead in a <select> box.
@@ -49,7 +50,7 @@ class AutocompleteForeignKeyInput(forms.HiddenInput):
     def __init__(self, rel, search_fields, attrs=None):
         self.rel = rel
         self.search_fields = search_fields
-        super(AutocompleteForeignKeyInput, self).__init__(attrs)
+        super(AutocompleteForeignKeyInputOld, self).__init__(attrs)
                 
     class Media:
             css = {
@@ -91,6 +92,56 @@ class AutocompleteForeignKeyInput(forms.HiddenInput):
                    })
 
 
+class BaseAutocompleteInput(forms.TextInput):
+    class_for_form = forms.TextInput
+    
+    def __init__(self, model, search_fields, attrs=None):
+        self.model = model
+        self.search_fields = search_fields
+        super(BaseAutocompleteInput, self).__init__(attrs)
+        
+    def get_url(self):
+        meta = self.model._meta
+        return '%s%s/%s/' % (ADMIN_URL_PREFIX,meta.app_label,meta.module_name)
+    
+    class Media:
+            css = {
+                    'all': ('%s/jquery.autocomplete.css' % base_plugin,)
+            }
+            js = (
+                    '%s/jquery.autocomplete.js' % base_plugin,
+                    '%s/autocomplete.js' % basemedia
+                )
+
+
+class AutocompleteForeignKeyInput(BaseAutocompleteInput):
+    """
+    A Widget for displaying ForeignKeys in an autocomplete search input 
+    instead in a <select> box.
+    """
+    def __init__(self, *args, **kwargs):
+        super(AutocompleteForeignKeyInput, self).__init__(*args, **kwargs)
+
+    def label_for_value(self, value):
+        rel_name = self.search_fields[0].split('__')[0]
+        key = self.rel.get_related_field().name
+        obj = self.rel.to._default_manager.get(**{key: value})
+        return getattr(obj,rel_name)
+
+    def render(self, name, value, attrs=None):
+        attrs = attrs or {}
+        if value:
+            label = self.label_for_value(value)
+        else:
+            label = u''
+        
+        ctx = {'name': name,
+               'url': self.get_url(),
+               'id': attrs.get('id',''),
+               'widget_class': self.attrs.pop('class',''),
+               'css': settings.HTML_CLASSES}
+        
+        return loader.render_to_string('djpcms/autocomplete/single.html',ctx)  
 
 
 class AutocompleteManyToManyInput(forms.TextInput):    
@@ -150,9 +201,18 @@ class AutocompleteManyToManyInput(forms.TextInput):
                 
         return loader.render_to_string('djpcms/autocomplete/multi.html',ctx)
     
+
+class ModelChoiceField(forms.ModelChoiceField):
     
-# a new ModelMultipleChoiceField
-#
+    def __init__(self, queryset, widget = None, **kwargs):
+        if not widget:
+            model = queryset.model
+            search_fields = autocomplete.get(model)
+            if search_fields:
+                widget = AutocompleteForeignKeyInput(model, search_fields)
+                self.widget = widget
+        super(ModelChoiceField,self).__init__(queryset, widget = widget, **kwargs)
+            
 class ModelMultipleChoiceField(forms.ModelMultipleChoiceField):
     
     def __init__(self, queryset, widget = None, **kwargs):
