@@ -253,7 +253,7 @@ class ModelApplicationBase(ApplicationBase):
     
     #  FORMS FOR EDITING AND SEARCHING
     #---------------------------------------------------------------------------------
-    def get_form(self, djp, prefix = None, initial = None, wrapped = True, formhelper = True):
+    def get_form(self, djp, prefix = None, initial = None, wrapped = True, formhelper = True, form = None):
         '''
         Build an add/edit form for the application model
         @param djp: instance of djpcms.views.DjpRequestWrap 
@@ -267,10 +267,12 @@ class ModelApplicationBase(ApplicationBase):
         request  = djp.request
         own_view = djp.url == request.path
         
-        if isinstance(self.form,type):
-            mform = modelform_factory(self.model, self.form)
+        form = form or self.form
+        
+        if isinstance(form,type):
+            mform = modelform_factory(self.model, form)
         else:
-            mform = self.form(request = request, instance = instance)
+            mform = form(request = request, instance = instance)
         
         initial = self.update_initial(request, mform, initial, own_view = own_view)
         
@@ -457,14 +459,14 @@ class ModelApplicationBase(ApplicationBase):
             content = self.object_content(djp, obj)
             yield loader.render_to_string(template_name, content)
     
-    def render_object(self, djp):
+    def render_object(self, djp, wrapper = None):
         '''
         Render an object.
         This is usually called in the view page of the object
         '''
         obj      = djp.instance
         request  = djp.request
-        template_name = self.get_object_view_template(obj,djp.wrapper)
+        template_name = self.get_object_view_template(obj, wrapper or djp.wrapper)
         content = self.object_content(djp, obj)
         return loader.render_to_string(template_name    = template_name,
                                        context_instance = Context(content))

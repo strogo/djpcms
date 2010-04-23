@@ -295,8 +295,7 @@
 			var presubmit_form = function(formData, jqForm, opts) {
 				jqForm.css({'opacity':'0.5'});
 				$('.'+config.errorlist+
-				 ',.'+config.ajax_server_error+
-				 ',.'+config.formmessages,jqForm).fadeOut(100);
+				 ',.'+config.ajax_server_error,jqForm).fadeOut(100);
 				return true;
 			};
 			var success_form = function(o,s,jform) {

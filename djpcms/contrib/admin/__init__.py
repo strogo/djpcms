@@ -60,7 +60,7 @@ def new_formfield_for_foreignkey(self, db_field, request=None, **kwargs):
     db = kwargs.get('using')
     search_fields = autocomplete.get(db_field.rel.to)
     if search_fields:
-        kwargs['widget'] = AutocompleteForeignKeyInput(db_field.rel,search_fields)
+        kwargs['widget'] = AutocompleteForeignKeyInput(db_field.rel.to,search_fields)
     elif db_field.name in self.raw_id_fields:
         kwargs['widget'] = widgets.ForeignKeyRawIdWidget(db_field.rel, using=db)
     elif db_field.name in self.radio_fields:

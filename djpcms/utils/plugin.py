@@ -23,7 +23,7 @@ class PluginBase(UnicodeObject):
         storage = self.storage
         if not storage.has_key(self.name):
             description = self.description or self.name
-            self.description   = force_unicode(capfirst(description))
+            self.description   = force_unicode(capfirst(description.replace('_',' ')))
             storage[self.name] = self
         return self
             

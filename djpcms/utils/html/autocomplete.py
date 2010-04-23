@@ -42,56 +42,6 @@ multi_autocomplete_class = '%s multi' % autocomplete_class
 ADMIN_URL_PREFIX         = getattr(settings,"ADMIN_URL_PREFIX","/admin/")
 
 
-class AutocompleteForeignKeyInputOld(forms.HiddenInput):
-    """
-    A Widget for displaying ForeignKeys in an autocomplete search input 
-    instead in a <select> box.
-    """
-    def __init__(self, rel, search_fields, attrs=None):
-        self.rel = rel
-        self.search_fields = search_fields
-        super(AutocompleteForeignKeyInputOld, self).__init__(attrs)
-                
-    class Media:
-            css = {
-                    'all': ('%s/jquery.autocomplete.css' % base_plugin,)
-            }
-            js = (
-                    '%s/jquery.autocomplete.js' % base_plugin,
-                    '%s/autocomplete.js' % basemedia
-                )
-
-    def label_for_value(self, value):
-        rel_name = self.search_fields[0].split('__')[0]
-        key = self.rel.get_related_field().name
-        obj = self.rel.to._default_manager.get(**{key: value})
-        return getattr(obj,rel_name)
-
-    def render(self, name, value, attrs=None):
-        attrs = attrs or {}
-        if value:
-            label = self.label_for_value(value)
-        else:
-            label = u''
-        meta = self.rel.to._meta
-        url = '%s%s/%s/' % (ADMIN_URL_PREFIX,meta.app_label,meta.module_name)
-        return mark_safe(u'''
-<div class="%(klass)s">
-<input type="text" id="lookup_%(name)s" value="%(label)s" size="40"/>
- <div style="display:none">
-  <input type="text" name="%(name)s" value="%(value)s">
-  <a href="%(url)s"></a>
- </div>
-</div>
-            ''' % {
-                   'label': label,
-                   'name': name,
-                   'value': value,
-                   'url': url,
-                   'klass': autocomplete_class
-                   })
-
-
 class BaseAutocompleteInput(forms.TextInput):
     class_for_form = forms.TextInput
     
@@ -119,23 +69,24 @@ class AutocompleteForeignKeyInput(BaseAutocompleteInput):
     A Widget for displaying ForeignKeys in an autocomplete search input 
     instead in a <select> box.
     """
-    def __init__(self, *args, **kwargs):
-        super(AutocompleteForeignKeyInput, self).__init__(*args, **kwargs)
-
-    def label_for_value(self, value):
-        rel_name = self.search_fields[0].split('__')[0]
-        key = self.rel.get_related_field().name
-        obj = self.rel.to._default_manager.get(**{key: value})
-        return getattr(obj,rel_name)
+    #def label_for_value(self, value, name):
+    #    rel_name = self.search_fields[0].split('__')[0]
+    #    key = self.rel.get_related_field().name
+    #    obj = self.rel.to._default_manager.get(**{key: value})
+    #    return getattr(obj,rel_name)
 
     def render(self, name, value, attrs=None):
         attrs = attrs or {}
         if value:
-            label = self.label_for_value(value)
+            key = self.search_fields[0].split('__')[0]  
+            obj = self.model.objects.get(pk = value)
+            label = getattr(obj,key)
         else:
             label = u''
         
         ctx = {'name': name,
+               'value': value,
+               'label': label,
                'url': self.get_url(),
                'id': attrs.get('id',''),
                'widget_class': self.attrs.pop('class',''),
@@ -144,50 +95,45 @@ class AutocompleteForeignKeyInput(BaseAutocompleteInput):
         return loader.render_to_string('djpcms/autocomplete/single.html',ctx)  
 
 
-class AutocompleteManyToManyInput(forms.TextInput):    
+class AutocompleteManyToManyInput(BaseAutocompleteInput):    
     """
     A Widget for displaying Mutliple model input in an autocomplete search input 
     instead in a <select> box.
     """
-    class_for_form = forms.TextInput
-    
-    def __init__(self, model, search_fields, attrs=None):
-        self.model = model
-        self.search_fields = search_fields
-        super(AutocompleteManyToManyInput, self).__init__(attrs)
-                
-    class Media:
-            css = {
-                    'all': ('%s/jquery.autocomplete.css' % base_plugin,)
-            }
-            js = (
-                    '%s/jquery.autocomplete.js' % base_plugin,
-                    '%s/autocomplete.js' % basemedia
-                )
-
-    def get_url(self):
-        meta = self.model._meta
-        return '%s%s/%s/' % (ADMIN_URL_PREFIX,meta.app_label,meta.module_name)
+    def __init__(self, *args, **kwargs):
+        self.separator = kwargs.pop('separator',',')
+        self.inline    = kwargs.pop('inline',False)
+        super(AutocompleteManyToManyInput,self).__init__(*args, **kwargs)
     
     def value_from_datadict(self, data, files, name):
-        if isinstance(data, (MultiValueDict, MergeDict)):
-            return data.getlist(name)
-        return data.get(name, None)        
+        if self.inline:
+            return data.get(name,None)
+        else:
+            if isinstance(data, (MultiValueDict, MergeDict)):
+                return data.getlist(name)
+            return data.get(name, None)        
     
     def render(self, name, value, attrs=None):
         if attrs is None:
             attrs = {}
-        value = value or []
+        val = ''
             
+        value = value or []
+        
+        if isinstance(value,basestring):
+            val = value
+        
         selected = []
         ctx = {'items': selected,
+               'separator': self.separator,
+               'value': val,
                'name': name,
                'url': self.get_url(),
                'id': attrs.get('id',''),
                'widget_class': self.attrs.pop('class',''),
                'css': settings.HTML_CLASSES}
         
-        if value:
+        if isinstance(value,list):
             key = self.search_fields[0].split('__')[0]
             for id in value:
                 try:
@@ -198,9 +144,12 @@ class AutocompleteManyToManyInput(forms.TextInput):
                 selected.append({'label': label,
                                  'name':  name,
                                  'value': obj.id})
-                
-        return loader.render_to_string('djpcms/autocomplete/multi.html',ctx)
-    
+        if self.inline:
+            stempl = 'multi_inline.html'
+        else:
+            stempl = 'multi.html'
+        return loader.render_to_string('djpcms/autocomplete/%s' % stempl,ctx)
+
 
 class ModelChoiceField(forms.ModelChoiceField):
     
@@ -223,4 +172,3 @@ class ModelMultipleChoiceField(forms.ModelMultipleChoiceField):
                 widget = AutocompleteManyToManyInput(model, search_fields)
                 self.widget = widget
         super(ModelMultipleChoiceField,self).__init__(queryset, widget = widget, **kwargs)
-

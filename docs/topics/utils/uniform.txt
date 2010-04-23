@@ -1,0 +1,12 @@
+.. _topics-utils-uniform:
+
+============================
+Uniform Utility
+============================
+
+.. module:: djpcms.utils.html
+
+The django forms module is decoupled from the other Django components,
+such as the database layer, views and templates. It is quite general library
+which can and probably should extended.
+ 

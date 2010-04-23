@@ -424,7 +424,8 @@ class AddView(AppView):
     Standard Add method
     '''
     def __init__(self, regex = 'add', parent = None,
-                 name = 'add', isplugin = True, in_navigation = True, **kwargs):
+                 name = 'add', isplugin = True, in_navigation = True, form = None,
+                 **kwargs):
         '''
         Set some default values for add application
         '''
@@ -434,12 +435,13 @@ class AddView(AppView):
                                      isplugin = isplugin,
                                      in_navigation = in_navigation,
                                      **kwargs)
+        self._form = form
     
     def has_permission(self, request = None, obj = None):
         return self.appmodel.has_add_permission(request, obj)
     
     def get_form(self, djp):
-        return self.appmodel.get_form(djp)
+        return self.appmodel.get_form(djp, form = self._form)
     
     def save(self, f):
         return self.appmodel.object_from_form(f)

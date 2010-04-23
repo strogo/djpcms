@@ -11,8 +11,10 @@ div.djpcms-block-element {
 	overflow: hidden;
 	margin-bottom: 20px;
 }
-div.flat-element {
+div.flat-element,
+div.flat-pannel {
 	padding: 10px;
+	background: transparent;
 }
 
 /* BOX
@@ -453,6 +455,7 @@ input.openid {
 -------------------------------------------------------*/
 .djp-autocomplete {
 	overflow: hidden;
+	/*float: left;*/
 }
 .djp-autocomplete input.multi {
 	clear: both;

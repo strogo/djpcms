@@ -10,6 +10,17 @@
 				var display  = $('input.lookup',el).attr('autocomplete','off');
 				var divo    = $('div.options',el);
 				var url     = $('a',divo).attr('href');
+				var sep		= $('span.separator',divo);
+				var inline  = false;
+				if(sep.length) {
+					sep = sep.html();
+				}
+				else {
+					sep = ' ';
+				}
+				if($('span.inline',divo).length) {
+					inline = true;
+				}
 				divo.remove();
 				if(display && url) {
 					var opts = 	{
@@ -27,16 +38,18 @@
 					};
 					if(display.hasClass('multi')) {
 						opts.multiple = true;
-						opts.multipleSeparator = ", ";
-						el.click(function(e) {
-							var originalElement = e.originalTarget || e.srcElement;
-							try {
-								var al = $(originalElement);
-								if(al.hasClass('deletable')) {
-									al.parent().remove();
-								}
-							} catch(err) {}
-						});
+						opts.multipleSeparator = sep || " ";
+						if(!inline) {
+							el.click(function(e) {
+								var originalElement = e.originalTarget || e.srcElement;
+								try {
+									var al = $(originalElement);
+									if(al.hasClass('deletable')) {
+										al.parent().remove();
+									}
+								} catch(err) {}
+							});
+						}
 					}
 					display.autocomplete(url, opts);
 					display.bind("result", function(el,data,bo) {
@@ -46,10 +59,14 @@
 						var v    = data[2];
 						if(me.hasClass("multi")) {
 							var lbl = data[0];
-							var td  = $('<div class="to_delete"><input type="hidden" name="'+name+'" value="'+v+'"/><a href="#" class="deletable"></a>'+lbl+'</div>');
-							next.append(td);
-							//next.append(new Option(lbl,v,true));
-							me.val("");
+							if(inline) {
+								//me.val(me.val() + lbl);
+							}
+							else {
+								var td  = $('<div class="to_delete"><input type="hidden" name="'+name+'" value="'+v+'"/><a href="#" class="deletable"></a>'+lbl+'</div>');
+								next.append(td);
+								me.val("");
+							}
 						}
 						else {
 							next.val(v);

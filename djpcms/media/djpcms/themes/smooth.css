@@ -1,7 +1,8 @@
 
 /* boxes
 ----------------------------------------------- */
-.djpcms-html-box {
+.djpcms-html-box,
+div.flat-pannel {
     -moz-border-radius: 4px;
     -webkit-border-radius: 4px;
 }
@@ -17,8 +18,13 @@
 .djpcms-html-box .hd h2 {
     color: #3C3C3C;
 }
-.djpcms-html-box .bd {
+.djpcms-html-box .bd,
+div.flat-pannel {
 	background: #FAFAFA;
+}
+
+div.flat-pannel {
+	border: 1px solid #E0E0E0;
 }
 
 /* uniForm Inputs

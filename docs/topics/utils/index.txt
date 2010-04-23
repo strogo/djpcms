@@ -1,0 +1,12 @@
+.. _topics-plugins-index:
+
+============================
+Utilitityes
+============================
+
+.. module:: djpcms.utils
+
+.. toctree::
+   :maxdepth: 2
+   
+   uniform
