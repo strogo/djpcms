@@ -7,7 +7,6 @@ from django.forms import Media
 from djpcms.conf import settings
 from djpcms.utils import UnicodeObject
 
-
 class htmlbase(UnicodeObject):
     ajax = settings.HTML_CLASSES
     
