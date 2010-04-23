@@ -1,6 +1,7 @@
 
-0.6 beta
+0.6 beta-3
 =======================
+ * Added `autocomplete` and `uniform` in `utils.html`
  * `ModelApplication` and `DJPplugin` metaclasses derive from `forms.MediaDefiningClass`
  * Added color picker jquery plugin from http://www.eyecon.ro/colorpicker/
  * When serving media files add applications media roots in `urls`

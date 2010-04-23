@@ -11,6 +11,10 @@
 				var divo    = $('div.options',el);
 				var url     = $('a',divo).attr('href');
 				var sep		= $('span.separator',divo);
+				var name	= $('span.name',divo);
+				if(name.length) {
+					display.attr('_lookup',name.html());
+				}
 				var inline  = false;
 				if(sep.length) {
 					sep = sep.html();
@@ -54,7 +58,7 @@
 					display.autocomplete(url, opts);
 					display.bind("result", function(el,data,bo) {
 						var me   = $(this);
-						var name = me.attr("id").split("-")[1];
+						var name = me.attr("_lookup");
 						var next = me.next();
 						var v    = data[2];
 						if(me.hasClass("multi")) {

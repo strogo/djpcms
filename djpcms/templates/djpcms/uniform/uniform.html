@@ -1,5 +1,5 @@
-{% if helper.tag %}<form {{ helper.flatattr }}>{% endif %}
-{% csrf_token %}
+{% if helper.tag %}<form {{ helper.flatattr }}>{% endif %}{% if helper.use_csrf_protection %}
+{% csrf_token %}{% endif %}
 <div class="form-messages"></div>
 {{ helper.render_layout }}
 {% if helper.tag %}</form>{% endif %}

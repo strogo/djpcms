@@ -1,7 +1,7 @@
 import os
 import sys
 
-VERSION = (0, 6, 'beta-1')
+VERSION = (0, 6, 'beta-2')
 
 def get_version():
     if len(VERSION) == 3:
