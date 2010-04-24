@@ -529,7 +529,7 @@ class DeleteView(ObjectView):
     def has_permission(self, request = None, obj = None):
         return self.appmodel.has_delete_permission(request, obj)
     
-    def default_ajax_view(self, djp):
+    def default_post(self, djp):
         instance = djp.instance
         try:
             bid = self.appmodel.remove_object(instance)
@@ -537,8 +537,8 @@ class DeleteView(ObjectView):
                 return jremove('#%s' % bid)
             else:
                 pass
-        except:
-            raise ValueError('Could not remove %s' % instance)
+        except Exception, e:
+            raise ValueError('Could not remove %s: %s' % (instance,e))
       
 
 # Edit/Change an object

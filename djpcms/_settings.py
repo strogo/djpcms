@@ -10,7 +10,7 @@ def configure(settings):
         return
     settings.TEMPLATE_ENGINE        = getattr(settings, 'TEMPLATE_ENGINE', 'django')
     settings.LANGUAGE_REDIRECT      = getattr(settings, 'LANGUAGE_REDIRECT', False)
-    #settings.DEFAULT_TEMPLATE_NAME  = getattr(settings, 'DEFAULT_TEMPLATE_NAME', ['base.html','djpcms/base.html'])
+    settings.DEFAULT_TEMPLATE_NAME  = getattr(settings, 'DEFAULT_TEMPLATE_NAME', ['base.html','djpcms/base.html'])
     settings.DEFAULT_VIEW_MODULE    = getattr(settings, 'DEFAULT_VIEW_MODULE', 'djpcms.views.pageview.pageview')
     settings.USE_TINYMCE            = getattr(settings, 'USE_TINYMCE', False)
     settings.HTML_CLASSES           = getattr(settings, 'HTML_CLASSES', ajaxhtml())

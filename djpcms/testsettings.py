@@ -16,6 +16,8 @@ INSTALLED_APPS  = ['django.contrib.auth',
                    'tagging']
 
 
+TEMPLATE_DIRS     = os.path.join(BASE, 'templates','djpcms','tests'),
+
 
 # Silence logging
 import logging
@@ -28,4 +30,3 @@ logging.getLogger("djpcms").addHandler(Silence())
 
 ROOT_URLCONF           = 'djpcms.tests.urls'
 APPLICATION_URL_MODULE = 'djpcms.tests.test_urls'
-DEFAULT_TEMPLATE_NAME  = 'djpcms/test.html'

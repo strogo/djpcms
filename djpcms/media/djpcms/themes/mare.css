@@ -1,3 +1,11 @@
+.edit-contentblock .hd {
+	border: 2px solid #D6E0FF;
+	border-top: none;
+}
+.edit-contentblock .actions {
+	background: #D6E0FF;
+}
+
 /* boxes
 ----------------------------------------------- */
 .djpcms-html-box {

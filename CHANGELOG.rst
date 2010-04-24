@@ -1,5 +1,5 @@
 
-0.6 beta-3
+0.6 (2010-04-24)
 =======================
  * Added `autocomplete` and `uniform` in `utils.html`
  * `ModelApplication` and `DJPplugin` metaclasses derive from `forms.MediaDefiningClass`

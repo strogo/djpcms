@@ -35,11 +35,17 @@ class content_view(object):
     def __call__(self, request, blockcontents):
         '''
         Return a generator
+        blockcontents is a queryset of BlockContent model
         '''
         appmodel = appsite.site.for_model(BlockContent)
         view = appmodel.getapp('edit')
         wrapper = EditWrapperHandler()
+        pos = 0
         for b in blockcontents:
+            if b.position != pos:
+                b.position = pos
+                b.save()
+            pos += 1
             djp  = view(request, instance = b)
             djp.wrapper = wrapper
             #djp.prefix  = wrapper.prefix(b)

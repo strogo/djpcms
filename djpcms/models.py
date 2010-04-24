@@ -17,14 +17,14 @@ from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext_lazy as _
 from django.template import Template
 
-#from djcms.middleware.threadlocals import get_current_user
+from djpcms.conf import settings
 from djpcms.fields import SlugCode
 from djpcms.plugins import get_wrapper, default_content_wrapper, get_plugin
 from djpcms.utils.models import TimeStamp
 from djpcms.utils import lazyattr, function_module, force_unicode, mark_safe, htmltype
 from djpcms.utils.func import PathList
 from djpcms.uploads import upload_function, site_image_storage
-from djpcms.managers import PageManager
+from djpcms.managers import PageManager, BlockContentManager
 from djpcms.markup import markuplib
 
 protocol_re = re.compile('^\w+://')
@@ -179,7 +179,7 @@ class Page(TimeStamp):
             if self.parent:
                 return self.parent.get_template()
             else:
-                return 'base.html'
+                return settings.DEFAULT_TEMPLATE_NAME
         else:
             return self.template
 
@@ -291,77 +291,6 @@ class Page(TimeStamp):
     def additional_head(self):
         return self.additionaldata.filter(where = 1)
 
-
-    
-    
-class BlockContentManager(models.Manager):
-    '''
-    BlockContent manager
-    '''
-    def for_page_block(self, page, block):
-        '''
-        Get contentblocks for a given page and block
-        @param page: instance of a page model
-        @param block: integer indicating the block number
-        @return: a queryset  
-        '''
-        blockcontents = list(self.filter(page = page, block = block))
-        create = False
-        pos = None
-
-        # No contents, create an empty one
-        if not blockcontents:
-            create = True
-            pos    = 0
-        # Last content has a plugin. Add another block
-        elif blockcontents[-1].plugin_name:
-            create = True
-            pos = blockcontents[-1].position + 1
-            
-        if create:
-            bc =self.model(page = page, block = block, position = pos)
-            bc.save()
-            
-        return self.filter(page = page, block = block)
-    
-    def plugin_content_from_name(self, name):
-        global _plugin_dictionary
-        model = _plugin_dictionary.get(name,None)
-        if model:
-            return ContentType.objects.get_for_model(model)
-        else:
-            return None
-        
-    def delete_and_sort(self, instance):
-        '''
-        This function delete from database a blockcontent instance.
-        Actually it only deletes it if there are more than one contents in the block
-        otherwise it only delete the embedded plugin
-        @param instance: instance of BlockContent 
-        '''
-        if instance and instance.plugin:
-            blockcontents = self.for_page_block(instance.page, instance.block)
-            
-            if blockcontents.count() == 1:
-                b = blockcontents[0]
-                if b != instance:
-                    raise ContentBlockError("Critical error in deleting contentblock")
-                b.delete_plugin()
-            elif blockcontents.count() > 1:
-                pos = 0
-                for b in blockcontents:
-                    if b == instance:
-                        b.delete()
-                    elif b.position != pos:
-                        b.position = pos
-                        b.save()
-                        pos += 1
-            else:
-                raise ContentBlockError("Critical error in deleting contentblock. No Contentblock found")
-            
-            return True
-        else:
-            return False
 
 
 class BlockContent(models.Model):

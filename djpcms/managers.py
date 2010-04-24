@@ -1,6 +1,9 @@
 from django.db import models
 from django.contrib.sites.models import Site
 
+
+class ContentBlockError(Exception):
+    pass
     
 
 class PageManager(models.Manager):
@@ -71,3 +74,75 @@ class PageManager(models.Manager):
                            Q(start_publish_date__lte=datetime.datetime.now()) | Q(start_publish_date__isnull=True), 
                            Q(end_publish_date__gte=datetime.datetime.now()) | Q(end_publish_date__isnull=True),
                            )
+
+    
+    
+class BlockContentManager(models.Manager):
+    '''
+    BlockContent manager
+    '''
+    def for_page_block(self, page, block):
+        '''
+        Get contentblocks for a given page and block
+        @param page: instance of a page model
+        @param block: integer indicating the block number
+        @return: a queryset  
+        '''
+        blockcontents = list(self.filter(page = page, block = block))
+        create = False
+        pos = None
+
+        # No contents, create an empty one
+        if not blockcontents:
+            create = True
+            pos    = 0
+        # Last content has a plugin. Add another block
+        elif blockcontents[-1].plugin_name:
+            create = True
+            pos = blockcontents[-1].position + 1
+            
+        if create:
+            bc =self.model(page = page, block = block, position = pos)
+            bc.save()
+            
+        return self.filter(page = page, block = block)
+    
+    def plugin_content_from_name(self, name):
+        global _plugin_dictionary
+        model = _plugin_dictionary.get(name,None)
+        if model:
+            return ContentType.objects.get_for_model(model)
+        else:
+            return None
+        
+    def delete_and_sort(self, instance):
+        '''
+        This function delete from database a blockcontent instance.
+        Actually it only deletes it if there are more than one contents in the block
+        otherwise it only delete the embedded plugin
+        @param instance: instance of BlockContent 
+        '''
+        if instance and instance.plugin:
+            blockcontents = self.for_page_block(instance.page, instance.block)
+            
+            if blockcontents.count() == 1:
+                b = blockcontents[0]
+                if b != instance:
+                    raise ContentBlockError("Critical error in deleting contentblock")
+                b.delete_plugin()
+            elif blockcontents.count() > 1:
+                pos = 0
+                for b in blockcontents:
+                    if b == instance:
+                        b.delete()
+                        continue
+                    if b.position != pos:
+                        b.position = pos
+                        b.save()
+                    pos += 1
+            else:
+                raise ContentBlockError("Critical error in deleting contentblock. No Contentblock found")
+            
+            return True
+        else:
+            return False
