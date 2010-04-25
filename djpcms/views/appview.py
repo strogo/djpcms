@@ -373,19 +373,27 @@ def render_form(form, djp):
     else:
         return form.render()
     
-def saveform(self,djp,editing = False):
+def saveform(self, djp, editing = False):
+    view       = djp.view
     request    = djp.request
     is_ajax    = request.is_ajax()
     djp.prefix = self.get_prefix(djp)
     cont       = request.POST.has_key("_save_and_continue")
     url        = djp.url
-    if not cont:
-        url = request.POST.get('next',None) or url
+    next       = None
+    
     if request.POST.has_key("_cancel"):
+        redirect_url = next
+        if not redirect_url:
+            if djp.instance:
+                redirect_url = view.appmodel.viewurl(request,djp.instance)
+            if not redirect_url:
+                redirect_url = view.appmodel.searchurl(request) or '/'
+
         if is_ajax:
-            return jredirect(url = url)                
+            return jredirect(url = redirect_url)                
         else:
-            return http.HttpResponseRedirect(url)
+            return http.HttpResponseRedirect(redirect_url)
     
     f = self.get_form(djp)
     helper = getattr(f,'helper',f)
@@ -408,10 +416,17 @@ def saveform(self,djp,editing = False):
             else:
                 return self.handle_response(djp)
         
-        if is_ajax:
-            return jredirect(url = url)                
+        if cont:
+            redirect_url = view.appmodel.editurl(request,instance)
         else:
-            return http.HttpResponseRedirect(url)
+            redirect_url = next
+            if not next:
+                redirect_url = view.appmodel.viewurl(request,instance)
+            
+        if is_ajax:
+            return jredirect(url = redirect_url)                
+        else:
+            return http.HttpResponseRedirect(redirect_url)
     else:
         if is_ajax:
             return helper.json_errors(f)

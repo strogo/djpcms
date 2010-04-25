@@ -1,3 +1,10 @@
+.edit-contentblock .hd {
+	border: 2px solid #E0E0E0;
+	border-top: none;
+}
+.edit-contentblock .actions {
+	background: #E0E0E0;
+}
 
 /* boxes
 ----------------------------------------------- */
