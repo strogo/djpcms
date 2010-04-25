@@ -1,17 +1,30 @@
-
+from distutils.core import setup
+from distutils.command.install_data import install_data
+from distutils.command.install import INSTALL_SCHEMES
 import os
 import sys
-from distutils.command.install import INSTALL_SCHEMES
-from distutils.core import setup
 
 package_name = 'djpcms'
 root_dir     = os.path.dirname(__file__)
+package_dir  = os.path.join(root_dir, package_name)
 
+class osx_install_data(install_data):
+
+    def finalize_options(self):
+        self.set_undefined_options('install', ('install_lib', 'install_dir'))
+        install_data.finalize_options(self)
+
+if sys.platform == "darwin": 
+    cmdclasses = {'install_data': osx_install_data} 
+else: 
+    cmdclasses = {'install_data': install_data} 
+    
 # Tell distutils to put the data_files in platform-specific installation
 # locations. See here for an explanation:
 # http://groups.google.com/group/comp.lang.python/browse_thread/thread/35ec7b2fed36eaec/2105ee4d9e8042cb
 for scheme in INSTALL_SCHEMES.values():
     scheme['data'] = scheme['purelib']
+    
 
 def get_version():
     if root_dir not in sys.path:
@@ -39,8 +52,16 @@ def fullsplit(path, result=None):
 
 # Compile the list of packages available, because distutils doesn't have
 # an easy way to do this.
+def get_rel_dir(d,base,res=''):
+    if d == base:
+        return res
+    br,r = os.path.split(d)
+    if res:
+        r = os.path.join(r,res)
+    return get_rel_dir(br,base,r)
+
+
 packages, data_files = [], []
-package_dir = os.path.join(root_dir, package_name)
 pieces = fullsplit(root_dir)
 if pieces[-1] == '':
     len_root_dir = len(pieces) - 1
@@ -54,7 +75,12 @@ for dirpath, dirnames, filenames in os.walk(package_dir):
     if '__init__.py' in filenames:
         packages.append('.'.join(fullsplit(dirpath)[len_root_dir:]))
     elif filenames:
-        data_files.append([dirpath, [os.path.join(dirpath, f) for f in filenames]])
+        rel_dir = get_rel_dir(dirpath,root_dir)
+        data_files.append([rel_dir, [os.path.join(dirpath, f) for f in filenames]])
+
+if len(sys.argv) > 1 and sys.argv[1] == 'bdist_wininst':
+    for file_info in data_files:
+        file_info[0] = '\\PURELIB\\%s' % file_info[0]
 
 
 
@@ -68,6 +94,7 @@ setup(
         description  = 'Dynamic content management system for Django',
         long_description = read('README.rst'),
         packages     = packages,
+        cmdclass     = cmdclasses,
         data_files   = data_files,
         install_requires = ['pytz>2009'],
         classifiers = [
