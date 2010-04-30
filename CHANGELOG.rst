@@ -1,6 +1,7 @@
-0.6.1 beta
+0.6.1 (2010-04-30)
 =======================
  * Added `utils.unipath` from http://pypi.python.org/pypi/Unipath
+ * Added ajax property to uniform helper class
 
 0.6 (2010-04-24)
 =======================
