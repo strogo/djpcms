@@ -1,0 +1,36 @@
+.edit-contentblock .hd {
+	border: 2px solid #D6E0FF;
+	border-top: none;
+}
+.edit-contentblock .actions {
+	background: #D6E0FF;
+}
+
+/* boxes
+----------------------------------------------- */
+.djpcms-html-box {
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+}
+.djpcms-html-box .bd {
+	-moz-border-radius-bottomleft: 2px;
+    -moz-border-radius-bottomright: 2px;
+    -webkit-border-bottom-left-radius: 2px;
+    -webkit-border-bottom-right-radius: 2px;
+}
+.djpcms-html-box {
+    background:#248F00;
+}
+.djpcms-html-box .hd h2 {
+    color: #fff;
+}
+.djpcms-html-box .bd {
+	background: #fff;
+}
+
+/* uniForm Inputs
+----------------------------------------------*/
+.uniForm .textInput, .uniForm select, .uniForm textarea {
+	background:#FFFFFF none repeat scroll 0 0;
+	border:2px solid #D6E0FF;
+}

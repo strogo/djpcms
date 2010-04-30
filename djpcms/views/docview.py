@@ -7,8 +7,7 @@ from django.template import loader, RequestContext
 from django.utils.safestring import mark_safe
 from django.conf.urls.defaults import url
 
-from unipath import FSPath as Path
-
+from djpcms.utils.unipath import FSPath as Path
 from djpcms.views.baseview import djpcmsview
 from djpcms.views.appsite import ApplicationBase
 from djpcms.views.appview import AppViewBase

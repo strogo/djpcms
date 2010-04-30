@@ -6,7 +6,7 @@ class SiteMachine(machine):
     The default for this site application
     '''
     def __init__(self,
-                 dbname     = 'sampledb',
+                 dbname     = 'sampledb.sqlite',
                  dbengine   = 'sqlite3',
                  dbuser     = '',
                  dbpassword = '',
@@ -18,8 +18,8 @@ class SiteMachine(machine):
                                          **kwargs)
         
 SiteMachine()
-# Set vespa machine to be a development machine
-SiteMachine(name = 'vespa', debug = True, servs = True)
+# Set flow machine to be a development machine
+SiteMachine(name = 'flow', debug = True, servs = True)
 
 
 class Identity(object):
