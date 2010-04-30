@@ -1,3 +1,6 @@
+0.6.1 beta
+=======================
+ * Added `utils.unipath` from http://pypi.python.org/pypi/Unipath
 
 0.6 (2010-04-24)
 =======================

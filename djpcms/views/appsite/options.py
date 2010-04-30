@@ -291,7 +291,7 @@ class ModelApplicationBase(ApplicationBase):
                 f.helper = helper
             
             helper.attr['action'] = djp.url
-            if self.form_ajax:
+            if helper.ajax is not False and self.form_ajax:
                 helper.addClass(self.ajax.ajax)
             helper.inputs = self.submit(instance, own_view)
             return f
@@ -321,7 +321,7 @@ class ModelApplicationBase(ApplicationBase):
             sb = [submit(value = self._form_save, name = '_save')]
         else:
             sb = [submit(value = self._form_add, name = '_save')]
-        if self._form_continue:
+        if self._form_continue and own_view:
             sb.append(submit(value = self._form_continue, name = '_save_and_continue'))
         if own_view:
             sb.append(submit(value = 'cancel', name = '_cancel'))

@@ -196,6 +196,7 @@ class FormHelper(object):
         self.layout = FormLayout()
         self.tag    = True
         self.use_csrf_protection = False
+        self.ajax   = None
         self.form   = None
 
     def add_input(self, input_object):

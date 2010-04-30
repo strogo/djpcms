@@ -380,7 +380,7 @@ def saveform(self, djp, editing = False):
     djp.prefix = self.get_prefix(djp)
     cont       = request.POST.has_key("_save_and_continue")
     url        = djp.url
-    next       = None
+    next       = request.POST.get("next",None)
     
     if request.POST.has_key("_cancel"):
         redirect_url = next
