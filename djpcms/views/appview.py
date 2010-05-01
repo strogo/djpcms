@@ -37,7 +37,8 @@ class AppViewBase(djpcmsview):
                  parent = None,
                  regex = None,
                  splitregex = False,
-                 insitemap = True):
+                 insitemap = True,
+                 ajax_views = None):
         self.__page    = None
         self.name      = name
         self.parent    = parent
@@ -45,10 +46,22 @@ class AppViewBase(djpcmsview):
         self.insitemap = insitemap
         self.urlbit    = RegExUrl(regex,splitregex)
         self.regex     = None
+        self.ajax_views = ajax_views or {}
         
     def __get_baseurl(self):
         return self.appmodel.baseurl
     baseurl = property(__get_baseurl)
+    
+    def get_ajax_response(self, djp):
+        if self.ajax_views:
+            data = djp.request.POST or djp.request.GET
+            ajax_key = data.get(settings.HTML_CLASSES.post_view_key, None)
+            if ajax_key:
+                return self.ajax_views.get(ajax_key,None)
+        return None
+    
+    def get_form(self, djp):
+        return None
         
     def set_page(self, page):
         self.__page = page
@@ -96,13 +109,14 @@ class AppView(AppViewBase):
                  template_name = None,
                  in_navigation = False,
                  insitemap  = True,
-                 splitregex = True):
-        AppViewBase.__init__(self,
-                             name = name,
-                             regex = regex,
-                             splitregex = splitregex,
-                             parent = parent,
-                             insitemap = insitemap)
+                 splitregex = True,
+                 **kwargs):
+        super(AppView,self).__init__(name = name,
+                                     regex = regex,
+                                     splitregex = splitregex,
+                                     parent = parent,
+                                     insitemap = insitemap,
+                                     **kwargs)
         self.isapp    = isapp
         self.isplugin = isplugin
         self.func     = None

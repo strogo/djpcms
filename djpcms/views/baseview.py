@@ -167,12 +167,14 @@ class djpcmsview(UnicodeObject):
         more_content['inner'] = inner
         return djp.render_to_response(more_content)
     
+    def get_ajax_response(djp):
+        return None
+    
     def get_response(self, djp):
         return self.handle_response(djp)
     
     def default_post(self, djp):
         raise NotImplementedError('Default Post view not implemented')
-        return self.handle_response(djp)
     
     def post_response(self, djp):
         '''

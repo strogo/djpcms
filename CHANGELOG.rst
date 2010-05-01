@@ -1,3 +1,7 @@
+0.7 alpha
+=======================
+ * application views can specify several ajax views  by passing a dictionary `ajax_view`
+
 0.6.1 (2010-04-30)
 =======================
  * Added `utils.unipath` from http://pypi.python.org/pypi/Unipath

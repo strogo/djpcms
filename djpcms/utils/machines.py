@@ -40,7 +40,9 @@ class machine(object):
         self.egg_cache   = egg_cache
         self.debug       = debug
         self._media_root = media_root
-        self._machines[name] = self
+        names = name.split(',')
+        for nam in names:
+            self._machines[nam] = self
         
     def media_root(self):
         m = os.path.join(self.LOCDIR,'media')

@@ -74,8 +74,12 @@ example:
             if field.key:
                 setattr(self,field.key,field)
 
-    def render(self, helper):
-        form = helper.form
+    def render(self, helperOrform):
+        form = helperOrform
+        ishelper = False
+        if isinstance(helperOrform,FormHelper):
+            form = helperOrform.form
+            ishelper = True
         ctx  = {}
         html = ''
         for field in self._allfields:
@@ -91,10 +95,12 @@ example:
                 
         if ctx:
             ctx['html'] = mark_safe(html)
-            ctx['inputs'] = helper.render_inputs()
+            if ishelper:
+                ctx['inputs'] = helperOrform.render_inputs()
             return loader.render_to_string(self.template, ctx)
         else:
-            html += helper.render_inputs()
+            if ishelper:
+                html += helperOrform.render_inputs()
             return mark_safe(html)
 
 def_renderer = lambda x: x

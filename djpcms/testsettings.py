@@ -12,8 +12,7 @@ INSTALLED_APPS  = ['django.contrib.auth',
                    'django.contrib.sessions',
                    'django.contrib.sites',
                    'django.contrib.contenttypes',
-                   'djpcms',
-                   'tagging']
+                   'djpcms']
 
 
 TEMPLATE_DIRS     = os.path.join(BASE, 'templates','djpcms','tests'),

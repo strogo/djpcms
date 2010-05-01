@@ -159,6 +159,7 @@ class DjpResponse(http.HttpResponse):
         '''
         view    = self.view
         request = self.request
+        is_ajax = request.is_ajax()
         
         # Last check for permissions
         if not view.has_permission(request, self.instance):
@@ -168,6 +169,11 @@ class DjpResponse(http.HttpResponse):
         methods = view.methods(request)
         if method not in (method.lower() for method in methods):
             return http.HttpResponseNotAllowed(methods)
+        
+        if is_ajax:
+            func = view.get_ajax_response(self)
+            if func:
+                return func(self)
         
         func = getattr(view,'%s_response' % method,None)
         if not func:

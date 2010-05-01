@@ -13,10 +13,6 @@ Contact
 ==============
 Contact form application.
 
-Flowrepo
-==============
-Flowrepo application
-
 Tagging
 ==============
 General tagging application
