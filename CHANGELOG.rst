@@ -1,14 +1,15 @@
 0.7 alpha
-=======================
- * application views can specify several ajax views  by passing a dictionary `ajax_view`
+==============
+ * Added inline form to `utils.html.uniform` similar to `django.contrib.admin`
+ * Application views can specify several ajax views by passing a dictionary called `ajax_view`
 
-0.6.1 (2010-04-30)
-=======================
+0.6.1 (2010-04-30) 
+====================
  * Added `utils.unipath` from http://pypi.python.org/pypi/Unipath
  * Added ajax property to uniform helper class
 
 0.6 (2010-04-24)
-=======================
+==================
  * Added `autocomplete` and `uniform` in `utils.html`
  * `ModelApplication` and `DJPplugin` metaclasses derive from `forms.MediaDefiningClass`
  * Added color picker jquery plugin from http://www.eyecon.ro/colorpicker/
@@ -42,7 +43,7 @@
  * Added "splitregex" named options in views.appview.AppView constructor 
  * Added DISQUS in plugins
  * Removed StaticPagesMiddleware request handler
- * response method in djpcmsview class has been replaced with __call__ method
+ * Response method in djpcmsview class has been replaced with __call__ method
  * Change in urls
  * Added DeploySite model
  * Added Deploy plugin
@@ -56,4 +57,7 @@
  
 0.4 (2009-12-24)
 =====================
-first official Alpha release.
+
+ * First official Alpha release.
+
+ 

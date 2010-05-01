@@ -107,7 +107,6 @@ class ModelApplicationBase(ApplicationBase):
     Each one of the class attributes are optionals
     '''
     # Form used for adding/editing objects.
-    # This can be overritten with a function
     form             = forms.ModelForm
     _form_add        = 'add'
     _form_edit       = 'change'

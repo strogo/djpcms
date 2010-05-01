@@ -20,6 +20,10 @@ __all__ = ['FormHelper','FormLayout','Fieldset','Row','HtmlForm']
 #_required_tag = mark_safe('<em>*</em>')
 _required_tag = mark_safe('')
 
+#default renderer for forms
+def_renderer = lambda x: x
+
+
 def render_field(field, form):
     if isinstance(field, str):
         return render_form_field(form, field)
@@ -75,6 +79,7 @@ example:
                 setattr(self,field.key,field)
 
     def render(self, helperOrform):
+        '''Render the uniform layout'''
         form = helperOrform
         ishelper = False
         if isinstance(helperOrform,FormHelper):
@@ -97,13 +102,14 @@ example:
             ctx['html'] = mark_safe(html)
             if ishelper:
                 ctx['inputs'] = helperOrform.render_inputs()
+                ctx['inlines'] = helperOrform.render_inlines()
             return loader.render_to_string(self.template, ctx)
         else:
             if ishelper:
+                html += helperOrform.render_inlines()
                 html += helperOrform.render_inputs()
             return mark_safe(html)
 
-def_renderer = lambda x: x
 
 class FormElement(object):
     
@@ -120,8 +126,8 @@ class FormElement(object):
         raise NotImplementedError
 
 class Fieldset(FormElement):
-
     ''' Fieldset container. Renders to a <fieldset>. '''
+    
     inlineLabels = 'inlineLabels'
     blockLabels  = 'blockLabels'
     
@@ -185,8 +191,12 @@ class HtmlForm(FormElement):
 
     def _render(self, form):
         return self.html
+    
 
-
+class FormInline(object):
+    '''Inline form'''
+    def __init__(self, model = None):
+        self.model = model
 
 
 class FormHelper(object):
@@ -198,12 +208,13 @@ class FormHelper(object):
         self.attr['enctype'] = enctype
         self.attr['id']      = ''
         self.attr['class']   = 'uniForm'
-        self.inputs = []
-        self.layout = FormLayout()
-        self.tag    = True
+        self.inputs  = []
+        self.layout  = FormLayout()
+        self.tag     = True
         self.use_csrf_protection = False
-        self.ajax   = None
-        self.form   = None
+        self.ajax    = None
+        self.inlines = []
+        self.form    = None
 
     def add_input(self, input_object):
         self.inputs.append(input_object)
@@ -217,6 +228,14 @@ class FormHelper(object):
                                            {'inputs': self.inputs})
         else:
             return ''
+    
+    def render_inlines(self):
+        if self.inlines:
+            return loader.render_to_string('djpcms/uniform/inlines.html',
+                                           {'inlines': self.inlines})
+        else:
+            return ''
+            
 
     def flatattr(self):
         attr = []

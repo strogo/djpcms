@@ -4,9 +4,18 @@
 Uniform Utility
 ============================
 
-.. module:: djpcms.utils.html
+.. module:: djpcms.utils.html.uniform
 
-The django forms module is decoupled from the other Django components,
-such as the database layer, views and templates. It is quite general library
-which can and probably should extended.
+This module complements the django forms library by adding Ajax funationality, inline formes,
+and custom layout based on uniform_ style.
+
+This module is easy to use::
+
+	class MyForm(forms.Form);
+		name = forms.cahrField()
+		
+		helper = formHelper()
+		
+	
+
  
