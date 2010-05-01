@@ -112,7 +112,7 @@ class ModelApplicationBase(ApplicationBase):
     _form_add        = 'add'
     _form_edit       = 'change'
     _form_save       = 'done'
-    _form_continue   = 'save'
+    _form_continue   = 'save & continue'
     # Form layout.
     form_layout      = None
     # Whether the form requires the request object to be passed to the constructor
