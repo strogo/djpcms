@@ -11,11 +11,12 @@ elements, and UI elements to forms generated via the uni_form template tag.
 from django.template import loader 
 from django.core.urlresolvers import reverse, NoReverseMatch
 from django.forms.forms import BoundField
+from django.forms.formsets import all_valid
 from django.utils.safestring import mark_safe
 
 from djpcms.utils.ajax import jhtmls
 
-__all__ = ['FormHelper','FormLayout','Fieldset','Row','HtmlForm']
+__all__ = ['FormHelper','FormLayout','Fieldset','Row', 'HtmlForm', 'FormWrap']
 
 #_required_tag = mark_safe('<em>*</em>')
 _required_tag = mark_safe('')
@@ -78,13 +79,8 @@ example:
             if field.key:
                 setattr(self,field.key,field)
 
-    def render(self, helperOrform):
+    def render(self, form, formsets = None, inputs = None):
         '''Render the uniform layout'''
-        form = helperOrform
-        ishelper = False
-        if isinstance(helperOrform,FormHelper):
-            form = helperOrform.form
-            ishelper = True
         ctx  = {}
         html = ''
         for field in self._allfields:
@@ -100,14 +96,14 @@ example:
                 
         if ctx:
             ctx['html'] = mark_safe(html)
-            if ishelper:
-                ctx['inputs'] = helperOrform.render_inputs()
-                ctx['inlines'] = helperOrform.render_inlines()
+            ctx['inputs'] = inputs
+            ctx['inlines'] = formsets
             return loader.render_to_string(self.template, ctx)
         else:
-            if ishelper:
-                html += helperOrform.render_inlines()
-                html += helperOrform.render_inputs()
+            if formsets:
+                html += formsets
+            if inputs:
+                html += inputs
             return mark_safe(html)
 
 
@@ -191,12 +187,6 @@ class HtmlForm(FormElement):
 
     def _render(self, form):
         return self.html
-    
-
-class FormInline(object):
-    '''Inline form'''
-    def __init__(self, model = None):
-        self.model = model
 
 
 class FormHelper(object):
@@ -214,28 +204,9 @@ class FormHelper(object):
         self.use_csrf_protection = False
         self.ajax    = None
         self.inlines = []
-        self.form    = None
 
     def add_input(self, input_object):
         self.inputs.append(input_object)
-
-    def render_layout(self):
-        return mark_safe(self.layout.render(self))
-    
-    def render_inputs(self):
-        if self.inputs:
-            return loader.render_to_string('djpcms/uniform/inputs.html',
-                                           {'inputs': self.inputs})
-        else:
-            return ''
-    
-    def render_inlines(self):
-        if self.inlines:
-            return loader.render_to_string('djpcms/uniform/inlines.html',
-                                           {'inlines': self.inlines})
-        else:
-            return ''
-            
 
     def flatattr(self):
         attr = []
@@ -246,11 +217,6 @@ class FormHelper(object):
             return mark_safe(' %s' % ' '.join(attr))
         else:
             return ''
-    
-    def render(self, form):
-        self.form = form
-        return loader.render_to_string('djpcms/uniform/uniform.html',
-                                       {'helper': self})
 
     def addClass(self, cn):
         if cn:
@@ -283,4 +249,47 @@ class FormHelper(object):
                       html = '<div class="errorlist">%s</div>' % e,
                       alldocument = False)
         
+
+class FormWrap(object):
+    '''Utility class holding a form, formsets and helper for displaying form'''
+    def __init__(self, form, formsets, inputs):
+        self.helper   = form.helper
+        self.form     = form
+        self.formsets = formsets
+        self.inputs   = inputs
         
+    def __get_media(self):
+        return self.form.media
+    media = property(__get_media)
+        
+    def is_valid(self):
+        if self.form.is_valid():
+            return all_valid(self.formsets)
+        else:
+            return False
+
+    def render(self):
+        return loader.render_to_string('djpcms/uniform/uniform.html',
+                                       {'helper': self.helper,
+                                        'form': self.render_layout()})
+        
+    def render_inputs(self):
+        if self.inputs:
+            return loader.render_to_string('djpcms/uniform/inputs.html',
+                                           {'inputs': self.inputs})
+        else:
+            return ''
+    
+    def render_inlines(self):
+        if self.formsets:
+            return loader.render_to_string('djpcms/uniform/inlines.html',
+                                           {'form_inlines': self.formsets})
+        else:
+            return ''
+        
+    def render_layout(self):
+        return mark_safe(self.helper.layout.render(self.form,
+                                                   self.render_inlines(),
+                                                   self.render_inputs()))
+        
+    

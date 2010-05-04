@@ -18,3 +18,4 @@ Introductions to all the key parts of Djpcms you'll need to know:
    javascript/index
    settings
    included/index
+   utils/index

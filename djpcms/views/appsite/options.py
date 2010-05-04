@@ -18,7 +18,7 @@ from djpcms.conf import settings
 from djpcms.utils import form_kwargs, UnicodeObject
 from djpcms.utils.forms import add_hidden_field
 from djpcms.plugins import register_application
-from djpcms.utils.html import formlet, submit, form, FormHelper
+from djpcms.utils.html import formlet, submit, form, FormHelper, FormWrap
 
 from djpcms.views.baseview import editview
 from djpcms.views.appview import AppView
@@ -289,11 +289,22 @@ class ModelApplicationBase(ApplicationBase):
                 helper = FormHelper()
                 f.helper = helper
             
+            prefixes = {}
+            formsets = []
+            for inline in f.helper.inlines:
+                prefix  = inline.get_default_prefix()
+                prefixes[prefix] = prefixes.get(prefix, 0) + 1
+                if prefixes[prefix] != 1:
+                    prefix = "%s-%s" % (prefix, prefixes[prefix])
+                formset = inline.get_formset(request,
+                                             instance = instance,
+                                             prefix   = prefix)
+                formsets.append(formset)
+            
             helper.attr['action'] = djp.url
             if helper.ajax is not False and self.form_ajax:
                 helper.addClass(self.ajax.ajax)
-            helper.inputs = self.submit(instance, own_view)
-            return f
+            return FormWrap(f,formsets,self.submit(instance, own_view))
         
         
         layout = self.form_layout
@@ -523,7 +534,9 @@ class ModelApplicationBase(ApplicationBase):
                 'djpcms/components/object_list_item.html']
         
     def object_from_form(self, form):
-        return form.save()
+        instance = form.form.save()
+        # formsets?
+        return instance
     
     def permissionDenied(self, djp):
         raise PermissionDenied

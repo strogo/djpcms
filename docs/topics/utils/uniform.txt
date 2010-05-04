@@ -6,15 +6,21 @@ Uniform Utility
 
 .. module:: djpcms.utils.html.uniform
 
-This module complements the django forms library by adding Ajax funationality, inline formes,
-and custom layout based on uniform_ style.
+This module complements the django forms library by adding ajax funationality, inline forms,
+and custom layout based on uniform__ style.
 
-This module is easy to use::
+To use it::
+
+	from djpcms.utils.html import FormHelper
 
 	class MyForm(forms.Form);
-		name = forms.cahrField()
+		name = forms.CharField()
 		
-		helper = formHelper()
+		helper = FormHelper()
+
+
+
+__ http://sprawsm.com/uni-form/
 		
 	
 

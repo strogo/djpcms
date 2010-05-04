@@ -1,7 +1,7 @@
 .. _topics-plugins-index:
 
 ============================
-Utilitityes
+Utilities
 ============================
 
 .. module:: djpcms.utils

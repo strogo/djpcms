@@ -1,3 +1,21 @@
-<div class="inlineHolder">{% for inline in inlines %}
-  {{ inline }}{% endfor %}
-</div>
+{% for formset in form_inlines %}
+ <fieldset class="module">
+ <table>
+ <thead>
+ <tr>{% for field in formset.fields %}{% if not field.widget.is_hidden %}
+   <th{% if forloop.first %} colspan="2"{% endif %}{% if field.required %} class="required"{% endif %}>{{ field.label|capfirst }}</th>
+   {% endif %}{% endfor %}
+ <th>
+ Delete?
+ </th>
+ </tr>
+ </thead>
+ <tbody>{% for form in formset %}
+ <tr class="{% cycle "row1" "row2" %}">
+ <td class="original">{% for field in form %}{% if field.is_hidden %}
+ {{ field }}{% endif %}{% endfor %}{% for field in form %}{% if not field.is_hidden %}
+ <td>{{ field }}</td>{% endif %}{% endfor %}
+ </tr>{% endfor %}
+ </tbody>
+ </table>
+</fieldset>{% endfor %}

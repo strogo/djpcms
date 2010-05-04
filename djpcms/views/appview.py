@@ -381,11 +381,7 @@ class YearArchiveView(ArchiveView):
     
 def render_form(form, djp):
     djp.media += form.media
-    helper = getattr(form,'helper',None)
-    if helper:
-        return helper.render(form)
-    else:
-        return form.render()
+    return form.render()
     
 def saveform(self, djp, editing = False):
     view       = djp.view
