@@ -237,6 +237,8 @@ class FormHelper(object):
         Serialize form errors for AJAX-JSON interaction
         '''
         jerr = jhtmls()
+        # jsut a temporary fix
+        form = form.form
         for name,errs in form.errors.items():
             field_instance = form.fields.get(name,None)
             if field_instance:
@@ -292,4 +294,5 @@ class FormWrap(object):
                                                    self.render_inlines(),
                                                    self.render_inputs()))
         
+            
     

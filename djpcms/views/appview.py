@@ -384,6 +384,7 @@ def render_form(form, djp):
     return form.render()
     
 def saveform(self, djp, editing = False):
+    '''Save model instance'''
     view       = djp.view
     request    = djp.request
     is_ajax    = request.is_ajax()

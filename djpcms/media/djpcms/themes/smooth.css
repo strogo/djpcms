@@ -40,3 +40,13 @@ div.flat-pannel {
 	background:#FFFFFF none repeat scroll 0 0;
 	border:2px solid #DFDFDF;
 }
+
+.uniForm input[type="submit"] {
+	background: #fff url(../img/nav-bg.gif) repeat-x scroll center bottom;
+	border:1px solid #AAAAAA;
+	padding:3px 5px;
+}
+
+.uniForm input[type="submit"]:hover {
+	border:1px solid #6B6B6B;
+}

@@ -1,5 +1,6 @@
 {% for formset in form_inlines %}
  <fieldset class="module">
+ {{ formset.formset.management_form }}
  <table>
  <thead>
  <tr>{% for field in formset.fields %}{% if not field.widget.is_hidden %}
