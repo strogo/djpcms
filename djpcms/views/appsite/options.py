@@ -195,13 +195,16 @@ class ModelApplicationBase(ApplicationBase):
         if roots and self.root_application:
             for app in roots:
                 app.parent = self.root_application
-                                
+    
+    def modelsearch(self):
+        return self.model
+    
     def get_search_fields(self):
         if self.search_fields:
             return self.search_fields
         else:
             from django.contrib.admin import site
-            admin = site._registry.get(self.model,None)
+            admin = site._registry.get(self.modelsearch(),None)
             if admin:
                 return admin.search_fields
         

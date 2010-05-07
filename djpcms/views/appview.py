@@ -279,7 +279,7 @@ class SearchView(AppView):
                 if not bit:
                     continue
                 or_queries = [Q(**{construct_search(field_name): bit}) for field_name in slist]
-                other_qs   = QuerySet(self.model)
+                other_qs   = QuerySet(self.appmodel.modelsearch())
                 other_qs.dup_select_related(qs)
                 other_qs   = other_qs.filter(reduce(operator.or_, or_queries))
                 qs         = qs & other_qs    
@@ -341,6 +341,7 @@ class ArchiveView(SearchView):
         return c
     
     def appquery(self, request, year = None, month = None, day = None, **kwargs):
+        qs       = super(ArchiveView,self).appquery(request, **kwargs)
         dt       = self._date_code()
         dateargs = {}
         if year:
@@ -354,7 +355,7 @@ class ArchiveView(SearchView):
         if day:
             dateargs['%s__day' % dt] = int(day)
             
-        qs = self.basequery(request, **kwargs)
+        #qs = self.basequery(request, **kwargs)
         if dateargs:
             return qs.filter(**dateargs)
         else:

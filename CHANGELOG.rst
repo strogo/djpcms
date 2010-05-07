@@ -1,14 +1,14 @@
-0.7 alpha
-==============
- * Added inline form to `utils.html.uniform` similar to `django.contrib.admin`
+0.6.2 (2010-May-07)
+====================
+ * Minor bug fixes
  * Application views can specify several ajax views by passing a dictionary called `ajax_view`
 
-0.6.1 (2010-04-30) 
+0.6.1 (2010-Apr-30) 
 ====================
  * Added `utils.unipath` from http://pypi.python.org/pypi/Unipath
  * Added ajax property to uniform helper class
 
-0.6 (2010-04-24)
+0.6 (2010-Apr-24)
 ==================
  * Added `autocomplete` and `uniform` in `utils.html`
  * `ModelApplication` and `DJPplugin` metaclasses derive from `forms.MediaDefiningClass`
@@ -36,7 +36,7 @@
  * url resolver split between main urls and sub-applications
  * Better title in flowrepo contentview
  
-0.5 (2010-01-13)
+0.5 (2010-Jan-13)
 =====================
 
  * Bug fixes
@@ -55,7 +55,7 @@
  * Breadcrumbs name is given by view title
  * Created the DjpResponse object in views.response.
  
-0.4 (2009-12-24)
+0.4 (2009-Dec-24)
 =====================
 
  * First official Alpha release.
