@@ -6,6 +6,7 @@ include README.rst
 recursive-include docs *.txt
 recursive-include djpcms/templates *
 recursive-include djpcms/media *
+recursive-include djpcms/fixtures *
 recursive-include djpcms/contrib/admin/templates *
 recursive-include djpcms/contrib/admin/media *
 recursive-include djpcms/contrib/compressor/templates *

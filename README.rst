@@ -6,7 +6,7 @@ A dynamic content management system for Django and jQuery with several battery-i
 javascript decorators. The `djp` part of the name stands for `dynamic javascript-python` or
 `django-javascript-python` or whatever you like.
 
-This is a tool to ease the development of Django and jQuery powered sites without getting too much in the way.
+This is a tool to ease the development of Django and jQuery powered sites.
 
 
 --------------
@@ -23,8 +23,7 @@ Optional requirements:
 ----------------
 Features
 ----------------
-Design for web-applications which require high level of customisation without getting too much
-on the way.
+Design for web-applications which require high level of customisation without getting too much on the way.
 
  * Extendible using plugins
  * Dynamic pages based on database models

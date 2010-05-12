@@ -8,6 +8,7 @@ def configure(settings):
     # Not available yet. For future releases
     if(getattr(settings, '_djpcms_is_set', False)):
         return
+    settings.ADMIN_URL_PREFIX       = getattr(settings, 'ADMIN_URL_PREFIX', '/admin/')
     settings.TEMPLATE_ENGINE        = getattr(settings, 'TEMPLATE_ENGINE', 'django')
     settings.LANGUAGE_REDIRECT      = getattr(settings, 'LANGUAGE_REDIRECT', False)
     settings.DEFAULT_TEMPLATE_NAME  = getattr(settings, 'DEFAULT_TEMPLATE_NAME', ['base.html','djpcms/base.html'])

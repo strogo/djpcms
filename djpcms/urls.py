@@ -87,10 +87,7 @@ if settings.CONTENT_INLINE_EDITING['available']:
     edit = settings.CONTENT_INLINE_EDITING['preurl']
     #site_urls += ((r'{0}/([\w/-]*)'.format(edit), 'djpcms.views.handlers.editHandler'),)
     site_urls += ((r'%s/([\w/-]*)' % edit, 'djpcms.views.handlers.editHandler'),)
-    
-    
-loadplugins(settings.DJPCMS_PLUGINS)
-loadwrappers(settings.DJPCMS_WRAPPERS)
+
 
 
     
