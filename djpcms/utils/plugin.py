@@ -5,8 +5,6 @@ import logging
 from django.utils.text import capfirst
 from djpcms.utils import UnicodeObject, force_unicode
 
-log = logging.getLogger("djpcms.utils.plugins")
-
 
 class PluginBase(UnicodeObject):
     virtual       = False
@@ -55,7 +53,7 @@ def loadobjects(plist, BaseClass):
             try:
                 mod = __import__(p, '', '', [''])
             except ImportError, e:
-                log.error("Couldn't import provider %r: %s" % (p, e))
+                pass
             else:
                 for name in dir(mod):
                     kclass = getattr(mod, name)

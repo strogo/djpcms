@@ -1,3 +1,10 @@
+
+0.6.3
+====================
+ * Added rightclickmenu jQuery plugin
+ * Fixed missing data in setup.py
+ * Memcached monitor displays MB used.
+
 0.6.2 (2010-May-07)
 ====================
  * Minor bug fixes

@@ -47,7 +47,7 @@ def get_stats():
         uptime = st.get('uptime',0)
         bytes  = st.get('bytes',0)
         st['uptime'] = nicetime(int(uptime))
-        mbytes = int(bytes)/1024.0
+        mbytes = int(bytes)/1048576.0
         if mbytes > 1:
             mbytes = round(mbytes,1)
         else:
