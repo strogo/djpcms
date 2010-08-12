@@ -8,9 +8,15 @@ from djpcms.models import Page
 class PageCache(object):
     
     def __init__(self):
-        site = Site.objects.get_current()
-        self.domain = site.domain
+        self._domain = None
         self.applications_url = None
+        
+    @property
+    def domain(self):
+        if not self._domain:
+            site = Site.objects.get_current()
+            self._domain = site.domain
+        return self._domain
     
     def idkey(self, id):
         return '%s:pagecache:id:%s' % (self.domain,id)

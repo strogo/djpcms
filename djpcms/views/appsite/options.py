@@ -5,16 +5,16 @@ The main object handle several subviews used for searching, adding and manipulat
 '''
 from copy import deepcopy
 
-from django import forms, http
-from django.forms.models import modelform_factory
+from django import http
 from django.utils.encoding import force_unicode
 from django.utils.datastructures import SortedDict
 from django.template import loader, Template, Context, RequestContext
 from django.core.exceptions import PermissionDenied
 from django.conf.urls.defaults import url
 
+from django import forms
+from django.forms.models import modelform_factory
 
-from djpcms.conf import settings
 from djpcms.utils import form_kwargs, UnicodeObject
 from djpcms.utils.forms import add_hidden_field
 from djpcms.plugins import register_application
@@ -60,9 +60,11 @@ class ApplicationBase(object):
     '''
     Base class for djpcms applications
     '''
-    ajax             = settings.HTML_CLASSES
+    ajax             = None
     name             = None
+    '''Application name'''
     authenticated    = True
+    '''True if authentication is required'''
     has_api          = False
     
     def __init__(self, baseurl, application_site, editavailable):
@@ -95,19 +97,35 @@ class ApplicationBase(object):
         return self.root_application
     
     def has_permission(self, request = None, obj = None):
+        '''Return True if the page can be viewed, otherwise False'''
         return True
 
 
+class ModelAppMetaClass(forms.MediaDefiningClass):
+    
+    def __new__(cls, name, bases, attrs):
+        attrs['base_applications'] = get_declared_applications(bases, attrs)
+        new_class = super(ModelAppMetaClass, cls).__new__(cls, name, bases, attrs)
+        return new_class
 
-class ModelApplicationBase(ApplicationBase):
+
+class ModelApplication(ApplicationBase):
     '''
     Base class for Django Model Applications
     This class implements the basic functionality for a general model
     User should subclass this for full control on the model application.
-    Each one of the class attributes are optionals
+    Each one of the class attributes are optionals.
     '''
-    # Form used for adding/editing objects.
+    __metaclass__ = ModelAppMetaClass
+    
     form             = forms.ModelForm
+    '''Form class to edit/add objects of the application model.'''
+    form_method      ='post'
+    '''Form method'''
+    list_display     = None
+    '''List of object's field to display. If available, the search view will display a sortable table
+of objects'''
+    
     _form_add        = 'add'
     _form_edit       = 'change'
     _form_save       = 'done'
@@ -116,27 +134,23 @@ class ModelApplicationBase(ApplicationBase):
     form_layout      = None
     # Whether the form requires the request object to be passed to the constructor
     form_withrequest = False
-    # Form response method, POST by default
-    form_method      ='post'
     # if True add/edit/delete will be performed via AJAX xhr POST requests
     form_ajax        = True
     search_form      = None
     #
     date_code        = None
     search_form      = SearchForm
-    # True if applications can go into navigation
     in_navigation    = True
+    '''True if applications can go into site navigation.'''
     # If set to True, base class views will be available
     inherit          = False
     #
     search_fields    = None
     #
-    list_display     = None
-    #
     list_display_links = None
     
     def __init__(self, baseurl, application_site, editavailable, model = None):
-        super(ModelApplicationBase,self).__init__(baseurl, application_site, editavailable)
+        super(ModelApplication,self).__init__(baseurl, application_site, editavailable)
         self.model            = model
         self.opts             = model._meta
         self.name             = self.name or self.opts.module_name
@@ -257,14 +271,12 @@ class ModelApplicationBase(ApplicationBase):
     #---------------------------------------------------------------------------------
     def get_form(self, djp, prefix = None, initial = None, wrapped = True, formhelper = True, form = None):
         '''
-        Build an add/edit form for the application model
-        @param djp: instance of djpcms.views.DjpRequestWrap 
-        @param request: django HttpRequest instance
-        @param instance: instance of self.model or None
-        @param prefix: prefix to use in the form
-        @param wrapper: instance of djpcms.plugins.wrapper.ContentWrapperHandler with information on layout
-        @param url: action url in the form     
-        '''
+        Build an form to add or edit application model object:
+* *djp*: instance of djpcms.views.DjpRequestWrap.
+* *initial*: If not none, a dictionary of initial values for model fields.
+* *prefix*: prefix to use in the form.
+* *wrapper*: instance of djpcms.plugins.wrapper.ContentWrapperHandler with information on layout.
+'''
         instance = djp.instance
         request  = djp.request
         own_view = djp.url == request.path
@@ -559,18 +571,4 @@ class ModelApplicationBase(ApplicationBase):
         
     def sitemapchildren(self, view):
         return []
-
-
-class ModelAppMetaClass(forms.MediaDefiningClass):
     
-    def __new__(cls, name, bases, attrs):
-        attrs['base_applications'] = get_declared_applications(bases, attrs)
-        new_class = super(ModelAppMetaClass, cls).__new__(cls, name, bases, attrs)
-        return new_class
-    
-
-
-class ModelApplication(ModelApplicationBase):
-    __metaclass__ = ModelAppMetaClass
-    
-

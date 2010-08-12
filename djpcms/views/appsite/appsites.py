@@ -2,7 +2,7 @@ from django.db.models.base import ModelBase
 from django import http
 from django.utils.datastructures import SortedDict
 
-from djpcms.views.appsite.options import ModelApplication
+from djpcms.views.appsite.options import ApplicationBase, ModelApplication
 from djpcms import siteapp_choices
 
 
@@ -39,14 +39,17 @@ class ApplicationSite(object):
         they'll be applied as options to the admin class.
 
         If a model is already registered, this will raise AlreadyRegistered.
-        """
-        if not application_class:
-            application_class = ModelApplication
-        
+        """        
         if isinstance(model, ModelBase):
             model_or_iterable = [model]
         else:
             model_or_iterable = model
+            
+        if not application_class:
+            if not model_or_iterable:
+                application_class = ApplicationBase
+            else:
+                application_class = ModelApplication 
         
         editavailable = self.editavailable and editavailable
         if model_or_iterable:

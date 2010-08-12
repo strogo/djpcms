@@ -8,13 +8,13 @@ Introductions to all the key parts of Djpcms you'll need to know:
 .. toctree::
    :maxdepth: 1
 
-   models
    views/index
    application/index
-   plugins/index
+   plugins
    design
    templates/index
    javascript/index
    settings
    included/index
    utils/index
+   models

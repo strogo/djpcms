@@ -1,15 +1,13 @@
 from django import forms
 from django.utils.importlib import import_module
 
-from djpcms.views.appsite.options import ApplicationBase, ModelApplication
-from djpcms.views.appsite.appsites import ApplicationSite, site
+from djpcms.views.appsite.appsites import ApplicationBase, ModelApplication, ApplicationSite, site
 from djpcms.forms import LazyChoiceField
 from djpcms.views.appsite.appurls import *
 
 
 def load():
-    '''
-    Load dynamic applications and create urls
+    '''Load dynamic applications and create urls
     '''
     from djpcms.conf import settings
     import djpcms.views.contentedit
@@ -17,7 +15,6 @@ def load():
         app_module = import_module(settings.APPLICATION_URL_MODULE)
         
 
-        
 
 class ChangeForm(forms.ModelForm):
     application = LazyChoiceField(choices = site.choices)

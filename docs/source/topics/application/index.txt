@@ -6,11 +6,22 @@ Dynamic Applications
 
 .. module:: djpcms.views.appview
 
-A dynamic application is represented by a set of urls dedicated to a given model in the database.
+A dynamic application is represented by a set of urls dedicated to a given model.
 
 
-.. toctree::
-   :maxdepth: 2
+ApplicationBase
+======================
 
-   intro
-   examples
+.. autoclass:: djpcms.views.appsite.ApplicationBase
+   :members:
+   :member-order: groupwise
+
+
+
+ModelApplication
+======================
+
+.. autoclass:: djpcms.views.appsite.ModelApplication
+   :members:
+   :inherited-members:
+   :member-order: groupwise

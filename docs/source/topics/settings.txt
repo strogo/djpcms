@@ -120,7 +120,7 @@ If set to 0, no bread crumbs support, otherwise it indicates from which level to
 bread-crumbs (usually 1 or 2).
 
 
-.. settings:: GRID960_DEFAULT_FIXED
+.. setting:: GRID960_DEFAULT_FIXED
 
 GRID960_DEFAULT_FIXED
 --------------------------
@@ -130,17 +130,7 @@ If set to True (the default), the grid 960 layout is fixed at 960px, otherwise i
 See `960 grid system <http://960.gs/>`_ and `fluid 960 grid system <http://www.designinfluences.com/fluid960gs/>`_ 
 
 
-
-.. _html-classes:
-
-HTML_CLASSES
--------------------------
-
-This object contains names of classes used for the interaction between Django and jQuery
-
-
-
-.. _google_analytics_id:
+.. setting:: GOOGLE_ANALYTICS_ID
 
 GOOGLE_ANALYTICS_ID
 -------------------------

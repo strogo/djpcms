@@ -9,7 +9,10 @@ URLs and View handlers
 djpcms handles views using objects rather than functions. Each view is an instance of a class
 derived from `djpcmsview`.
 
-
+.. autoclass:: djpcms.views.djpcmsview
+   :members:
+   
+   
 .. toctree::
    :maxdepth: 2
    

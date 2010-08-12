@@ -3,17 +3,15 @@
 #
 #    OBSOLETE BUT STILL SUPPORTED.... USE uniforms instead!
 #
-from django.utils.encoding import force_unicode
-from django import forms
-
+from djpcms.utils import force_unicode
 from djpcms.utils.ajax import jhtmls, jerrors, jredirect
 from djpcms.utils.func import slugify, isforminstance
 
 from base import htmlattr, htmltiny, htmlcomp
 from boundfield import BoundField
 
-
 __all__ = ['form','formlet','submit']
+
 
 FORMLET_TEMPLATES      = {'onecolumn':    ['form/onecolumn.html',
                                            'djpcms/form/onecolumn.html'],

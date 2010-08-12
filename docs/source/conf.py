@@ -14,7 +14,12 @@
 import sys, os
 
 # If your extensions are in another directory, add it here.
-sys.path.append(os.path.join(os.path.dirname(__file__), "_ext"))
+os.environ['DJANGO_SETTINGS_MODULE'] = 'djpcms.testsettings'
+source_dir = os.path.split(os.path.abspath(__file__))[0]
+docs_dir   = os.path.split(source_dir)[0]
+base_dir   = os.path.split(docs_dir)[0]
+sys.path.append(os.path.join(source_dir, "_ext"))
+sys.path.insert(0,base_dir)
 
 # The short X.Y version.
 version = '0.7.0'
@@ -29,7 +34,8 @@ release = '0.7.0'
 #extensions = ['djpcmsdoc']
 extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.todo',
-              'sphinx.ext.pngmath']
+              'sphinx.ext.pngmath',
+              'djpcmsdoc']
 #extensions = ['djpcmsdoc','sphinxtogithub']
 
 # Add any paths that contain templates here, relative to this directory.

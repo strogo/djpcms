@@ -2,7 +2,7 @@
 # Used by testing.py on the package directory for testing
 #
 import os
-BASE = os.path.abspath(os.path.dirname(__file__))
+BASE = os.path.split(os.path.abspath(__file__))[0]
 SITE_ID = 1
 DATABASE_ENGINE = 'sqlite3'
 DATABASE_NAME   = '/tmp/testdjpcms.db'

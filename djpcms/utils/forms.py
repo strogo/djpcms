@@ -1,11 +1,10 @@
 
-from django import forms
-
 
 def add_extra_fields(form, name, field):
     '''
     form must be a form class, not an object
     '''
+    from django import forms
     fields = form.base_fields
     if name not in fields:
         fields[name] = field

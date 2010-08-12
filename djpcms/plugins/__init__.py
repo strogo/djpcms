@@ -3,16 +3,14 @@ import logging
 import copy
 
 from django import http, forms
-from django.utils.safestring import mark_safe
 from djpcms.utils.plugin import PluginBase, loadobjects
-from djpcms.utils import json, form_kwargs
+from djpcms.utils import json, form_kwargs, mark_safe
 from djpcms.utils.formjson import form2json
 from djpcms.utils.deco import response_wrap
-from djpcms.conf import settings
-    
 
 _plugin_dictionary = {}
 _wrapper_dictionary = {}
+
 
 def ordered_generator(di):
     def cmp(x,y):
@@ -37,8 +35,7 @@ def get_wrapper(name, default = None):
     return _wrapper_dictionary.get(name,default)
 
 def register_application(app, name = None, description = None):
-    '''
-    Register an application view as a plugin
+    '''Register an application view as a plugin
     app is instance of an application view
     '''
     if hasattr(app,'get_plugin'):
@@ -51,8 +48,7 @@ def register_application(app, name = None, description = None):
 
 
 def loadplugins(plist):
-    '''
-    Load plugins into the global plugin dictionary
+    '''Load plugins into the global plugin dictionary
     '''
     EmptyPlugin().register()
     ThisPlugin().register()
@@ -103,16 +99,17 @@ class DJPwrapperMeta(type):
 
 
 class DJPwrapper(PluginBase):
-    '''
-    Class responsible for wrapping djpcms plugins
+    '''Class responsible for wrapping :ref:`djpcms plugins <plugins-class>`.
     '''
     __metaclass__ = DJPwrapperMeta
     form_layout   = None
     storage       = _wrapper_dictionary
 
     def wrap(self, djp, cblock, html):
-        '''
-        Render the inner block. This function is the one to implement
+        '''Wrap content for block cblock
+        @param param: djp instance of djpcms.views.baseview.DjpRequestWrap 
+        @param param: cblock instance or BlockContent
+        @return: safe unicode HTML
         '''
         if html:
             return html
@@ -132,16 +129,14 @@ class DJPwrapper(PluginBase):
 
 
 class DJPplugin(PluginBase):
-    '''
-    Base class for Plug-ins.
-    At a glance
-     1) A Plug-in is dynamic application
-     2) It is rendered within a djpcms content block
-     3) Each content block display a plug-in
-     4) A plug-in can define style to include in the page
-     5) It can also add script to the page
-     6) It can have parameters to control its behaviour
-    '''
+    '''Base class for Plugins.
+The basics:
+    
+* A Plug-in is dynamic application.
+* It is rendered within a djpcms content block and each content block display a plugin.
+* It can define style and javascript to include in the page.
+* It can have parameters to control its behaviour.'''
+    
     __metaclass__ = DJPpluginMeta
     form          = None
     withrequest   = False
@@ -156,9 +151,6 @@ class DJPplugin(PluginBase):
         return None
     
     def arguments(self, args):
-        '''
-        Process arguments string
-        '''
         try:
             kwargs = json.loads(args)
             if isinstance(kwargs,dict):
@@ -172,15 +164,15 @@ class DJPplugin(PluginBase):
             return {}
         
     def __get_url(self):
-        if self.URL:
-            return self.URL
-        else:
-            return '%s%s/' % (settings.DJPCMS_PLUGIN_BASE_URL,self.__class__.name)
+        raise NotImplementedError
+        #if self.URL:
+        #    return self.URL
+        #else:
+        #    return '%s%s/' % (settings.DJPCMS_PLUGIN_BASE_URL,self.__class__.name)
     url = property(__get_url)
         
-    def processargs(self,kwargs):
-        '''
-        You can use this hook to perform pre-processing on parameters
+    def processargs(self, kwargs):
+        '''You can use this hook to perform pre-processing on parameters
         '''
         return kwargs
     
@@ -196,14 +188,14 @@ class DJPplugin(PluginBase):
             return self.edit_form(djp, **kwargs)
     
     def render(self, djp, wrapper, prefix, **kwargs):
+        '''Render the plugin. It returns a safe string to be included in the HTML page.'''
         return u''
     
     def save(self, pform):
         return form2json(pform)
     
     def get_form(self, djp, args = None):
-        '''
-        Form for this plugin
+        '''Return an instance of a form or None. It is used to edit the plugin in editing mode.
         '''
         initial = self.arguments(args) or None
         if self.form:
@@ -230,8 +222,7 @@ class EmptyPlugin(DJPplugin):
     
 
 class ThisPlugin(DJPplugin):
-    '''
-    Current view plugin. This plugin render the current view
+    '''Current view plugin. This plugin render the current view
     The view must be a AppView instance
     @see: sjpcms.views.appview
     '''
@@ -239,17 +230,13 @@ class ThisPlugin(DJPplugin):
     description = 'Current View'
     
     def render(self, djp, wrapper, prefix, **kwargs):
-        '''
-        This function needs to be implemented
-        '''
         djp.wrapper = wrapper
         djp.prefix  = prefix
         return djp.view.render(djp)
     
     
 class ApplicationPlugin(DJPplugin):
-    '''
-    Plugin formed by application views
+    '''Plugin formed by application views
     '''
     def __init__(self, app, name = None, description = None):
         self.app  = app
@@ -267,9 +254,6 @@ class ApplicationPlugin(DJPplugin):
             self.description = description
     
     def render(self, djp, wrapper, prefix, **kwargs):
-        '''
-        This function needs to be implemented
-        '''
         app  = self.app
         request = djp.request
         if app.has_permission(request):

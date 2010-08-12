@@ -1,4 +1,4 @@
-.. _topics-plugins-index:
+.. _utils-index:
 
 ============================
 Utilities
@@ -10,3 +10,4 @@ Utilities
    :maxdepth: 2
    
    uniform
+   internals
