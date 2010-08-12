@@ -125,6 +125,8 @@ class ModelApplication(ApplicationBase):
     list_display     = None
     '''List of object's field to display. If available, the search view will display a sortable table
 of objects'''
+    filter_fields    = None
+    '''List of model fields which can be used to filter'''
     
     _form_add        = 'add'
     _form_edit       = 'change'

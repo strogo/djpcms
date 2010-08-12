@@ -1,12 +1,11 @@
-.. _topics-application-index:
+.. _application-index:
+
+.. module:: djpcms.views.appsite
 
 ======================
-Dynamic Applications
+Applications
 ======================
 
-.. module:: djpcms.views.appview
-
-A dynamic application is represented by a set of urls dedicated to a given model.
 
 
 ApplicationBase
@@ -15,7 +14,6 @@ ApplicationBase
 .. autoclass:: djpcms.views.appsite.ApplicationBase
    :members:
    :member-order: groupwise
-
 
 
 ModelApplication
