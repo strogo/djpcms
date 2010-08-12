@@ -10,8 +10,7 @@ First steps
 ==============
 
 **From scratch:**
-:ref:`Overview <intro-overview>` |
-:ref:`Installation <intro-install>`
+:ref:`Overview and Installing <intro-overview>`
 
 **Tutorial:**
 :ref:`Part 1 <intro-tutorial01>` |

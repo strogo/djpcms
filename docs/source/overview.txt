@@ -21,6 +21,11 @@ or easy_install::
 
 	easy_install djpcms
 	
-	
+
+Dependencies
+========================
+It requires Python__ 2.5 or above. It is not yet compatible with Python 3 series.
+
 __ http://pypi.python.org/pypi?:action=display&name=djpcms
+__ http://www.python.org/
 	
