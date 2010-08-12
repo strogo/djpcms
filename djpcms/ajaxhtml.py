@@ -1,7 +1,3 @@
-from django.utils import simplejson as json
-
-from django.utils.safestring import mark_safe
-from django.utils.encoding import force_unicode
 
 class ajaxhtml(object):
     
@@ -36,6 +32,6 @@ class ajaxhtml(object):
         self._dict[k] = v
 
     def tojson(self):
-        return mark_safe(force_unicode(json.dumps(self._dict)))
+        from djpcms.utils import json_dump_safe
+        return json_dump_safe(self._dict)
     
-
