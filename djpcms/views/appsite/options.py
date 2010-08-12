@@ -15,6 +15,7 @@ from django.conf.urls.defaults import url
 from django import forms
 from django.forms.models import modelform_factory
 
+from djpcms.conf import settings
 from djpcms.utils import form_kwargs, UnicodeObject
 from djpcms.utils.forms import add_hidden_field
 from djpcms.plugins import register_application
@@ -60,7 +61,6 @@ class ApplicationBase(object):
     '''
     Base class for djpcms applications
     '''
-    ajax             = None
     name             = None
     '''Application name'''
     authenticated    = True
@@ -72,6 +72,10 @@ class ApplicationBase(object):
         self.editavailable    = editavailable
         self.root_application = None
         self.__baseurl = baseurl
+    
+    @property
+    def ajax(self):
+        return settings.HTML_CLASSES
         
     def get_root_code(self):
         raise NotImplementedError
@@ -125,6 +129,8 @@ class ModelApplication(ApplicationBase):
     list_display     = None
     '''List of object's field to display. If available, the search view will display a sortable table
 of objects'''
+    list_per_page    = 30
+    '''Number of objects per page'''
     filter_fields    = None
     '''List of model fields which can be used to filter'''
     
@@ -138,7 +144,7 @@ of objects'''
     form_withrequest = False
     # if True add/edit/delete will be performed via AJAX xhr POST requests
     form_ajax        = True
-    search_form      = None
+    #search_form      = None
     #
     date_code        = None
     search_form      = SearchForm
@@ -231,11 +237,10 @@ of objects'''
         return '%s_%s' % (base,name)
         
     def objectbits(self, obj):
-        '''
-        Get arguments from model instance used to construct url
-        By default it is the object id
-        @param obj: instance of self.model
-        @return: dictionary of url bits 
+        '''Get arguments from model instance used to construct url. By default it is the object id.
+* *obj*: instance of self.model
+
+It returns dictionary of url bits. 
         '''
         return {'id': obj.id}
     
@@ -354,21 +359,21 @@ of objects'''
             sb.append(submit(value = 'cancel', name = '_cancel'))
         return sb
     
-    def get_searchform(self,
-                       djp,
-                       initial = None,
-                       method  = 'get'):
-        '''
-        Build a search form for model
-        '''
-        mform  = self.search_form
-        f = mform(**form_kwargs(request = djp.request,
-                                initial = initial))
-        fhtml = form(method = method, url = djp.url)
-        fhtml['form'] = formlet(form = f,
-                                layout = 'flat-notag',
-                                submit = submit(value = 'search', name = 'search'))
-        return fhtml
+    #def get_searchform(self,
+    #                   djp,
+    #                   initial = None,
+    #                   method  = 'get'):
+    #    '''
+    #    Build a search form for model
+    #    '''
+    #    mform  = self.search_form
+    #    f = mform(**form_kwargs(request = djp.request,
+    #                            initial = initial))
+    #    fhtml = form(method = method, url = djp.url)
+    #    fhtml['form'] = formlet(form = f,
+    #                            layout = 'flat-notag',
+    #                            submit = submit(value = 'search', name = 'search'))
+    #    return fhtml
     
     # APPLICATION URLS
     # TODO: write it better (not use of application name)
@@ -451,10 +456,8 @@ of objects'''
         return self.model.objects.all()
     
     def object_content(self, djp, obj):
-        '''
-        Utility function for getting content out of an instance of a model.
-        This dictionary should be used to render an object within a template
-        '''
+        '''Utility function for getting content out of an instance of a model.
+This dictionary should be used to render an object within a template. It returns a dictionary.'''
         request = djp.request
         editurl = self.editurl(request, obj)
         if editurl:
@@ -475,8 +478,7 @@ of objects'''
         return self.application_site.for_model(obj.__class__)
     
     def paginate(self, request, data, prefix, wrapper):
-        '''
-        paginate data
+        '''Paginate data
         @param request: HTTP request 
         @param data: a queryset 
         '''

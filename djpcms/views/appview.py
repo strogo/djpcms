@@ -31,13 +31,13 @@ class pageinfo(object):
 
 
 class AppViewBase(djpcmsview):
-    
+    '''Base view class for application views.'''
     def __init__(self,
-                 name   = None,
-                 parent = None,
-                 regex = None,
+                 name       = None,
+                 parent     = None,
+                 regex      = None,
                  splitregex = False,
-                 insitemap = True,
+                 insitemap  = True,
                  ajax_views = None):
         self.__page    = None
         self.name      = name
@@ -299,9 +299,8 @@ class SearchView(AppView):
             urlargs = djp.urlargs
             urlargs.update(kwargs)
             djp = self(request, *urlargs)
-        query   = self.appquery(request, *djp.args, **djp.kwargs)
-        f  = self.appmodel.get_searchform(djp)
-        p  = Paginator(request, query)
+        query = self.appquery(request, *djp.args, **djp.kwargs)
+        p  = Paginator(request, query, per_page = appmodel.list_per_page)
         c  = self.content_dict(djp)
         c.update({'paginator': p,
                   'djp': djp,
