@@ -3,8 +3,6 @@
 How the Djpcms documentation works
 ==================================
 
-\... and how to contribute.
-
 Djpcms documentation uses the Sphinx__ documentation system, which in turn is
 based on docutils__. The basic idea is that lightly-formatted plain-text
 documentation is transformed into HTML, PDF, and any other output format.

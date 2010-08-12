@@ -1,0 +1,17 @@
+.. _intro-overview:
+
+=====================
+Overview
+=====================
+
+.. rubric:: A dynamic content management system for Django.
+
+
+Installing and Running
+================================
+To install::
+
+	python setup.py install
+	pip install djpcms
+	easy_install djpcms
+	

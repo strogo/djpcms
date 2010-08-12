@@ -1,3 +1,5 @@
 *.pyc
 djpcms.egg-info/*
 *.egg
+dist/*
+docs/build/*
