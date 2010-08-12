@@ -1,9 +1,0 @@
-.. _intro-install:
- 	
-Quick install guide
-===================
- 	
-Before you can use djpcms in your Django project, you'll need to get it installed. 
-Installation is quite simple since djpcms is pure python and does not require any additional
-library other than Django itself (and Python of course).
- 	

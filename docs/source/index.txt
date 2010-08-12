@@ -4,46 +4,33 @@
 djpcms documentation
 ====================
 
-.. rubric:: Everything you need to know about djpcms
+.. rubric:: A dynamic Content Management System using Javascript and Python
 
 First steps
-===========
+==============
 
-    * **From scratch:**
-      :ref:`Overview <intro-overview>` |
-      :ref:`Installation <intro-install>`
+**From scratch:**
+:ref:`Overview <intro-overview>` |
+:ref:`Installation <intro-install>`
 
-    * **Tutorial:**
-      :ref:`Part 1 <intro-tutorial01>` |
-      :ref:`Part 2 <intro-tutorial02>` |
-      :ref:`Part 3 <intro-tutorial03>` |
-      :ref:`Part 4 <intro-tutorial04>`
+**Tutorial:**
+:ref:`Part 1 <intro-tutorial01>` |
+:ref:`Part 2 <intro-tutorial02>` |
+:ref:`Part 3 <intro-tutorial03>` |
+:ref:`Part 4 <intro-tutorial04>`
 
-Dynamic Content Management
-=============================
-	* **Applications:**
-	  
-	* **Plugins:**
-	  :ref:`Examples <topics-plugins-examples>` |
-	  :ref:`Extending <topics-plugins-extending>`
-	  
-	* **Design:**
-	
-	* **Battery Included:**
-	  :ref:`Navigator <topics-included-navigator>` |
-	  :ref:`Breadcrumbs <topics-included-breadcrumbs>`
+Contents
+=====================
+.. toctree::
+   :maxdepth: 2
+   
+   topics/index
+   misc/index
 
 
-The Djpcms open-source project
-===============================
+Indices, glossary and tables
+============================
 
-    * **Community:**
-      :ref:`Team of committers <misc-committers>`
-
-    * **Design philosophies:**
-      :ref:`Overview <misc-philosophies>`
-
-    * **Documentation:**
-      :ref:`About this documentation <misc-documentation>`
-
-
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`glossary`

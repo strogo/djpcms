@@ -4,14 +4,23 @@
 Overview
 =====================
 
-.. rubric:: A dynamic content management system for Django.
+.. rubric:: A dynamic Content Management System using Javascript and Python.
 
 
-Installing and Running
+Installing
 ================================
-To install::
+You can download the latest archive from pypi__, uncompress and::
 
 	python setup.py install
+	
+Otherwise you can use pip::
+
 	pip install djpcms
+	
+or easy_install::
+
 	easy_install djpcms
+	
+	
+__ http://pypi.python.org/pypi?:action=display&name=djpcms
 	
