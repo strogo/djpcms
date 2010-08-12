@@ -3,7 +3,10 @@ include INSTALL
 include LICENSE
 include MANIFEST.in
 include README.rst
-recursive-include docs *.txt
+include docs/make.bat
+include docs/Makefile
+include docs/source/conf.py
+recursive-include docs/source *.txt
 recursive-include djpcms/templates *
 recursive-include djpcms/media *
 recursive-include djpcms/fixtures *

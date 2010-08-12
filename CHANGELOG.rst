@@ -1,5 +1,10 @@
 
-0.6.3
+0.7.0
+====================
+ * Added more documentation
+ * Added ``list_per_page`` attribute to ``ModelApplication``
+
+0.6.3 (2010-Jun-06)
 ====================
  * Added rightclickmenu jQuery plugin
  * Fixed missing data in setup.py
