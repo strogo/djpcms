@@ -50,6 +50,18 @@ ul.messagelist li {
     padding:4px 5px 4px 25px;
 }
 
+/** UL.SIMPLE-NAV
+-----------------------------------------------------------*/
+ul.simple-nav li {
+	display: inline;
+}
+ul.simple-nav.right {
+	float: right;
+}
+ul.simple-nav.right li {
+	margin-left: 10px;
+}
+
 /**  MENU AND ACCORDION MENU
 -----------------------------------------------------------*/
 ul.menu {

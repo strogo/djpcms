@@ -1,33 +1,33 @@
 
-ADMIN_URL_PREFIX       = '/admin/'
-TEMPLATE_ENGINE        = 'django'
-LANGUAGE_REDIRECT      = False
-DEFAULT_TEMPLATE_NAME  = ['base.html','djpcms/base.html']
-DEFAULT_VIEW_MODULE    = 'djpcms.views.pageview.pageview'
-HTML_CLASSES           = None
-MAX_SEARCH_DISPLAY     = 20
-CACHE_VIEW_OBJECTS     = True
-DJPCMS_IMAGE_UPLOAD_FUNCTION = None
-SERVE_STATIC_FILES     = False
+ADMIN_URL_PREFIX                = '/admin/'
+TEMPLATE_ENGINE                 = 'django'
+LANGUAGE_REDIRECT               = False
+DEFAULT_TEMPLATE_NAME           = ['base.html','djpcms/base.html']
+DEFAULT_VIEW_MODULE             = 'djpcms.views.pageview.pageview'
+HTML_CLASSES                    = None
+MAX_SEARCH_DISPLAY              = 20
+CACHE_VIEW_OBJECTS              = True
+DJPCMS_IMAGE_UPLOAD_FUNCTION    = None
+SERVE_STATIC_FILES              = False
 
 # Root page for user account urls
-USER_ACCOUNT_HOME_URL    = '/accounts/'
-JS_START_END_PAGE        = 101
-EXTRA_CONTENT_PLUGIN     = None
+USER_ACCOUNT_HOME_URL           = '/accounts/'
+JS_START_END_PAGE               = 101
+EXTRA_CONTENT_PLUGIN            = None
 
 # Analytics
-GOOGLE_ANALYTICS_ID      = None
-LLOOGG_ANALYTICS_ID      = None
+GOOGLE_ANALYTICS_ID             = None
+LLOOGG_ANALYTICS_ID             = None
 
-ENABLE_BREADCRUMBS       = 1
+ENABLE_BREADCRUMBS              = 1
 
-APPLICATION_URL_MODULE   = None
-APPLICATION_URL_PREFIX   = '/apps/'
+APPLICATION_URL_MODULE          = None
+APPLICATION_URL_PREFIX          = '/apps/'
 
-DJPCMS_PLUGINS           = ['djpcms.plugins.*']
-DJPCMS_WRAPPERS          = ['djpcms.plugins.extrawrappers']
-DJPCMS_CONTENT_FUNCTION  = None
-DJPCMS_MARKUP_MODULE     = 'djpcms.utils.markups'
+DJPCMS_PLUGINS                  = ['djpcms.plugins.*']
+DJPCMS_WRAPPERS                 = ['djpcms.plugins.extrawrappers']
+DJPCMS_CONTENT_FUNCTION         = None
+DJPCMS_MARKUP_MODULE            = 'djpcms.utils.markups'
 
 #
 # API url prefix
