@@ -24,6 +24,23 @@ Using uniforms to render form is easy::
 
 __ http://sprawsm.com/uni-form/
 __ http://github.com/pydanny/django-uni-form		
+
+
+FormHelper class
+==========================
+
+.. autoclass:: djpcms.utils.uniforms.FormHelper
+   :members:
+   :inherited-members:
+   :member-order: bysource
+   	
 	
+FormLayout class
+==========================
+
+.. autoclass:: djpcms.utils.uniforms.FormLayout
+   :members:
+   :inherited-members:
+   :member-order: bysource
 
  

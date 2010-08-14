@@ -17,7 +17,9 @@
 <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/fluid960gs/grid.css"/>{% endif %}
 <!--[if IE 6]><link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/fluid960gs/ie6.css" media="screen" /><![endif]-->
 <!--[if IE 7]><link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/fluid960gs/ie.css" media="screen" /><![endif]-->{% endblock %}
-{% block extrastyle %}{% if media %}{% for css in media.render_css %}
+{% block extrastyle %}
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/djpcms.css"/>
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/uni-form.css"/>{% if media %}{% for css in media.render_css %}
 {{ css|safe }}{% endfor %}{% endif %}{% endblock %}
 <style type="text/css">{% block body-extra-style %}{% endblock %}
 </style>{% endcompress %}

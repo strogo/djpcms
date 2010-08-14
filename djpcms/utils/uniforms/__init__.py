@@ -14,6 +14,10 @@ from django.forms import *
 from djpcms.utils.ajax import jhtmls
 
 
+inlineLabels = 'inlineLabels'
+blockLabels  = 'blockLabels'
+blockLabels2 = 'blockLabels2'
+
 
 #_required_tag = mark_safe('<em>*</em>')
 _required_tag = mark_safe('')
@@ -121,11 +125,8 @@ class FormElement(object):
 class Fieldset(FormElement):
     ''' Fieldset container. Renders to a <fieldset>. '''
     
-    inlineLabels = 'inlineLabels'
-    blockLabels  = 'blockLabels'
-    
     def __init__(self, *fields, **kwargs):
-        self.css = kwargs.get('css_class','blockLabels2')
+        self.css = kwargs.get('css_class',blockLabels2)
         self.legend_html = kwargs.get('legend','')
         if self.legend_html:
             self.legend_html = '<legend>%s</legend>' % unicode(self.legend_html)
@@ -187,7 +188,7 @@ class HtmlForm(FormElement):
 
 
 class FormHelper(object):
-
+    '''Main uniformclass used to inject layout and other properties to raw forms.'''
     def __init__(self, enctype = 'multipart/form-data'):
         self.attr = {}
         self.attr['method']  = 'post'

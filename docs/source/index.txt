@@ -33,7 +33,7 @@ First steps
 Contents
 =====================
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    
    topics/application/index
    topics/plugins
