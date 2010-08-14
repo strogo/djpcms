@@ -31,7 +31,7 @@ ThisPlugin
    :members:
    
 ApplicationPlugin
---------------
+--------------------
 
 .. autoclass:: djpcms.plugins.ApplicationPlugin
    :members:

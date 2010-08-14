@@ -10,4 +10,5 @@ Utilities
    :maxdepth: 2
    
    uniform
+   navigation
    internals

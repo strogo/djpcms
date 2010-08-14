@@ -5,3 +5,11 @@
 ArchiveApplication
 ======================
 
+.. _archiveapplication-class:
+
+ArchiveApplication Class
+=========================
+
+.. autoclass:: djpcms.views.apps.archive.ArchiveApplication
+   :members:
+   :member-order: bysource

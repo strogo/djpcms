@@ -8,15 +8,4 @@ Creating your first scalable dynamic application
 ====================================================
 
 If there is to reed a section about this documentation, this is it.
-
-Dynamic applications is **the only reason** that drive us to specialise django.
-Applications which manipulate data interact with users, collect data, give back results
-can use djpcms to their advantage.
-
-
-Django is designed to deal with dynamic applications.
-In Django everything is centered around models, database pieces of data and
-it provides a general framework without too much magic.
-Djpcms, will bridge that gap at the expense of more coupling
-between different technologies (sometimes coupling is good).
- 
+Coming soon.

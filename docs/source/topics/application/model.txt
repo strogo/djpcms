@@ -6,20 +6,20 @@ Model Application
 The Basics
 =========================
 
-Lets assume we have a model called `Project`, the basics step sto setup an application are the following:
+Lets assume we have a model called `Project`, to setup an ``djpcms`` application we create a class derived from
+:ref:`modelapplication-class` ::
+
+	from djpcms.views import appsite
+	
+	class ProjectApplication(appsite.ModelApplication):
+	    pass
     
-    * A dynamic application is created by subclassing `ModelApplication` defined in djpcms.views.appsite.options::
+A dynamic application is registered to the site by invoking::
+	
+	appsite.site.register('/project/', Project, ProjectApplication)
         
-        from djpcms.views.appsite import ModelApplication
-        
-        class ProjectApplication(ModelApplication):
-            baseurl = '/project/'
-    
-    * The dynamic application class must specify the baseurl of the application (including trailing slashes).
-    * A dynamic application is registered to the site by invoking::
-        
-        appsite.site.register(Project,ProjectApplication)
-        
+
+.. _modelapplication-class:
 
 ModelApplication Class
 =========================
@@ -27,7 +27,7 @@ ModelApplication Class
 .. autoclass:: djpcms.views.appsite.ModelApplication
    :members:
    :inherited-members:
-   :member-order: groupwise
+   :member-order: bysource
 
        
 

@@ -1,6 +1,7 @@
 
 0.7.0
 ====================
+ * Backward incompatible changes to internal modules.
  * Added more documentation
  * Added ``list_per_page`` attribute to ``ModelApplication``
 

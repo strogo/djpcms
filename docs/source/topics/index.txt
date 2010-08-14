@@ -6,7 +6,7 @@ Using Djpcms
 Introductions to all the key parts of Djpcms you'll need to know:
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
    views/index
    application/index
@@ -15,6 +15,5 @@ Introductions to all the key parts of Djpcms you'll need to know:
    templates/index
    javascript/index
    settings
-   included/index
    utils/index
    models

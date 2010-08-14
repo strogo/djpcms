@@ -21,10 +21,16 @@ First steps
 Contents
 =====================
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    
-   topics/index
-   misc/index
+   topics/application/index
+   topics/plugins
+   topics/design
+   topics/templates/index
+   topics/javascript/index
+   topics/settings
+   topics/utils/index
+   topics/models
 
 
 Indices, glossary and tables

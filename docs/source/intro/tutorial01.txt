@@ -4,11 +4,7 @@
 Writing your first site, part 1
 =====================================
 
-Django documentation is one of the best written technical documentation available.
-Following Django's masterpiece, we will guide you through the use of djpcms by setting
-up a an example web site.
-Throughout this tutorial, we'll walk you through the creation of a basic
-poll application.
+Throughout this tutorial, we'll walk you through the creation of a basic pool application.
 
 It'll consist of two parts:
 
@@ -27,6 +23,7 @@ djpcms is installed.
 
 __ http://groups.google.co.uk/group/djpcms-users
 
+
 Creating a project
 ==================
 
@@ -39,7 +36,7 @@ create a ``mysite`` directory in your current directory.
 Refer to Django documentation http://docs.djangoproject.com/en/dev/intro/tutorial01/#intro-tutorial01
 
 Setting up djpcms
-----------------------
+=============================
 
 Change into the :file:`mysite` directory and edit the :file:`setting.py` file and add at least the following applications to
 INSTALLED_APPS_::
@@ -60,15 +57,6 @@ the following output on the command line::
 
     Validating models...
     0 errors found.
-
-Next step is to create the databse tables required by djpcms. To do this simply type the django
-command ``python manage.py syncdb``.
-Everything is ready for running the configuration script
-
-	.. code-block:: bash
-
-        python manage.py makedjpcms
-
 
 When you're comfortable with the API, read :ref:`part 2 of this tutorial
 <intro-tutorial02>` to get Django's automatic admin working.

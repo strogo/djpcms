@@ -122,17 +122,23 @@ class ModelApplication(ApplicationBase):
     '''
     __metaclass__ = ModelAppMetaClass
     
-    form             = forms.ModelForm
-    '''Form class to edit/add objects of the application model.'''
-    form_method      ='post'
     '''Form method'''
     list_display     = None
     '''List of object's field to display. If available, the search view will display a sortable table
-of objects'''
+of objects. Default is ``None``.'''
     list_per_page    = 30
-    '''Number of objects per page'''
+    '''Number of objects per page. Default is ``30``.'''
     filter_fields    = None
     '''List of model fields which can be used to filter'''
+    
+    form             = forms.ModelForm
+    '''Form class to edit/add objects of the application model.'''
+    form_method      ='post'
+    '''Form submit method, ``get`` or ``post``. Default ``post``.'''
+    form_withrequest = False
+    '''If set to True, the request instance is passed to the form constructor. Default is ``False``.'''
+    form_ajax        = True
+    '''If True the form submits are performed using ajax. Default ``True``.'''
     
     _form_add        = 'add'
     _form_edit       = 'change'
@@ -141,10 +147,6 @@ of objects'''
     # Form layout.
     form_layout      = None
     # Whether the form requires the request object to be passed to the constructor
-    form_withrequest = False
-    # if True add/edit/delete will be performed via AJAX xhr POST requests
-    form_ajax        = True
-    #search_form      = None
     #
     date_code        = None
     search_form      = SearchForm
@@ -327,7 +329,7 @@ It returns dictionary of url bits.
                 helper.addClass(self.ajax.ajax)
             return FormWrap(f,formsets,self.submit(instance, own_view))
         
-        
+        # Old way of doing things. Deprecated.
         layout = self.form_layout
         if not layout and wrapper:
             layout = wrapper.form_layout
