@@ -4,7 +4,19 @@
 djpcms documentation
 ====================
 
-.. rubric:: A dynamic Content Management System using Javascript and Python
+.. rubric:: A dynamic Content Management System using Javascript and Python.
+
+
+Get it
+=============
+
+Djpcms is available as an easy-installable package on the
+`Python Package Index <http://pypi.python.org/pypi?:action=display&name=djpcms>`_. ::
+	
+	easy_install djpcms
+
+Development is hosted at github http://github.com/lsbardel/djpcms and there is a user mailing list at http://groups.google.co.uk/group/djpcms-users.    
+
 
 First steps
 ==============

@@ -3,11 +3,6 @@
 # Adapted from http://github.com/pydanny/django-uni-form
 #
 #
-"""
-Utilities for helping developers use python for adding various attributes,
-elements, and UI elements to forms generated via the uni_form template tag.
-
-"""
 from django.template import loader 
 from django.core.urlresolvers import reverse, NoReverseMatch
 from django.forms.forms import BoundField

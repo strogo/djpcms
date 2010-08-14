@@ -1,27 +1,29 @@
 .. _topics-utils-uniform:
 
 ============================
-Uniform Utility
+Uniforms
 ============================
 
-.. module:: djpcms.utils.html.uniform
+.. module:: djpcms.utils.uniforms
 
-This module complements the django forms library by adding ajax funationality, inline forms,
-and custom layout based on uniform__ style.
+This module complements the django forms library by adding ajax functionality,
+inline forms, and custom layout based on uniform__ style. The module has been adapted 
+from django-uni-form__.
 
-To use it::
+Using uniforms to render form is easy::
 
-	from djpcms.utils.html import FormHelper
-
-	class MyForm(forms.Form);
-		name = forms.CharField()
-		
-		helper = FormHelper()
-
+	from django import forms
+	
+	class MyForm(forms.Form):
+	    name = forms.CharField()
+	    
+	    #create the form helper
+	    helper = uniforms.FormHelper()
+	    
 
 
 __ http://sprawsm.com/uni-form/
-		
+__ http://github.com/pydanny/django-uni-form		
 	
 
  
