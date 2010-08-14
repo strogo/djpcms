@@ -2,7 +2,7 @@ from django.db.models.base import ModelBase
 from django import http
 from django.utils.datastructures import SortedDict
 
-from djpcms.views.appsite.options import ApplicationBase, ModelApplication
+from djpcms.views.appsite.applications import ApplicationBase, ModelApplication
 from djpcms import siteapp_choices
 
 

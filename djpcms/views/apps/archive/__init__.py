@@ -7,7 +7,7 @@ from django.template import loader, Context
 from django.utils.dates import MONTHS_3, MONTHS_3_REV, WEEKDAYS_ABBR, MONTHS
 from django.utils.encoding import force_unicode
 
-from djpcms.views.appsite.options import ModelApplication
+from djpcms.views.appsite import ModelApplication
 from djpcms.views import appview
 
 __all__ = ['ArchiveApplication']

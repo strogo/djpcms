@@ -276,9 +276,8 @@ It returns dictionary of url bits.
     
     #  FORMS FOR EDITING AND SEARCHING
     #---------------------------------------------------------------------------------
-    def get_form(self, djp, prefix = None, initial = None, wrapped = True, formhelper = True, form = None):
-        '''
-        Build an form to add or edit application model object:
+    def get_form(self, djp, initial = None, prefix = None, wrapped = True, formhelper = True, form = None):
+        '''Build a form to add or edit an application model object:
 * *djp*: instance of djpcms.views.DjpRequestWrap.
 * *initial*: If not none, a dictionary of initial values for model fields.
 * *prefix*: prefix to use in the form.
@@ -345,9 +344,8 @@ It returns dictionary of url bits.
         else:
             return fl
         
-    def submit(self, instance, own_view):
-        '''
-        Submits elements
+    def submit(self, instance, own_view = False):
+        '''Generate the submits elements to be added to the model form.
         '''
         if instance:
             sb = [submit(value = self._form_save, name = '_save')]
