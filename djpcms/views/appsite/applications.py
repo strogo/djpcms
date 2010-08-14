@@ -19,7 +19,8 @@ from djpcms.conf import settings
 from djpcms.utils import form_kwargs, UnicodeObject
 from djpcms.utils.forms import add_hidden_field
 from djpcms.plugins import register_application
-from djpcms.utils.html import formlet, submit, form, FormHelper, FormWrap
+from djpcms.utils.html import formlet, submit, form
+from djpcms.utils.uniforms import FormHelper, FormWrap
 
 from djpcms.views.baseview import editview
 from djpcms.views.appview import AppView
@@ -181,9 +182,7 @@ of objects. Default is ``None``.'''
         return self.root_application.code
         
     def create_applications(self):
-        '''
-        Build sub views for this application
-        '''
+        #Build sub views for this application
         roots = []
         for app_name,child in self.applications.items():
             child.name   = app_name

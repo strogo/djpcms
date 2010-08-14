@@ -1,7 +1,7 @@
 .. _index:
 
 ====================
-djpcms documentation
+DJPCMS
 ====================
 
 .. rubric:: A dynamic Content Management System using Javascript and Python.
@@ -33,7 +33,7 @@ First steps
 Contents
 =====================
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    
    topics/application/index
    topics/plugins

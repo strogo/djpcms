@@ -12,9 +12,9 @@ from django-uni-form__.
 
 Using uniforms to render form is easy::
 
-	from django import forms
+	from djcms.utils import uniforms
 	
-	class MyForm(forms.Form):
+	class MyForm(uniforms.Form):
 	    name = forms.CharField()
 	    
 	    #create the form helper

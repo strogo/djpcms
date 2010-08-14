@@ -8,10 +8,12 @@ from django.core.urlresolvers import reverse, NoReverseMatch
 from django.forms.forms import BoundField
 from django.forms.formsets import all_valid
 from django.utils.safestring import mark_safe
+# Wild import af all django forms stuff
+from django.forms import *
 
 from djpcms.utils.ajax import jhtmls
 
-__all__ = ['FormHelper','FormLayout','Fieldset','Row', 'HtmlForm', 'FormWrap']
+
 
 #_required_tag = mark_safe('<em>*</em>')
 _required_tag = mark_safe('')
