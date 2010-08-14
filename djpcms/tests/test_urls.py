@@ -1,7 +1,8 @@
 from djpcms.views import appsite
+from djpcms.views.apps import archive
 from djpcms.models import SiteContent
 
-class ContentArchiveApplication(appsite.ArchiveApplication):
+class ContentArchiveApplication(archive.ArchiveApplication):
     '''
     Simple ArchiveApplication based on the SiteContent model in djpcms
     '''

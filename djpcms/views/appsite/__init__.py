@@ -3,7 +3,6 @@ from django.utils.importlib import import_module
 
 from djpcms.views.appsite.appsites import ApplicationBase, ModelApplication, ApplicationSite, site
 from djpcms.forms import LazyChoiceField
-from djpcms.views.appsite.appurls import *
 
 
 def load():

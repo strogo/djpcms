@@ -195,7 +195,7 @@ The basics:
         return form2json(pform)
     
     def get_form(self, djp, args = None):
-        '''Return an instance of a form or None. It is used to edit the plugin in editing mode.
+        '''Return an instance of a form or None. Used to edit the plugin when in editing mode.
         '''
         initial = self.arguments(args) or None
         if self.form:

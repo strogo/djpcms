@@ -1,6 +1,0 @@
-
-.. _topics-application-examples:
-
-
-Application Examples
-============================
