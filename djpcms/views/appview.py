@@ -406,8 +406,8 @@ def saveform(self, djp, editing = False):
         else:
             return http.HttpResponseRedirect(redirect_url)
     
-    f = self.get_form(djp)
-    helper = getattr(f,'helper',f)
+    f      = self.get_form(djp)
+    helper = f.helper
     if f.is_valid():
         try:
             mch        = 'added'

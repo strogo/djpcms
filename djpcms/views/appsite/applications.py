@@ -246,11 +246,16 @@ It returns dictionary of url bits.
         return {'id': obj.id}
     
     def get_object(self, *args, **kwargs):
-        '''
-        Retrive an instance of self.model for arguments.
-        By default arguments is the object id,
-        Reimplement for custom arguments
-        '''
+        '''Retrive an instance of self.model from key-values *kwargs* forming the url.
+By default it get the 'id' and get the object::
+
+    try:
+        id = int(kwargs.get('id',None))
+        return self.model.objects.get(id = id)
+    except:
+        return None
+    
+Reimplement for custom arguments.'''
         try:
             id = int(kwargs.get('id',None))
             return self.model.objects.get(id = id)
@@ -279,10 +284,11 @@ It returns dictionary of url bits.
     #---------------------------------------------------------------------------------
     def get_form(self, djp, initial = None, prefix = None, wrapped = True, formhelper = True, form = None):
         '''Build a form to add or edit an application model object:
-* *djp*: instance of djpcms.views.DjpRequestWrap.
-* *initial*: If not none, a dictionary of initial values for model fields.
-* *prefix*: prefix to use in the form.
-* *wrapper*: instance of djpcms.plugins.wrapper.ContentWrapperHandler with information on layout.
+        
+ * *djp*: instance of djpcms.views.DjpRequestWrap.
+ * *initial*: If not none, a dictionary of initial values for model fields.
+ * *prefix*: prefix to use in the form.
+ * *wrapper*: instance of djpcms.plugins.wrapper.ContentWrapperHandler with information on layout.
 '''
         instance = djp.instance
         request  = djp.request
@@ -357,6 +363,10 @@ It returns dictionary of url bits.
         if own_view:
             sb.append(submit(value = 'cancel', name = '_cancel'))
         return sb
+    
+    def object_from_form(self, form):
+        '''Save form and return an instance pof self.model'''
+        return form.form.save()
     
     #def get_searchform(self,
     #                   djp,
@@ -550,11 +560,6 @@ This dictionary should be used to render an object within a template. It returns
         return ['components/%s' % template_name,
                 '%s/%s' % (opts.app_label,template_name),
                 'djpcms/components/object_list_item.html']
-        
-    def object_from_form(self, form):
-        instance = form.form.save()
-        # formsets?
-        return instance
     
     def permissionDenied(self, djp):
         raise PermissionDenied

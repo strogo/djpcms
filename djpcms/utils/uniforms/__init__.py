@@ -122,6 +122,7 @@ class FormElement(object):
     def _render(self, form):
         raise NotImplementedError
 
+
 class Fieldset(FormElement):
     ''' Fieldset container. Renders to a <fieldset>. '''
     
@@ -160,6 +161,7 @@ class Row(FormElement):
         output += u'</div>'
         return u''.join(output)
 
+
 class Column(FormElement):
     ''' column container. Renders to a set of <div>'''
     def __init__(self, *fields, **kwargs):
@@ -175,6 +177,7 @@ class Column(FormElement):
             output += render_field(field, form)
         output += u'</div>'
         return u''.join(output)
+
 
 class HtmlForm(FormElement):
 

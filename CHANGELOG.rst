@@ -3,7 +3,7 @@
 ====================
  * Backward incompatible changes to internal modules.
  * Added more documentation.
- * Uniform are imported from ``djpcms.utils.uniforms``.
+ * Uniforms moved from ``djpcms.utils.uniforms``.
  * Added ``list_per_page`` attribute to ``ModelApplication``.
 
 0.6.3 (2010-Jun-06)
