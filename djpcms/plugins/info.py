@@ -29,13 +29,17 @@ class Deploy(DJPplugin):
         '''
         Information about deployment
         '''
-        from djpcms.models import DeploySite
-        try:
-            latest = DeploySite.objects.latest()
-        except:
+        from djpcms.conf import settings
+        if 'djpcms.contrib.jdep' in settings.INSTALLED_APPS:
+            from djpcms.contrib.jdep.models import DeploySite
+            try:
+                latest = DeploySite.objects.latest()
+            except:
+                return ''
+            return loader.render_to_string(['/bits/deploy.html',
+                                            'djpcms/bits/deploy.html'],
+                                            {'latest':latest,
+                                             'name': timezone.tzname(dt = latest.created),
+                                             'url': timezone.link()})
+        else:
             return ''
-        return loader.render_to_string(['/bits/deploy.html',
-                                        'djpcms/bits/deploy.html'],
-                                        {'latest':latest,
-                                         'name': timezone.tzname(dt = latest.created),
-                                         'url': timezone.link()})
