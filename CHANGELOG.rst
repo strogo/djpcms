@@ -1,9 +1,9 @@
 
-0.7.0
-====================
+0.7.0 (2010-Aug-19)
+======================
  * Backward incompatible changes to internal modules.
- * Added more documentation.
- * Uniforms moved from ``djpcms.utils.uniforms``.
+ * Added more documentation which is hosted at http://packages.python.org/djpcms/
+ * ``uniforms`` moved from ``djpcms.utils.uniforms``.
  * Added ``list_per_page`` attribute to ``ModelApplication``.
 
 0.6.3 (2010-Jun-06)
