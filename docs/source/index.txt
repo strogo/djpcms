@@ -22,13 +22,15 @@ First steps
 ==============
 
 **From scratch:**
-:ref:`Overview and Installing <intro-overview>`
+:ref:`Overview and Installing <intro-overview>` |
+:ref:`CHANGELOG <changelog>`
 
 **Tutorial:**
 :ref:`Part 1 <intro-tutorial01>` |
 :ref:`Part 2 <intro-tutorial02>` |
 :ref:`Part 3 <intro-tutorial03>` |
 :ref:`Part 4 <intro-tutorial04>`
+
 
 Contents
 =====================
@@ -43,6 +45,7 @@ Contents
    topics/settings
    topics/utils/index
    topics/models
+   changelog
 
 
 Indices, glossary and tables

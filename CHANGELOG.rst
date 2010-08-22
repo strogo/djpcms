@@ -1,29 +1,35 @@
+.. _changelog:
 
-0.7.0 (2010-Aug-19)
-======================
- * Backward incompatible changes to internal modules.
+=============================
+Changelog
+=============================
+
+
+Version 0.7.0 (2010-Aug-19)
+===================================
+ * Backward incompatible changes to internal modules. To use this version, changes needs to be made when importing ``djpcms`` modules.
  * Added more documentation which is hosted at http://packages.python.org/djpcms/
  * ``uniforms`` moved from ``djpcms.utils.uniforms``.
  * Added ``list_per_page`` attribute to ``ModelApplication``.
 
-0.6.3 (2010-Jun-06)
-====================
- * Added rightclickmenu jQuery plugin
- * Fixed missing data in setup.py
- * Memcached monitor displays MB used.
+Version 0.6.3 (2010-Jun-06)
+========================================
+ * Added rightclickmenu jQuery plugin.
+ * Fixed missing data in ``setup.py``.
+ * ``Memcached`` monitor-plugin displays MegaBytes used.
 
-0.6.2 (2010-May-07)
-====================
- * Minor bug fixes
- * Application views can specify several ajax views by passing a dictionary called `ajax_view`
+Version 0.6.2 (2010-May-07)
+========================================
+ * Several bug fixes.
+ * Application views can specify several ajax views by passing a dictionary called ``ajax_view``.
 
-0.6.1 (2010-Apr-30) 
-====================
- * Added `utils.unipath` from http://pypi.python.org/pypi/Unipath
- * Added ajax property to uniform helper class
+Version 0.6.1 (2010-Apr-30) 
+========================================
+ * Added ``utils.unipath`` from http://pypi.python.org/pypi/Unipath
+ * Added ``ajax`` property to ``uniforms.FormHelper`` class
 
-0.6 (2010-Apr-24)
-==================
+Version 0.6 (2010-Apr-24)
+=======================================
  * Added `autocomplete` and `uniform` in `utils.html`
  * `ModelApplication` and `DJPplugin` metaclasses derive from `forms.MediaDefiningClass`
  * Added color picker jquery plugin from http://www.eyecon.ro/colorpicker/
@@ -50,8 +56,8 @@
  * url resolver split between main urls and sub-applications
  * Better title in flowrepo contentview
  
-0.5 (2010-Jan-13)
-=====================
+Version 0.5 (2010-Jan-13)
+===================================
 
  * Bug fixes
  * Added "splitregex" named options in views.appview.AppView constructor 
@@ -69,8 +75,8 @@
  * Breadcrumbs name is given by view title
  * Created the DjpResponse object in views.response.
  
-0.4 (2009-Dec-24)
-=====================
+Version 0.4 (2009-Dec-24)
+=========================================
 
  * First official Alpha release.
 
