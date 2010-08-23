@@ -4,15 +4,12 @@
 Writing your first site, part 1
 =====================================
 
-Throughout this tutorial, we'll walk you through the creation of a basic pool application.
+Throughout this tutorial, we'll walk you through the creation of a web site dedicated to wine.
+If you are in a hurry and want to see facts and no words, the web site is called ``vinoweb`` and it
+is included in the ``example`` directory.
 
-It'll consist of two parts:
-
-    * A public site that lets people view polls and vote in them.
-    * An admin site that lets you add, change and delete polls.
-
-We'll assume you have :ref:`djpcms installed <intro-install>` already. You can
-tell djpcms is installed by running the Python interactive interpreter and
+We'll assume you have :ref:`djpcms installed <intro-installing>` already. You can
+tell ``djpcms`` is installed by running the Python interactive interpreter and
 typing ``import djpcms``. If that command runs successfully, with no errors,
 djpcms is installed.
 
@@ -24,21 +21,33 @@ djpcms is installed.
 __ http://groups.google.co.uk/group/djpcms-users
 
 
-Creating a project
-==================
+Creating the wine project
+=================================
 
 First thing is to create a new Django project.
 
 From the command line, ``cd`` into a directory where you'd like to store your
-code, then run the command ``django-admin.py startproject mysite``. This will
-create a ``mysite`` directory in your current directory.
+code, then run the command::
 
-Refer to Django documentation http://docs.djangoproject.com/en/dev/intro/tutorial01/#intro-tutorial01
+	django-admin.py startproject vinoweb
+
+This will create a ``vinoweb`` directory with four files::
+
+	vinoweb/
+		__init__.py
+		manage.py
+		settings.py
+		urls.py
+    	
+Change into the :file:`vinoweb` directory
+and add the :file:`models.py` file where we will enter the models for our application.
+For now just save the empty file and lets move to the next step.
+
 
 Setting up djpcms
 =============================
 
-Change into the :file:`mysite` directory and edit the :file:`setting.py` file and add at least the following applications to
+Change into the :file:`vinoweb` directory and edit the :file:`setting.py` file and add at least the following applications to
 INSTALLED_APPS_::
 
 	INSTALLED_APPS = (
@@ -46,17 +55,50 @@ INSTALLED_APPS_::
 		'django.contrib.sites',
 		'django.contrib.contenttypes',
 		'django.contrib.sessions',
-		'djpcms'
+		'djpcms',
+		'vinoweb'
 	)
 	
 .. _installed_apps: http://docs.djangoproject.com/en/dev/ref/settings/#setting-INSTALLED_APPS
 	
-Let's verify this worked. From within the :file:`mysite` directory
-run the command ``python manage.py validate``. You'll see
-the following output on the command line::
+Let's verify this worked::
 
-    Validating models...
+    python manage.py validate
     0 errors found.
 
-When you're comfortable with the API, read :ref:`part 2 of this tutorial
-<intro-tutorial02>` to get Django's automatic admin working.
+good.
+
+
+.. _intro-tutorial-urls:
+
+Setting urls files
+========================
+Last step of this first tutorial concerns the setting up of urls.
+First edit the :file:`urls.py` which was created when we started the project and
+replace its content with::
+
+	from django.conf.urls.defaults import patterns
+	from djpcms.urls import *
+	
+	urlpatterns = patterns('', *site_urls)
+	
+The ``site_urls`` tuple is defined in the ``djpcms.urls`` module.
+
+Second, edit the :file:`settings.py` and add the ``djpcms`` specific :setting:`APPLICATION_URL_MODULE` setting::
+
+	APPLICATION_URL_MODULE = 'vinoweb.appurls'
+	
+This module, which can be empty, will be imported by ``djpcms`` during the ``urls`` setup.
+We will add code further on in our tutorial.
+
+Great, we've done a lot, your project should look like this::
+
+	vinoweb/
+		__init__.py
+		appurls.py (empty)
+		manage.py
+		models.py (empty)
+		settings.py (modified)
+		urls.py (modified)
+		
+Ready to add  contents? Go to the :ref:`next tutorial <intro-tutorial02>`.

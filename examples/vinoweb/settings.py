@@ -1,4 +1,5 @@
 import os
+basedir = os.path.split(os.path.abspath(__file__))[0])
 
 # ADD THIS ENVIRONMENT VARIABLE
 os.environ['DJPCMS_WEB_FRAMEWORK'] = 'django'
@@ -15,12 +16,8 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': '',                      # Or path to database file if using sqlite3.
-        'USER': '',                      # Not used with sqlite3.
-        'PASSWORD': '',                  # Not used with sqlite3.
-        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+        'ENGINE': 'sqlite3',
+        'NAME': os.path.join(basedir,'vino.sqlite'),
     }
 }
 
@@ -79,7 +76,9 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
 )
 
-ROOT_URLCONF = 'testex.urls'
+ROOT_URLCONF = 'vinoweb.urls'
+APPLICATION_URL_MODULE = 'vinoweb.appurls'
+
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
@@ -95,4 +94,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     # Uncomment the next line to enable the admin:
     # 'django.contrib.admin',
+    #
+    'djpcms',
+    #'vinoweb'
 )

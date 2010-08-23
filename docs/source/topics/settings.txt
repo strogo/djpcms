@@ -14,6 +14,17 @@ Here's a full list of all available settings, in alphabetical order, and their
 default values.
 
 
+.. setting:: APPLICATION_URL_MODULE
+
+APPLICATION_URL_MODULE
+---------------------------------
+default: ``None``
+
+The python dotted path to the application urls module.
+This module is where applications can be registered to the site.
+If not provided, no dynamic application will be available.
+
+
 .. setting:: DJPCMS_MARKUP_MODULE
 
 DJPCMS_MARKUP_MODULE

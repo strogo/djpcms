@@ -1,3 +1,5 @@
+.. _intro-overview:
+
 =====================
 Overview
 =====================
@@ -11,6 +13,8 @@ Features
  * Dynamic pages based on database models
  * Sitemap design
 
+
+.. _intro-installing:
 
 Installing
 ================================
