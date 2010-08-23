@@ -1,0 +1,1 @@
+/home/lsbardel/workspace/djpcms/README.rst
