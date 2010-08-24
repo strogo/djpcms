@@ -8,7 +8,7 @@ HTML_CLASSES                    = None
 MAX_SEARCH_DISPLAY              = 20
 CACHE_VIEW_OBJECTS              = True
 DJPCMS_IMAGE_UPLOAD_FUNCTION    = None
-SERVE_STATIC_FILES              = False
+SERVE_STATIC_FILES              = True
 
 # Root page for user account urls
 USER_ACCOUNT_HOME_URL           = '/accounts/'

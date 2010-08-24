@@ -1,9 +1,8 @@
 import os
-basedir = os.path.split(os.path.abspath(__file__))[0])
-
-# ADD THIS ENVIRONMENT VARIABLE
-os.environ['DJPCMS_WEB_FRAMEWORK'] = 'django'
-
+basedir = os.path.split(os.path.abspath(__file__))[0]
+ROOT_URLCONF = 'vinoweb.urls'
+APPLICATION_URL_MODULE = 'vinoweb.appurls'
+TEMPLATE_DIRS = (os.path.join(basedir,'templates'),)
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -76,16 +75,6 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
 )
 
-ROOT_URLCONF = 'vinoweb.urls'
-APPLICATION_URL_MODULE = 'vinoweb.appurls'
-
-
-TEMPLATE_DIRS = (
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
-)
-
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -93,8 +82,8 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     # Uncomment the next line to enable the admin:
-    # 'django.contrib.admin',
+    'django.contrib.admin',
     #
     'djpcms',
-    #'vinoweb'
+    'vino'
 )

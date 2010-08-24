@@ -4,8 +4,32 @@
 Writing your first site, part 2
 =====================================
 
-Creating your first page
-=========================
-
 We assume you succesfully created a new django project with djpcms installed as explained in tutorial
-:ref:`Part 1 <intro-tutorial01>`
+:ref:`Part 1 <intro-tutorial01>` and yor file structure looks like
+:ref:`this <intro-files>`.
+
+.. _intro-firstpage
+
+Creating the first page
+==========================
+You should be able to run the django development server::
+
+	python manage.py runserver
+	
+and be able to access the admin page at `http://localhost:8000/admin/`.
+Click on `Sitemap` and add the root page. For this, all you need to specify is the
+the ``site`` and possibly the ``inner template``. For our site I choose the
+``3 columns 33-33-33``.
+
+Adding styles
+========================
+Edit the :file:`root.html` template file and add the lines::
+
+	{% block extrastyle %}{{ block.super }}
+	<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/djpcms.css"/>
+	<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/themes/mare.css"/>
+	<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/uni-form.css"/>
+	<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/nav.css"/>
+	<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/tablesorter/themes/sleekdark/style.css"/>
+	<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}site/vino.css"/>{% endblock %}
+

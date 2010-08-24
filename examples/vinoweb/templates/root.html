@@ -1,0 +1,10 @@
+{% extends "djpcms/root.html" %}
+{% block title-block %}Vino Web{% endblock %}
+
+{% block extrastyle %}{{ block.super }}
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/djpcms.css"/>
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/themes/mare.css"/>
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/uni-form.css"/>
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/nav.css"/>
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/tablesorter/themes/sleekdark/style.css"/>
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}site/vino.css"/>{% endblock %}

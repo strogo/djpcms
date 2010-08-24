@@ -4,6 +4,9 @@
 Changelog
 =============================
 
+Version 0.7.1 Trunk
+==============================
+ * Default value for setting SERVE_STATIC_FILES is set to ``True``.
 
 Version 0.7.0 (2010-Aug-19)
 ===================================

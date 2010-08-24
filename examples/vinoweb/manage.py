@@ -1,4 +1,13 @@
 #!/usr/bin/env python
+import os
+import sys
+try:
+    import djpcms
+except:
+    parent = lambda x : os.path.split(x)[0]
+    djpdir = parent(parent(parent(os.path.abspath(__file__))))
+    sys.path.insert(0,djpdir)                   
+
 from django.core.management import execute_manager
 try:
     import settings # Assumed to be in the same directory.

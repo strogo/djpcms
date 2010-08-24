@@ -21,40 +21,48 @@ djpcms is installed.
 __ http://groups.google.co.uk/group/djpcms-users
 
 
-Creating the wine project
+Creating vinoweb
 =================================
 
-First thing is to create a new Django project.
-
-From the command line, ``cd`` into a directory where you'd like to store your
+First thing is to create a new Django project. From the command line, ``cd`` into a directory where you'd like to store your
 code, then run the command::
 
 	django-admin.py startproject vinoweb
 
-This will create a ``vinoweb`` directory with four files::
+This will create a ``vinoweb`` directory. Move into the directory and create the
+application we will use in the site::
+
+	django-admin.py startapp vino
+
+Great, your directory structure should look like this::
 
 	vinoweb/
-		__init__.py
-		manage.py
-		settings.py
-		urls.py
-    	
-Change into the :file:`vinoweb` directory
-and add the :file:`models.py` file where we will enter the models for our application.
-For now just save the empty file and lets move to the next step.
+	  vino/
+	    __init__.py
+	    models.py
+	    tests.py
+	    views.py
+	  __init__.py
+	  appurls.py
+	  manage.py
+	  settings.py
+	  urls.py
+	
+Edit the :file:`vino/models.py` file and the django models (cut and paste from :file:`djpcms/examples/vinoweb/vino/models.py` file).
 
 
 Setting up djpcms
 =============================
 
-Change into the :file:`vinoweb` directory and edit the :file:`setting.py` file and add at least the following applications to
-INSTALLED_APPS_::
+Change into the :file:`vinoweb` directory and edit the :file:`setting.py` file and add
+at least the following applications to INSTALLED_APPS_::
 
 	INSTALLED_APPS = (
 		'django.contrib.auth',
 		'django.contrib.sites',
 		'django.contrib.contenttypes',
 		'django.contrib.sessions',
+		'django.contrib.admin',
 		'djpcms',
 		'vinoweb'
 	)
@@ -69,9 +77,34 @@ Let's verify this worked::
 good.
 
 
+Templates and media
+================================
+
+Create a new directory ``templates`` and add template :file:`root.html` file::
+
+	{% extends "djpcms/root.html" %}
+	
+and the :file:`base.html` file::
+
+	{% extends "djpcms/base.html" %}
+	
+the :file:`djpcms/base.html` is a battery included template for quick development.
+You can also use your own.
+
+Edit the :file:`settings.py` file and add the lines::
+
+	import os
+	basedir = os.path.split(os.path.abspath(__file__))[0]
+	TEMPLATE_DIRS = (os.path.join(basedir,'templates'),)
+
+
+Let also create a ``media`` directory containing the static files.
+This directory will contains another directory called ``site``
+and a cascade style sheet file file:`vino.css`.
+
 .. _intro-tutorial-urls:
 
-Setting urls files
+Urls files
 ========================
 Last step of this first tutorial concerns the setting up of urls.
 First edit the :file:`urls.py` which was created when we started the project and
@@ -91,14 +124,30 @@ Second, edit the :file:`settings.py` and add the ``djpcms`` specific :setting:`A
 This module, which can be empty, will be imported by ``djpcms`` during the ``urls`` setup.
 We will add code further on in our tutorial.
 
+.. _intro-files:
+
 Great, we've done a lot, your project should look like this::
 
 	vinoweb/
-		__init__.py
-		appurls.py (empty)
-		manage.py
-		models.py (empty)
-		settings.py (modified)
-		urls.py (modified)
+	  media/
+	    site/
+	      vino.css
+	  templates/
+	    base.html
+	    root.html
+	  vino/
+	    __init__.py
+	    models.py
+	    tests.py
+	    views.py
+	  __init__.py
+	  appurls.py (empty)
+	  manage.py
+	  settings.py (modified)
+	  urls.py (modified)
 		
+Just one last thing, add the database information to the settings file, and run ``syncdb``::
+
+	python manage.py syncdb
+	
 Ready to add  contents? Go to the :ref:`next tutorial <intro-tutorial02>`.

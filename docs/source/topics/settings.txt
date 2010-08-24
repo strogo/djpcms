@@ -91,7 +91,7 @@ See: :ref:`topics-javascript-index`
 SERVE_STATIC_FILES
 ----------------------
 
-Default: ``False``
+Default: ``True``
 
 Whether static files are served by the server running the Django site (and therefore included in the urls) or not.
 
