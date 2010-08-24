@@ -26,7 +26,7 @@ First steps
 
 **From scratch:**
 :ref:`Overview and Installing <intro-overview>` |
-:ref:`CHANGELOG <changelog>`
+:ref:`Changelog <changelog>`
 
 **Tutorial:**
 :ref:`Part 1 <intro-tutorial01>` |

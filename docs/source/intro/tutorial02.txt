@@ -27,11 +27,11 @@ Edit the :file:`root.html` template file and add the lines::
 
 	{% block extrastyle %}{{ block.super }}
 	<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/djpcms.css"/>
-	<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/themes/mare.css"/>
 	<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/uni-form.css"/>
 	<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/nav.css"/>
 	<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/tablesorter/themes/sleekdark/style.css"/>
-	<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}site/vino.css"/>{% endblock %}
+	<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}site/vino.css"/>
+	<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/jquery-ui-css/smoothness/jquery-ui-1.7.2.custom.css"/>{% endblock %}
 
 
 Adding links for editing
