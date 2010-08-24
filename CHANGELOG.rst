@@ -4,7 +4,7 @@
 Changelog
 =============================
 
-Version 0.7.1 Trunk
+Version 0.7.1 (2010-Aug-24)
 ==============================
  * Default value for setting ``SERVE_STATIC_FILES`` is set to ``True``.
  * Critical bug fix in `:class:`siro.plugins.text.Text` which was crashing the edit form.
