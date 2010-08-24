@@ -4,10 +4,6 @@
 Writing your first site, part 4
 =====================================
 
-Using and Writing plugins
-=============================
 
-Plugins are added sugar to your djpcms application. They can range from a lightweight text and HTML snippet
-to fully fledged applications.
 
 

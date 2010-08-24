@@ -4,8 +4,3 @@
 Writing your first site, part 3
 =====================================
 
-Creating your first scalable dynamic application
-====================================================
-
-If there is to reed a section about this documentation, this is it.
-Coming soon.

@@ -1,8 +1,3 @@
-import os
-basedir = os.path.split(os.path.abspath(__file__))[0]
-ROOT_URLCONF = 'vinoweb.urls'
-APPLICATION_URL_MODULE = 'vinoweb.appurls'
-TEMPLATE_DIRS = (os.path.join(basedir,'templates'),)
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -12,13 +7,6 @@ ADMINS = (
 )
 
 MANAGERS = ADMINS
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'sqlite3',
-        'NAME': os.path.join(basedir,'vino.sqlite'),
-    }
-}
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -47,10 +35,6 @@ USE_L10N = True
 # Example: "/home/media/media.lawrence.com/"
 MEDIA_ROOT = ''
 
-# URL that handles the media served from MEDIA_ROOT. Make sure to use a
-# trailing slash if there is a path component (optional in other cases).
-# Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = ''
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
@@ -87,3 +71,30 @@ INSTALLED_APPS = (
     'djpcms',
     'vino'
 )
+
+
+# The settings changed by the application
+#==========================================================
+import os
+basedir = os.path.split(os.path.abspath(__file__))[0]
+ROOT_URLCONF = 'vinoweb.urls'
+APPLICATION_URL_MODULE = 'vinoweb.appurls'
+TEMPLATE_DIRS = (os.path.join(basedir,'templates'),)
+ADMIN_MEDIA_PREFIX = '/media/admin/'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(basedir, 'media')
+DATABASES = {
+    'default': {
+        'ENGINE': 'sqlite3',
+        'NAME': os.path.join(basedir,'vino.sqlite'),
+    }
+}
+TEMPLATE_CONTEXT_PROCESSORS = (
+            "django.contrib.auth.context_processors.auth",
+            "django.core.context_processors.debug",
+            "django.core.context_processors.i18n",
+            "django.core.context_processors.media",
+            "django.contrib.messages.context_processors.messages",
+            "djpcms.core.context_processors.djpcms"
+            )
+#=========================================================

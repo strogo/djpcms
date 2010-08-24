@@ -15,7 +15,10 @@ Djpcms is available as an easy-installable package on the
 	
 	easy_install djpcms
 
-Development is hosted at github http://github.com/lsbardel/djpcms and there is a user mailing list at http://groups.google.co.uk/group/djpcms-users.    
+Development is hosted at github__ and there is a user `mailing list`__.
+
+__ http://github.com/lsbardel/djpcms
+__ http://groups.google.co.uk/group/djpcms-users   
 
 
 First steps

@@ -40,12 +40,8 @@ if admin:
 appsite.load()
 
 
-
-
 # MEDIA FILES ONLY IF REQUESTED
-if settings.SERVE_STATIC_FILES:
-    import djpcms
-    import os
+if settings.SERVE_STATIC_FILES and settings.MEDIA_URL:
     murl = settings.MEDIA_URL.lstrip("/")
     
     # Add application media directories if they exists
@@ -66,15 +62,16 @@ if settings.SERVE_STATIC_FILES:
                           {'document_root': mediapath, 'show_indexes': True}
                           ),
     
-    mediapath = os.path.join(settings.MEDIA_ROOT,'site')
+    mediaroot = settings.MEDIA_ROOT
+    mediasite = os.path.join(mediaroot,'site')
     site_urls += (
                   r'^%s(?P<path>.*)$' % murl, #r'^{0}site/(?P<path>.*)$'.format(murl),
                   'django.views.static.serve',
-                  {'document_root': settings.MEDIA_ROOT, 'show_indexes': True}
+                  {'document_root': mediaroot, 'show_indexes': True}
                  ),(
                   r'^favicon.ico$',
                   'django.views.static.serve',
-                  {'document_root': mediapath, 'show_indexes': True}
+                  {'document_root': mediasite, 'show_indexes': True}
                  )
 
 # Sitemap

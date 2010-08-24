@@ -55,7 +55,7 @@ Setting up djpcms
 =============================
 
 Change into the :file:`vinoweb` directory and edit the :file:`setting.py` file and add
-at least the following applications to INSTALLED_APPS_::
+at least the following applications to `INSTALLED_APPS`_::
 
 	INSTALLED_APPS = (
 		'django.contrib.auth',
@@ -67,7 +67,21 @@ at least the following applications to INSTALLED_APPS_::
 		'vinoweb'
 	)
 	
-.. _installed_apps: http://docs.djangoproject.com/en/dev/ref/settings/#setting-INSTALLED_APPS
+and add ``djpcms.core.context_processors.djpcms`` to
+`TEMPLATE_CONTEXT_PROCESSORS`_::
+
+	TEMPLATE_CONTEXT_PROCESSORS = (
+            "django.contrib.auth.context_processors.auth",
+            "django.core.context_processors.debug",
+            "django.core.context_processors.i18n",
+            "django.core.context_processors.media",
+            "django.contrib.messages.context_processors.messages",
+            "djpcms.core.context_processors.djpcms"
+            )
+
+.. _TEMPLATE_CONTEXT_PROCESSORS: http://docs.djangoproject.com/en/1.2/ref/settings/#template-context-processors
+.. _INSTALLED_APPS: http://docs.djangoproject.com/en/dev/ref/settings/#setting-INSTALLED_APPS
+
 	
 Let's verify this worked::
 
@@ -101,6 +115,11 @@ Edit the :file:`settings.py` file and add the lines::
 Let also create a ``media`` directory containing the static files.
 This directory will contains another directory called ``site``
 and a cascade style sheet file file:`vino.css`.
+In your settings file replace the default media settings with these::
+
+	ADMIN_MEDIA_PREFIX = '/media/admin/'
+	MEDIA_URL = '/media/'
+	MEDIA_ROOT = os.path.join(basedir, 'media')
 
 .. _intro-tutorial-urls:
 

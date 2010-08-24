@@ -11,6 +11,8 @@ from djpcms.forms import SlugField, LazyChoiceField
 from djpcms.utils.html import formlet
 from djpcms.markup import markuplib
 
+from djpcms.utils import uniforms
+
 
 class NewContentCode(SlugField):
     
@@ -130,7 +132,7 @@ class Text(DJPplugin):
                                                   instance = site_content,
                                                   withrequest = True,
                                                   **kwargs))
-                return formlet(form = f, template = 'djpcms/form/text-edit-form.html')
+                return formlet(form = f, layout = 'djpcms/form/text-edit-form.html')
             except Exception, e:
                 return None
             

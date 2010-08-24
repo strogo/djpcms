@@ -25,6 +25,28 @@ This module is where applications can be registered to the site.
 If not provided, no dynamic application will be available.
 
 
+
+.. setting:: CONTENT_INLINE_EDITING
+
+CONTENT_INLINE_EDITING
+-------------------------
+
+default::
+
+	{
+	'available': True,
+	'preurl': 'edit-content',
+	'permission': None,
+	'pagecontent': '/site-content/',
+	'width': 600,
+	'height': 400
+	}
+
+Dictionary of information for `inline content editing`.
+The ``pagecontent`` key define the base url for editing page contents.
+It must contain trailing slashes.
+
+
 .. setting:: DJPCMS_MARKUP_MODULE
 
 DJPCMS_MARKUP_MODULE
@@ -96,30 +118,6 @@ Default: ``True``
 Whether static files are served by the server running the Django site (and therefore included in the urls) or not.
 
 It should be set to True only during development.
-
-
-
-.. setting:: CONTENT_INLINE_EDITING
-
-CONTENT_INLINE_EDITING
--------------------------
-
-Dictionary of information for inline content editing, by default it is set for no editing::
-
-	CONTENT_INLINE_EDITING = {
-				'available': False,
-				'preurl': 'edit',
-				'permission': None,
-				'pagecontent': '/content/',
-				'width': 600,
-				'height': 400
-				}
-
-The ``pagecontent`` key define the base url for editing page contents. It should contains trailing slashes.
-A :ref:`topics-models-page` object with url given by ``pagecontent`` needs to be created if ``available`` is set to True.
-Otherwise an error will occur. 
-
-
 
 .. setting:: ENABLE_BREADCRUMBS
 

@@ -1,0 +1,22 @@
+html {
+	background:url("bkg.jpg") repeat fixed left top;
+	color: #fff;
+}
+a {
+	color: #fff;
+	text-decoration:none;
+}
+a:link, a:visited {
+	color: #F5B800;
+}
+a:hover {
+	color: #C29100;
+}
+#branding-banner {
+	height: 80px;
+}
+#page-footer {
+	overflow:hidden;
+	height:60px;
+	text-align:center;
+}

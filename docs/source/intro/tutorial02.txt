@@ -33,3 +33,7 @@ Edit the :file:`root.html` template file and add the lines::
 	<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/tablesorter/themes/sleekdark/style.css"/>
 	<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}site/vino.css"/>{% endblock %}
 
+
+Adding links for editing
+====================================
+

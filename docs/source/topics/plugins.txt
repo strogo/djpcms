@@ -1,15 +1,15 @@
 .. _plugins-index:
 
-.. module:: djpcms.plugins
-
 ============================
 Plugins
 ============================
 
-Plugins are classes which derive from :ref:`DJPplugin <plugins-class>`.
+Plugins are classes which derive from :class:`djpcms.plugins.DJPplugin`.
 
 
 .. _plugins-class:
+
+.. module:: djpcms.plugins
 
 Plugin Class
 ===================================
@@ -36,6 +36,18 @@ ApplicationPlugin
 .. autoclass:: djpcms.plugins.ApplicationPlugin
    :members:
    
+
+.. _plugins-text:
+
+.. module:: djpcms.plugins
+
+Text Plugin
+--------------------
+
+The text plugin allows to write content in a straightforward manner.
+   
+
+
 
 .. _plugins-wrapper-class:
 
