@@ -98,6 +98,7 @@ class EditContentForm(forms.ModelForm):
 
     
 class Text(DJPplugin):
+    '''plugin for writing text using several different markup languages.'''
     name          = "text"
     description   = "Text Editor"
     withrequest   = True
@@ -147,6 +148,7 @@ class HtmlContent(forms.Form):
 
         
 class Html(DJPplugin):
+    '''Html plugin. Write what you like, javascript and HTML.'''
     name          = "html"
     description   = "HTML Snippet"
     form          = HtmlContent

@@ -60,6 +60,10 @@ class AppViewBase(djpcmsview):
                 return self.ajax_views.get(ajax_key,None)
         return None
     
+    def isroot(self):
+        '''True if this application view represents the root view of the application.'''
+        return False
+    
     def get_form(self, djp):
         return None
         

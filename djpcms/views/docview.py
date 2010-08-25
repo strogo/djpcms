@@ -29,6 +29,9 @@ class Index(DocView):
     def __call__(self, request, *args, **kwargs):
         a = self.appmodel
         return http.HttpResponseRedirect('%s%s/%s/' % (a.baseurl,a.deflang,a.defversion))
+    
+    def isroot(self):
+        return True
 
 class Language(DocView):
     

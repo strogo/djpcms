@@ -163,23 +163,12 @@ The basics:
         except:
             return {}
         
-    def __get_url(self):
-        raise NotImplementedError
-        #if self.URL:
-        #    return self.URL
-        #else:
-        #    return '%s%s/' % (settings.DJPCMS_PLUGIN_BASE_URL,self.__class__.name)
-    url = property(__get_url)
-        
     def processargs(self, kwargs):
         '''You can use this hook to perform pre-processing on parameters
         '''
         return kwargs
     
     def __call__(self, djp, args = None, wrapper = None, prefix = None):
-        '''
-        This function needs to be implemented
-        '''
         return self.render(djp, wrapper, prefix, **self.arguments(args))
     
     def edit(self, djp, args = None, **kwargs):

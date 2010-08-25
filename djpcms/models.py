@@ -1,10 +1,6 @@
 import datetime
 import re
 
-try:
-    from django.contrib import messages
-except:
-    messages = None
 from django.http import Http404
 from django.utils.dateformat import DateFormat
 from django.db import models
@@ -215,9 +211,7 @@ class Page(TimeStamp):
                     root    = Page.objects.filter(site = self.site, level = 0)
                     if baseurl == '/':
                         if root:
-                            if messages:
-                                messages.error("Root page already available, cannot set application as root. Delete the flat root page first")
-                            return
+                            raise ValueError("Root page already available, cannot set application as root. Delete the flat root page first")
                         self.parent = None
                     else:
                         urls = baseurl[1:-1].split('/')
@@ -230,9 +224,7 @@ class Page(TimeStamp):
                         if root:
                             self.parent = root[0]
                         else:
-                            if messages:
-                                messages.error('Parent page "%s" not available, cannot set application %s' % (parent_url,baseurl))
-                            return
+                            raise ValueError('Parent page "%s" not available, cannot set application %s' % (parent_url,baseurl))
                         return baseurl
                 else:
                     p = app.parent
@@ -240,9 +232,7 @@ class Page(TimeStamp):
                     if pages:
                         self.parent = pages[0]
                     else:
-                        if messages:
-                            messages.error('Parent page not defined %s' % app.code)
-                        return
+                        raise ValueError('Parent page not defined %s' % app.code)
                     url = purl
             else:
                 url = self.url_pattern
@@ -254,8 +244,8 @@ class Page(TimeStamp):
             if not url.startswith('/'):
                 url = '/%s' % url
             return url
-        except:
-            return None
+        except Exception, e:
+            raise ValueError("Unhandled error while saving page: %s." % e)
 
     def get_children(self):
         '''
