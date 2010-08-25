@@ -254,7 +254,6 @@ example with inlines::
         Serialize form errors for AJAX-JSON interaction
         '''
         jerr = jhtmls()
-        # jsut a temporary fix
         form = form.form
         for name,errs in form.errors.items():
             field_instance = form.fields.get(name,None)

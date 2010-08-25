@@ -3,7 +3,9 @@
 -----------------------------------------------------------*/
 table.plain td,
 table.plain th {padding: 3px 15px 3px 0; text-align: left;}
-
+.djpcms-block td {padding: 2px 5px;}
+.djpcms-block td.original, 
+td.original {padding: 0;}
 
 /*		BOX and CONTENT BLOCKS
 -------------------------------------------------*/
@@ -29,8 +31,6 @@ div.flat-pannel {
 	list-style-position:outside;
 	list-style-type: disc;
 }
-
-.djpcms-block table td {padding: 2px 5px;}
 
 .grid_3 .djpcms-block-element .flat-element img.fullwidth,
 .grid_3 .djpcms-block-element .djpcms-html-box .bd img.fullwidth {

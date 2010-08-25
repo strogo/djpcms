@@ -7,7 +7,8 @@ Changelog
 Version 0.7.2 - Trunk
 ==============================
  * Removed obsolete code in ``plugins``.
- * Fixed bug in 
+ * ``DocView`` refactoring and documentation.
+ * ``uniforms`` refactoring and documentation.
  
  
 Version 0.7.1 (2010-Aug-24)

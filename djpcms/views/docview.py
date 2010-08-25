@@ -8,7 +8,7 @@ from django.utils.safestring import mark_safe
 from django.conf.urls.defaults import url
 
 from djpcms.utils.unipath import FSPath as Path
-from djpcms.views.baseview import djpcmsview
+from djpcms.views.baseview import djpcmsview, htmltype, build_base_context
 from djpcms.views.appsite import ApplicationBase
 from djpcms.views.appview import AppViewBase
 from djpcms.views.regex import RegExUrl
@@ -68,7 +68,12 @@ class DocView(AppViewBase):
                           'docs/%s.html' % namet, 
                           'docs/doc.html',
                           ]
-        c = {
+        c = build_base_context(djp)
+        if page:
+            c['htmldoc'] = htmltype.get(page.doctype)
+        else:
+            c['htmldoc'] = htmltype.get()
+        c.update({
              'djp':     djp,
              'doc':     json.load(open(doc, 'rb')),
              'env':     json.load(open(docroot.child('globalcontext.json'), 'rb')),
@@ -80,10 +85,9 @@ class DocView(AppViewBase):
              #'search': urlresolvers.reverse('document-search', kwargs={'lang':lang, 'version':version}),
              'redirect_from': request.GET.get('from', None),
              'grid':          self.grid960(page)
-             }
+             })
         
-        return render_to_response(template_names,
-                                  RequestContext(request,c))
+        return djp.render_to_response(c, template_file = template_names)
         
 
 class DocApplication(ApplicationBase):
@@ -129,7 +133,6 @@ class DocApplication(ApplicationBase):
                 purl += '(?P<version>[\w.-]+)/'
         urls += url(r'^%s(?P<url>[\w./-]*)/$' % purl,
                     appview,
-                    {'url': ''},
                     name = '%s_details' % self.name),
         self.urls = urls
             

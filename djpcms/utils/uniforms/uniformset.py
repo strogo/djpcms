@@ -33,6 +33,9 @@ class FormsetWrap(object):
     def __iter__(self):
         for form in self.formset.forms:
             yield form
+            
+    def is_valid(self):
+        return self.formset.is_valid()
         
     def fields(self):
         formset = self.formset

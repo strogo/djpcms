@@ -96,8 +96,6 @@ class AppViewBase(djpcmsview):
         pass
     
     
-
-
 class AppView(AppViewBase):
     '''
     Base class for application views
@@ -376,6 +374,7 @@ class MonthArchiveView(ArchiveView):
     def title(self, page, **urlargs):
         return urlargs.get('month',None)
     
+    
 class YearArchiveView(ArchiveView):
     def __init__(self, *args, **kwargs):
         super(YearArchiveView,self).__init__(*args,**kwargs)
@@ -386,6 +385,7 @@ class YearArchiveView(ArchiveView):
 def render_form(form, djp):
     djp.media += form.media
     return form.render()
+    
     
 def saveform(self, djp, editing = False):
     '''Save model instance'''
@@ -581,6 +581,9 @@ class EditView(ObjectView):
     
     def has_permission(self, request = None, obj = None):
         return self.appmodel.has_edit_permission(request, obj)
+    
+    def title(self, page, instance = None, **urlargs):
+        return 'Edit %s' % self.appmodel.title_object(instance)
     
     def get_form(self, djp):
         return self.appmodel.get_form(djp)

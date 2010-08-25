@@ -181,7 +181,8 @@ class DjpResponse(http.HttpResponse):
         
         return func(self)        
     
-    def render_to_response(self, more_context = None, **kwargs):
+    def render_to_response(self, more_context = None,
+                           template_file = None, **kwargs):
         """
         A shortcut method that runs the `render_to_response` Django shortcut.
  
@@ -203,7 +204,8 @@ class DjpResponse(http.HttpResponse):
                   'sitenav':    Navigator(self)})
         if settings.ENABLE_BREADCRUMBS:
             d['breadcrumbs'] = Breadcrumbs(self,min_length = settings.ENABLE_BREADCRUMBS)
-        res = render_to_response(self.template_file, context_instance=context, **kwargs)
+        template_file = template_file or self.template_file
+        res = render_to_response(template_file, context_instance=context, **kwargs)
         self.content = res.content
         return self
         
