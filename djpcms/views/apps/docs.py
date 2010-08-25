@@ -1,4 +1,3 @@
-import json
 import datetime
 
 from django import http
@@ -7,6 +6,7 @@ from django.template import loader, RequestContext
 from django.utils.safestring import mark_safe
 from django.conf.urls.defaults import url
 
+from djpcms.utils import json 
 from djpcms.utils.unipath import FSPath as Path
 from djpcms.views.baseview import djpcmsview, htmltype, build_base_context
 from djpcms.views.appsite import ApplicationBase
@@ -17,15 +17,10 @@ from djpcms.views.regex import RegExUrl
 class DocView(AppViewBase):
     editurl          = None
     
-    def __init__(self, app, parent = None, lang = False, version = False):
-        super(DocView,self).__init__(app)
+    def __init__(self, lang = False, version = False, **kwargs):
+        super(DocView,self).__init__(**kwargs)
         self.lang    = lang
         self.version = version
-        self.__root  = not parent
-        self.appmodel = app
-    
-    def isroot(self):
-        return self.__root
     
     def get_url(self, djp, **urlargs):
         lang = urlargs.get('lang','')
@@ -95,7 +90,7 @@ class DocApplication(ApplicationBase):
     defversion       = 'dev'
     DOCS_PICKLE_ROOT = None
     
-    def __init__(self, baseurl, application_site, editavailable):
+    def old__init__(self, baseurl, application_site, editavailable):
         '''Create a tuple of urls'''
         super(DocApplication,self).__init__(baseurl, application_site, editavailable)
         urls = ()

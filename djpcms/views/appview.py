@@ -32,25 +32,44 @@ class pageinfo(object):
 
 class AppViewBase(djpcmsview):
     '''Base view class for application views.'''
+    creation_counter = 0
+    
     def __init__(self,
                  name       = None,
                  parent     = None,
                  regex      = None,
                  splitregex = False,
                  insitemap  = True,
+                 isapp      = False,
+                 isplugin   = False,
+                 in_navigation = False,
+                 template_name = None,
                  ajax_views = None):
         self.__page    = None
         self.name      = name
         self.parent    = parent
+        self.isapp     = isapp
+        self.isplugin  = isplugin
+        self.in_nav    = in_navigation
         self.appmodel  = None
         self.insitemap = insitemap
         self.urlbit    = RegExUrl(regex,splitregex)
         self.regex     = None
+        self.func      = None
+        self.code      = None
+        self.editurl   = None
         self.ajax_views = ajax_views or {}
+        #self.template_name = template_name
+        # Increase the creation counter, and save our local copy.
+        self.creation_counter = AppViewBase.creation_counter
+        AppViewBase.creation_counter += 1
         
     def __get_baseurl(self):
         return self.appmodel.baseurl
     baseurl = property(__get_baseurl)
+    
+    def get_media(self):
+        return self.appmodel.media
     
     def get_ajax_response(self, djp):
         if self.ajax_views:
@@ -62,7 +81,7 @@ class AppViewBase(djpcmsview):
     
     def isroot(self):
         '''True if this application view represents the root view of the application.'''
-        return False
+        return self.appmodel.root_application is self
     
     def get_form(self, djp):
         return None
@@ -100,42 +119,14 @@ class AppView(AppViewBase):
     '''
     Base class for application views
     '''
-    creation_counter = 0
     
     def __init__(self,
-                 regex     = None,
-                 parent    = None,
-                 name      = None,
-                 isapp     = True,
-                 isplugin  = False,
-                 template_name = None,
-                 in_navigation = False,
-                 insitemap  = True,
+                 isapp      = True,
                  splitregex = True,
                  **kwargs):
-        super(AppView,self).__init__(name = name,
-                                     regex = regex,
+        super(AppView,self).__init__(isapp = isapp,
                                      splitregex = splitregex,
-                                     parent = parent,
-                                     insitemap = insitemap,
                                      **kwargs)
-        self.isapp    = isapp
-        self.isplugin = isplugin
-        self.func     = None
-        self.code     = None
-        self.editurl  = None
-        self.in_nav   = in_navigation
-        if template_name:
-            self.template_name = template_name
-        # Increase the creation counter, and save our local copy.
-        self.creation_counter = AppView.creation_counter
-        AppView.creation_counter += 1
-    
-    def get_media(self):
-        return self.appmodel.media
-    
-    def isroot(self):
-        return self.appmodel.root_application is self
     
     def __unicode__(self):
         return u'%s: %s' % (self.name,self.regex)

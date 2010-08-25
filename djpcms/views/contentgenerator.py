@@ -23,7 +23,7 @@ class BlockContentGen(UnicodeObject):
         @param b:       integer indicating the block number in the page
         @param page:    instance of Page or AppPage
         '''
-        from djpcms.views.contentedit import content_view
+        from djpcms.views.apps.contentedit import content_view
         self.djp     = djp
         self.page    = djp.page
         self.view    = djp.view

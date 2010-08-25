@@ -38,7 +38,7 @@ class content_view(object):
         blockcontents is a queryset of BlockContent model
         '''
         appmodel = appsite.site.for_model(BlockContent)
-        view = appmodel.getapp('edit')
+        view = appmodel.getview('edit')
         wrapper = EditWrapperHandler()
         pos = 0
         for b in blockcontents:
@@ -296,7 +296,7 @@ class ContentSite(appsite.ModelApplication):
         p = obj.plugin
         if not p or not p.edit_form:
             return
-        view = self.getapp('plugin')
+        view = self.getview('plugin')
         if view and self.has_edit_permission(request, obj):
             djp = view(request, instance = obj)
             return djp.url

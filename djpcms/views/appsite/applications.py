@@ -9,21 +9,19 @@ from django import http
 from django.utils.encoding import force_unicode
 from django.utils.datastructures import SortedDict
 from django.template import loader, Template, Context, RequestContext
-from django.core.exceptions import PermissionDenied
 from django.conf.urls.defaults import url
-
 from django import forms
 from django.forms.models import modelform_factory
 
 from djpcms.conf import settings
+from djpcms.core.exceptions import PermissionDenied, ApplicationUrlException
 from djpcms.utils import form_kwargs, UnicodeObject, slugify
 from djpcms.utils.forms import add_hidden_field
 from djpcms.plugins import register_application
 from djpcms.utils.html import formlet, submit, form
 from djpcms.utils.uniforms import FormHelper, FormWrap
-
 from djpcms.views.baseview import editview
-from djpcms.views.appview import AppView
+from djpcms.views.appview import AppViewBase
 from djpcms.views.cache import pagecache
 
 
@@ -33,18 +31,13 @@ class SearchForm(forms.Form):
     '''
     search = forms.CharField(max_length=300, required = False,
                              widget = forms.TextInput(attrs={'class':'search-box'}))
-    
 
-class ModelApplicationUrlError(Exception):
-    pass
 
-def get_declared_applications(bases, attrs):
-    """
-    Create a list of ModelApplication children instances from the passed in 'attrs', plus any
-    similar fields on the base classes (in 'bases').
-    """
+def get_declared_application_views(bases, attrs):
+    """Create a list of Application views instances from the passed in 'attrs', plus any
+similar fields on the base classes (in 'bases')."""
     inherit = attrs.pop('inherit',False)
-    apps = [(app_name, attrs.pop(app_name)) for app_name, obj in attrs.items() if isinstance(obj, AppView)]      
+    apps = [(app_name, attrs.pop(app_name)) for app_name, obj in attrs.items() if isinstance(obj, AppViewBase)]      
     apps.sort(lambda x, y: cmp(x[1].creation_counter, y[1].creation_counter))
 
     # If this class is subclassing another Application, and inherit is True add that Application's views.
@@ -52,36 +45,57 @@ def get_declared_applications(bases, attrs):
     # order to preserve the correct order of fields.
     if inherit:
         for base in bases[::-1]:
-            if hasattr(base, 'base_applications'):
-                apps = base.base_applications.items() + apps
+            if hasattr(base, 'base_views'):
+                apps = base.base_views.items() + apps
                 
     return SortedDict(data = apps)
 
 
+class ApplicationMetaClass(forms.MediaDefiningClass):
+    
+    def __new__(cls, name, bases, attrs):
+        attrs['base_views'] = get_declared_application_views(bases, attrs)
+        new_class = super(ApplicationMetaClass, cls).__new__(cls, name, bases, attrs)
+        return new_class
+
+
 class ApplicationBase(object):
+    '''Base class for djpcms applications.
+* *baseurl* the root part of the application views urls. Must be provided with trailing slashes (ex. "/docs/")
+* *application_site* instance of the application site manager.
+* *editavailable* ``True`` if inline editing is available.
     '''
-    Base class for djpcms applications
-    '''
+    __metaclass__ = ApplicationMetaClass
+    
     name             = None
-    '''Application name'''
+    '''Application name. Default ``None``, calculated from class name.'''
     authenticated    = True
-    '''True if authentication is required'''
+    '''True if authentication is required. Default ``True``.'''
     has_api          = False
+    '''Flag indicating if API is available. Default ``False``.'''
+    inherit          = False
+    '''Flag indicating if application views are inherited from base class. Default ``False``.'''
     
     def __init__(self, baseurl, application_site, editavailable):
         self.application_site = application_site
         self.editavailable    = editavailable
         self.root_application = None
-        self.__baseurl = baseurl
-        self.name      = self._makename()
-        
-    def _makename(self):
-        cls = self.__class__
-        name = cls.name
-        if not name:
-            name = cls.__name__
-        name = name.replace('-','_').lower()
-        return str(slugify(name,rtx='_'))
+        self.__baseurl        = baseurl
+        self.name             = self._makename()
+        self.views            = deepcopy(self.base_views)
+        self._create_views()
+        urls = []
+        for app in self.views.values():
+            view_name  = self._get_view_name(app.name)
+            nurl = url(regex = str(app.regex),
+                       view  = app,
+                       name  = view_name)
+            urls.append(nurl)
+        self.urls = tuple(urls)
+    
+    def getview(self, code):
+        '''Get an application view from the view code.'''
+        return self.views.get(code, None)
     
     @property
     def ajax(self):
@@ -92,11 +106,6 @@ class ApplicationBase(object):
     
     def __get_baseurl(self):
         return self.__baseurl
-    #    page = pagecache.get_for_application(self.get_root_code())
-    #    if page:
-    #        return page.url
-    #    else:
-    #        return None
     baseurl = property(__get_baseurl)
     
     def __call__(self, request, rurl):
@@ -113,108 +122,42 @@ class ApplicationBase(object):
     def has_permission(self, request = None, obj = None):
         '''Return True if the page can be viewed, otherwise False'''
         return True
-
-
-class ModelAppMetaClass(forms.MediaDefiningClass):
     
-    def __new__(cls, name, bases, attrs):
-        attrs['base_applications'] = get_declared_applications(bases, attrs)
-        new_class = super(ModelAppMetaClass, cls).__new__(cls, name, bases, attrs)
-        return new_class
-
-
-class ModelApplication(ApplicationBase):
-    '''
-    Base class for Django Model Applications
-    This class implements the basic functionality for a general model
-    User should subclass this for full control on the model application.
-    Each one of the class attributes are optionals.
-    '''
-    __metaclass__ = ModelAppMetaClass
+    def _makename(self):
+        cls = self.__class__
+        name = cls.name
+        if not name:
+            name = cls.__name__
+        name = name.replace('-','_').lower()
+        return str(slugify(name,rtx='_'))
     
-    '''Form method'''
-    list_display     = None
-    '''List of object's field to display. If available, the search view will display a sortable table
-of objects. Default is ``None``.'''
-    list_per_page    = 30
-    '''Number of objects per page. Default is ``30``.'''
-    filter_fields    = None
-    '''List of model fields which can be used to filter'''
+    def _get_view_name(self, name):
+        if not self.baseurl:
+            raise ApplicationUrlException('Application without baseurl')
+        base = self.baseurl[1:-1].replace('/','_')
+        return '%s_%s' % (base,name)
     
-    form             = forms.ModelForm
-    '''Form class to edit/add objects of the application model.'''
-    form_method      ='post'
-    '''Form submit method, ``get`` or ``post``. Default ``post``.'''
-    form_withrequest = False
-    '''If set to True, the request instance is passed to the form constructor. Default is ``False``.'''
-    form_ajax        = True
-    '''If True the form submits are performed using ajax. Default ``True``.'''
-    
-    _form_add        = 'add'
-    _form_edit       = 'change'
-    _form_save       = 'done'
-    _form_continue   = 'save & continue'
-    # Form layout.
-    form_layout      = None
-    # Whether the form requires the request object to be passed to the constructor
-    #
-    date_code        = None
-    search_form      = SearchForm
-    in_navigation    = True
-    '''True if applications can go into site navigation.'''
-    # If set to True, base class views will be available
-    inherit          = False
-    #
-    search_fields    = None
-    #
-    list_display_links = None
-    
-    def __init__(self, baseurl, application_site, editavailable, model = None):
-        super(ModelApplication,self).__init__(baseurl, application_site, editavailable)
-        self.model            = model
-        self.opts             = model._meta
-        self.applications     = deepcopy(self.base_applications)
-        self.edits            = []
-        self.parent_url       = None
-        self.create_applications()
-        urls = []
-        for app in self.applications.values():
-            view_name  = self.get_view_name(app.name)
-            nurl = url(regex = str(app.regex),
-                       view  = app,
-                       name  = view_name)
-            urls.append(nurl)
-        self.urls = tuple(urls)
-        
-    def get_root_code(self):
-        return self.root_application.code
-        
-    def create_applications(self):
-        #Build sub views for this application
+    def _create_views(self):
+        #Build views for this application
         roots = []
-        for app_name,child in self.applications.items():
+        for app_name,child in self.views.items():
             child.name   = app_name
             pkey         = child.parent
             if pkey:
-                parent  = self.applications.get(pkey,None)
+                parent  = self.views.get(pkey,None)
                 if not parent:
-                    raise ModelApplicationUrlError('Parent %s for %s not in children tree' % (pkey,child))
+                    raise ApplicationUrlException('Parent %s for %s not in children tree' % (pkey,child))
                 child.parent = parent
             else:
                 if not child.urlbit:
                     if self.root_application:
-                        raise ValueError('Could not resolve root application')
+                        raise ApplicationUrlException('Could not resolve root application')
                     self.root_application = child
                 else:
                     roots.append(child)
             child.processurlbits(self)
             code = u'%s-%s' % (self.name,child.name)
             child.code = code
-            #
-            # View with no arguments. Store in parent pages
-            #TODO: This is useless, remove it!
-            #if not child.tot_args:
-            #    self.application_site.root_pages[child.purl] = child
                 
             if child.isapp:
                 name = u'%s %s' % (self.name,child.name.replace('_',' '))
@@ -226,6 +169,55 @@ of objects. Default is ``None``.'''
         if roots and self.root_application:
             for app in roots:
                 app.parent = self.root_application
+
+
+class ModelApplication(ApplicationBase):
+    '''
+    Base class for Django Model Applications
+    This class implements the basic functionality for a general model
+    User should subclass this for full control on the model application.
+    Each one of the class attributes are optionals.
+    '''    
+    '''Form method'''
+    list_display     = None
+    '''List of object's field to display. If available, the search view will display a sortable table
+of objects. Default is ``None``.'''
+    list_per_page    = 30
+    '''Number of objects per page. Default is ``30``.'''
+    filter_fields    = None
+    '''List of model fields which can be used to filter'''
+    form             = forms.ModelForm
+    '''Form class to edit/add objects of the application model.'''
+    form_method      ='post'
+    '''Form submit method, ``get`` or ``post``. Default ``post``.'''
+    form_withrequest = False
+    '''If set to True, the request instance is passed to the form constructor. Default is ``False``.'''
+    form_ajax        = True
+    '''If True the form submits are performed using ajax. Default ``True``.'''
+    in_navigation    = True
+    '''True if application'views can go into site navigation. Default ``True``.'''
+    search_fields    = None
+    '''List of model field's names which are searchable. Default ``None``.'''
+    
+    _form_add        = 'add'
+    _form_edit       = 'change'
+    _form_save       = 'done'
+    _form_continue   = 'save & continue'
+    #
+    search_form      = SearchForm
+    # If set to True, base class views will be available
+    #
+    #
+    list_display_links = None
+    
+    def __init__(self, baseurl, application_site, editavailable, model = None):
+        self.model            = model
+        self.opts             = model._meta
+        super(ModelApplication,self).__init__(baseurl, application_site, editavailable)
+        #self.edits            = []
+        
+    def get_root_code(self):
+        return self.root_application.code
     
     def modelsearch(self):
         return self.model
@@ -238,12 +230,6 @@ of objects. Default is ``None``.'''
             admin = site._registry.get(self.modelsearch(),None)
             if admin:
                 return admin.search_fields
-        
-    def get_view_name(self, name):
-        if not self.baseurl:
-            raise ModelApplicationUrlError('Application without baseurl')
-        base = self.baseurl[1:-1].replace('/','_')
-        return '%s_%s' % (base,name)
         
     def objectbits(self, obj):
         '''Get arguments from model instance used to construct url. By default it is the object id.
@@ -269,9 +255,6 @@ Reimplement for custom arguments.'''
             return self.model.objects.get(id = id)
         except:
             return None
-    
-    def getapp(self, code):
-        return self.applications.get(code, None)
     
     def update_initial(self, request, mform, initial = None, own_view = True):
         if request.method == 'GET':
@@ -343,8 +326,8 @@ Reimplement for custom arguments.'''
             return FormWrap(f,formsets,self.submit(instance, own_view))
         
         # Old way of doing things. Deprecated.
-        layout = self.form_layout
-        if not layout and wrapper:
+        layout = None
+        if wrapper:
             layout = wrapper.form_layout
             
         submit = self.submit(instance, own_view)
@@ -396,14 +379,14 @@ Reimplement for custom arguments.'''
     # TODO: write it better (not use of application name)
     #----------------------------------------------------------------
     def addurl(self, request):
-        view = self.getapp('add')
+        view = self.getview('add')
         if view and self.has_add_permission(request):
             djp = view(request)
             return djp.url
         
     def deleteurl(self, request, obj):
         #TODO: change this so that we are not tide up with name
-        view = self.getapp('delete')
+        view = self.getview('delete')
         if view and self.has_delete_permission(request, obj):
             djp = view(request, instance = obj)
             return djp.url
@@ -413,7 +396,7 @@ Reimplement for custom arguments.'''
         Get the edit url if available
         '''
         #TODO: change this so that we are not tide up with name
-        view = self.getapp('edit')
+        view = self.getview('edit')
         if view and self.has_edit_permission(request, obj):
             djp = view(request, instance = obj)
             return djp.url
@@ -424,7 +407,7 @@ Reimplement for custom arguments.'''
         '''
         #TODO: change this so that we are not tide up with name
         try:
-            view = self.getapp('view')
+            view = self.getview('view')
             if view and self.has_view_permission(request, obj):
                 djp = view(request, instance = obj)
                 return djp.url
@@ -435,7 +418,7 @@ Reimplement for custom arguments.'''
         '''
         The search url for the model
         '''
-        view = self.getapp('search')
+        view = self.getview('search')
         if view and self.has_view_permission(request):
             djp = view(request)
             return djp.url

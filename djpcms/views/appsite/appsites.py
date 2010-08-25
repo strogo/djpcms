@@ -87,7 +87,7 @@ returns the application handler. If the appname is not available, it raises a Ke
             app_code = names[1]
             appmodel = self._nameregistry.get(name,None)
             if appmodel:
-                return appmodel.getapp(app_code)
+                return appmodel.getview(app_code)
         appmodel = self._nameregistry.get(appname,None)
         if appmodel is None:
             raise KeyError('Application %s not available.' % appname)

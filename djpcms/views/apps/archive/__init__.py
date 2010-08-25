@@ -17,7 +17,8 @@ class ArchiveApplication(ModelApplication):
     '''
     An application urls wich define a search and archive views
     '''
-    date_code     = None    # this must be specified in implementations
+    date_code     = None
+    '''The model field name which is used to create time archives. Must be a date or datetime field.'''
     split_days    = False
     search        = appview.ArchiveView(in_navigation = True)
     year_archive  = appview.YearArchiveView(regex = '(?P<year>\d{4})')
@@ -34,18 +35,18 @@ class ArchiveApplication(ModelApplication):
             return MONTHS_3_REV.get(month,None)
         
     def yearurl(self, request, year, **kwargs):
-        view = self.getapp('year_archive')
+        view = self.getview('year_archive')
         if view:
             return view(request, year = year, **kwargs).url
         
     def monthurl(self, request, year, month, **kwargs):
-        view  = self.getapp('month_archive')
+        view  = self.getview('month_archive')
         if view:
             month = self.get_month_value(month)
             return view(request, year = year, month = month, **kwargs).url
         
     def dayurl(self, request, year, month, day, **kwargs):
-        view = self.getapp('day_archive')
+        view = self.getview('day_archive')
         if view:
             month = self.get_month_value(month)
             return view(request, year = year, month = month, day = day, **kwargs).url

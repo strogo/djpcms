@@ -1,8 +1,4 @@
-'''
-Requires django-tagging
 
-Battery included plugins and application for tagging and tagging with archive
-'''
 from django.utils.http import urlquote
 from djpcms.views import appsite
 from djpcms.views import appview
@@ -54,7 +50,7 @@ class TagArchiveView(appview.ArchiveView):
 def add_tags(self, c, djp, obj):
     request = djp.request
     tagurls = []
-    tagview = self.getapp('tag1')
+    tagview = self.getview('tag1')
     if obj.tags and tagview:
         tags = obj.tags.split(u' ')
         for tag in tags:
@@ -65,7 +61,7 @@ def add_tags(self, c, djp, obj):
     return c
 
 def tagurl(self, request, *tags):
-    view = self.getapp('tag%s' % len(tags))
+    view = self.getview('tag%s' % len(tags))
     if view:
         kwargs = {}
         c = 1
@@ -93,7 +89,7 @@ class TagApplication(appsite.ModelApplication):
 
 class ArchiveTaggedApplication(archive.ArchiveApplication):
     '''
-    Comprehensive Tagged Archive Application urls
+    Comprehensive Tagged Archive Application urls.
     '''
     search        = appview.ArchiveView(in_navigation = True)
     year_archive  = appview.YearArchiveView(regex = '(?P<year>\d{4})')

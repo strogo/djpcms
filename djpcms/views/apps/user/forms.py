@@ -4,8 +4,6 @@ from django.contrib.auth import forms as authforms
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 
-#from djpcms.html import NewUserName, UniqueEmail
-
 
 class LoginForm(forms.Form):
     '''
