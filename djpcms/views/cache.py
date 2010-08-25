@@ -11,6 +11,10 @@ class PageCache(object):
         self._domain = None
         self.applications_url = None
         
+    def clear(self, request):
+        cache.clear()
+        request.session['application-urls-built'] = 0
+        
     @property
     def domain(self):
         if not self._domain:

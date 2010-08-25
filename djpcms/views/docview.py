@@ -13,47 +13,41 @@ from djpcms.views.appsite import ApplicationBase
 from djpcms.views.appview import AppViewBase
 from djpcms.views.regex import RegExUrl
 
-
+    
 class DocView(AppViewBase):
     editurl          = None
     
-    def __init__(self, app, parent = None):
-        AppViewBase.__init__(self, parent = parent)
+    def __init__(self, app, parent = None, lang = False, version = False):
+        super(DocView,self).__init__(app)
+        self.lang    = lang
+        self.version = version
+        self.__root  = not parent
         self.appmodel = app
-        
-class Index(DocView):
-    
-    def __init__(self, app):
-        super(Index,self).__init__(app)
-    
-    def __call__(self, request, *args, **kwargs):
-        a = self.appmodel
-        return http.HttpResponseRedirect('%s%s/%s/' % (a.baseurl,a.deflang,a.defversion))
     
     def isroot(self):
-        return True
+        return self.__root
+    
+    def get_url(self, djp, **urlargs):
+        lang = urlargs.get('lang','')
+        vers = urlargs.get('version','')
+        urls = urlargs.get('url','')
+        url  = self.appmodel.baseurl
+        if lang:
+            url = '%s/%s/' % (url,lang)
+        if vers:
+            url = '%s/%s/' % (url,vers)
+        if urls:
+            url = '%s/%s/' % (url,urls.strip('/'))
+        return url
 
-class Language(DocView):
-    
-    def __init__(self, app, parent):
-        super(Language,self).__init__(app,parent)
-    
-    def __call__(self, request, lang, *args, **kwargs):
-        a = self.appmodel
-        return http.HttpResponseRedirect('%s%s/%s/' % (a.baseurl,lang,a.defversion))
-
-class Document(DocView):
-    
-    def __init__(self, app, parent):
-        super(Document,self).__init__(app,parent)
-    
     def handle_response(self, djp):
+        app     = self.appmodel
         request = djp.request
         args    = djp.urlargs
         page    = djp.page
-        lang    = args.get('lang')
-        version = args.get('version')
-        url     = args.get('url')
+        lang    = args.get('lang',app.deflang)
+        version = args.get('version',app.defversion)
+        url     = args.get('url','')
         docroot = self.appmodel.get_docroot(lang, version)
     
         # First look for <bits>/index.fpickle, then for <bits>.fpickle
@@ -72,7 +66,7 @@ class Document(DocView):
                           '%s/docs/%s.html' % (name,namet),
                           '%s/docs/doc.html' % name,
                           'docs/%s.html' % namet, 
-                          'docs/doc.html'
+                          'docs/doc.html',
                           ]
         c = {
              'djp':     djp,
@@ -92,27 +86,53 @@ class Document(DocView):
                                   RequestContext(request,c))
         
 
-
 class DocApplication(ApplicationBase):
     deflang          = 'en'
     defversion       = 'dev'
     DOCS_PICKLE_ROOT = None
     
     def __init__(self, baseurl, application_site, editavailable):
-        '''
-        Create a tuple of urls
-        '''
-        super(DocApplication,self).__init__(baseurl, application_site, editavailable)       
-        self.root_application   = Index(self)
-        self.language           = Language(self,self.root_application)
-        self.document           = Document(self,self.language)
-        self.urls = (url(r'^$', self.root_application),
-                     url(r'^(?P<lang>[a-z-]+)/$', self.language),
-                     url(r'^(?P<lang>[a-z-]+)/(?P<version>[\w.-]+)/$',
-                         self.document, {'url': ''},  name = '%s_index' % self.name),
-                     url(r'^(?P<lang>[a-z-]+)/(?P<version>[\w.-]+)/(?P<url>[\w./-]*)/$',
-                         self.document, name = '%s_details' % self.name),
-                    )
+        '''Create a tuple of urls'''
+        super(DocApplication,self).__init__(baseurl, application_site, editavailable)
+        urls = ()
+        appview                 = DocView(self)
+        self.root_application   = appview
+        self.language = None
+        self.version  = None
+        #self.urls = (url(r'^$', self.root_application),
+        #             url(r'^(?P<lang>[a-z-]+)/$', self.language),
+        #             url(r'^(?P<lang>[a-z-]+)/(?P<version>[\w.-]+)/$',
+        #                 self.document, {'url': ''},  name = '%s_index' % self.name),
+        #             url(r'^(?P<lang>[a-z-]+)/(?P<version>[\w.-]+)/(?P<url>[\w./-]*)/$',
+        #                 self.document, name = '%s_details' % self.name),
+        #            )
+        if self.deflang:
+            appview  = DocView(self,appview,lang=True)
+            self.language = appview
+            urls = url(r'^(?P<lang>[a-z-]+)/$',
+                       self.language,
+                       {'url': ''},
+                       name = '%s_lang' % self.name),
+        if self.defversion:
+            appview = DocView(self,appview,version=True)
+            self.version = appview
+            urls += url(r'^(?P<lang>[a-z-]+)/(?P<version>[\w.-]+)/$',
+                         self.version,
+                         {'url': ''},
+                         name = '%s_version' % self.name),
+        purl = ''
+        if urls:
+            urls = (url(r'^$', self.root_application),) + urls
+            if self.language:
+                purl = '(?P<lang>[a-z-]+)/'
+            if self.version:
+                purl += '(?P<version>[\w.-]+)/'
+        urls += url(r'^%s(?P<url>[\w./-]*)/$' % purl,
+                    appview,
+                    {'url': ''},
+                    name = '%s_details' % self.name),
+        self.urls = urls
+            
     
     def get_root_code(self):
         return self.name

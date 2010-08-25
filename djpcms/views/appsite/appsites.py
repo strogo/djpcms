@@ -57,15 +57,13 @@ class ApplicationSite(object):
                 # Instantiate the admin class to save in the registry
                 if model in self._registry:
                     raise ValueError('Model %s already registered as application' % model)
-                appmodel = application_class(baseurl, self, editavailable, model)
-                if appmodel.name in self._nameregistry:
+                app = application_class(baseurl, self, editavailable, model)
+                if app.name in self._nameregistry:
                     raise ValueError('Model %s already registered as application' % model)
-                self._registry[model] = appmodel
-                self._nameregistry[appmodel.name] = appmodel
+                self._registry[model] = app
+                self._nameregistry[app.name] = app
         else:
             app = application_class(baseurl, self, editavailable)
-            if not app.name:
-                raise ValueError('Application %s without a name' % app)
             if app.name in self._nameregistry:
                 raise ValueError('Application %s already registered as application' % app.name)
             self._nameregistry[app.name] = app
@@ -80,10 +78,8 @@ class ApplicationSite(object):
         return self._registry.get(model,None)
             
     def getapp(self, appname):
-        '''
-        Given a appname in the form of app_label-model_name-app_code
-        returns the application handler
-        '''
+        '''Given a *appname* in the form of appname-appview
+returns the application handler. If the appname is not available, it raises a KeyError'''
         from django.db import models
         names = appname.split('-')
         if len(names) == 2:
@@ -94,7 +90,7 @@ class ApplicationSite(object):
                 return appmodel.getapp(app_code)
         appmodel = self._nameregistry.get(appname,None)
         if appmodel is None:
-            raise ValueError('Application name %s not recognized' % appname)
+            raise KeyError('Application %s not available.' % appname)
         return appmodel.root_application
     
     def count(self):

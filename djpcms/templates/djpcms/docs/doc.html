@@ -2,7 +2,7 @@
 
 {% block page-body %}
 <div class="{{ grid.container_class }}">
-<div class="{{ grid.column_2_3 }}">
+<div class="{{ grid.column_2_3 }}">{% if version %}
   <h2 class="deck">
   {% ifequal version "dev" %}
     This document is for djpcms's SVN release. Currently there are no
@@ -11,7 +11,7 @@
     This document describes {{ cl.name }} version {{ version }}. For development documentation, 
     <a href="">go here</a>.
   {% endifequal %}
-  </h2>
+  </h2>{% endif %}
   {{ doc.body|safe }}
 </div>
 <div class="{{ grid.column_1_3 }}">

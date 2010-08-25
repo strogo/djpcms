@@ -16,7 +16,7 @@ from django import forms
 from django.forms.models import modelform_factory
 
 from djpcms.conf import settings
-from djpcms.utils import form_kwargs, UnicodeObject
+from djpcms.utils import form_kwargs, UnicodeObject, slugify
 from djpcms.utils.forms import add_hidden_field
 from djpcms.plugins import register_application
 from djpcms.utils.html import formlet, submit, form
@@ -73,6 +73,15 @@ class ApplicationBase(object):
         self.editavailable    = editavailable
         self.root_application = None
         self.__baseurl = baseurl
+        self.name      = self._makename()
+        
+    def _makename(self):
+        cls = self.__class__
+        name = cls.name
+        if not name:
+            name = cls.__name__
+        name = name.replace('-','_').lower()
+        return str(slugify(name,rtx='_'))
     
     @property
     def ajax(self):
@@ -164,7 +173,6 @@ of objects. Default is ``None``.'''
         super(ModelApplication,self).__init__(baseurl, application_site, editavailable)
         self.model            = model
         self.opts             = model._meta
-        self.name             = self.name or self.opts.module_name
         self.applications     = deepcopy(self.base_applications)
         self.edits            = []
         self.parent_url       = None

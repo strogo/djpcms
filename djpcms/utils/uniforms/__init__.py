@@ -54,14 +54,15 @@ def render_form_field(form, field):
 
 
 class FormLayout(object):
-    '''
-Form Layout, add fieldsets, rows, fields and html
+    '''Form Layout, add fieldsets, rows, fields and html.
+Valid key-value arguments are (all optionals):
+* *template*: a template file name.
 
 example:
 
->>> layout = Layout(Fieldset('', 'is_company'),
-... Fieldset(_('Contact details'),
-... 'email',
+>>> layout = Layout(
+... Fieldset('', 'is_company'),
+... Fieldset('email',
 ... Row('password1','password2'),
 ... 'first_name',
 ... 'last_name',

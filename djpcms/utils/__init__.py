@@ -166,3 +166,13 @@ def form_kwargs(request, instance = None, withrequest = False, withdata = True, 
     if instance:
         kwargs['instance'] = instance
     return kwargs
+
+
+def slugify(value, rtx = '-'):
+    import re
+    import unicodedata
+    '''Normalizes string, removes non-alpha characters,
+and converts spaces to hyphens *rtx* character'''
+    value = unicodedata.normalize('NFKD', unicode(value)).encode('ascii', 'ignore')
+    value = unicode(re.sub('[^\w\s-]', '', value).strip())
+    return mark_safe(re.sub('[-\s]+', rtx, value))

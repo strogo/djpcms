@@ -9,3 +9,19 @@ Application for Sphinx Documentation
 To create an application which display sphinx documentation::
 
 	from djpcms.views.docview import DocApplication
+	
+	class MyProjectDocs(DocApplication):
+	    name = 'myprojectdocs'
+	
+	
+In order to display documentation you need to create a template directory.
+In our example, ``djpcms`` will look into the following directories::
+
+	['myprojectdocs/%s.html' % pagename,
+	 'myprojectdocs/doc.html',
+	 'docs/%s.html' % pagename,
+	 'docs/doc.html']
+	 
+where ``pagename`` is the sphinx page name (*index*, *contents*, and so forth).
+To get started quickly,
+cut and past the entire ``docs`` directory in :file:`djpcms/templates/djpcms`.

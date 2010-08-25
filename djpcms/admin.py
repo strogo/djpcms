@@ -4,27 +4,48 @@ from django.contrib import admin
 from django.contrib.sites.models import Site
 from django.shortcuts import get_object_or_404, render_to_response
 from django.utils.encoding import force_unicode
+try:
+    from django.contrib import messages
+except:
+    messages = None
 #from django.views.decorators.csrf import csrf_protect
 #from django.contrib.admin.util import display_for_field, label_for_field
 
 from djpcms import models
 from djpcms.forms import PageForm
 from djpcms.utils.ajax import simplelem
+from djpcms.views.cache import pagecache
+
+class SafeModelAdmin(admin.ModelAdmin):
+    
+    def save_model(self, request, obj, form, change):
+        try:
+            obj = super(SafeModelAdmin,self).save_model(request, obj, form, change)
+        except Exception, e:
+            if messages:
+                messages.error(request, 'Could not save: %s' % str(e))
+        pagecache.clear(request)
+        return obj
+
 
 class AdditionalPageDataInline(admin.TabularInline):
     model = models.AdditionalPageData
     
-class BlockContentAdmin(admin.ModelAdmin):
-    list_display = ('page','block','position','plugin_name')
-    list_filter = ('page', 'block')
-    
+
 class SiteContentAdmin(admin.ModelAdmin):
     list_display = ('code','last_modified','user_last','markup')
     
-class InnerTemplateAdmin(admin.ModelAdmin):
+    
+class BlockContentAdmin(SafeModelAdmin):
+    list_display = ('page','block','position','plugin_name')
+    list_filter = ('page', 'block')
+    
+    
+class InnerTemplateAdmin(SafeModelAdmin):
     list_display = ('name','numblocks','blocks','image')
 
-class PageAdmin(admin.ModelAdmin):
+
+class PageAdmin(SafeModelAdmin):
     list_display        = ('url','application','in_navigation','link','redirect_to','requires_login','inner_template', 'cssinfo',
                            'is_published','get_template','level')
     inlines             = [AdditionalPageDataInline]
