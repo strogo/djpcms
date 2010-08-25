@@ -1,15 +1,14 @@
-from django.forms.models import inlineformset_factory
+from djpcms.utils import form_kwargs, force_unicode
 
-from djpcms.utils import form_kwargs
-
-class FormInlineHelper(object):
-    '''Inline formset helper'''
+class ModelFormInlineHelper(object):
+    '''Inline formset helper for model with foreign keys.'''
     def __init__(self, parent_model, model, legend = None, **kwargs):
+        from django.forms.models import inlineformset_factory
         self.parent_model = parent_model
         self.model   = model
         self.legend  = None
         if legend is not False:
-            self.legend = legend or model._meta.verbose_name_plural
+            self.legend = legend or force_unicode(model._meta.verbose_name_plural)
         self.FormSet = inlineformset_factory(parent_model, model, **kwargs)
         
     def get_default_prefix(self):
@@ -42,3 +41,4 @@ class FormsetWrap(object):
             if fk and fk.name == name:
                 continue
             yield field
+

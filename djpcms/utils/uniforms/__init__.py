@@ -12,6 +12,7 @@ from django.utils.safestring import mark_safe
 from django.forms import *
 
 from djpcms.utils.ajax import jhtmls
+from djpcms.utils.uniforms.uniformset import ModelFormInlineHelper
 
 
 inlineLabels = 'inlineLabels'
@@ -82,7 +83,10 @@ example:
                 setattr(self,field.key,field)
 
     def render(self, form, formsets = None, inputs = None):
-        '''Render the uniform layout'''
+        '''Render the uniform layout:
+* *form* a form instance.
+* *formsets* a string which render inline formsets.
+* *inputs* safe string which render the submit inputs.'''
         ctx  = {}
         html = ''
         for field in self._allfields:
@@ -192,7 +196,18 @@ class HtmlForm(FormElement):
 
 
 class FormHelper(object):
-    '''Main uniformclass used to inject layout and other properties to raw forms.'''
+    '''Main uniform class used to inject layout and other properties to raw forms.
+example::
+
+    class StrategyForm(forms.Form):
+        pass
+        
+example with inlines::
+
+    class StrategyForm(fforms.ModelForm):
+        helper = FormHelper()
+        helper.inlines.append(LegForm)
+'''
     def __init__(self, enctype = 'multipart/form-data'):
         self.attr = {}
         self.attr['method']  = 'post'
