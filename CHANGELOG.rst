@@ -6,7 +6,8 @@ Changelog
 
 Version 0.7.2 - Trunk
 ==============================
- * Removed obsolete code in ``plugins``
+ * Removed obsolete code in ``plugins``.
+ * Fixed bug in 
  
  
 Version 0.7.1 (2010-Aug-24)

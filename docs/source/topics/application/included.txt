@@ -1,0 +1,31 @@
+.. _applications-included:
+
+.. module:: djpcms.views.apps
+
+====================================
+Included Model Applications
+====================================
+
+
+.. _included-archiveapplication:
+
+.. module:: djpcms.views.apps.archive
+
+Archive Application
+======================
+
+.. autoclass:: djpcms.views.apps.archive.ArchiveApplication
+   :members:
+   :member-order: bysource
+   
+
+.. _included-taggingapplication:
+   
+.. module:: djpcms.views.apps.tagging
+
+Tagging Application
+======================
+
+.. autoclass:: djpcms.views.apps.tagging.TaggingApplication
+   :members:
+   :member-order: bysource

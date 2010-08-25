@@ -1,0 +1,11 @@
+.. _applications-docs:
+
+.. module:: djpcms.views.docview
+
+========================================
+Application for Sphinx Documentation
+========================================
+
+To create an application which display sphinx documentation::
+
+	from djpcms.views.docview import DocApplication

@@ -9,9 +9,9 @@ Applications
 Applications are subclasses of ``ApplicationBase``
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
    base
    model
-   archive
-   tagging
+   documentation
+   included

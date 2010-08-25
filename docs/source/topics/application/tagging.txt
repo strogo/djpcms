@@ -1,6 +1,0 @@
-
-.. module:: djpcms.views.apps.tagging
-
-======================
-Tagging Applications
-======================

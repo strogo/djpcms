@@ -1,3 +1,6 @@
+.. _applications-model:
+
+.. module:: djpcms.views.appsite
 
 ======================
 Model Application
