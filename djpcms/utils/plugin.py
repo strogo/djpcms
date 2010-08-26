@@ -3,28 +3,7 @@ import glob
 import logging
 
 from django.utils.text import capfirst
-from djpcms.utils import UnicodeObject, force_unicode
-
-
-class PluginBase(UnicodeObject):
-    virtual       = False
-    name          = None
-    description   = None
-    storage       = None
-        
-    def __unicode__(self):
-        return self.description
-    
-    def register(self):
-        if self.name is None:
-            return self
-        storage = self.storage
-        if not storage.has_key(self.name):
-            description = self.description or self.name
-            self.description   = force_unicode(capfirst(description.replace('_',' ')))
-            storage[self.name] = self
-        return self
-            
+from djpcms.utils import UnicodeObject, force_unicode            
 
 def expand_star(mod_name):
     """
@@ -36,7 +15,6 @@ def expand_star(mod_name):
     for f in glob.glob1(mod_dir, "[!_]*.py"):
         expanded.append('%s.%s' % (mod_name[:-2], f[:-3]))
     return expanded
-
 
 def loadobjects(plist, BaseClass):
     '''
@@ -57,8 +35,9 @@ def loadobjects(plist, BaseClass):
             else:
                 for name in dir(mod):
                     kclass = getattr(mod, name)
-                    if isinstance(kclass,metaclass) and not kclass == BaseClass and not kclass.virtual:
-                        kclass().register()
+                    if isinstance(kclass,metaclass) and not kclass.virtual:
+                        if not getattr(kclass,'auto_register',True):
+                            kclass().register()
 
 
 

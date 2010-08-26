@@ -58,9 +58,8 @@ def get_stats():
 
 class Index(AppViewBase):
     
-    def __init__(self, app, parent = None):
-        AppViewBase.__init__(self, parent = parent)
-        self.appmodel = app
+    def __init__(self, **kwargs):
+        AppViewBase.__init__(self, **kwargs)
         
     def render(self, djp, **kwargs):
         try:
@@ -75,12 +74,12 @@ class Index(AppViewBase):
         except:
             return 'Memcached not installed'
     
+    
 class Flush(AppViewBase):
     _methods      = ('post',)
     
-    def __init__(self, app, parent = None):
-        AppViewBase.__init__(self, parent = parent)
-        self.appmodel = app
+    def __init__(self, regex = 'flush', **kwargs):
+        super(Flush,self).__init__(regex = regex, **kwargs)
         
     def default_post(self, djp):
         try:
@@ -94,14 +93,7 @@ class Flush(AppViewBase):
 
 
 class MemcacheApplication(ApplicationBase):
-    name = 'memcache-monitor'
-    
-    def __init__(self, baseurl, application_site, editavailable):
-        super(MemcacheApplication,self).__init__(baseurl, application_site, editavailable)       
-        self.root_application   = Index(self)
-        self.flush              = Flush(self,self.root_application)
-        register_application(self.root_application,'memcache-monitor','Memcached Monitor')
-        self.urls = (url(r'^$', self.root_application),
-                     url(r'^flush/$', self.flush),
-                    )
+    name = 'memcache_monitor'
+    index = Index(isplugin = True)
+    flush = Flush()
 

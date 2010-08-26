@@ -69,6 +69,8 @@ class ApplicationBase(object):
     
     name             = None
     '''Application name. Default ``None``, calculated from class name.'''
+    description      = None
+    '''Application description. Default ``None``, calculated from name.'''
     authenticated    = True
     '''True if authentication is required. Default ``True``.'''
     has_api          = False
@@ -82,6 +84,7 @@ class ApplicationBase(object):
         self.root_application = None
         self.__baseurl        = baseurl
         self.name             = self._makename()
+        self.description      = self._makedescription()
         self.views            = deepcopy(self.base_views)
         self._create_views()
         urls = []
@@ -130,6 +133,9 @@ class ApplicationBase(object):
             name = cls.__name__
         name = name.replace('-','_').lower()
         return str(slugify(name,rtx='_'))
+    
+    def _makedescription(self):
+        return self.description or self.name
     
     def _get_view_name(self, name):
         if not self.baseurl:

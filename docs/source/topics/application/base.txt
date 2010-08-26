@@ -6,3 +6,16 @@ ApplicationBase
 .. autoclass:: djpcms.views.appsite.ApplicationBase
    :members:
    :member-order: groupwise
+   
+   
+======================
+Application Views
+======================
+Applications views are subclasses of :class:`djpcms.views.baseview.djpcmsview` with
+the additional feature af beeing part of an :class:`ApplicationBase` class.
+The base class for this view is :class:`AppViewBase`.
+
+
+.. autoclass:: djpcms.views.appview.AppViewBase
+   :members:
+   :member-order: bysource

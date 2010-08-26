@@ -10,17 +10,17 @@ from djpcms.utils.ajax import jredirect
 from forms import LoginForm
 
 
-__all__ = ['LogoutApp','LoginApp']
+__all__ = ['LogoutView','LoginView']
 
 
-class LogoutApp(appview.AppView):
+class LogoutView(appview.AppView):
     '''
     Logs out a user, if there is an authenticated user :)
     '''
     _methods = ('get',)
     
     def __init__(self, regex = 'logout', parent = None):
-        super(LogoutApp,self).__init__(regex = regex, parent = parent, isapp = False, insitemap = False)
+        super(LogoutView,self).__init__(regex = regex, parent = parent, isapp = False, insitemap = False)
         
     def preget(self, djp):
         request = djp.request
@@ -33,13 +33,13 @@ class LogoutApp(appview.AppView):
 
 
 
-class LoginApp(appview.AppView):
+class LoginView(appview.AppView):
     '''
     A Battery included Login view.
     This object can be used to login users
     '''
     def __init__(self, regex = 'login', parent = None, insitemap = False, **kwargs):
-        super(LoginApp,self).__init__(regex = regex, parent = parent,
+        super(LoginView,self).__init__(regex = regex, parent = parent,
                                       insitemap = insitemap, **kwargs)
         
     def title(self, page, **kwargs):

@@ -1,21 +1,18 @@
 import os
-
-from django.utils.importlib import import_module
 from django.conf.urls.defaults import *
 
 import djpcms
 from djpcms.conf import settings
 from djpcms.views import appsite
 from djpcms.sitemap import get_site_maps
+from djpcms.utils.importlib import import_module, import_modules
 
 if not settings.DEBUG:
     handler404 = 'djpcms.views.specials.http404view'
     handler500 = 'djpcms.views.specials.http500view'
-
-from djpcms.plugins import loadplugins, loadwrappers
     
-plugin_urls = loadplugins(settings.DJPCMS_PLUGINS)
-loadwrappers(settings.DJPCMS_WRAPPERS)
+import_modules(settings.DJPCMS_PLUGINS)
+import_modules(settings.DJPCMS_WRAPPERS)
 
 site_urls = ()
 
@@ -77,8 +74,6 @@ if settings.SERVE_STATIC_FILES and settings.MEDIA_URL:
 # Sitemap
 site_urls      += (r'^sitemap.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': get_site_maps()}),
 
-# Plugins
-site_urls      += plugin_urls
 
 if settings.CONTENT_INLINE_EDITING['available']:
     edit = settings.CONTENT_INLINE_EDITING['preurl']

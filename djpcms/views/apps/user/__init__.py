@@ -6,5 +6,5 @@ class UserApplication(appsite.ModelApplication):
     name    = 'account'
     baseurl = '/accounts/'
     home    = appview.AppView()
-    login   = LoginApp(isplugin = True, parent = 'home')
-    logout  = LogoutApp(parent = 'home')
+    login   = LoginView(isplugin = True, parent = 'home')
+    logout  = LogoutView(parent = 'home')

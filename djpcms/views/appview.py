@@ -31,7 +31,11 @@ class pageinfo(object):
 
 
 class AppViewBase(djpcmsview):
-    '''Base view class for application views.'''
+    '''Base view class for application views.
+    
+* ``name`` name of view.
+* ``parent`` instance of :class:`AppViewBase` or None.
+* ``isplugin`` if ``True`` the view can be rendered as :class:`djpcms.plugins.DJPplugin`.'''
     creation_counter = 0
     
     def __init__(self,
@@ -44,9 +48,11 @@ class AppViewBase(djpcmsview):
                  isplugin   = False,
                  in_navigation = False,
                  template_name = None,
+                 description = None,
                  ajax_views = None):
-        self.__page    = None
-        self.name      = name
+        self.__page      = None
+        self.name        = name
+        self.description = description
         self.parent    = parent
         self.isapp     = isapp
         self.isplugin  = isplugin

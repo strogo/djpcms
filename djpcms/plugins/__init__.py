@@ -3,14 +3,16 @@ import logging
 import copy
 
 from django import http, forms
-from djpcms.utils.plugin import PluginBase, loadobjects
-from djpcms.utils import json, form_kwargs, mark_safe
+from django.utils.text import capfirst
+
+from djpcms.utils import UnicodeObject, force_unicode, json, form_kwargs, mark_safe
 from djpcms.utils.formjson import form2json
 from djpcms.utils.deco import response_wrap
 
 _plugin_dictionary = {}
 _wrapper_dictionary = {}
 
+nicename = lambda name : force_unicode(capfirst(name.replace('-',' ').replace('_',' ')))
 
 def ordered_generator(di):
     def cmp(x,y):
@@ -24,45 +26,32 @@ def ordered_generator(di):
 
 def plugingenerator():
     return ordered_generator(_plugin_dictionary)
+      
         
 def wrappergenerator():
     return ordered_generator(_wrapper_dictionary)
+      
         
 def get_plugin(name, default = None):
     return _plugin_dictionary.get(name,default)
 
+
 def get_wrapper(name, default = None):
     return _wrapper_dictionary.get(name,default)
 
+
 def register_application(app, name = None, description = None):
     '''Register an application view as a plugin
-    app is instance of an application view
-    '''
+* *app* is an instance of an :class:`djpcms.views.appview.AppViewBase`
+* *name* name for this plugin'''
+    global _plugin_dictionary
     if hasattr(app,'get_plugin'):
         p = app.get_plugin()
     else:
-        p = ApplicationPlugin(app,name,description)
-    media = p.media + app.get_media()
-    p.__class__.media = media
-    p.register()
-
-
-def loadplugins(plist):
-    '''Load plugins into the global plugin dictionary
-    '''
-    EmptyPlugin().register()
-    ThisPlugin().register()
-    loadobjects(plist,DJPplugin)
-    urls = []
-    for p in _plugin_dictionary.values():
-        if p.URL:
-            urls.append((r'^%s' % p.URL.lstrip('/'), p.response))
-    #urls.append((r'^%s([\w/-]*)' % settings.DJPCMS_PLUGIN_BASE_URL.lstrip('/'), generic_plugin_response))
-    return tuple(urls)
-
-
-def loadwrappers(plist):
-    loadobjects(plist,DJPwrapper)
+        p = ApplicationPlugin(app)
+    #media = p.media + app.get_media()
+    #p.__class__.media = media
+    #p.register()
 
 
 @response_wrap
@@ -80,30 +69,46 @@ def generic_plugin_response(request, url):
         return plugin.response(request, *tuple(bits))
 
 
-
-
-
 ####    IMPLEMENTATION
 
-class DJPpluginMeta(forms.MediaDefiningClass):
+class DJPpluginMetaBase(forms.MediaDefiningClass):
     '''
     Just a metaclass to differentiate plugins from other calsses
     '''
-    pass
+    def __new__(cls, name, bases, attrs):
+        new_class = super(DJPpluginMetaBase, cls).__new__
+        if attrs.pop('virtual',None) or not attrs.pop('auto_register',True):
+            return new_class(cls, name, bases, attrs)
+        pname = attrs.get('name',None)
+        if not pname:
+            pname = name
+        pname = pname.lower()
+        descr = attrs.get('description',None)
+        if not descr:
+            descr = pname
+        attrs['name'] = pname
+        attrs['description'] = nicename(descr)
+        pcls = new_class(cls, name, bases, attrs)
+        pcls()._register()
+        return pcls
 
-class DJPwrapperMeta(type):
+
+class DJPpluginMeta(DJPpluginMetaBase):
     '''
-    Just a metaclass to differentiate wrapper from other calsses
+    Just a metaclass to differentiate plugins from other classes
     '''
-    pass
+
+class DJPwrapperMeta(DJPpluginMetaBase):
+    '''
+    Just a metaclass to differentiate wrapper from other classes
+    '''
 
 
-class DJPwrapper(PluginBase):
+class DJPwrapper(UnicodeObject):
     '''Class responsible for wrapping :ref:`djpcms plugins <plugins-class>`.
     '''
     __metaclass__ = DJPwrapperMeta
     form_layout   = None
-    storage       = _wrapper_dictionary
 
     def wrap(self, djp, cblock, html):
         '''Wrap content for block cblock
@@ -126,20 +131,33 @@ class DJPwrapper(PluginBase):
         return mark_safe(u'\n'.join(['<div class="djpcms-block-element">',
                                      self.wrap(djp, cblock, html),
                                      '</div>']))
+    
+    def _register(self):
+        global _wrapper_dictionary
+        _wrapper_dictionary[self.name] = self
 
 
-class DJPplugin(PluginBase):
-    '''Base class for Plugins.
+class DJPplugin(UnicodeObject):
+    '''Base class for Plugins. These classes are used to display contents on a ``djpcms`` powered site.
 The basics:
     
-* A Plug-in is dynamic application.
-* It is rendered within a djpcms content block and each content block display a plugin.
-* It can define style and javascript to include in the page.
+* A Plugin is dynamic application.
+* It is rendered within a :class:`DJPwrapper` and each :class:`DJPwrapper` displays a plugin.
+* It can define style and javascript to include in the page, in a static way (as a ``meta`` property of the class) or in a dynamic way by member functions.
 * It can have parameters to control its behaviour.'''
-    
     __metaclass__ = DJPpluginMeta
+    
+    virtual       = True
+    '''If set to true, the class won't be registered with the plugin's dictionary. Default ``False``.'''
+    name          = None
+    '''Unique name. If not provided the class name will be used. Default ``None``.'''
+    description   = None
+    '''A short description to display in forms.'''
     form          = None
-    withrequest   = False
+    '''Form class for editing the plugin. Default ``None``, the plugin has no arguments.'''
+    form_withrequest = False
+    '''Equivalent to :attr:`djpcms.views.appsite.ModelApplication.form_withrequest`. If set to ``True``,
+    the ``request`` instance is passed to the form constructor. Default is ``False``.'''
     edit_form     = False
     storage       = _plugin_dictionary
     URL           = None
@@ -164,7 +182,8 @@ The basics:
             return {}
         
     def processargs(self, kwargs):
-        '''You can use this hook to perform pre-processing on parameters
+        '''You can use this hook to perform pre-processing on plugin parameters if :attr:`form` is set.
+By defult do nothing.
         '''
         return kwargs
     
@@ -177,29 +196,35 @@ The basics:
             return self.edit_form(djp, **kwargs)
     
     def render(self, djp, wrapper, prefix, **kwargs):
-        '''Render the plugin. It returns a safe string to be included in the HTML page.'''
+        '''Render the plugin. It returns a safe string to be included in the HTML page.
+This is the function plugins need to implement.
+
+* *djp* instance of :class:`djpcms.views.response.DjpResponse`.
+* *wrapper* :class:`DJPwrapper` instance which wraps the plugin.
+* *prefix* a prefix string or ``None`` to use for forms within the plugin.
+* *kwargs* plugin specific key-valued arguments.'''
         return u''
     
     def save(self, pform):
         return form2json(pform)
     
     def get_form(self, djp, args = None):
-        '''Return an instance of a form or None. Used to edit the plugin when in editing mode.
+        '''Return an instance of a :attr:`form` or `None`. Used to edit the plugin when in editing mode.
+Usually, there is no need to override this function. If your plugin needs input parameters when editing, simple set the
+:attr:`form` attribute.
         '''
         initial = self.arguments(args) or None
         if self.form:
             return self.form(**form_kwargs(request = djp.request,
                                            initial = initial,
-                                           withrequest = self.withrequest))
+                                           withrequest = self.form_withrequest))
             
     def response(self, request, *bits):
         raise http.Http404
     
-    
-    
-           
-class SimpleWrap(DJPwrapper):
-    name         = 'simple no-tag'
+    def _register(self):
+        global _plugin_dictionary
+        _plugin_dictionary[self.name] = self
     
 
 class EmptyPlugin(DJPplugin):
@@ -227,20 +252,18 @@ class ThisPlugin(DJPplugin):
 class ApplicationPlugin(DJPplugin):
     '''Plugin formed by application views
     '''
+    auto_register = False
+    
     def __init__(self, app, name = None, description = None):
+        global _plugin_dictionary
         self.app  = app
-        try:
-            opts = app.appmodel.model._meta
-        except:
-            opts = None
         if not name:
-            self.name = '%s %s' % (app.appmodel.name,app.name)
-        else:
-            self.name = name
+            name = '%s-%s' % (app.appmodel.name,app.name)
         if not description:
-            self.description = u'%s %s' % (opts.verbose_name, app.name)
-        else:
-            self.description = description
+            description = app.description or name
+        self.name = name
+        self.description = nicename(description)
+        _plugin_dictionary[self.name] = self
     
     def render(self, djp, wrapper, prefix, **kwargs):
         app  = self.app
@@ -274,6 +297,8 @@ class ApplicationPlugin(DJPplugin):
         #else:
         #    return ''
     
-                    
 
-default_content_wrapper = SimpleWrap().register()
+class SimpleWrap(DJPwrapper):
+    name         = 'simple no-tags'
+
+default_content_wrapper = SimpleWrap()
