@@ -1,12 +1,10 @@
 import datetime
 
 from django import http
-from django.shortcuts import render_to_response
-from django.template import loader, RequestContext
-from django.utils.safestring import mark_safe
 from django.conf.urls.defaults import url
 
-from djpcms.utils import json 
+from djpcms.utils import mark_safe, json 
+from djpcms.template import loader
 from djpcms.utils.unipath import FSPath as Path
 from djpcms.views.baseview import djpcmsview, htmltype, build_base_context
 from djpcms.views.appsite import ApplicationBase
@@ -22,7 +20,7 @@ class DocView(AppViewBase):
         self.lang    = lang
         self.version = version
     
-    def get_url(self, djp, **urlargs):
+    def old_get_url(self, djp, **urlargs):
         lang = urlargs.get('lang','')
         vers = urlargs.get('version','')
         urls = urlargs.get('url','')
@@ -58,9 +56,8 @@ class DocView(AppViewBase):
         name  = self.appmodel.name
         namet = '-'.join([b for b in bits if b])
         template_names = [
-                          '%s/docs/%s.html' % (name,namet),
-                          '%s/docs/doc.html' % name,
-                          'docs/%s.html' % namet, 
+                          'docs/%s.html' % namet,
+                          'djpcms/docs/%s.html' % namet,
                           'docs/doc.html',
                           ]
         c = build_base_context(djp)
@@ -82,14 +79,18 @@ class DocView(AppViewBase):
              'grid':          self.grid960(page)
              })
         
-        return djp.render_to_response(c, template_file = template_names)
+        return loader.render_to_string(template_names, c)
         
 
 class DocApplication(ApplicationBase):
     deflang          = 'en'
     defversion       = 'dev'
     DOCS_PICKLE_ROOT = None
+    document = DocView() 
     
+    def __init__(self, baseurl, application_site, editavailable):
+        super(DocApplication,self).__init__(baseurl, application_site, False)
+        
     def old__init__(self, baseurl, application_site, editavailable):
         '''Create a tuple of urls'''
         super(DocApplication,self).__init__(baseurl, application_site, editavailable)

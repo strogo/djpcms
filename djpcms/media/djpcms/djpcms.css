@@ -105,6 +105,9 @@ ul.menu li.selected ul li.selected a {background: rgb(245,245,245);}
 	padding: 5px 10px;
 	margin: 0;
 }
+.edit-contentblock {
+	margin-bottom: 20px;
+}
 .edit-contentblock .hd textarea {
 	width: 100%;
 }
@@ -244,22 +247,6 @@ div.djpcms-comment.djpcms-html-box .bd {
 }
 .djpcms-comment .head span {
 	color: rgb(120,120,120);
-}
-
-/* Documentation
------------------------------------------------------------------------*/
-.documentation h2, .documentation h3, .documentation h4 {
-	margin-top:1.4em;
-}
-.documentation :hover > a.headerlink {
-	visibility:visible;
-}
-.documentation a.headerlink {
-	color:#C60F0F;
-	font-size:0.8em;
-	padding:0 4px;
-	text-decoration:none;
-	visibility:hidden;
 }
 
 /* IMAGE PLUGIN WIDTH

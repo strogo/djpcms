@@ -167,7 +167,7 @@ class AppViewBase(djpcmsview):
     
     
 class AppView(AppViewBase):
-    '''Base class for model application's views
+    '''Base class for model views of :class:`djpcms.views.appsite.ModelApplication`.
     '''
     def __init__(self,
                  isapp      = True,

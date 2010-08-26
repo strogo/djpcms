@@ -126,6 +126,19 @@ class ApplicationBase(object):
         '''Return True if the page can be viewed, otherwise False'''
         return True
     
+    def parentresponse(self, djp, app):
+        '''
+        Retrive the parent view
+        '''
+        if not app.parent:
+            page = app.get_page()
+            if page:
+                page = page.parent
+                if page:
+                    app.parent = pagecache.view_from_page(djp.request, page)
+        if app.parent:
+            return app.parent(djp.request, **djp.urlargs)
+    
     def _makename(self):
         cls = self.__class__
         name = cls.name
@@ -170,9 +183,20 @@ class ApplicationBase(object):
                 self.application_site.choices.append((code,name))
             if child.isplugin:
                 register_application(child)
-        #
-        # Check for parents
-        if roots and self.root_application:
+        
+        # No root application. See if there is one candidate    
+        if roots:
+            if not self.root_application:
+                possible = []
+                for app in roots:
+                    if not app.parent:
+                        possible.append(app)
+                if len(possible) == 1:
+                    self.root_application = possible[0]
+                    roots.remove(self.root_application)
+                else:
+                    raise ApplicationUrlException("Could not define root application.")
+            
             for app in roots:
                 app.parent = self.root_application
 
@@ -560,19 +584,6 @@ This dictionary should be used to render an object within a template. It returns
     
     def permissionDenied(self, djp):
         raise PermissionDenied
-    
-    def parentresponse(self, djp, app):
-        '''
-        Retrive the parent view
-        '''
-        if not app.parent:
-            page = app.get_page()
-            if page:
-                page = page.parent
-                if page:
-                    app.parent = pagecache.view_from_page(djp.request, page)
-        if app.parent:
-            return app.parent(djp.request, **djp.urlargs)
         
     def sitemapchildren(self, view):
         return []

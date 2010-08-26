@@ -6,8 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 
 
 class LoginForm(forms.Form):
-    '''
-    The login form
+    '''The login form
     '''
     username   = forms.CharField(min_length=1,max_length=30)
     password   = forms.CharField(min_length=1,max_length=20,widget=forms.PasswordInput)
