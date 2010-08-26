@@ -68,9 +68,35 @@ class AppViewBase(djpcmsview):
         return self.appmodel.baseurl
     baseurl = property(__get_baseurl)
     
+    def get_url(self, request, **kwargs):
+        purl = self.regex.get_url(request, **kwargs)
+        return '%s%s' % (self.baseurl,purl)
+    
     def get_media(self):
         return self.appmodel.media
     
+    def in_navigation(self, request, page):
+        if self.in_nav:
+            if page:
+                return page.in_navigation
+            else:
+                return 1
+        else:
+            return 0
+        
+    def linkname(self, djp):
+        page = djp.page
+        if not page:
+            return self.appmodel.name
+        else:
+            return page.link
+        
+    def title(self, page, **urlargs):
+        if not page:
+            return self.appmodel.name
+        else:
+            return page.title
+        
     def get_ajax_response(self, djp):
         if self.ajax_views:
             data = djp.request.POST or djp.request.GET
@@ -114,12 +140,29 @@ class AppViewBase(djpcmsview):
         '''
         pass
     
+    def parentresponse(self, djp):
+        '''
+        Retrive the parent response
+        '''
+        return self.appmodel.parentresponse(djp, self)
+    
+    def processurlbits(self, appmodel):
+        '''Process url bits and store information for navigation and urls
+        '''
+        self.appmodel = appmodel
+        self.ajax     = appmodel.ajax
+        if self.parent:
+            self.regex = self.parent.regex + self.urlbit
+        else:
+            self.regex = self.urlbit
+            
+    def __deepcopy__(self, memo):
+        return copy.copy(self)  
+    
     
 class AppView(AppViewBase):
+    '''Base class for model application's views
     '''
-    Base class for application views
-    '''
-    
     def __init__(self,
                  isapp      = True,
                  splitregex = True,
@@ -135,58 +178,15 @@ class AppView(AppViewBase):
         return self.appmodel.model
     model = property(fget = __get_model)
     
-    def in_navigation(self, request, page):
-        if self.in_nav:
-            if page:
-                return page.in_navigation
-            else:
-                return 1
-        else:
-            return 0
-    
-    def linkname(self, djp):
-        page = djp.page
-        if not page:
-            return self.appmodel.name
-        else:
-            return page.link
-        
-    def title(self, page, **urlargs):
-        if not page:
-            return self.appmodel.name
-        else:
-            return page.title
-    
     def edit_regex(self, edit):
         baseurl = self.baseurl
         if baseurl:
             return r'^%s/%s%s$' % (edit,baseurl[1:],self.regex)
         else:
             return None
-    
-    def processurlbits(self, appmodel):
-        '''
-        Process url bits and store information for navigation and urls
-        '''
-        self.appmodel = appmodel
-        self.ajax     = appmodel.ajax
-        if self.parent:
-            self.regex = self.parent.regex + self.urlbit
-        else:
-            self.regex = self.urlbit
         
     def content_dict(self, cl):
         return copy.copy(cl.urlargs)
-        
-    def get_url(self, request, **kwargs):
-        purl = self.regex.get_url(request, **kwargs)
-        return '%s%s' % (self.baseurl,purl)
-    
-    def parentresponse(self, djp):
-        '''
-        Retrive the parent response
-        '''
-        return self.appmodel.parentresponse(djp, self)
     
     def modelparent(self):
         '''
@@ -232,10 +232,7 @@ class AppView(AppViewBase):
         return self.appmodel.permissionDenied(djp)
     
     def sitemapchildren(self):
-        return []
-    
-    def __deepcopy__(self, memo):
-        return copy.copy(self)   
+        return [] 
     
     
     

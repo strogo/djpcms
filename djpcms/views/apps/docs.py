@@ -17,8 +17,8 @@ from djpcms.views.regex import RegExUrl
 class DocView(AppViewBase):
     editurl          = None
     
-    def __init__(self, lang = False, version = False, **kwargs):
-        super(DocView,self).__init__(**kwargs)
+    def __init__(self, regex = '(?P<url>[\w./-]*)', lang = False, version = False, **kwargs):
+        super(DocView,self).__init__(regex = regex, **kwargs)
         self.lang    = lang
         self.version = version
     
@@ -35,7 +35,7 @@ class DocView(AppViewBase):
             url = '%s/%s/' % (url,urls.strip('/'))
         return url
 
-    def handle_response(self, djp):
+    def render(self, djp):
         app     = self.appmodel
         request = djp.request
         args    = djp.urlargs

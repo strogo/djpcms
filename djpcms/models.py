@@ -205,6 +205,8 @@ class Page(TimeStamp):
             if self.application:
                 from djpcms.views import appsite
                 app = appsite.site.getapp(self.application)
+                if not app:
+                    raise ValueError("Application %s not available on site." % self.application)
                 purl = app.urlbit.url
                 if app.isroot():
                     baseurl = app.baseurl
