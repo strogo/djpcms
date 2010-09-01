@@ -29,7 +29,7 @@ def djpcmsHandler(request, url):
         try:
             apphandler, args, kwargs = resolver.resolve(url)
             return apphandler(request, *args, **kwargs) 
-        except:
+        except Exception, e:
             raise Http404
 
 

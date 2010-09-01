@@ -12,6 +12,7 @@ class TestSiteNavigation(TestCase):
     
     def callView(self, url):
         response = self.client.get(url)
+        self.assertEqual(response.status_code,200)
         if isinstance(response.context, list):
             return response.context[1]
         else:
