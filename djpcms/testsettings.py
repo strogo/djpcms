@@ -27,5 +27,5 @@ class Silence(logging.Handler):
 
 logging.getLogger("djpcms").addHandler(Silence())
 
-ROOT_URLCONF           = 'djpcms.tests.urls'
-APPLICATION_URL_MODULE = 'djpcms.tests.test_urls'
+ROOT_URLCONF           = 'djpcms.tests.conf.urls'
+APPLICATION_URL_MODULE = 'djpcms.tests.conf.test_urls'

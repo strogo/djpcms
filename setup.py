@@ -5,8 +5,19 @@ import os
 import sys
 
 package_name = 'djpcms'
-root_dir     = os.path.dirname(__file__)
+root_dir     = os.path.split(os.path.abspath(__file__))[0]
 package_dir  = os.path.join(root_dir, package_name)
+
+def get_module():
+    if root_dir not in sys.path:
+        sys.path.insert(0,root_dir)
+    return __import__(package_name)
+
+mod = get_module()
+
+
+def read(fname):
+    return open(os.path.join(root_dir, fname)).read()
 
 class osx_install_data(install_data):
 
@@ -24,17 +35,6 @@ else:
 # http://groups.google.com/group/comp.lang.python/browse_thread/thread/35ec7b2fed36eaec/2105ee4d9e8042cb
 for scheme in INSTALL_SCHEMES.values():
     scheme['data'] = scheme['purelib']
-    
-
-def get_version():
-    if root_dir not in sys.path:
-        sys.path.insert(0,root_dir)
-    pkg = __import__(package_name)
-    return pkg.get_version()
-
-
-def read(fname):
-    return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 def fullsplit(path, result=None):
     """
@@ -86,17 +86,16 @@ if len(sys.argv) > 1 and sys.argv[1] == 'bdist_wininst':
 
 setup(
         name         = package_name,
-        version      = get_version(),
-        author       = 'Luca Sbardella',
-        author_email = 'luca.sbardella@gmail.com',
-        url          = 'http://github.com/lsbardel/djpcms',
-        license      = 'BSD',
-        description  = 'Dynamic content management system for Django',
+        version      = mod.get_version(),
+        author       = mod.__author__,
+        author_email = mod.__contact__,
+        url          = mod.__homepage__,
+        license      = mod.__license__,
+        description  = mod.__doc__,
         long_description = read('README.rst'),
         packages     = packages,
         cmdclass     = cmdclasses,
         data_files   = data_files,
-        install_requires = ['pytz>2009'],
         classifiers = [
             'Development Status :: 4 - Beta',
             'Environment :: Web Environment',
