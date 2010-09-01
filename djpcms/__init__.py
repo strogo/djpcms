@@ -1,6 +1,6 @@
 '''Dynamic content management system using Javascript and Python'''
 
-VERSION = (0, 7, 1)
+VERSION = (0, 8, 'alpha')
 
 
 def get_version():
@@ -25,7 +25,7 @@ __contact__  = "luca.sbardella@gmail.com"
 __homepage__ = "http://github.com/lsbardel/djpcms"
 
 
-def run_tests(verbosity = 1, interactive = True, failfast = False):
+def runtests(verbosity = 1, interactive = True, failfast = False):
     '''Run tests::
     
     import djpcms

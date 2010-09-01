@@ -4,15 +4,16 @@
 Changelog
 =============================
 
-Version 0.7.2 - Trunk
+Version 0.8_alpha - Trunk
 ==============================
+ * Created the ``djpcmstest`` in the ``examples`` directory. This example is used to create pages for ``unittests``. 
  * Removed obsolete code in ``plugins``.
  * ``DocView`` refactoring and documentation.
  * ``uniforms`` refactoring and documentation.
  * Unified ``ApplicationBase`` and ``ModelApplication``. They now are of the same ``ApplicationMetaClass`` type.
  * Moved the ``user`` application into ``views.appsite.apps`` for consistency.
- * Renamed ``docview`` as ``docs`` and moved into the ``views.appsite.apps`` directory. 
- 
+ * Renamed ``docview`` as ``docs`` and moved into the ``views.appsite.apps`` directory.
+ * 7 unit tests. 
  
 Version 0.7.1 (2010-Aug-24)
 ==============================

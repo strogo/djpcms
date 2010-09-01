@@ -1,0 +1,1379 @@
+[
+    {
+        "pk": 43, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "add_logentry", 
+            "name": "Can add log entry", 
+            "content_type": 15
+        }
+    }, 
+    {
+        "pk": 44, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "change_logentry", 
+            "name": "Can change log entry", 
+            "content_type": 15
+        }
+    }, 
+    {
+        "pk": 45, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "delete_logentry", 
+            "name": "Can delete log entry", 
+            "content_type": 15
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "add_group", 
+            "name": "Can add group", 
+            "content_type": 2
+        }
+    }, 
+    {
+        "pk": 5, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "change_group", 
+            "name": "Can change group", 
+            "content_type": 2
+        }
+    }, 
+    {
+        "pk": 6, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "delete_group", 
+            "name": "Can delete group", 
+            "content_type": 2
+        }
+    }, 
+    {
+        "pk": 10, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "add_message", 
+            "name": "Can add message", 
+            "content_type": 4
+        }
+    }, 
+    {
+        "pk": 11, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "change_message", 
+            "name": "Can change message", 
+            "content_type": 4
+        }
+    }, 
+    {
+        "pk": 12, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "delete_message", 
+            "name": "Can delete message", 
+            "content_type": 4
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "add_permission", 
+            "name": "Can add permission", 
+            "content_type": 1
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "change_permission", 
+            "name": "Can change permission", 
+            "content_type": 1
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "delete_permission", 
+            "name": "Can delete permission", 
+            "content_type": 1
+        }
+    }, 
+    {
+        "pk": 7, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "add_user", 
+            "name": "Can add user", 
+            "content_type": 3
+        }
+    }, 
+    {
+        "pk": 8, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "change_user", 
+            "name": "Can change user", 
+            "content_type": 3
+        }
+    }, 
+    {
+        "pk": 9, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "delete_user", 
+            "name": "Can delete user", 
+            "content_type": 3
+        }
+    }, 
+    {
+        "pk": 19, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "add_contenttype", 
+            "name": "Can add content type", 
+            "content_type": 7
+        }
+    }, 
+    {
+        "pk": 20, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "change_contenttype", 
+            "name": "Can change content type", 
+            "content_type": 7
+        }
+    }, 
+    {
+        "pk": 21, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "delete_contenttype", 
+            "name": "Can delete content type", 
+            "content_type": 7
+        }
+    }, 
+    {
+        "pk": 37, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "add_additionalpagedata", 
+            "name": "Can add additional page data", 
+            "content_type": 13
+        }
+    }, 
+    {
+        "pk": 38, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "change_additionalpagedata", 
+            "name": "Can change additional page data", 
+            "content_type": 13
+        }
+    }, 
+    {
+        "pk": 39, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "delete_additionalpagedata", 
+            "name": "Can delete additional page data", 
+            "content_type": 13
+        }
+    }, 
+    {
+        "pk": 40, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "add_application", 
+            "name": "Can add application", 
+            "content_type": 14
+        }
+    }, 
+    {
+        "pk": 41, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "change_application", 
+            "name": "Can change application", 
+            "content_type": 14
+        }
+    }, 
+    {
+        "pk": 42, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "delete_application", 
+            "name": "Can delete application", 
+            "content_type": 14
+        }
+    }, 
+    {
+        "pk": 31, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "add_blockcontent", 
+            "name": "Can add block content", 
+            "content_type": 11
+        }
+    }, 
+    {
+        "pk": 32, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "change_blockcontent", 
+            "name": "Can change block content", 
+            "content_type": 11
+        }
+    }, 
+    {
+        "pk": 33, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "delete_blockcontent", 
+            "name": "Can delete block content", 
+            "content_type": 11
+        }
+    }, 
+    {
+        "pk": 25, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "add_csspageinfo", 
+            "name": "Can add css page info", 
+            "content_type": 9
+        }
+    }, 
+    {
+        "pk": 26, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "change_csspageinfo", 
+            "name": "Can change css page info", 
+            "content_type": 9
+        }
+    }, 
+    {
+        "pk": 27, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "delete_csspageinfo", 
+            "name": "Can delete css page info", 
+            "content_type": 9
+        }
+    }, 
+    {
+        "pk": 22, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "add_innertemplate", 
+            "name": "Can add inner template", 
+            "content_type": 8
+        }
+    }, 
+    {
+        "pk": 23, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "change_innertemplate", 
+            "name": "Can change inner template", 
+            "content_type": 8
+        }
+    }, 
+    {
+        "pk": 24, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "delete_innertemplate", 
+            "name": "Can delete inner template", 
+            "content_type": 8
+        }
+    }, 
+    {
+        "pk": 28, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "add_page", 
+            "name": "Can add page", 
+            "content_type": 10
+        }
+    }, 
+    {
+        "pk": 29, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "change_page", 
+            "name": "Can change page", 
+            "content_type": 10
+        }
+    }, 
+    {
+        "pk": 30, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "delete_page", 
+            "name": "Can delete page", 
+            "content_type": 10
+        }
+    }, 
+    {
+        "pk": 34, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "add_sitecontent", 
+            "name": "Can add site content", 
+            "content_type": 12
+        }
+    }, 
+    {
+        "pk": 35, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "change_sitecontent", 
+            "name": "Can change site content", 
+            "content_type": 12
+        }
+    }, 
+    {
+        "pk": 36, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "delete_sitecontent", 
+            "name": "Can delete site content", 
+            "content_type": 12
+        }
+    }, 
+    {
+        "pk": 13, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "add_session", 
+            "name": "Can add session", 
+            "content_type": 5
+        }
+    }, 
+    {
+        "pk": 14, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "change_session", 
+            "name": "Can change session", 
+            "content_type": 5
+        }
+    }, 
+    {
+        "pk": 15, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "delete_session", 
+            "name": "Can delete session", 
+            "content_type": 5
+        }
+    }, 
+    {
+        "pk": 16, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "add_site", 
+            "name": "Can add site", 
+            "content_type": 6
+        }
+    }, 
+    {
+        "pk": 17, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "change_site", 
+            "name": "Can change site", 
+            "content_type": 6
+        }
+    }, 
+    {
+        "pk": 18, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "delete_site", 
+            "name": "Can delete site", 
+            "content_type": 6
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "auth.user", 
+        "fields": {
+            "username": "djpcms", 
+            "first_name": "", 
+            "last_name": "", 
+            "is_active": true, 
+            "is_superuser": true, 
+            "is_staff": true, 
+            "last_login": "2010-09-01 15:22:31", 
+            "groups": [], 
+            "user_permissions": [], 
+            "password": "sha1$3383c$14130c420feb6c5acbec8c904cea6116bd35c0e4", 
+            "email": "djpcms-users@googlegroups.com", 
+            "date_joined": "2010-09-01 15:18:52"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "sites.site", 
+        "fields": {
+            "domain": "example.com", 
+            "name": "example.com"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "djpcms.innertemplate", 
+        "fields": {
+            "blocks": "content", 
+            "name": "flat", 
+            "created": "2009-11-18 19:29:24", 
+            "image": "", 
+            "last_modified": "2009-12-10 17:29:00", 
+            "template": "{{ content0 }}"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "djpcms.innertemplate", 
+        "fields": {
+            "blocks": "left,right", 
+            "name": "2 columns 50-50", 
+            "created": "2009-11-18 21:37:35", 
+            "image": "", 
+            "last_modified": "2009-12-10 17:28:53", 
+            "template": "<div class=\"{{ grid.column_1_2 }}\">\r\n{{ content0 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_2 }}\">\r\n{{ content1 }}\r\n</div>\r\n{{ grid.clear }}"
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "djpcms.innertemplate", 
+        "fields": {
+            "blocks": "left,center,right", 
+            "name": "3 columns 33-33-33", 
+            "created": "2009-11-18 21:40:58", 
+            "image": "", 
+            "last_modified": "2009-12-10 17:28:36", 
+            "template": "<div class=\"{{ grid.column_1_3 }}\">\r\n{{ content0 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_3 }}\">\r\n{{ content1 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_3 }}\">\r\n{{ content2 }}\r\n</div>\r\n{{ grid.clear }}"
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "djpcms.innertemplate", 
+        "fields": {
+            "blocks": "left,center,right,bleft,bright", 
+            "name": "3 columns 33-33-33 2 columns 50-50", 
+            "created": "2009-11-18 21:42:17", 
+            "image": "", 
+            "last_modified": "2009-12-10 17:28:18", 
+            "template": "<div class=\"{{ grid.column_1_3 }}\">\r\n{{ content0 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_3 }}\">\r\n{{ content1 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_3 }}\">\r\n{{ content2 }}\r\n</div>\r\n{{ grid.clear }}\r\n<div class=\"{{ grid.column_1_2 }}\">\r\n{{ content3 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_2 }}\">\r\n{{ content4 }}\r\n</div>\r\n{{ grid.clear }}"
+        }
+    }, 
+    {
+        "pk": 5, 
+        "model": "djpcms.innertemplate", 
+        "fields": {
+            "blocks": "side,main", 
+            "name": "2 columns 33-66", 
+            "created": "2009-11-18 21:43:45", 
+            "image": "", 
+            "last_modified": "2009-12-10 17:27:36", 
+            "template": "<div class=\"{{ grid.column_1_3 }}\">\r\n{{ content0 }}\r\n</div>\r\n<div class=\"{{ grid.column_2_3 }}\">\r\n{{ content1 }}\r\n</div>\r\n{{ grid.clear }}"
+        }
+    }, 
+    {
+        "pk": 6, 
+        "model": "djpcms.innertemplate", 
+        "fields": {
+            "blocks": "main,right", 
+            "name": "2 columns 66-33", 
+            "created": "2009-11-18 21:44:15", 
+            "image": "", 
+            "last_modified": "2009-12-10 17:27:42", 
+            "template": "<div class=\"{{ grid.column_2_3 }}\">\r\n{{ content0 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_3 }}\">\r\n{{ content1 }}\r\n</div>\r\n{{ grid.clear }}"
+        }
+    }, 
+    {
+        "pk": 7, 
+        "model": "djpcms.innertemplate", 
+        "fields": {
+            "blocks": "left,cleft,cright,right", 
+            "name": "4 columns - 25 each", 
+            "created": "2009-12-07 21:36:12", 
+            "image": "", 
+            "last_modified": "2009-12-10 17:27:47", 
+            "template": "<div class=\"{{ grid.column_1_4 }}\">\r\n{{ content0 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_4 }}\">\r\n{{ content1 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_4 }}\">\r\n{{ content2 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_4 }}\">\r\n{{ content3 }}\r\n</div>\r\n{{ grid.clear }}"
+        }
+    }, 
+    {
+        "pk": 8, 
+        "model": "djpcms.innertemplate", 
+        "fields": {
+            "blocks": "left,center,right", 
+            "name": "3 columns - 25-50-25", 
+            "created": "2009-12-08 12:18:19", 
+            "image": "", 
+            "last_modified": "2009-12-10 17:27:51", 
+            "template": "<div class=\"{{ grid.column_1_4 }}\">\r\n{{ content0 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_2 }}\">\r\n{{ content1 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_4 }}\">\r\n{{ content2 }}\r\n</div>\r\n{{ grid.clear }}"
+        }
+    }, 
+    {
+        "pk": 9, 
+        "model": "djpcms.innertemplate", 
+        "fields": {
+            "blocks": "content", 
+            "name": "1 column", 
+            "created": "2009-12-10 17:15:23", 
+            "image": "", 
+            "last_modified": "2009-12-10 17:27:56", 
+            "template": "<div class=\"{{ grid.column1 }}\">\r\n{{ content0 }}\r\n</div>\r\n{{ grid.clear }}"
+        }
+    }, 
+    {
+        "pk": 10, 
+        "model": "djpcms.innertemplate", 
+        "fields": {
+            "blocks": "left,center,right", 
+            "name": "3 columns 50 25 25", 
+            "created": "2009-12-24 10:35:27", 
+            "image": "", 
+            "last_modified": "2009-12-24 10:35:27", 
+            "template": "<div class=\"{{ grid.column_1_2 }}\">\r\n{{ content0 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_4 }}\">\r\n{{ content1 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_4 }}\">\r\n{{ content2 }}\r\n</div>\r\n{{ grid.clear }}"
+        }
+    }, 
+    {
+        "pk": 11, 
+        "model": "djpcms.innertemplate", 
+        "fields": {
+            "blocks": "left,center,right", 
+            "name": "3 columns 25 25 50", 
+            "created": "2009-12-24 10:36:04", 
+            "image": "", 
+            "last_modified": "2009-12-24 10:45:25", 
+            "template": "<div class=\"{{ grid.column_1_4 }}\">\r\n{{ content0 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_4 }}\">\r\n{{ content1 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_2 }}\">\r\n{{ content2 }}\r\n</div>\r\n{{ grid.clear }}"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "djpcms.csspageinfo", 
+        "fields": {
+            "gridsize": 12, 
+            "created": "2009-11-18 21:45:00", 
+            "body_class_name": "", 
+            "container_class_name": "", 
+            "last_modified": "2009-11-18 21:45:00", 
+            "fixed": true
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "djpcms.csspageinfo", 
+        "fields": {
+            "gridsize": 12, 
+            "created": "2009-12-06 09:07:06", 
+            "body_class_name": "writing", 
+            "container_class_name": "", 
+            "last_modified": "2009-12-06 09:07:06", 
+            "fixed": false
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "djpcms.page", 
+        "fields": {
+            "level": 0, 
+            "in_navigation": 1, 
+            "code_object": "", 
+            "parent": null, 
+            "cssinfo": null, 
+            "title": "", 
+            "url": "/", 
+            "redirect_to": null, 
+            "site": 1, 
+            "soft_root": false, 
+            "created": "2010-09-01 15:22:58", 
+            "application": "", 
+            "last_modified": "2010-09-01 15:22:58", 
+            "link": "", 
+            "template": "", 
+            "inner_template": 3, 
+            "requires_login": false, 
+            "doctype": 4, 
+            "url_pattern": "", 
+            "insitemap": true, 
+            "is_published": true
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "djpcms.page", 
+        "fields": {
+            "level": 1, 
+            "in_navigation": 1, 
+            "code_object": "", 
+            "parent": 1, 
+            "cssinfo": null, 
+            "title": "About", 
+            "url": "/about/", 
+            "redirect_to": null, 
+            "site": 1, 
+            "soft_root": false, 
+            "created": "2010-09-01 15:23:48", 
+            "application": "", 
+            "last_modified": "2010-09-01 15:23:48", 
+            "link": "about", 
+            "template": "", 
+            "inner_template": 6, 
+            "requires_login": false, 
+            "doctype": 4, 
+            "url_pattern": "about", 
+            "insitemap": true, 
+            "is_published": true
+        }
+    }
+]
+[
+    {
+        "pk": 43, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "add_logentry", 
+            "name": "Can add log entry", 
+            "content_type": 15
+        }
+    }, 
+    {
+        "pk": 44, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "change_logentry", 
+            "name": "Can change log entry", 
+            "content_type": 15
+        }
+    }, 
+    {
+        "pk": 45, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "delete_logentry", 
+            "name": "Can delete log entry", 
+            "content_type": 15
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "add_group", 
+            "name": "Can add group", 
+            "content_type": 2
+        }
+    }, 
+    {
+        "pk": 5, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "change_group", 
+            "name": "Can change group", 
+            "content_type": 2
+        }
+    }, 
+    {
+        "pk": 6, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "delete_group", 
+            "name": "Can delete group", 
+            "content_type": 2
+        }
+    }, 
+    {
+        "pk": 10, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "add_message", 
+            "name": "Can add message", 
+            "content_type": 4
+        }
+    }, 
+    {
+        "pk": 11, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "change_message", 
+            "name": "Can change message", 
+            "content_type": 4
+        }
+    }, 
+    {
+        "pk": 12, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "delete_message", 
+            "name": "Can delete message", 
+            "content_type": 4
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "add_permission", 
+            "name": "Can add permission", 
+            "content_type": 1
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "change_permission", 
+            "name": "Can change permission", 
+            "content_type": 1
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "delete_permission", 
+            "name": "Can delete permission", 
+            "content_type": 1
+        }
+    }, 
+    {
+        "pk": 7, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "add_user", 
+            "name": "Can add user", 
+            "content_type": 3
+        }
+    }, 
+    {
+        "pk": 8, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "change_user", 
+            "name": "Can change user", 
+            "content_type": 3
+        }
+    }, 
+    {
+        "pk": 9, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "delete_user", 
+            "name": "Can delete user", 
+            "content_type": 3
+        }
+    }, 
+    {
+        "pk": 19, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "add_contenttype", 
+            "name": "Can add content type", 
+            "content_type": 7
+        }
+    }, 
+    {
+        "pk": 20, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "change_contenttype", 
+            "name": "Can change content type", 
+            "content_type": 7
+        }
+    }, 
+    {
+        "pk": 21, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "delete_contenttype", 
+            "name": "Can delete content type", 
+            "content_type": 7
+        }
+    }, 
+    {
+        "pk": 37, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "add_additionalpagedata", 
+            "name": "Can add additional page data", 
+            "content_type": 13
+        }
+    }, 
+    {
+        "pk": 38, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "change_additionalpagedata", 
+            "name": "Can change additional page data", 
+            "content_type": 13
+        }
+    }, 
+    {
+        "pk": 39, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "delete_additionalpagedata", 
+            "name": "Can delete additional page data", 
+            "content_type": 13
+        }
+    }, 
+    {
+        "pk": 40, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "add_application", 
+            "name": "Can add application", 
+            "content_type": 14
+        }
+    }, 
+    {
+        "pk": 41, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "change_application", 
+            "name": "Can change application", 
+            "content_type": 14
+        }
+    }, 
+    {
+        "pk": 42, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "delete_application", 
+            "name": "Can delete application", 
+            "content_type": 14
+        }
+    }, 
+    {
+        "pk": 31, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "add_blockcontent", 
+            "name": "Can add block content", 
+            "content_type": 11
+        }
+    }, 
+    {
+        "pk": 32, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "change_blockcontent", 
+            "name": "Can change block content", 
+            "content_type": 11
+        }
+    }, 
+    {
+        "pk": 33, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "delete_blockcontent", 
+            "name": "Can delete block content", 
+            "content_type": 11
+        }
+    }, 
+    {
+        "pk": 25, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "add_csspageinfo", 
+            "name": "Can add css page info", 
+            "content_type": 9
+        }
+    }, 
+    {
+        "pk": 26, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "change_csspageinfo", 
+            "name": "Can change css page info", 
+            "content_type": 9
+        }
+    }, 
+    {
+        "pk": 27, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "delete_csspageinfo", 
+            "name": "Can delete css page info", 
+            "content_type": 9
+        }
+    }, 
+    {
+        "pk": 22, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "add_innertemplate", 
+            "name": "Can add inner template", 
+            "content_type": 8
+        }
+    }, 
+    {
+        "pk": 23, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "change_innertemplate", 
+            "name": "Can change inner template", 
+            "content_type": 8
+        }
+    }, 
+    {
+        "pk": 24, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "delete_innertemplate", 
+            "name": "Can delete inner template", 
+            "content_type": 8
+        }
+    }, 
+    {
+        "pk": 28, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "add_page", 
+            "name": "Can add page", 
+            "content_type": 10
+        }
+    }, 
+    {
+        "pk": 29, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "change_page", 
+            "name": "Can change page", 
+            "content_type": 10
+        }
+    }, 
+    {
+        "pk": 30, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "delete_page", 
+            "name": "Can delete page", 
+            "content_type": 10
+        }
+    }, 
+    {
+        "pk": 34, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "add_sitecontent", 
+            "name": "Can add site content", 
+            "content_type": 12
+        }
+    }, 
+    {
+        "pk": 35, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "change_sitecontent", 
+            "name": "Can change site content", 
+            "content_type": 12
+        }
+    }, 
+    {
+        "pk": 36, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "delete_sitecontent", 
+            "name": "Can delete site content", 
+            "content_type": 12
+        }
+    }, 
+    {
+        "pk": 13, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "add_session", 
+            "name": "Can add session", 
+            "content_type": 5
+        }
+    }, 
+    {
+        "pk": 14, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "change_session", 
+            "name": "Can change session", 
+            "content_type": 5
+        }
+    }, 
+    {
+        "pk": 15, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "delete_session", 
+            "name": "Can delete session", 
+            "content_type": 5
+        }
+    }, 
+    {
+        "pk": 16, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "add_site", 
+            "name": "Can add site", 
+            "content_type": 6
+        }
+    }, 
+    {
+        "pk": 17, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "change_site", 
+            "name": "Can change site", 
+            "content_type": 6
+        }
+    }, 
+    {
+        "pk": 18, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "delete_site", 
+            "name": "Can delete site", 
+            "content_type": 6
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "auth.user", 
+        "fields": {
+            "username": "djpcms", 
+            "first_name": "", 
+            "last_name": "", 
+            "is_active": true, 
+            "is_superuser": true, 
+            "is_staff": true, 
+            "last_login": "2010-09-01 15:22:31", 
+            "groups": [], 
+            "user_permissions": [], 
+            "password": "sha1$3383c$14130c420feb6c5acbec8c904cea6116bd35c0e4", 
+            "email": "djpcms-users@googlegroups.com", 
+            "date_joined": "2010-09-01 15:18:52"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "sites.site", 
+        "fields": {
+            "domain": "example.com", 
+            "name": "example.com"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "djpcms.innertemplate", 
+        "fields": {
+            "blocks": "content", 
+            "name": "flat", 
+            "created": "2009-11-18 19:29:24", 
+            "image": "", 
+            "last_modified": "2009-12-10 17:29:00", 
+            "template": "{{ content0 }}"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "djpcms.innertemplate", 
+        "fields": {
+            "blocks": "left,right", 
+            "name": "2 columns 50-50", 
+            "created": "2009-11-18 21:37:35", 
+            "image": "", 
+            "last_modified": "2009-12-10 17:28:53", 
+            "template": "<div class=\"{{ grid.column_1_2 }}\">\r\n{{ content0 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_2 }}\">\r\n{{ content1 }}\r\n</div>\r\n{{ grid.clear }}"
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "djpcms.innertemplate", 
+        "fields": {
+            "blocks": "left,center,right", 
+            "name": "3 columns 33-33-33", 
+            "created": "2009-11-18 21:40:58", 
+            "image": "", 
+            "last_modified": "2009-12-10 17:28:36", 
+            "template": "<div class=\"{{ grid.column_1_3 }}\">\r\n{{ content0 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_3 }}\">\r\n{{ content1 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_3 }}\">\r\n{{ content2 }}\r\n</div>\r\n{{ grid.clear }}"
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "djpcms.innertemplate", 
+        "fields": {
+            "blocks": "left,center,right,bleft,bright", 
+            "name": "3 columns 33-33-33 2 columns 50-50", 
+            "created": "2009-11-18 21:42:17", 
+            "image": "", 
+            "last_modified": "2009-12-10 17:28:18", 
+            "template": "<div class=\"{{ grid.column_1_3 }}\">\r\n{{ content0 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_3 }}\">\r\n{{ content1 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_3 }}\">\r\n{{ content2 }}\r\n</div>\r\n{{ grid.clear }}\r\n<div class=\"{{ grid.column_1_2 }}\">\r\n{{ content3 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_2 }}\">\r\n{{ content4 }}\r\n</div>\r\n{{ grid.clear }}"
+        }
+    }, 
+    {
+        "pk": 5, 
+        "model": "djpcms.innertemplate", 
+        "fields": {
+            "blocks": "side,main", 
+            "name": "2 columns 33-66", 
+            "created": "2009-11-18 21:43:45", 
+            "image": "", 
+            "last_modified": "2009-12-10 17:27:36", 
+            "template": "<div class=\"{{ grid.column_1_3 }}\">\r\n{{ content0 }}\r\n</div>\r\n<div class=\"{{ grid.column_2_3 }}\">\r\n{{ content1 }}\r\n</div>\r\n{{ grid.clear }}"
+        }
+    }, 
+    {
+        "pk": 6, 
+        "model": "djpcms.innertemplate", 
+        "fields": {
+            "blocks": "main,right", 
+            "name": "2 columns 66-33", 
+            "created": "2009-11-18 21:44:15", 
+            "image": "", 
+            "last_modified": "2009-12-10 17:27:42", 
+            "template": "<div class=\"{{ grid.column_2_3 }}\">\r\n{{ content0 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_3 }}\">\r\n{{ content1 }}\r\n</div>\r\n{{ grid.clear }}"
+        }
+    }, 
+    {
+        "pk": 7, 
+        "model": "djpcms.innertemplate", 
+        "fields": {
+            "blocks": "left,cleft,cright,right", 
+            "name": "4 columns - 25 each", 
+            "created": "2009-12-07 21:36:12", 
+            "image": "", 
+            "last_modified": "2009-12-10 17:27:47", 
+            "template": "<div class=\"{{ grid.column_1_4 }}\">\r\n{{ content0 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_4 }}\">\r\n{{ content1 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_4 }}\">\r\n{{ content2 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_4 }}\">\r\n{{ content3 }}\r\n</div>\r\n{{ grid.clear }}"
+        }
+    }, 
+    {
+        "pk": 8, 
+        "model": "djpcms.innertemplate", 
+        "fields": {
+            "blocks": "left,center,right", 
+            "name": "3 columns - 25-50-25", 
+            "created": "2009-12-08 12:18:19", 
+            "image": "", 
+            "last_modified": "2009-12-10 17:27:51", 
+            "template": "<div class=\"{{ grid.column_1_4 }}\">\r\n{{ content0 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_2 }}\">\r\n{{ content1 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_4 }}\">\r\n{{ content2 }}\r\n</div>\r\n{{ grid.clear }}"
+        }
+    }, 
+    {
+        "pk": 9, 
+        "model": "djpcms.innertemplate", 
+        "fields": {
+            "blocks": "content", 
+            "name": "1 column", 
+            "created": "2009-12-10 17:15:23", 
+            "image": "", 
+            "last_modified": "2009-12-10 17:27:56", 
+            "template": "<div class=\"{{ grid.column1 }}\">\r\n{{ content0 }}\r\n</div>\r\n{{ grid.clear }}"
+        }
+    }, 
+    {
+        "pk": 10, 
+        "model": "djpcms.innertemplate", 
+        "fields": {
+            "blocks": "left,center,right", 
+            "name": "3 columns 50 25 25", 
+            "created": "2009-12-24 10:35:27", 
+            "image": "", 
+            "last_modified": "2009-12-24 10:35:27", 
+            "template": "<div class=\"{{ grid.column_1_2 }}\">\r\n{{ content0 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_4 }}\">\r\n{{ content1 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_4 }}\">\r\n{{ content2 }}\r\n</div>\r\n{{ grid.clear }}"
+        }
+    }, 
+    {
+        "pk": 11, 
+        "model": "djpcms.innertemplate", 
+        "fields": {
+            "blocks": "left,center,right", 
+            "name": "3 columns 25 25 50", 
+            "created": "2009-12-24 10:36:04", 
+            "image": "", 
+            "last_modified": "2009-12-24 10:45:25", 
+            "template": "<div class=\"{{ grid.column_1_4 }}\">\r\n{{ content0 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_4 }}\">\r\n{{ content1 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_2 }}\">\r\n{{ content2 }}\r\n</div>\r\n{{ grid.clear }}"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "djpcms.csspageinfo", 
+        "fields": {
+            "gridsize": 12, 
+            "created": "2009-11-18 21:45:00", 
+            "body_class_name": "", 
+            "container_class_name": "", 
+            "last_modified": "2009-11-18 21:45:00", 
+            "fixed": true
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "djpcms.csspageinfo", 
+        "fields": {
+            "gridsize": 12, 
+            "created": "2009-12-06 09:07:06", 
+            "body_class_name": "writing", 
+            "container_class_name": "", 
+            "last_modified": "2009-12-06 09:07:06", 
+            "fixed": false
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "djpcms.page", 
+        "fields": {
+            "level": 0, 
+            "in_navigation": 1, 
+            "code_object": "", 
+            "parent": null, 
+            "cssinfo": null, 
+            "title": "", 
+            "url": "/", 
+            "redirect_to": null, 
+            "site": 1, 
+            "soft_root": false, 
+            "created": "2010-09-01 15:22:58", 
+            "application": "", 
+            "last_modified": "2010-09-01 15:22:58", 
+            "link": "", 
+            "template": "", 
+            "inner_template": 3, 
+            "requires_login": false, 
+            "doctype": 4, 
+            "url_pattern": "", 
+            "insitemap": true, 
+            "is_published": true
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "djpcms.page", 
+        "fields": {
+            "level": 1, 
+            "in_navigation": 5, 
+            "code_object": "", 
+            "parent": 1, 
+            "cssinfo": null, 
+            "title": "About", 
+            "url": "/about/", 
+            "redirect_to": null, 
+            "site": 1, 
+            "soft_root": false, 
+            "created": "2010-09-01 15:23:48", 
+            "application": "", 
+            "last_modified": "2010-09-01 16:53:10", 
+            "link": "about", 
+            "template": "", 
+            "inner_template": 6, 
+            "requires_login": false, 
+            "doctype": 4, 
+            "url_pattern": "about", 
+            "insitemap": true, 
+            "is_published": true
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "djpcms.page", 
+        "fields": {
+            "level": 1, 
+            "in_navigation": 10, 
+            "code_object": "", 
+            "parent": 1, 
+            "cssinfo": null, 
+            "title": "Documentation", 
+            "url": "/docs/", 
+            "redirect_to": null, 
+            "site": 1, 
+            "soft_root": false, 
+            "created": "2010-09-01 16:52:25", 
+            "application": "test_documentation", 
+            "last_modified": "2010-09-01 16:52:25", 
+            "link": "docs", 
+            "template": "", 
+            "inner_template": 1, 
+            "requires_login": false, 
+            "doctype": 4, 
+            "url_pattern": "", 
+            "insitemap": true, 
+            "is_published": true
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "djpcms.page", 
+        "fields": {
+            "level": 1, 
+            "in_navigation": 1, 
+            "code_object": "", 
+            "parent": 1, 
+            "cssinfo": null, 
+            "title": "Content Model", 
+            "url": "/content/", 
+            "redirect_to": null, 
+            "site": 1, 
+            "soft_root": false, 
+            "created": "2010-09-01 16:52:51", 
+            "application": "content-search", 
+            "last_modified": "2010-09-01 16:52:51", 
+            "link": "content", 
+            "template": "", 
+            "inner_template": 3, 
+            "requires_login": false, 
+            "doctype": 4, 
+            "url_pattern": "content", 
+            "insitemap": true, 
+            "is_published": true
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "djpcms.blockcontent", 
+        "fields": {
+            "title": "", 
+            "plugin_name": "", 
+            "container_type": "", 
+            "position": 0, 
+            "page": 1, 
+            "block": 0, 
+            "arguments": ""
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "djpcms.blockcontent", 
+        "fields": {
+            "title": "", 
+            "plugin_name": "", 
+            "container_type": "", 
+            "position": 0, 
+            "page": 1, 
+            "block": 1, 
+            "arguments": ""
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "djpcms.blockcontent", 
+        "fields": {
+            "title": "", 
+            "plugin_name": "", 
+            "container_type": "", 
+            "position": 0, 
+            "page": 1, 
+            "block": 2, 
+            "arguments": ""
+        }
+    }
+]

@@ -37,8 +37,12 @@ Running tests
 
 On the top level directory type::
 
-	python testing.py test djpcms
+	python runtests.py
 	
+Otherwise, once installed::
+
+	import djpcms
+	djpcms.runtests()
 
 Dependencies
 ========================
