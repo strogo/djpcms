@@ -15,8 +15,9 @@ from djpcms.views.regex import RegExUrl
 class DocView(AppViewBase):
     editurl          = None
     
-    def __init__(self, regex = '(?P<url>[\w./-]*)', lang = False, version = False, **kwargs):
-        super(DocView,self).__init__(regex = regex, **kwargs)
+    def __init__(self, regex = '(?P<url>[\w./-]*)', lang = False,
+                 version = False, in_navigation = True, **kwargs):
+        super(DocView,self).__init__(regex = regex, in_navigation = in_navigation, **kwargs)
         self.lang    = lang
         self.version = version
     
@@ -86,7 +87,9 @@ class DocApplication(ApplicationBase):
     deflang          = 'en'
     defversion       = 'dev'
     DOCS_PICKLE_ROOT = None
-    document = DocView() 
+    
+    index = DocView(regex = '')
+    document = DocView()
     
     def __init__(self, baseurl, application_site, editavailable):
         super(DocApplication,self).__init__(baseurl, application_site, False)

@@ -16,7 +16,7 @@ Version 0.8_alpha - Trunk
  * Unified ``ApplicationBase`` and ``ModelApplication``. They now are of the same ``ApplicationMetaClass`` type.
  * Moved the ``user`` application into ``views.appsite.apps`` for consistency.
  * Renamed ``docview`` as ``docs`` and moved into the ``views.appsite.apps`` directory.
- * 7 unit tests. 
+ * 8 unit tests. 
  
 Version 0.7.1 (2010-Aug-24)
 ==============================
