@@ -6,6 +6,9 @@ Changelog
 
 Version 0.8_alpha - Trunk
 ==============================
+ * :class:`djpcms.views.cache.PageCache` works when django sessions are not available. Previously it was failing.
+ * Added ``AUTHORS`` to base directory and included ``jogging`` in contrib.
+ * Removed ``settings`` import in ``utils.navigation``.
  * Created the ``djpcmstest`` in the ``examples`` directory. This example is used to create pages for ``unittests``. 
  * Removed obsolete code in ``plugins``.
  * ``DocView`` refactoring and documentation.

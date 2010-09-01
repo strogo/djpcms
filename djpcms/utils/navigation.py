@@ -1,7 +1,6 @@
 '''
 Utility module for creating a navigation list
 '''
-from djpcms.conf import settings
 from djpcms.utils import lazyattr    
 
 
@@ -65,13 +64,13 @@ class Navigator(lazycounter):
         return djp
         
     def _items(self, urlselects = None, secondary_after = 100, **kwargs):
-        HTML_CLASSES = settings.HTML_CLASSES
-        djp        = self.djp
+        djp = self.djp
+        css = djp.css
         if urlselects is None:
             urlselects = []
             djp = self.buildselects(djp,urlselects)
             self.kwargs['urlselects'] = urlselects
-        scn        = HTML_CLASSES.secondary_in_list
+        scn        = css.secondary_in_list
         request    = djp.request
         children   = djp.children
         items      = []
@@ -84,7 +83,7 @@ class Navigator(lazycounter):
             if djp.in_navigation() > secondary_after:
                 classes.append(scn)
             if url in urlselects:
-                classes.append(HTML_CLASSES.link_selected)
+                classes.append(css.link_selected)
             items.append(self.make_item(djp, classes))
         return items
 

@@ -1,3 +1,4 @@
+import logging
 
 ADMIN_URL_PREFIX                = '/admin/'
 TEMPLATE_ENGINE                 = 'django'
@@ -9,6 +10,10 @@ MAX_SEARCH_DISPLAY              = 20
 CACHE_VIEW_OBJECTS              = True
 DJPCMS_IMAGE_UPLOAD_FUNCTION    = None
 SERVE_STATIC_FILES              = True
+
+#Logging
+GLOBAL_LOG_LEVEL                = logging.INFO
+GLOBAL_LOG_HANDLERS             = [logging.StreamHandler()]
 
 # Root page for user account urls
 USER_ACCOUNT_HOME_URL           = '/accounts/'

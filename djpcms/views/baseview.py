@@ -290,10 +290,8 @@ class djpcmsview(UnicodeObject):
         return djp.url
     
     def children(self, request, **kwargs):
-        '''
-        Return children permitted views for self.
-        It includes views not in navigation
-        '''
+        '''Return children permitted views for self.
+It includes views not in navigation.'''
         views = []
         page      = self.get_page()
         if not page:

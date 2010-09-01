@@ -48,6 +48,7 @@ Contents
    topics/settings
    topics/utils/index
    topics/models
+   authors
    changelog
 
 

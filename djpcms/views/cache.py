@@ -13,7 +13,10 @@ class PageCache(object):
         
     def clear(self, request):
         cache.clear()
-        request.session['application-urls-built'] = 0
+        self.session(request)['application-urls-built'] = 0
+        
+    def session(self, request):
+        return getattr(request,'session',{})
         
     @property
     def domain(self):
@@ -31,10 +34,11 @@ class PageCache(object):
     
     def build_app_urls(self, request, force = True):
         from djpcms.views import appsite
-        b = request.session.get('application-urls-built',0)
+        session = self.session(request)
+        b = session.get('application-urls-built',0)
         if not self.applications_url or (force and not b):
             self.applications_url = appsite.site.get_urls()
-            request.session['application-urls-built'] = 1
+            session['application-urls-built'] = 1
         return self.applications_url
     
     def view_from_url(self, request, url):
