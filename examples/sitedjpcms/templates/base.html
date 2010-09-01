@@ -1,8 +1,7 @@
-{% extends "root.html" %}{% load djpcmstags %}
+{% extends "djpcms/base.html" %}{% load djpcmstags %}
 {% block body-container-bits %}{% endblock %}
 
-{% block html-container %}
-<div id="page-header">
+{% block branding-banner %}
  <div class="{{ grid.container_class }}">
   <div class="{{ grid.column_1_3 }}">
    <a id="menu-site" class="site-logo" href="/">djpcms</a>
@@ -29,29 +28,30 @@
   </div>
  </div>
  {{ grid.clear }}
- <div id="branding">
-  <div class="{{ grid.container_class }}">
-   <div id="brandline" class="{{ grid.column_2_3 }}">
-    <p>Dynamic Javascript+Python</p>
-    <p>Content Management System</p>
-   </div>
+ <div id="branding" class="{{ grid.container_class }}">
+    <div class="{{ grid.column_1_2 }}">
+      <div id="brandline">
+        <p>Dynamic Javascript+Python</p>
+        <p>Content Management System</p>
+      </div>
+    </div>
+    <div class="{{ grid.column_1_2 }}">
+      <div id="site-navigation">
+	    <ul>{% for navitem in sitenav %}
+		  <li{% if navitem.classes %} class="{{ navitem.classes }}"{% endif %}>
+		  <a href="{{ navitem.url }}">{{ navitem.name }}</a>
+		  </li>{% endfor %}
+	    </ul>
+	  </div>
+    </div>
+ </div>
+{% endblock %}
+
+{% block page-footer %}
+ <div class="{{ grid.container_class }}">
+  <div class="{{ grid.column1 }}">
+   &copy; 2010 Luca Sbardella
   </div>
  </div>
-</div>
-<div id="tagline">
-</div>
-
-<div id="page-main">
-  <div class="{{ grid.container_class }}">
-  {{ inner }}
- </div>
-</div>
-
-
-<div id="footer" class="full-width">
-<div class="{{ grid.container_class }}">
-</div>
-</div>
-
-
 {% endblock %}
+
