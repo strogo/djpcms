@@ -270,11 +270,15 @@ example with inlines::
 
 class FormWrap(object):
     '''Utility class holding a form, formsets and helper for displaying form'''
-    def __init__(self, form, formsets, inputs):
-        self.helper   = form.helper
+    def __init__(self, form, formsets = None, inputs = None):
+        helper        = getattr(form,'helper',None)
+        if not helper:
+            helper = FormHelper()
+            form.helper = helper
+        self.helper   = helper
         self.form     = form
-        self.formsets = formsets
-        self.inputs   = inputs
+        self.formsets = formsets or []
+        self.inputs   = inputs or []
         
     def __get_media(self):
         return self.form.media
