@@ -45,7 +45,7 @@ def render_form_field(form, field):
     except KeyError:
         raise Exception("Could not resolve form field '%s'." % field)
     bound_field = BoundField(form, field_instance, field)
-    html = loader.render_to_string("djpcms/uniform/field.html", {'field': bound_field, 'required': _required_tag})
+    html = loader.render_to_string("djpcms/uniforms/field.html", {'field': bound_field, 'required': _required_tag})
     rendered_fields = get_rendered_fields(form)
     if not field in rendered_fields:
         rendered_fields.append(field)
@@ -291,20 +291,20 @@ class FormWrap(object):
             return False
 
     def render(self):
-        return loader.render_to_string('djpcms/uniform/uniform.html',
+        return loader.render_to_string('djpcms/uniforms/uniform.html',
                                        {'helper': self.helper,
                                         'form': self.render_layout()})
         
     def render_inputs(self):
         if self.inputs:
-            return loader.render_to_string('djpcms/uniform/inputs.html',
+            return loader.render_to_string('djpcms/uniforms/inputs.html',
                                            {'inputs': self.inputs})
         else:
             return ''
     
     def render_inlines(self):
         if self.formsets:
-            return loader.render_to_string('djpcms/uniform/inlines.html',
+            return loader.render_to_string('djpcms/uniforms/inlines.html',
                                            {'form_inlines': self.formsets})
         else:
             return ''

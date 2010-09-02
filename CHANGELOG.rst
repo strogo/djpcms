@@ -6,6 +6,7 @@ Changelog
 
 Version 0.8_alpha - Trunk
 ==============================
+ * Added :setting:`DJPCMS_STYLE` setting for specifying ``css`` style.
  * :class:`djpcms.views.cache.PageCache` works when django sessions are not available. Previously it was failing.
  * Added ``AUTHORS`` to base directory and included ``jogging`` in contrib.
  * Removed ``settings`` import in ``utils.navigation``.
@@ -16,7 +17,7 @@ Version 0.8_alpha - Trunk
  * Unified ``ApplicationBase`` and ``ModelApplication``. They now are of the same ``ApplicationMetaClass`` type.
  * Moved the ``user`` application into ``views.appsite.apps`` for consistency.
  * Renamed ``docview`` as ``docs`` and moved into the ``views.appsite.apps`` directory.
- * 8 unit tests. 
+ * 9 unit tests. 
  
 Version 0.7.1 (2010-Aug-24)
 ==============================

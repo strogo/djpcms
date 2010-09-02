@@ -11,6 +11,9 @@ CACHE_VIEW_OBJECTS              = True
 DJPCMS_IMAGE_UPLOAD_FUNCTION    = None
 SERVE_STATIC_FILES              = True
 
+#styling
+DJPCMS_STYLE                    = 'smooth'
+
 #Logging
 GLOBAL_LOG_LEVEL                = logging.INFO
 GLOBAL_LOG_HANDLERS             = [logging.StreamHandler()]

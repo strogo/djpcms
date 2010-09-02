@@ -91,6 +91,15 @@ this be different from any other url you may use in your application.
 See: :ref:`topics-plugins-url`
 
 
+.. settings:: DJPCMS_STYLE
+
+DJPCMS_STYLE
+-------------------
+
+Default: ``'smooth'``
+
+Css style to be included in pages. If you don't want to include any styling from ``djpcms`` set the value to ``None``.
+
 
 .. setting:: DEFAULT_VIEW_MODULE
 

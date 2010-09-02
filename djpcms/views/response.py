@@ -194,8 +194,11 @@ class DjpResponse(http.HttpResponse):
         d = context.push()
         if more_context:
             d.update(more_context)
+        media = self.media
+        if settings.DJPCMS_STYLE:
+            media.add_css({'all':['djpcms/themes/%s.css' % settings.DJPCMS_STYLE]})
         d.update({'djp':        self,
-                  'media':      self.media,
+                  'media':      media,
                   'page':       self.page,
                   'cssajax':    self.css,
                   'is_popup':   False,
