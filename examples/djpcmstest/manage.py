@@ -9,7 +9,7 @@ except:
     sys.path.insert(0,djpdir)     
     
 # To dump data
-# python manage.py dumpdata auth sites djpcms --indent 4 >> ../../djpcms/fixtures/test.json
+# python manage.py dumpdata auth sites djpcms testmodel --indent 4 >> ../../djpcms/fixtures/test.json
 
 from django.core.management import execute_manager
 try:

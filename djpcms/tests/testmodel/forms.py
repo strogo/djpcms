@@ -7,7 +7,7 @@ from djpcms.tests.testmodel.models import Strategy, StrategyTrade
 
 class TradeForm(forms.ModelForm):
     name = forms.CharField(label = 'name')
-    currency = forms.ChoiceField(choices=(('EUR','EUR'),('USD','USD')),
+    currency = forms.ChoiceField(choices=(('','---'),('EUR','EUR'),('USD','USD')),
                                  label = 'currency')
     
     class Meta:

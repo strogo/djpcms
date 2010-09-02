@@ -405,6 +405,87 @@
         }
     }, 
     {
+        "pk": 46, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "add_strategy", 
+            "name": "Can add strategy", 
+            "content_type": 16
+        }
+    }, 
+    {
+        "pk": 47, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "change_strategy", 
+            "name": "Can change strategy", 
+            "content_type": 16
+        }
+    }, 
+    {
+        "pk": 48, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "delete_strategy", 
+            "name": "Can delete strategy", 
+            "content_type": 16
+        }
+    }, 
+    {
+        "pk": 52, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "add_strategytrade", 
+            "name": "Can add strategy trade", 
+            "content_type": 18
+        }
+    }, 
+    {
+        "pk": 53, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "change_strategytrade", 
+            "name": "Can change strategy trade", 
+            "content_type": 18
+        }
+    }, 
+    {
+        "pk": 54, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "delete_strategytrade", 
+            "name": "Can delete strategy trade", 
+            "content_type": 18
+        }
+    }, 
+    {
+        "pk": 49, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "add_trade", 
+            "name": "Can add trade", 
+            "content_type": 17
+        }
+    }, 
+    {
+        "pk": 50, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "change_trade", 
+            "name": "Can change trade", 
+            "content_type": 17
+        }
+    }, 
+    {
+        "pk": 51, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "delete_trade", 
+            "name": "Can delete trade", 
+            "content_type": 17
+        }
+    }, 
+    {
         "pk": 1, 
         "model": "auth.user", 
         "fields": {
@@ -414,7 +495,7 @@
             "is_active": true, 
             "is_superuser": true, 
             "is_staff": true, 
-            "last_login": "2010-09-01 15:22:31", 
+            "last_login": "2010-09-02 15:54:55", 
             "groups": [], 
             "user_permissions": [], 
             "password": "sha1$3383c$14130c420feb6c5acbec8c904cea6116bd35c0e4", 
@@ -602,10 +683,10 @@
             "soft_root": false, 
             "created": "2010-09-01 15:22:58", 
             "application": "", 
-            "last_modified": "2010-09-01 15:22:58", 
+            "last_modified": "2010-09-02 17:17:27", 
             "link": "", 
             "template": "", 
-            "inner_template": 3, 
+            "inner_template": 6, 
             "requires_login": false, 
             "doctype": 4, 
             "url_pattern": "", 
@@ -695,13 +776,53 @@
         }
     }, 
     {
+        "pk": 5, 
+        "model": "djpcms.page", 
+        "fields": {
+            "level": 1, 
+            "in_navigation": 2, 
+            "code_object": "", 
+            "parent": 1, 
+            "cssinfo": null, 
+            "title": "", 
+            "url": "/strategies/", 
+            "redirect_to": null, 
+            "site": 1, 
+            "soft_root": false, 
+            "created": "2010-09-02 18:14:53", 
+            "application": "strategy-search", 
+            "last_modified": "2010-09-02 18:15:20", 
+            "link": "", 
+            "template": "", 
+            "inner_template": 6, 
+            "requires_login": false, 
+            "doctype": 4, 
+            "url_pattern": "", 
+            "insitemap": true, 
+            "is_published": true
+        }
+    }, 
+    {
         "pk": 1, 
+        "model": "djpcms.blockcontent", 
+        "fields": {
+            "title": "", 
+            "plugin_name": "strategy-add", 
+            "container_type": "box", 
+            "position": 0, 
+            "page": 1, 
+            "block": 0, 
+            "arguments": ""
+        }
+    }, 
+    {
+        "pk": 4, 
         "model": "djpcms.blockcontent", 
         "fields": {
             "title": "", 
             "plugin_name": "", 
             "container_type": "", 
-            "position": 0, 
+            "position": 1, 
             "page": 1, 
             "block": 0, 
             "arguments": ""
@@ -730,6 +851,123 @@
             "position": 0, 
             "page": 1, 
             "block": 2, 
+            "arguments": ""
+        }
+    }, 
+    {
+        "pk": 11, 
+        "model": "djpcms.blockcontent", 
+        "fields": {
+            "title": "", 
+            "plugin_name": "", 
+            "container_type": "", 
+            "position": 0, 
+            "page": 2, 
+            "block": 0, 
+            "arguments": ""
+        }
+    }, 
+    {
+        "pk": 12, 
+        "model": "djpcms.blockcontent", 
+        "fields": {
+            "title": "", 
+            "plugin_name": "", 
+            "container_type": "", 
+            "position": 0, 
+            "page": 2, 
+            "block": 1, 
+            "arguments": ""
+        }
+    }, 
+    {
+        "pk": 13, 
+        "model": "djpcms.blockcontent", 
+        "fields": {
+            "title": "", 
+            "plugin_name": "", 
+            "container_type": "", 
+            "position": 0, 
+            "page": 3, 
+            "block": 0, 
+            "arguments": ""
+        }
+    }, 
+    {
+        "pk": 8, 
+        "model": "djpcms.blockcontent", 
+        "fields": {
+            "title": "", 
+            "plugin_name": "", 
+            "container_type": "", 
+            "position": 0, 
+            "page": 4, 
+            "block": 0, 
+            "arguments": ""
+        }
+    }, 
+    {
+        "pk": 9, 
+        "model": "djpcms.blockcontent", 
+        "fields": {
+            "title": "", 
+            "plugin_name": "", 
+            "container_type": "", 
+            "position": 0, 
+            "page": 4, 
+            "block": 1, 
+            "arguments": ""
+        }
+    }, 
+    {
+        "pk": 10, 
+        "model": "djpcms.blockcontent", 
+        "fields": {
+            "title": "", 
+            "plugin_name": "", 
+            "container_type": "", 
+            "position": 0, 
+            "page": 4, 
+            "block": 2, 
+            "arguments": ""
+        }
+    }, 
+    {
+        "pk": 5, 
+        "model": "djpcms.blockcontent", 
+        "fields": {
+            "title": "", 
+            "plugin_name": "this", 
+            "container_type": "pannel", 
+            "position": 0, 
+            "page": 5, 
+            "block": 0, 
+            "arguments": ""
+        }
+    }, 
+    {
+        "pk": 7, 
+        "model": "djpcms.blockcontent", 
+        "fields": {
+            "title": "", 
+            "plugin_name": "", 
+            "container_type": "", 
+            "position": 1, 
+            "page": 5, 
+            "block": 0, 
+            "arguments": ""
+        }
+    }, 
+    {
+        "pk": 6, 
+        "model": "djpcms.blockcontent", 
+        "fields": {
+            "title": "", 
+            "plugin_name": "", 
+            "container_type": "", 
+            "position": 0, 
+            "page": 5, 
+            "block": 1, 
             "arguments": ""
         }
     }

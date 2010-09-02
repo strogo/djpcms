@@ -36,7 +36,12 @@ class AppViewBase(djpcmsview):
     
 * ``name`` name of view.
 * ``parent`` instance of :class:`AppViewBase` or None.
-* ``isplugin`` if ``True`` the view can be rendered as :class:`djpcms.plugins.DJPplugin`.'''
+* ``isplugin`` if ``True`` the view can be rendered as :class:`djpcms.plugins.DJPplugin`.
+
+.. attribute: in_navigation
+
+    If ``False`` the view won't appear in Navigation.
+'''
     creation_counter = 0
     
     def __init__(self,
@@ -93,10 +98,10 @@ class AppViewBase(djpcmsview):
         
     def linkname(self, djp):
         page = djp.page
-        if not page:
-            return self.appmodel.name
-        else:
-            return page.link
+        link = '' if not page else page.link
+        if not link:
+            link = self.appmodel.name
+        return link
         
     def title(self, page, **urlargs):
         if not page:
@@ -248,10 +253,12 @@ class AppView(AppViewBase):
     
 class SearchView(AppView):
     search_text = 'search_text'
-    '''
-    Base class for searching objects in model
+    '''Base class for searching objects in model. By default :attr:`in_navigation` is set to ``True``.
     '''
     def __init__(self, *args, **kwargs):
+        in_navigation = kwargs.pop('in_navigation',None)
+        if in_navigation is None:
+            kwargs['in_navigation'] = True
         super(SearchView,self).__init__(*args,**kwargs)
     
     def appquery(self, request, *args, **kwargs):
@@ -524,7 +531,7 @@ class ViewView(ObjectView):
     '''
     Home page for an object
     '''
-    def __init__(self, regex = '(\d+)', parent = None, name = 'view', **kwargs):
+    def __init__(self, regex = '(?P<id>\d+)', parent = None, name = 'view', **kwargs):
         '''
         By default the relative url is given by the databse id number
         '''

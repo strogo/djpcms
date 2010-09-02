@@ -1,5 +1,4 @@
 {% extends "djpcms/base.html" %}{% load djpcmstags %}
-{% block body-container-bits %}{% endblock %}
 
 {% block branding-banner %}
  <div class="{{ grid.container_class }}">
@@ -45,6 +44,7 @@
 	  </div>
     </div>
  </div>
+ {{ grid.clear }}
 {% endblock %}
 
 {% block page-footer %}

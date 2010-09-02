@@ -1,6 +1,7 @@
 {% load uni_form_field %}
 {% for formset in form_inlines %}
  <fieldset class="{{ field_class }}">
+ {{ formset.legend }}
  {{ formset.formset.management_form }}
  <table>
  <thead>

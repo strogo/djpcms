@@ -20,7 +20,7 @@ class ArchiveApplication(ModelApplication):
     date_code     = None
     '''The model field name which is used to create time archives. Must be a date or datetime field.'''
     split_days    = False
-    search        = appview.ArchiveView(in_navigation = True)
+    search        = appview.ArchiveView()
     year_archive  = appview.YearArchiveView(regex = '(?P<year>\d{4})')
     month_archive = appview.MonthArchiveView(regex = '(?P<month>\w{3})', parent = 'year_archive')
     day_archive   = appview.DayArchiveView(regex = '(?P<day>\d{2})',   parent = 'month_archive')

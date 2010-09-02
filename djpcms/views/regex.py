@@ -1,11 +1,20 @@
-from django.utils.encoding import iri_to_uri
 import copy
 
+from django.utils.encoding import iri_to_uri
+
+from djpcms.core.exceptions import ApplicationUrlException
+
+
 class RegExUrl(object):
-    '''
-    Helper class for url regular expression manipulation
-    @param url: regular expression string
-    @param split: if True the url will be split using '/' as separator  
+    '''Helper class for url regular expression manipulation
+    
+    .. attribute: url
+    
+        regular expression string
+        
+    .. attribute: split
+        
+        if True the url will be split using '/' as separator  
     '''
     def __init__(self, url = None, split = True):
         self.url    = str(url or '')
@@ -38,7 +47,6 @@ class RegExUrl(object):
     
     def __process(self):
         bits = self.split()
-        nargs = 0
         for bit in bits:
             if not bit:
                 continue
@@ -49,9 +57,7 @@ class RegExUrl(object):
                 if st and en:
                     name = bit[st:en]
                 else:
-                    nargs += 1
-                    name   = 'arg_no_key_%s' % nargs
-                            
+                    raise ApplicationUrlException('Regular expression for urls requires a keyworld. %s does not have one.' % bit)             
                 bit  = '%(' + name + ')s'
             self.breadcrumbs.append(bit)
             self.purl  += '%s/' % bit

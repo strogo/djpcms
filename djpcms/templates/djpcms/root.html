@@ -13,7 +13,8 @@
 <!--  STYLING -->{% compress_if_you_can css %}{% block style-reset %}
 {% include "djpcms/bits/reset.html" %}{% endblock %}{% block extrastyle %}
 <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/djpcms.css"/>
-<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/uni-form.css"/>{% if media %}{% for css in media.render_css %}
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/uni-form.css"/>
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/nav.css"/>{% if media %}{% for css in media.render_css %}
 {{ css|safe }}{% endfor %}{% endif %}{% endblock %}
 <style type="text/css">{% block body-extra-style %}{% endblock %}
 </style>{% endcompress %}

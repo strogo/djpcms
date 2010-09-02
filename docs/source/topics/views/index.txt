@@ -9,6 +9,18 @@ View handlers
 djpcms handles views using objects rather than functions.
 Each view is an instance of a class derived from :class:`djpcms.views.baseview.djpcmsview`.
 
+Contents
+=====================
+.. toctree::
+   :maxdepth: 1
+   
+   flat
+   application
+   
+
+View Base Class
+========================
+
 .. autoclass:: djpcms.views.baseview.djpcmsview
    :members:
    :member-order: bysource

@@ -10,7 +10,6 @@ ul.nav * { margin:0;padding:0;}
 ul.nav {
 	position:relative;
 	max-width:100%;
-	height:2.5em;
 }
 ul.nav li {
     cursor:pointer;
@@ -18,7 +17,6 @@ ul.nav li {
     text-align:center;
     list-style-type:none;
     font-weight:normal;
-    line-height:2.5em;
 }
 ul.nav li ul {
 	cursor:default;
@@ -26,7 +24,6 @@ ul.nav li ul {
 	max-width:100%;
 	position:absolute;
 	height:auto;
-	top:2.5em;
 	background-position:0 0 !important;
 	left:-9000px;
 }
@@ -42,15 +39,11 @@ ul.nav li a {
 	display:block;
 	float:left;
 	padding:0 1em;
-	height:2.4em;
-	line-height:2.5em;
 }
 ul.nav li ul li a {
 	position:relative !important; /* ie Mac */
 	cursor:pointer !important;
 	white-space:nowrap;
-	line-height:2em;
-	height:2em;
 	font-weight:normal;
 	background-position:0 50% !important;
 }
@@ -58,7 +51,14 @@ ul.nav li:hover ul {left:0;z-index:10}
 ul.nav li.current a {cursor:default; font-weight:bold;}
 ul.nav li.current ul {left:0;z-index:5}
 ul.nav li.current ul li a {font-weight:normal;}
- 
+
+/* Size of navigation */
+ul.nav,
+ul.nav li a {height: 2.5em;}
+ul.nav li,
+ul.nav li a {line-height:2.5em;}
+ul.nav li ul {top:2.5em;}
+ul.nav li ul li a {line-height:2em;	height:2em;}
 
 /* navigation (vertical subnavigation)
 ----------------------------------------------- */
