@@ -16,6 +16,41 @@
     font-weight: bold;
 }
 
+.documentation .section h1 {
+	display: none;
+}
+.documentation .section h2 {
+	font-size: 150%;
+}
+/*
+------------------------------- LISTS */
+.documentation .section ul {
+	margin-left: 20px;
+}
+.documentation .section li,
+.documentation .section li.toctree-l1 {
+	list-style-type:disc;
+	margin-bottom: 10px;
+}
+.documentation .section li.toctree-l1 {
+	font-weight: bold;
+}
+.documentation .section li.toctree-l2 {
+	font-weight: normal;
+	list-style-type:circle;
+	margin-bottom: 0;
+	margin-top: 3px;
+}
+
+
+.documentation pre {
+	background: #fff;
+	border: 1px solid #C6C9CB;
+	color: #222222;
+	padding: 10px;
+	margin: 1.1em 0;
+}
+
 div.clearer {
     clear: both;
 }

@@ -2,6 +2,7 @@ from django import forms
 from django.test import TestCase
 
 from djpcms.utils import uniforms
+from djpcms.tests.testmodel.forms import StrategyForm
 
 
 class TestForm(forms.Form):
@@ -11,7 +12,9 @@ class TestForm(forms.Form):
     password2 = forms.CharField(label="re-enter password", max_length=30, required=True, widget=forms.PasswordInput())
     first_name = forms.CharField(label="first name", max_length=30, required=True, widget=forms.TextInput())
     last_name = forms.CharField(label="last name", max_length=30, required=True, widget=forms.TextInput())
+
     
+
     
 class TestUniForms(TestCase):
     
@@ -20,3 +23,13 @@ class TestUniForms(TestCase):
         html = uni.render()
         self.assertTrue("<td>" not in html)
         self.assertTrue("id_is_company" in html)
+        
+    def test_uni_with_formlets(self):
+        f = StrategyForm()
+        uni = uniforms.FormWrap(f)
+        html = uni.render()
+        self.assertTrue("<td>" not in html)
+        self.assertTrue("id_name" in html)
+        self.assertTrue("id_description" in html)
+        
+        

@@ -83,6 +83,38 @@ class DocApplication(ApplicationBase):
     
     def __init__(self, baseurl, application_site, editavailable):
         super(DocApplication,self).__init__(baseurl, application_site, False)
+    
+    def get_path_args(self, lang, version):
+        return (lang, version, "_build", "json")
+    
+    def get_docroot(self, lang, version):
+        docroot = Path(self.DOCS_PICKLE_ROOT).child(*self.get_path_args(lang, version))
+        if not docroot.exists():
+            raise http.Http404()
+        return docroot 
+    
+    def bodybits(self):
+        if self.editurl:
+            return mark_safe(u'class="edit documentation"')
+        else:
+            return mark_safe(u'class="documentation"')
+        
+    def doc_index_url(self, request, lang, version):
+        return '%s%s/%s/' % (self.baseurl,lang,version)
+    
+    def table_of_content_url(self, request, lang, version):
+        return '%s%s/' % (self.doc_index(),'contents')
+    
+    class Media:
+        css = {
+            'all': ('djpcms/sphinx/smooth.css',)
+        }
+    
+    
+    
+    
+    
+class __OldDocApplication(ApplicationBase):
         
     def old__init__(self, baseurl, application_site, editavailable):
         '''Create a tuple of urls'''
