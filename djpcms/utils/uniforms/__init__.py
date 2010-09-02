@@ -15,9 +15,10 @@ from djpcms.utils.ajax import jhtmls
 from djpcms.utils.uniforms.uniformset import ModelFormInlineHelper
 
 
-inlineLabels = 'inlineLabels'
-blockLabels  = 'blockLabels'
-blockLabels2 = 'blockLabels2'
+inlineLabels   = 'inlineLabels'
+blockLabels    = 'blockLabels'
+blockLabels2   = 'blockLabels2'
+inlineFormsets = 'blockLabels2'
 
 
 #_required_tag = mark_safe('<em>*</em>')
@@ -29,7 +30,7 @@ def_renderer = lambda x: x
 
 def render_field(field, form):
     if isinstance(field, str):
-        return render_form_field(form, field)
+        return render_form_field(field, form)
     else:
         return field.render(form)
     
@@ -39,13 +40,15 @@ def get_rendered_fields(form):
     return rf
 
 
-def render_form_field(form, field):
+def render_form_field(field, form):
     try:
         field_instance = form.fields[field]
     except KeyError:
         raise Exception("Could not resolve form field '%s'." % field)
     bound_field = BoundField(form, field_instance, field)
-    html = loader.render_to_string("djpcms/uniforms/field.html", {'field': bound_field, 'required': _required_tag})
+    html = loader.render_to_string("djpcms/uniforms/field.html",
+                                   {'field': bound_field,
+                                    'required': _required_tag})
     rendered_fields = get_rendered_fields(form)
     if not field in rendered_fields:
         rendered_fields.append(field)
@@ -69,18 +72,21 @@ example:
 ... 'last_name',
 ... HTML('<img src="/media/somepicture.jpg"/>'),
 ... 'company'))
->>> helper.add_layout(layout)
+>>> helper.layout = layout
 '''
     def __init__(self, *fields, **kwargs):
         self.template = kwargs.get('template',None)
+        self.default_style = kwargs.get('template',None)
         self._allfields = []
         self.add(*fields)
     
     def add(self,*fields):
+        '''Add *fields* to all fields. A field must be an instance of :class:`UniFormElement`.'''
         for field in fields:
-            self._allfields.append(field)
-            if field.key:
-                setattr(self,field.key,field)
+            if isinstance(field,UniFormElement):
+                self._allfields.append(field)
+                if field.key:
+                    setattr(self,field.key,field)
 
     def render(self, form, formsets = None, inputs = None):
         '''Render the uniform layout:
@@ -95,10 +101,15 @@ example:
             else:
                 html += render_field(field, form)
         
+        missing_fields = []
         rendered_fields = get_rendered_fields(form)
         for field in form.fields.keys():
             if not field in rendered_fields:
-                html += render_field(field, form)
+                missing_fields.append(field)
+        
+        if missing_fields:
+            fset = Fieldset(*missing_fields,**{'css_class':self.default_style})        
+            html += fset.render(form)
                 
         if ctx:
             ctx['html'] = mark_safe(html)
@@ -113,10 +124,10 @@ example:
             return mark_safe(html)
 
 
-class FormElement(object):
-    
+class UniFormElement(object):
+    '''Base class of elements in a uni-form :class:`FormLayout`'''
     def __new__(cls, *args, **kwargs):
-        obj = super(FormElement,cls).__new__(cls)
+        obj = super(UniFormElement,cls).__new__(cls)
         obj.renderer = kwargs.pop('renderer',def_renderer)
         obj.key = kwargs.pop('key',None)
         return obj
@@ -128,7 +139,7 @@ class FormElement(object):
         raise NotImplementedError
 
 
-class Fieldset(FormElement):
+class Fieldset(UniFormElement):
     ''' Fieldset container. Renders to a <fieldset>. '''
     
     def __init__(self, *fields, **kwargs):
@@ -150,7 +161,7 @@ class Fieldset(FormElement):
         return mark_safe(html)
 
 
-class Row(FormElement):
+class Row(UniFormElement):
     ''' row container. Renders to a set of <div>'''
     def __init__(self, *fields, **kwargs):
         self.fields = fields
@@ -167,7 +178,7 @@ class Row(FormElement):
         return u''.join(output)
 
 
-class Column(FormElement):
+class Column(UniFormElement):
     ''' column container. Renders to a set of <div>'''
     def __init__(self, *fields, **kwargs):
         self.fields = fields
@@ -184,7 +195,7 @@ class Column(FormElement):
         return u''.join(output)
 
 
-class HtmlForm(FormElement):
+class HtmlForm(UniFormElement):
 
     ''' HTML container '''
 
@@ -193,38 +204,10 @@ class HtmlForm(FormElement):
 
     def _render(self, form):
         return self.html
-
-
-class FormHelper(object):
-    '''Main uniform class used to inject layout and other properties to raw forms.
-example::
-
-    class StrategyForm(forms.Form):
-        pass
-        
-example with inlines::
-
-    class StrategyForm(fforms.ModelForm):
-        helper = FormHelper()
-        helper.inlines.append(LegForm)
-'''
-    def __init__(self, enctype = 'multipart/form-data'):
-        self.attr = {}
-        self.attr['method']  = 'post'
-        self.attr['action']  = ''
-        self.attr['enctype'] = enctype
-        self.attr['id']      = ''
-        self.attr['class']   = 'uniForm'
-        self.inputs  = []
-        self.layout  = FormLayout()
-        self.tag     = True
-        self.use_csrf_protection = False
-        self.ajax    = None
-        self.inlines = []
-
-    def add_input(self, input_object):
-        self.inputs.append(input_object)
-
+    
+    
+class UniFormBase(object):
+    
     def flatattr(self):
         attr = []
         for k,v in self.attr.items():
@@ -234,7 +217,7 @@ example with inlines::
             return mark_safe(' %s' % ' '.join(attr))
         else:
             return ''
-
+        
     def addClass(self, cn):
         if cn:
             cn = str(cn).replace(' ','')
@@ -249,9 +232,69 @@ example with inlines::
                 attrs['class'] = cn
         return self
     
+
+class FormHelper(UniFormBase):
+    '''Main uniform class used to inject layout and other properties to raw forms.
+For example::
+
+    from django import forms
+    from djpcms.utils import uniforms
+
+    class StrategyForm(forms.Form):
+        name = forms.CharField()
+        description = forms.TextField()
+        
+        helper = uniforms.FormHelper()
+    
+example with inline formlets::
+
+    class StrategyForm(forms.ModelForm):
+        helper = FormHelper()
+        helper.inlines.append(LegForm)
+        
+            
+.. attribute:: default_style
+ 
+    The default style to apply to layout.
+    
+.. attribute:: layout
+ 
+    Instance of :class:`FormLayout`.
+    
+.. attribute:: ajax
+ 
+    A string indicating the ``AJAX`` class or ``None``.
+'''
+    def __init__(self, enctype = 'multipart/form-data',
+                 layout = None, method = 'post',
+                 default_style = None):
+        self.attr = {}
+        self.attr['method']  = method
+        self.attr['action']  = ''
+        self.attr['enctype'] = enctype
+        self.attr['id']      = ''
+        self.attr['class']   = 'uniForm'
+        self.inputs  = []
+        self.default_style   = default_style or inlineLabels
+        self.__layout        = None
+        self.layout          = layout or FormLayout()
+        self.use_csrf_protection = False
+        self.ajax            = None
+        self.inlines         = []
+        
+    def __get_layout(self):
+        return self.__layout
+    def __set_layout(self, layout):
+        if isinstance(layout,FormLayout):
+            layout.default_style = self.default_style
+            self.__layout = layout
+    layout = property(__get_layout,__set_layout)
+
+    def add_input(self, input_object):
+        self.inputs.append(input_object)
+    
     def json_errors(self, form):
-        '''
-        Serialize form errors for AJAX-JSON interaction
+        '''Serialize form errors for AJAX-JSON interaction.
         '''
         jerr = jhtmls()
         form = form.form
@@ -268,17 +311,26 @@ example with inlines::
                       alldocument = False)
         
 
-class FormWrap(object):
-    '''Utility class holding a form, formsets and helper for displaying form'''
-    def __init__(self, form, formsets = None, inputs = None):
-        helper        = getattr(form,'helper',None)
+class UniForm(UniFormBase):
+    '''Class holding a form, formsets and helper for displaying forms as uni-forms.'''
+    def __init__(self,
+                 form,
+                 request = None,
+                 instance = None,
+                 action = '.',
+                 inputs = None,
+                 tag = True):
+        helper = getattr(form,'helper',None)
         if not helper:
             helper = FormHelper()
             form.helper = helper
+        self.attr     = helper.attr.copy()
         self.helper   = helper
+        self.attr['action'] = action
         self.form     = form
-        self.formsets = formsets or []
         self.inputs   = inputs or []
+        self.tag      = tag
+        self.formsets = self._build_fsets(request,instance)
         
     def __get_media(self):
         return self.form.media
@@ -292,7 +344,7 @@ class FormWrap(object):
 
     def render(self):
         return loader.render_to_string('djpcms/uniforms/uniform.html',
-                                       {'helper': self.helper,
+                                       {'uniform': self,
                                         'form': self.render_layout()})
         
     def render_inputs(self):
@@ -305,7 +357,8 @@ class FormWrap(object):
     def render_inlines(self):
         if self.formsets:
             return loader.render_to_string('djpcms/uniforms/inlines.html',
-                                           {'form_inlines': self.formsets})
+                                           {'form_inlines': self.formsets,
+                                            'field_class': inlineFormsets})
         else:
             return ''
         
@@ -313,6 +366,18 @@ class FormWrap(object):
         return mark_safe(self.helper.layout.render(self.form,
                                                    self.render_inlines(),
                                                    self.render_inputs()))
-        
-            
+    
+    def _build_fsets(self, request, instance):
+        formsets = []
+        prefixes = {}
+        for inline in self.helper.inlines:
+            prefix  = inline.get_default_prefix()
+            prefixes[prefix] = prefixes.get(prefix, 0) + 1
+            if prefixes[prefix] != 1:
+                prefix = "%s-%s" % (prefix, prefixes[prefix])
+            formset = inline.get_formset(request = request,
+                                         instance = instance,
+                                         prefix   = prefix)
+            formsets.append(formset)
+        return formsets
     

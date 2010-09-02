@@ -329,3 +329,10 @@ YOU CAN VERY EASILY REVERT TO A GENERIC STYLE OF UNI-FORM. BEST OF LUCK...
 	padding: 4px;
 	background: #ffbfbf;
 }
+
+.uniForm td {
+	padding-left: 0;
+}
+.uniForm th {
+	text-align: center;
+}

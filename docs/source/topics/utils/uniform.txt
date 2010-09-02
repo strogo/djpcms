@@ -7,7 +7,7 @@ Uniforms
 .. module:: djpcms.utils.uniforms
 
 This module complements the django forms library by adding ajax functionality,
-inline forms, and custom layout based on uniform__ style. The module has been adapted 
+inline forms, and custom layout based on uni-form__ style. The module has been adapted 
 from django-uni-form__.
 
 Using uniforms to render form is easy::

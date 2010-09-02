@@ -6,12 +6,16 @@ from djpcms.views.apps import archive
 
 from djpcms.models import SiteContent
 from djpcms.views.apps.docs import DocApplication
-from djpcms.tests.testmodel.models import Strategy
+from djpcms.tests.testmodel.forms import Strategy, StrategyForm
 
 
 class StrategyApplication(appsite.ModelApplication):
     name = 'strategy'
-    add = appview.AddView()
+    form = StrategyForm
+    search = appview.SearchView()
+    add  = appview.AddView()
+    view = appview.ViewView()
+    edit = appview.EditView()
 
 class ContentArchiveApplication(archive.ArchiveApplication):
     '''

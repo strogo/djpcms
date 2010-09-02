@@ -19,7 +19,7 @@ from djpcms.utils import form_kwargs, UnicodeObject, slugify
 from djpcms.utils.forms import add_hidden_field
 from djpcms.plugins import register_application
 from djpcms.utils.html import formlet, submit, form
-from djpcms.utils.uniforms import FormHelper, FormWrap
+from djpcms.utils.uniforms import UniForm
 from djpcms.views.baseview import editview
 from djpcms.views.appview import AppViewBase
 from djpcms.views.cache import pagecache
@@ -333,27 +333,14 @@ Reimplement for custom arguments.'''
                                     withrequest = self.form_withrequest))
 
         if formhelper:
-            helper = getattr(f,'helper',None)
-            if not helper:
-                helper = FormHelper()
-                f.helper = helper
-            
-            prefixes = {}
-            formsets = []
-            for inline in f.helper.inlines:
-                prefix  = inline.get_default_prefix()
-                prefixes[prefix] = prefixes.get(prefix, 0) + 1
-                if prefixes[prefix] != 1:
-                    prefix = "%s-%s" % (prefix, prefixes[prefix])
-                formset = inline.get_formset(request,
-                                             instance = instance,
-                                             prefix   = prefix)
-                formsets.append(formset)
-            
-            helper.attr['action'] = djp.url
-            if helper.ajax is not False and self.form_ajax:
-                helper.addClass(self.ajax.ajax)
-            return FormWrap(f,formsets,self.submit(instance, own_view))
+            wrap = UniForm(f,
+                           request  = request,
+                           instance = instance,
+                           action   = djp.url,
+                           inputs   = self.submit(instance, own_view))
+            if self.form_ajax:
+                wrap.addClass(self.ajax.ajax)
+            return wrap
         
         # Old way of doing things. Deprecated.
         layout = None

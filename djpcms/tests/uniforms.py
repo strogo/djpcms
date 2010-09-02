@@ -19,16 +19,16 @@ class TestForm(forms.Form):
 class TestUniForms(TestCase):
     
     def test_as_uni_form(self):
-        uni = uniforms.FormWrap(TestForm())
+        uni = uniforms.UniForm(TestForm())
         html = uni.render()
         self.assertTrue("<td>" not in html)
         self.assertTrue("id_is_company" in html)
         
     def test_uni_with_formlets(self):
         f = StrategyForm()
-        uni = uniforms.FormWrap(f)
+        uni = uniforms.UniForm(f)
         html = uni.render()
-        self.assertTrue("<td>" not in html)
+        self.assertTrue("<td>" in html)
         self.assertTrue("id_name" in html)
         self.assertTrue("id_description" in html)
         

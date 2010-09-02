@@ -17,7 +17,7 @@ class ModelFormInlineHelper(object):
     def queryset(self, request):
         return self.model._default_manager.all()
     
-    def get_formset(self, request, instance = None, prefix = None):
+    def get_formset(self, request = None, instance = None, prefix = None):
         formset = self.FormSet(**form_kwargs(request  = request,
                                              instance = instance,
                                              prefix   = prefix,

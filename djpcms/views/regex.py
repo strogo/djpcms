@@ -38,6 +38,7 @@ class RegExUrl(object):
     
     def __process(self):
         bits = self.split()
+        nargs = 0
         for bit in bits:
             if not bit:
                 continue
@@ -48,7 +49,7 @@ class RegExUrl(object):
                 if st and en:
                     name = bit[st:en]
                 else:
-                    self.nargs += 1
+                    nargs += 1
                     name   = 'arg_no_key_%s' % nargs
                             
                 bit  = '%(' + name + ')s'

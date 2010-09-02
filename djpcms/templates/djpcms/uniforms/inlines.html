@@ -1,5 +1,6 @@
+{% load uni_form_field %}
 {% for formset in form_inlines %}
- <fieldset class="module">
+ <fieldset class="{{ field_class }}">
  {{ formset.formset.management_form }}
  <table>
  <thead>
@@ -15,7 +16,7 @@
  <tr class="{% cycle "row1" "row2" %}">
  <td class="original">{% for field in form %}{% if field.is_hidden %}
  {{ field }}{% endif %}{% endfor %}{% for field in form %}{% if not field.is_hidden %}
- <td>{{ field }}</td>{% endif %}{% endfor %}
+ <td>{{ field|with_class }}</td>{% endif %}{% endfor %}
  </tr>{% endfor %}
  </tbody>
  </table>
