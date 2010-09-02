@@ -3,13 +3,6 @@
 ============================
 Template structure
 ============================
-
-.. toctree::
-   :maxdepth: 2
-   
-   overview
-   refinements
-   g960
    
 
 To use the template structure you need to create a ``root.html`` file at the root directory
@@ -20,4 +13,11 @@ in your site template directory structure::
 	{% block site-description %}your site description{% endblock %}
   	
 
+
+.. toctree::
+   :maxdepth: 2
+   
+   root
+   base
+   g960
 		

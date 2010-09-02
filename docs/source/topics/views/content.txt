@@ -1,7 +1,0 @@
-
-================================
-Content Editing views
-================================
-
-The content editing views is controlled by the setting :ref:`content-inline-editing`. The implementation of these views
-is in ``djpcms.views.content`` module.

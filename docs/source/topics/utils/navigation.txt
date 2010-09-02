@@ -1,6 +1,8 @@
 
 .. _topics-included-navigation:
 
+.. module:: djpcms.utils.navigation
+
 ============================
 Navigation Utilities
 ============================
@@ -12,6 +14,10 @@ There are two lazy generators useful for creating internal links, menus and brea
 Navigator
 ============================
 The Navigator can be used to generate navigation menus.
+
+.. autoclass:: djpcms.utils.navigation.Navigator
+   :members:
+   :member-order: bysource
 
 
 .. _topics-included-breadcrumbs:

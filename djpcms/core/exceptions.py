@@ -6,3 +6,7 @@ class UsernameAlreadyAvailable(Exception):
 
 class ApplicationUrlException(Exception):
     pass
+
+
+class PageNotFound(Exception):
+    pass

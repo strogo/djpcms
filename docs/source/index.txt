@@ -41,13 +41,14 @@ Contents
    :maxdepth: 1
    
    topics/application/index
+   topics/views/index
    topics/plugins
+   topics/models
    topics/design
    topics/templates/index
    topics/javascript/index
    topics/settings
    topics/utils/index
-   topics/models
    authors
    changelog
 

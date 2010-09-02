@@ -46,6 +46,15 @@ Dictionary of information for `inline content editing`.
 The ``pagecontent`` key define the base url for editing page contents.
 It must contain trailing slashes.
 
+.. setting:: DEFAULT_TEMPLATE_NAME
+
+DEFAULT_TEMPLATE_NAME
+---------------------------
+
+default: ``['base.html','djpcms/base.html']``
+
+A list of template files of a single string. This is the template file name used when no templates are found in the page/view.
+
 
 .. setting:: DJPCMS_MARKUP_MODULE
 

@@ -6,7 +6,6 @@ from django.conf.urls.defaults import url
 from djpcms.utils import mark_safe, json 
 from djpcms.template import loader
 from djpcms.utils.unipath import FSPath as Path
-from djpcms.views.baseview import djpcmsview, htmltype, build_base_context
 from djpcms.views.appsite import ApplicationBase
 from djpcms.views.appview import AppViewBase
 from djpcms.views.regex import RegExUrl
@@ -61,14 +60,7 @@ class DocView(AppViewBase):
                           'djpcms/docs/%s.html' % namet,
                           'docs/doc.html',
                           ]
-        c = build_base_context(djp)
-        if page:
-            c['htmldoc'] = htmltype.get(page.doctype)
-        else:
-            c['htmldoc'] = htmltype.get()
-        c.update({
-             'djp':     djp,
-             'doc':     json.load(open(doc, 'rb')),
+        c = {'doc':     json.load(open(doc, 'rb')),
              'env':     json.load(open(docroot.child('globalcontext.json'), 'rb')),
              'lang':    lang,
              'version': version,
@@ -76,9 +68,7 @@ class DocView(AppViewBase):
              'update_date': datetime.datetime.fromtimestamp(docroot.child('last_build').mtime()),
              #'home': urlresolvers.reverse('document-index', kwargs={'lang':lang, 'version':version}),
              #'search': urlresolvers.reverse('document-search', kwargs={'lang':lang, 'version':version}),
-             'redirect_from': request.GET.get('from', None),
-             'grid':          self.grid960(page)
-             })
+             'redirect_from': request.GET.get('from', None)}
         
         return loader.render_to_string(template_names, c)
         

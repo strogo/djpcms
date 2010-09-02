@@ -74,8 +74,7 @@ class DjpResponse(http.HttpResponse):
     
     @lazyattr
     def _get_page(self):
-        '''
-        Get the page object
+        '''Get the page object
         '''
         return self.view.get_page()
     page = property(_get_page)

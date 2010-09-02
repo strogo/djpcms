@@ -12,6 +12,10 @@ At the hart of the Content Management System lays the Page model.
 
 The content editing views is controlled by the setting :ref:`content-inline-editing`.
 
+.. autoclass:: djpcms.models.Page
+   :members:
+   :member-order: bysource
+
 
 .. _topics-models-additionalpagedata:
 

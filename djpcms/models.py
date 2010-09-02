@@ -16,7 +16,6 @@ from django.template import Template
 from djpcms.conf import settings
 from djpcms.fields import SlugCode
 from djpcms.plugins import get_wrapper, default_content_wrapper, get_plugin
-from djpcms.utils.models import TimeStamp
 from djpcms.utils import lazyattr, function_module, force_unicode, mark_safe, htmltype
 from djpcms.utils.func import PathList
 from djpcms.uploads import upload_function, site_image_storage
@@ -24,6 +23,17 @@ from djpcms.managers import PageManager, BlockContentManager
 from djpcms.markup import markuplib
 
 protocol_re = re.compile('^\w+://')
+
+
+class TimeStamp(models.Model):
+    '''Timestamp abstract model class.'''
+    last_modified     = models.DateTimeField(auto_now = True)
+    '''Python datetime instance when ``self`` was last modified.'''
+    created           = models.DateTimeField(auto_now_add = True)
+    '''Python datetime instance when ``self`` was created.'''
+    
+    class Meta:
+        abstract = True
     
 
 class InnerTemplate(TimeStamp):
@@ -78,8 +88,11 @@ class CssPageInfo(TimeStamp):
     
     
 class Page(TimeStamp):
+    '''The page model holds several information regarding pages in the sitemap.'''
     site        = models.ForeignKey(Site)
+    '''Site to which the page belongs.'''
     application = models.CharField(max_length = 200, blank = True)
+    '''Name of the :class:`djpcms.views.appview.AppViewBase` owner of the page. It can be empty, in which case the page is a ``flat`` page (not part of an application).'''
     redirect_to = models.ForeignKey('self',
                                     null  = True,
                                     blank = True,
@@ -110,6 +123,7 @@ class Page(TimeStamp):
     
     in_navigation = models.PositiveIntegerField(default=1,
                                                 help_text = _("Position in navigation. If 0 it won't be in navigation"))
+    '''Integer flag indicating positioning in the site navigation (see :class:`djpcms.utils.navigation.Navigator`). If set to ``0`` the page won't be displayed in the navigation.'''
     
     cssinfo     = models.ForeignKey(CssPageInfo,
                                     null = True,
@@ -134,6 +148,7 @@ class Page(TimeStamp):
                                   blank = True,
                                   related_name = 'children',
                                   help_text=_('This page will be appended inside the chosen parent page.'))
+    '''Parent page. If ``None`` the page is the site ``root`` page.'''
     
     code_object = models.CharField(max_length=200,
                                    blank=True,
@@ -167,10 +182,8 @@ class Page(TimeStamp):
         super(Page,self).save(**kwargs)
         
     def get_template(self):
-        '''
-        HTML template for the page
-        if not specified we get the template of the parent page
-        '''
+        '''Returns the name of the ``HTML`` template file for the page.
+If not specified we get the template of the :attr:`parent` page.'''
         if not self.template:
             if self.parent:
                 return self.parent.get_template()
@@ -198,8 +211,7 @@ class Page(TimeStamp):
         return super in self.get_path()
         
     def __calculate_url(self):
-        '''
-        Calculate the url.
+        '''Calculate the url. Called during saving.
         '''
         try:
             if self.application:
@@ -250,9 +262,7 @@ class Page(TimeStamp):
             raise ValueError("Unhandled error while saving page: %s." % e)
 
     def get_children(self):
-        '''
-        Same as self.children.all()
-        return all children of self
+        '''Alias of ``self.children.all()``. Return all children of ``self``.
         '''
         return Page.objects.filter(parent=self)
     

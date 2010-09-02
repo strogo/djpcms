@@ -1,0 +1,9 @@
+.. _templates-base:
+
+============================
+The Base Template
+============================
+
+The ``base`` template ``djpcms/base.html`` extends the ``root.html`` template defined
+in your django web site template directory. It provides a battery included template to
+get you up and running quickly.

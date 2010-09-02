@@ -21,6 +21,7 @@ from djpcms.utils import form_kwargs, force_unicode, construct_search, isexact
 from djpcms.views.regex import RegExUrl 
 from djpcms.views.cache import pagecache
 from djpcms.views.baseview import djpcmsview
+from djpcms.core.exceptions import PageNotFound
 
 
 class pageinfo(object):
@@ -126,7 +127,10 @@ class AppViewBase(djpcmsview):
             return self.__page
         else:
             try:
-                self.__page = pagecache.get_for_application(self.code)
+                page = pagecache.get_for_application(self.code)
+                if not page:
+                    raise PageNotFound 
+                self.__page = page
                 return self.__page
             except:
                 if self.parent:

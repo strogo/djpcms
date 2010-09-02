@@ -1,8 +1,0 @@
-.. _topics-templates-refinements:
-
-============================
-Template Refinements
-============================
-
-All other templates in ``djpcms/templates`` extends the ``root.html`` template defined
-in your django web site template directory.

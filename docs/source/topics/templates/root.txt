@@ -1,0 +1,98 @@
+.. _topics-templates-overview:
+
+============================
+The Root Template
+============================
+
+At the top of the tree there is the ``root.html`` file which lays out the main tags of the html page: the ``head`` and the ``body``.
+A new django site using ``djpcms`` templating system need to define a new ``root.html`` template which extends ``djpcms\root.html``.
+
+
+
+Head block tags
+=================
+Here we list the django block tags for customizing the ``head``.
+
+
+
+Body block tags
+================
+
+The body is defined has follow::
+
+	{% block doctype_html %}{{ htmldoc.html }}{% endblock %}{% load djpmodutils djpcmstags %}
+	<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<head>
+	<title>{% block title %}{% if djp.title %}{{ djp.title }} - {% endif %}{% block sitetitle %}{% endblock %}{% endblock %}</title>
+	<!-- Global IE fix to avoid layout crash when single word size wider than column width -->
+	<!--[if IE]><style type="text/css"> body {word-wrap: break-word;}</style><![endif]-->{% block meta-content %}
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />{% endblock %}{% block meta-language %}
+	<meta http-equiv="Content-Language" content="en-uk" />{% endblock %}
+	{% block blockbots %}<meta name="ROBOTS" content="{{ djp.robots }}" />{% endblock %}
+	{% block blockkeywords %}<meta name="keywords" content="{% block site-keywords %}{% endblock %}"/>{% endblock %}
+	{% block blockdescriptions %}<meta name="description" content="{% block site-description %}{% endblock %}"/>{% endblock %}{% if djp.page %}{% for head in djp.page.additional_head %}
+	{{ head|safe }}{% endfor %}{% endif %}
+	<!--  STYLING -->
+	{% compress_if_you_can css %}{% block style-reset %}
+	<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/reset-min.css"/>{% if grid.fixed %}
+	<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/fluid960gs/960.css"/>{% else %}
+	<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/fluid960gs/grid.css"/>{% endif %}
+	<!--[if IE 6]><link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/fluid960gs/ie6.css" media="screen" /><![endif]-->
+	<!--[if IE 7]><link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/fluid960gs/ie.css" media="screen" /><![endif]-->{% endblock %}
+	{% block extrastyle %}
+	<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/djpcms.css"/>
+	<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/uni-form.css"/>{% if media %}{% for css in media.render_css %}
+	{{ css|safe }}{% endfor %}{% endif %}{% endblock %}
+	<style type="text/css">{% block body-extra-style %}{% endblock %}
+	</style>{% endcompress %}
+	<!-- END OF STYLING -->
+	{% compress_if_you_can js %}
+	<script type="text/javascript" src="{{ MEDIA_URL }}djpcms/modernizr-1.1.min.js"></script>
+	<script type="text/javascript" src="{{ MEDIA_URL }}djpcms/jquery-1.4.1.min.js"></script>
+	{% block extra-head %}{% endblock %}{% endcompress %}
+	</head>
+	
+	<body {% block bodybits %}{{ djp.bodybits }}{% endblock %}>{% block pre-body %}{% if prebody %}
+	<!-- PRE-BODY SCRIPTS -->
+	{{ prebody }}{% endif %}{% endblock %}
+	
+	<!-- BODY CONTAINER -->
+	<div{% block body-container-id %} id="body-container"{% endblock %}{% block body-container-bits %} class="{% if grid.fixed %}_fixed{% else %}_float{% endif %}"{% endblock %}>
+	{% block html-container %}{% endblock %}
+	</div>
+	<!-- END OF BODY CONTAINER -->
+	
+	<!-- START END-BODY SCRIPTS -->{% compress_if_you_can js %}{% block end-page-scripts %}
+	<script type="text/javascript" src="{{ MEDIA_URL }}djpcms/jquery-ui-1.7.2.custom.min.js"></script>
+	<script type="text/javascript" src="{{ MEDIA_URL }}djpcms/jquery.pagination.js"></script>
+	<script type="text/javascript" src="{{ MEDIA_URL }}djpcms/form.js"></script>
+	<script type="text/javascript" src="{{ MEDIA_URL }}djpcms/tablesorter/jquery.tablesorter.min.js"></script>{% endblock %}{% block decorator-scripts %}
+	<script type="text/javascript" src="{{ MEDIA_URL }}djpcms/djpcms.js"></script>{% endblock %}{% if media %}
+	{{ media|cleanjs }}{% endif %}{% block body-scripts %}
+	<script type="text/javascript">
+	(function($) {
+	  $(document).ready(function() {
+		{% if cssajax %}var options = {{ cssajax.tojson }};{% else %}var options = {};{% endif %}
+		options.media_url = "{{ MEDIA_URL }}";
+		options.debug     = {{ jsdebug }};
+		$.djpcms.set_options(options);
+		$(document).djpcms();{% block body-extra-scripts %}{% endblock %}
+		});
+	})(jQuery);
+	</script>{% endblock %}{% endcompress %}
+	<!-- END END-BODY SCRIPTS -->
+	
+	{% block ads-scripts %}{% endblock %}
+	
+	{% block analytics-scripts %}{% if release %}
+	{% google_analytics %}
+	{% lloogg_analytics %}{% endif %}{% endblock %} 
+	
+	</body>
+	</html>
+
+There are two important django block tags:
+
+	* ``html-container``: to wrap all the html in the page.
+	* ``end-page-scripts``: to insert all your end-of-page javascript files.
+	

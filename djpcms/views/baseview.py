@@ -29,17 +29,21 @@ build_base_context = function_module(settings.DJPCMS_CONTENT_FUNCTION, more_cont
 # THE DJPCMS INTERFACE CLASS for handling views
 # the response method handle all the views in djpcms
 class djpcmsview(UnicodeObject):
-    # This override the template name in the page object (if it exists)
-    # hardly used but here just in case.
+    '''Base class for handling django views.
+    No views should use this class directly.
+    
+    .. attribute:: _methods
+
+        Request methods handled by ``self``. By default ``GET`` and ``POST`` only.
+    '''
     template_name = None
+    '''Used to override the template name in the page object (if it exists)
+hardly used but here just in case.'''
     parent        = None
     purl          = None
-    # methods handled by the current view. By default GET and POST only
+    
     _methods      = ('get','post')
-    '''
-    Base class for handling django views.
-    No views should use this class directly.
-    '''
+
     def get_media(self):
         return Media()
     
@@ -47,23 +51,24 @@ class djpcmsview(UnicodeObject):
         return None
     
     def get_page(self):
+        '''The :class:`djpcms.models.Page` instances associated with this view.'''
         return None
     
     def __call__(self, request, *args, **kwargs):
         return DjpResponse(request, self, *args, **kwargs)
     
     def methods(self, request):
-        '''
-        Allowed methods for this view.
-        By default it returns the class attribute _methods
+        '''Allowed request methods for this view.
+        By default it returns :attr:`_methods`.
         '''
         return self.__class__._methods
     
-    def get_template(self,page):
-        '''
-        given a page objects (which may be None)
-        return the template file for the get view
-        '''
+    def get_template(self, page = None):
+        '''Given a :class:`djpcms.models.Page` instance *page*, which may be ``None``,
+returns the template file for the ``GET`` response. If :attr:`template_name` is specified,
+it uses it, otherwise if *page* is available, it gets the template from
+:meth:`djpcms.models.Page.get_template`.
+If *page* is ``None`` it returns :setting:`DEFAULT_TEMPLATE_NAME`.'''
         if self.template_name:
             return self.template_name
         else:
@@ -73,6 +78,7 @@ class djpcmsview(UnicodeObject):
                 return settings.DEFAULT_TEMPLATE_NAME
         
     def title(self, page, **urlargs):
+        '''View title.'''
         if page:
             return page.title
         else:

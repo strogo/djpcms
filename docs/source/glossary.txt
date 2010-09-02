@@ -9,7 +9,7 @@ Glossary
     plugin
 		A class responsible for rendering applications and static content.
 		
-		See :ref:`topics-plugins-index`.
+		See :ref:`plugins-index`.
 		
     template
         A chunk of text that acts as formatting for representing data. A
@@ -21,5 +21,5 @@ Glossary
     view
         A class responsible for rending a page.
         
-        See :ref:`topics-views-index`.
+        See :ref:`views-index`.
       

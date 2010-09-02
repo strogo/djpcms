@@ -1,21 +1,14 @@
-.. _topics-views-index:
-
-============================
-URLs and View handlers
-============================
+.. _views-index:
 
 .. module:: djpcms.views
 
-djpcms handles views using objects rather than functions. Each view is an instance of a class
-derived from `djpcmsview`.
+=================
+View handlers
+=================
 
-.. autoclass:: djpcms.views.djpcmsview
+djpcms handles views using objects rather than functions.
+Each view is an instance of a class derived from :class:`djpcms.views.baseview.djpcmsview`.
+
+.. autoclass:: djpcms.views.baseview.djpcmsview
    :members:
-   
-   
-.. toctree::
-   :maxdepth: 2
-   
-   overview
-   content
-   included
+   :member-order: bysource
