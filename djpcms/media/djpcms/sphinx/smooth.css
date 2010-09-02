@@ -51,6 +51,17 @@
 	margin: 1.1em 0;
 }
 
+.documentation tt {
+	background-color:#ECF0F3;
+	color:#222222;
+	font-family:monospace;
+	padding:1px 2px;
+}
+.documentation tt.xref {
+	background-color:transparent;
+	color:inherit;
+}
+
 div.clearer {
     clear: both;
 }

@@ -8,9 +8,16 @@ include docs/Makefile
 include docs/source/conf.py
 recursive-include docs/source *.txt
 recursive-include djpcms/templates *
+recursive-include djpcms/tests/templates *
 recursive-include djpcms/media *
+recursive-include djpcms/tests/media *
 recursive-include djpcms/fixtures *
 recursive-include djpcms/contrib/admin/templates *
 recursive-include djpcms/contrib/admin/media *
 recursive-include djpcms/contrib/compressor/templates *
 recursive-include djpcms/contrib/compressor/media *
+recursive-include examples/sitedjpcms/templates *
+recursive-include examples/sitedjpcms/media *
+recursive-include examples/vinoweb/templates *
+recursive-include examples/vinoweb/media *
+include examples/djpcmstest/djpcmstest.sqlite

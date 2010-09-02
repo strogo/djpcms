@@ -1,11 +1,17 @@
 import os
 
-from djpcms.views import appsite
+from djpcms.views import appsite, appview
 from djpcms.utils.pathtool import parentdir
 from djpcms.views.apps import archive
+
 from djpcms.models import SiteContent
 from djpcms.views.apps.docs import DocApplication
+from djpcms.tests.testmodel.models import Strategy
 
+
+class StrategyApplication(appsite.ModelApplication):
+    name = 'strategy'
+    add = appview.AddView()
 
 class ContentArchiveApplication(archive.ArchiveApplication):
     '''
@@ -28,6 +34,7 @@ class DocTestApplication(DocApplication):
     
     
 appsite.site.register('/content/', ContentArchiveApplication, model = SiteContent)
+appsite.site.register('/strategies/', StrategyApplication, model = Strategy)
 appsite.site.register('/docs/', DocTestApplication)
 
 

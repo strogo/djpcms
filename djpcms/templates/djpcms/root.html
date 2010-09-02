@@ -10,14 +10,8 @@
 {% block blockkeywords %}<meta name="keywords" content="{% block site-keywords %}{% endblock %}"/>{% endblock %}
 {% block blockdescriptions %}<meta name="description" content="{% block site-description %}{% endblock %}"/>{% endblock %}{% if djp.page %}{% for head in djp.page.additional_head %}
 {{ head|safe }}{% endfor %}{% endif %}
-<!--  STYLING -->
-{% compress_if_you_can css %}{% block style-reset %}
-<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/reset-min.css"/>{% if grid.fixed %}
-<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/fluid960gs/960.css"/>{% else %}
-<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/fluid960gs/grid.css"/>{% endif %}
-<!--[if IE 6]><link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/fluid960gs/ie6.css" media="screen" /><![endif]-->
-<!--[if IE 7]><link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/fluid960gs/ie.css" media="screen" /><![endif]-->{% endblock %}
-{% block extrastyle %}
+<!--  STYLING -->{% compress_if_you_can css %}{% block style-reset %}
+{% include "djpcms/bits/reset.html" %}{% endblock %}{% block extrastyle %}
 <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/djpcms.css"/>
 <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/uni-form.css"/>{% if media %}{% for css in media.render_css %}
 {{ css|safe }}{% endfor %}{% endif %}{% endblock %}
@@ -40,7 +34,7 @@
 </div>
 <!-- END OF BODY CONTAINER -->
 
-<!-- START END-BODY SCRIPTS -->{% compress_if_you_can js %}{% block end-page-scripts %}
+<!-- START OF END-BODY SCRIPTS -->{% compress_if_you_can js %}{% block end-page-scripts %}
 <script type="text/javascript" src="{{ MEDIA_URL }}djpcms/jquery-ui-1.7.2.custom.min.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}djpcms/jquery.pagination.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}djpcms/form.js"></script>
@@ -58,13 +52,9 @@
 	});
 })(jQuery);
 </script>{% endblock %}{% endcompress %}
-<!-- END END-BODY SCRIPTS -->
-
+<!-- END OF END-BODY SCRIPTS -->
 {% block ads-scripts %}{% endblock %}
-
 {% block analytics-scripts %}{% if release %}
-{% google_analytics %}
-{% lloogg_analytics %}{% endif %}{% endblock %} 
-
+{% google_analytics %}{% lloogg_analytics %}{% endif %}{% endblock %} 
 </body>
 </html>

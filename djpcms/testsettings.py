@@ -16,8 +16,10 @@ INSTALLED_APPS  = ['django.contrib.auth',
                    'djpcms.tests.testmodel']
 
 
-TEMPLATE_DIRS     = os.path.join(BASE, 'templates','djpcms','tests'),
-
+TEMPLATE_DIRS     = os.path.join(BASE, 'tests', 'templates'),
+ADMIN_MEDIA_PREFIX = '/media/admin/'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE, 'tests', 'media')
 
 # Silence logging
 import logging
