@@ -78,37 +78,6 @@ class EditWrapperHandler(CollapsedWrapper):
     
     def footer(self, djp, cblock, html):
         return djp.view.get_preview(djp.request, djp.instance)
-        
-    def __wrap(self, djp):
-        '''
-        render a block for content editing
-        '''
-        view     = djp.view
-        instance = djp.instance
-        form     = view.render(djp)
-        try:
-            html     = instance.render(djp)
-        except Exception, e:
-            html     = u'%s' % e
-        delurl   = view.appmodel.deleteurl(djp.request, instance)
-        plgurl   = view.appmodel.pluginurl(djp.request, instance)
-        plugin = False
-        if instance.plugin:
-            plugin = True
-        c = {'djp':               djp,
-             'form':              form,
-             'preview':           html,
-             'instance':          instance,
-             'plugin':            plugin,
-             'deleteurl':         delurl,
-             'pluginurl':         plgurl,
-             'plugin_preview_id': view.plugin_preview_id(instance)}
-        #return loader.render_to_string(["content/edit_block.html",
-        #                                "djpcms/content/edit_block.html"],
-        #                                c)
-        return loader.render_to_string(["content/edit_block.html",
-                                        "djpcms/content/new_edit_block.html"],
-                                        c)
 
 
 # Application view for handling change in content block internal plugin

@@ -1,6 +1,9 @@
 .edit-page {
 	background: #fff;
 }
+.djpcms-html-box.edit-block .bd {
+	background: #DDFFCC;
+}
 
 
 /* boxes
@@ -24,9 +27,6 @@
 .djpcms-html-box .bd,
 .djpcms-html-box .ft {
 	background: #fff;
-}
-.djpcms-html-box.edit-block .bd {
-	background: #DDFFCC;
 }
 
 div.flat-pannel {

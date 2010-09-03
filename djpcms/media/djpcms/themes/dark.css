@@ -1,0 +1,44 @@
+.djpcms-block-element.edit-page {
+	background: #9E9E9E;
+	color: #fff;
+}
+.djpcms-block-element.edit-page .uniForm .formHint {
+	color: #fff;
+}
+.djpcms-html-box.edit-block {
+	background: #9E9E9E;
+}
+.djpcms-html-box.edit-block .bd {
+	background: #4D4D4D;
+}
+.djpcms-html-box.edit-block .ft {
+	background: #333;
+}
+
+
+/* boxes
+----------------------------------------------- */
+.djpcms-html-box, div.flat-pannel {
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+}
+.djpcms-html-box .bd {
+	-moz-border-radius-bottomleft: 2px;
+    -moz-border-radius-bottomright: 2px;
+    -webkit-border-bottom-left-radius: 2px;
+    -webkit-border-bottom-right-radius: 2px;
+}
+.djpcms-html-box,
+.djpcms-html-box .bd,
+.djpcms-html-box .hd,
+.djpcms-html-box .ft,
+div.flat-pannel {
+    background:#333;
+    color: #fff;
+}
+
+/* Edit Menu
+--------------------------------------*/
+a.deletable {
+	background: url("../img/buttons.gif") no-repeat scroll -24px 0 transparent
+}

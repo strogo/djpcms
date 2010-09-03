@@ -49,7 +49,7 @@ class BoxWrapper(DJPwrapper):
         if self.collapsed:
             classes.append('collapsed')
         c = {'id': cblock.htmlid(),
-             'title': cblock.title,
+             'title': mark_safe(cblock.title),
              'hd': True,
              'bd': html,
              'ft': self.footer(djp,cblock,html),
