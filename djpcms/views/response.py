@@ -169,11 +169,6 @@ class DjpResponse(http.HttpResponse):
         if method not in (method.lower() for method in methods):
             return http.HttpResponseNotAllowed(methods)
         
-        if is_ajax:
-            func = view.get_ajax_response(self)
-            if func:
-                return func(self)
-        
         func = getattr(view,'%s_response' % method,None)
         if not func:
             raise ValueError("Allowed view method %s does not exist in %s." % (method,view))
@@ -207,9 +202,9 @@ class DjpResponse(http.HttpResponse):
         if settings.ENABLE_BREADCRUMBS:
             d['breadcrumbs'] = Breadcrumbs(self,min_length = settings.ENABLE_BREADCRUMBS)
         template_file = template_file or self.template_file
-        res = render_to_response(template_file, context_instance=context, **kwargs)
-        self.content = res.content
-        return self
+        return render_to_response(template_file, context_instance=context, **kwargs)
+        #self.content = res.content
+        #return self
         
     def redirect(self, url):
         if self.request.is_ajax():

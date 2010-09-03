@@ -22,8 +22,8 @@ TradeForm = uniforms.ModelFormInlineHelper(Strategy,
 
 
 class StrategyForm(forms.ModelForm):
-    helper = uniforms.FormHelper()
-    helper.inlines.append(TradeForm)
+    layout = uniforms.FormLayout()
+    layout.inlines.append(TradeForm)
     
     class Meta:
         model = Strategy

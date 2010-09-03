@@ -8,6 +8,7 @@ from djpcms.models import Page, BlockContent, SiteContent
 from djpcms.utils import lazyattr
 from djpcms import siteapp_choices
 from djpcms.plugins import get_plugin, plugingenerator, wrappergenerator
+from djpcms.utils.uniforms import FormLayout, Column
 
 
 class SearchForm(forms.Form):
@@ -216,8 +217,8 @@ class ContentBlockForm(forms.ModelForm):
     This Model form is used to change the plug-in within
     for a given BlockContent instance.
     '''
-    plugin_name    = PluginChoice(label = _('content'),   choices = plugingenerator, required = False)
-    container_type = LazyChoiceField(label=_('container'), choices = wrappergenerator)
+    plugin_name    = PluginChoice(label = _('Plugin'),   choices = plugingenerator, required = False)
+    container_type = LazyChoiceField(label=_('Container'), choices = wrappergenerator)
     
     class Meta:
         model = BlockContent
@@ -243,16 +244,12 @@ class ContentBlockForm(forms.ModelForm):
 
 
 
-
-#AS_Q_CHOICES = (
-#   ('more:dev_docs', 'Latest'),
-#    ('more:1.0_docs', '1.0'),
-#    ('more:0.96_docs', '0.96'),
-#    ('more:all_docs', 'All'),
-#)
-#
-#class SearchForm(forms.Form):
-#    q = forms.CharField(widget=forms.TextInput({'class': 'query'}))
-#    as_q = forms.ChoiceField(choices=AS_Q_CHOICES, widget=forms.RadioSelect, initial='more:dev_docs')
-
-
+# Short Form for a Page
+class ShortPageForm(forms.ModelForm):
+    
+    layout = FormLayout(Column('title','inner_template'),
+                        Column('link','cssinfo'))
+    
+    class Meta:
+        model = Page
+        fields = ['link','title','inner_template','cssinfo']

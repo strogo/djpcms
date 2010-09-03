@@ -23,13 +23,11 @@ class BlockContentGen(UnicodeObject):
         @param b:       integer indicating the block number in the page
         @param page:    instance of Page or AppPage
         '''
-        from djpcms.views.apps.contentedit import content_view
         self.djp     = djp
         self.page    = djp.page
         self.view    = djp.view
         self.request = djp.request
         self.b       = b
-        self.ecv     = content_view(self.page)
         
     def render(self):
         '''
@@ -55,11 +53,12 @@ class BlockContentGen(UnicodeObject):
         This function produce HTML only if self.view is based on a database Page
         object. Otherwise it does nothing.
         '''
-        blockcontents = self.ecv.blockcontents(self.page, self.b)
+        from djpcms.views.apps.contentedit import content_view
+        ecv = content_view(self.page, self.b)
         if self.view.editurl:
-            return self.ecv(self.request, blockcontents)
+            return ecv(self.djp)
         else:
-            return self._blocks(blockcontents)
+            return self._blocks(ecv.blockcontents)
         
     def _blocks(self, blockcontents):
         '''

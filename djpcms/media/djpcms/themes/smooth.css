@@ -34,23 +34,6 @@ div.flat-pannel {
 	border: 1px solid #E0E0E0;
 }
 
-/* uniForm Inputs
-----------------------------------------------*/
-.uniForm .textInput, .uniForm select, .uniForm textarea {
-	background:#FFFFFF none repeat scroll 0 0;
-	border:2px solid #DFDFDF;
-}
-
-.uniForm input[type="submit"] {
-	background: #fff url(../img/nav-bg.gif) repeat-x scroll center bottom;
-	border:1px solid #AAAAAA;
-	padding:3px 5px;
-}
-
-.uniForm input[type="submit"]:hover {
-	border:1px solid #6B6B6B;
-}
-
 
 /* Navigation
 --------------------------------------------------*/
@@ -107,3 +90,25 @@ ul.main li:hover ul li a:hover {color:#fff; background:#444;}
 ul.main li:hover a:active {background:#444;}
 ul.main li:hover ul li a:active {color:#fff; background:#222;}
  
+
+/* uniForm Inputs
+----------------------------------------------*/
+.uniForm .textInput, .uniForm select, .uniForm textarea {
+	background:#FFFFFF none repeat scroll 0 0;
+	border:2px solid #DFDFDF;
+}
+
+.uniForm input[type="submit"] {
+	background: #fff url(../img/nav-bg.gif) repeat-x scroll center bottom;
+	border:1px solid #AAAAAA;
+	padding:3px 5px;
+}
+
+.uniForm input[type="submit"]:hover {
+	border:1px solid #6B6B6B;
+}
+
+.uniForm .errorlist{
+	color: #af4c4c;
+	background: #ffbfbf;
+}

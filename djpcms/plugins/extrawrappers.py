@@ -1,5 +1,5 @@
-from django.utils.safestring import mark_safe
-
+from djpcms.utils import mark_safe
+from djpcms.template import loader
 from djpcms.plugins import DJPwrapper
 from djpcms.utils.html import box
 
@@ -29,48 +29,47 @@ class PannelWrapper(DJPwrapper):
 
 class BoxWrapper(DJPwrapper):
     name = 'box'
+    template_name = 'djpcms/content/box.html'
+    collapsable = False
+    collapsed = False
     def wrap(self, djp, cblock, html):
         if html:
-            id = cblock.htmlid()
-            hd = cblock.title
-            return box(hd = hd, bd = html, id = id).render()
+            c = self._wrap(djp, cblock, html)
+            c['classes'] = mark_safe(' '.join(c['classes']))
+            return loader.render_to_string(self.template_name, c)
         else:
             return u''
+    
+    def _wrap(self, djp, cblock, html):
+        classes = []
+        menulist = []
+        if self.collapsable:
+            classes.append('collapsable')
+            menulist.append(mark_safe('<a class="collapse" href="#">COLLAPSE</a>'))
+        if self.collapsed:
+            classes.append('collapsed')
+        c = {'id': cblock.htmlid(),
+             'title': cblock.title,
+             'hd': True,
+             'bd': html,
+             'ft': self.footer(djp,cblock,html),
+             'menulist': menulist,
+             'classes': classes}
+        return c
+    
+    def footer(self, djp, cblock, html):
+        return ''
         
-class CollapseWrapper(DJPwrapper):
+class CollapseWrapper(BoxWrapper):
     name = 'box-collapse'
     description = 'box collapsable'
-    def wrap(self, djp, cblock, html):
-        if html:
-            id = cblock.htmlid()
-            hd = cblock.title
-            return box(hd = hd, bd = html, id = id, collapsable = True).render()
-        else:
-            return u''
+    collapsable = True
 
-class CollapsedWrapper(DJPwrapper):
+class CollapsedWrapper(BoxWrapper):
     name = 'box-collapse-closed'
     description = 'box collapsable closed'
-    def wrap(self, djp, cblock, html):
-        if html:
-            id = cblock.htmlid()
-            hd = cblock.title
-            return box(hd = hd, bd = html, id = id, collapsable = True, collapsed = True).render()
-        else:
-            return u''
-    
-    
-class BoxWrapper2(DJPwrapper):
-    name = 'box compact'
-    form_layout = 'onecolumn'
-    
-    def wrap(self, djp, cblock, html):
-        if html:
-            id = cblock.htmlid()
-            hd = cblock.title
-            return box(hd = hd, bd = html, id = id).render()
-        else:
-            return u''
+    collapsable = True
+    collapsed = True
         
 
 class centereddiv(DJPwrapper):

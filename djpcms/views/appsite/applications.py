@@ -343,6 +343,7 @@ Reimplement for custom arguments.'''
             return wrap
         
         # Old way of doing things. Deprecated.
+        raise ValueError('This is old')
         layout = None
         if wrapper:
             layout = wrapper.form_layout
@@ -375,22 +376,6 @@ Reimplement for custom arguments.'''
     def object_from_form(self, form):
         '''Save form and return an instance pof self.model'''
         return form.form.save()
-    
-    #def get_searchform(self,
-    #                   djp,
-    #                   initial = None,
-    #                   method  = 'get'):
-    #    '''
-    #    Build a search form for model
-    #    '''
-    #    mform  = self.search_form
-    #    f = mform(**form_kwargs(request = djp.request,
-    #                            initial = initial))
-    #    fhtml = form(method = method, url = djp.url)
-    #    fhtml['form'] = formlet(form = f,
-    #                            layout = 'flat-notag',
-    #                            submit = submit(value = 'search', name = 'search'))
-    #    return fhtml
     
     # APPLICATION URLS
     # TODO: write it better (not use of application name)

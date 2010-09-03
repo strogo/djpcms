@@ -9,6 +9,7 @@ from djpcms.models import SiteContent
 from djpcms.plugins import DJPplugin
 from djpcms.forms import SlugField, LazyChoiceField
 from djpcms.utils.html import formlet
+from djpcms.utils.uniforms import FormLayout, Fieldset, blockLabels2
 from djpcms.markup import markuplib
 
 from djpcms.utils import uniforms
@@ -99,10 +100,10 @@ class EditContentForm(forms.ModelForm):
     
 class Text(DJPplugin):
     '''plugin for writing text using several different markup languages.'''
-    name          = "text"
-    description   = "Text Editor"
-    withrequest   = True
-    form          = ChangeTextContent
+    name               = "text"
+    description        = "Text Editor"
+    form_withrequest   = True
+    form               = ChangeTextContent
     
     def html(self):
         if self.site_content:
@@ -144,7 +145,8 @@ class Text(DJPplugin):
 
 
 class HtmlContent(forms.Form):
-    content = forms.CharField(widget = forms.Textarea())
+    content = forms.CharField(label="HTML content", widget = forms.Textarea())
+    layout = FormLayout(Fieldset('content',css_class=blockLabels2))
 
         
 class Html(DJPplugin):
@@ -160,9 +162,5 @@ class Html(DJPplugin):
             return u''
             
     def render(self, djp, wrapper, prefix, content = None, **kwargs):
-        if content:
-            #c = RequestContext(djp.request)
-            return content
-        else:
-            return u''
+        return u'' if  not content else mark_safe(content)
     

@@ -54,8 +54,7 @@ class AppViewBase(djpcmsview):
                  isplugin   = False,
                  in_navigation = False,
                  template_name = None,
-                 description = None,
-                 ajax_views = None):
+                 description = None):
         self.__page      = None
         self.name        = name
         self.description = description
@@ -70,9 +69,6 @@ class AppViewBase(djpcmsview):
         self.func      = None
         self.code      = None
         self.editurl   = None
-        self.ajax_views = ajax_views or {}
-        #self.template_name = template_name
-        # Increase the creation counter, and save our local copy.
         self.creation_counter = AppViewBase.creation_counter
         AppViewBase.creation_counter += 1
         

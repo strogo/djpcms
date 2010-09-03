@@ -1,0 +1,14 @@
+<div id="{{ id }}" class="{% block box-class %}djpcms-html-box{% endblock %}{% if classes %} {{ classes }}{% endif %}">{% if hd %}
+ <div class="hd">
+  <h2>{{ title }}</h2>{% if menulist %}
+  <div class="edit-menu">{% for menu in menulist %}
+   {{ menu }}{% endfor %}
+  </div>{% endif %}
+ </div>{% endif %}
+ <div class="bd">
+ {{ bd }}
+ </div>{% if ft %}
+ <div class="ft">
+ {{ ft }}
+ </div>{% endif %}
+</div>

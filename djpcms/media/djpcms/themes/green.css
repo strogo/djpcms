@@ -1,10 +1,7 @@
-.edit-contentblock .hd {
-	border: 2px solid #D6E0FF;
-	border-top: none;
+.edit-page {
+	background: #fff;
 }
-.edit-contentblock .actions {
-	background: #D6E0FF;
-}
+
 
 /* boxes
 ----------------------------------------------- */
@@ -24,13 +21,53 @@
 .djpcms-html-box .hd h2 {
     color: #fff;
 }
-.djpcms-html-box .bd {
+.djpcms-html-box .bd,
+.djpcms-html-box .ft {
+	background: #fff;
+}
+.djpcms-html-box.edit-block .bd {
+	background: #DDFFCC;
+}
+
+div.flat-pannel {
+	-moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
 	background: #fff;
 }
 
-/* uniForm Inputs
+/* uniForm Inputs and Messages
 ----------------------------------------------*/
 .uniForm .textInput, .uniForm select, .uniForm textarea {
 	background:#FFFFFF none repeat scroll 0 0;
-	border:2px solid #D6E0FF;
+	border:2px solid #AFE495;
+}
+
+.uniForm input[type="submit"] {
+	background: #fff url(../img/nav-bg.gif) repeat-x scroll center bottom;
+	border:1px solid #AAAAAA;
+	padding:3px 5px;
+}
+
+.uniForm input[type="submit"]:hover {
+	border:1px solid #6B6B6B;
+}
+
+.uniForm .errorlist{
+	color: #af4c4c;
+	background: #ffbfbf;
+}
+
+.uniForm .messagelist{
+	color: #af4c4c;
+	background: #ffbfbf;
+}
+.uniForm .errorlist{
+	color: #af4c4c;
+	background: #ffbfbf;
+}
+
+/* Edit Menu
+--------------------------------------*/
+a.deletable {
+	background: url("../img/buttons.gif") no-repeat scroll -24px 0 transparent
 }

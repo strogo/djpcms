@@ -10,63 +10,76 @@ from django.template import RequestContext, loader
 
 from djpcms.conf import settings
 from djpcms.models import BlockContent
-from djpcms.utils import form_kwargs
+from djpcms.utils import form_kwargs, mark_safe
 from djpcms.utils.func import isforminstance
 from djpcms.utils.ajax import jhtmls, jremove, dialog, jempty
 from djpcms.utils.html import form, formlet, submit, htmlcomp
+from djpcms.utils.uniforms import UniForm, FormLayout
 from djpcms.forms import ContentBlockForm
-from djpcms.plugins import get_plugin, DJPwrapper
+from djpcms.plugins import get_plugin
+from djpcms.plugins.extrawrappers import CollapsedWrapper
 from djpcms.views import appsite, appview
 from djpcms.views.cache import pagecache
 
+dummy_wrap = lambda d,b,x : x
 
 # Generator of content block in editing mode.
 # Only called when we are in editing mode
 class content_view(object):
     '''
     Utility class for creating the editing generator
-    '''
-    def __init__(self, page):
-        pass
-            
-    def blockcontents(self, page, b):
-        return BlockContent.objects.for_page_block(page, b)
+    '''            
+    def __init__(self, page, b):
+        self.blockcontents = BlockContent.objects.for_page_block(page, b)
     
-    def __call__(self, request, blockcontents):
+    def __call__(self, djp):
         '''
         Return a generator
         blockcontents is a queryset of BlockContent model
         '''
+        request  = djp.request
         appmodel = appsite.site.for_model(BlockContent)
-        view = appmodel.getview('edit')
-        wrapper = EditWrapperHandler()
+        editview = appmodel.getview('edit')
+        wrapper  = EditWrapperHandler()
         pos = 0
-        for b in blockcontents:
+        for b in self.blockcontents:
             if b.position != pos:
                 b.position = pos
                 b.save()
             pos += 1
-            djp  = view(request, instance = b)
-            djp.wrapper = wrapper
-            #djp.prefix  = wrapper.prefix(b)
-            yield wrapper.wrap(djp)
+            editdjp = editview(request, instance = b)
+            djp.media += editdjp.media
+            editdjp.media = djp.media
+            html = editview.render(editdjp)
+            yield wrapper.wrap(editdjp,b,html)
 
 
 # Content wrapper in editing mode.
-# Only called by content_view (funation above)
-class EditWrapperHandler(DJPwrapper):
-    '''
-    wrapper for editing content
-    '''
-    form_layout = 'onecolumn'
-    
+# Only called by content_view (function above)
+class EditWrapperHandler(CollapsedWrapper):
+    '''Wrapper for editing content
+    '''    
     def prefix(self, instance):
         '''
         prefix for given block
         '''
         return 'bd_%s' % instance.pluginid()
     
-    def wrap(self, djp):
+    def _wrap(self, djp, cblock, html):
+        c = super(EditWrapperHandler,self)._wrap(djp, cblock, html)
+        view     = djp.view
+        instance = djp.instance
+        menulist = c['menulist']
+        c['classes'].append('edit-block')
+        delurl   = view.appmodel.deleteurl(djp.request, instance)
+        if delurl:
+            menulist.append(mark_safe('<a class="deletable" href="%s">DELETE</a>' % delurl))
+        return c
+    
+    def footer(self, djp, cblock, html):
+        return djp.view.get_preview(djp.request, djp.instance)
+        
+    def __wrap(self, djp):
         '''
         render a block for content editing
         '''
@@ -90,8 +103,11 @@ class EditWrapperHandler(DJPwrapper):
              'deleteurl':         delurl,
              'pluginurl':         plgurl,
              'plugin_preview_id': view.plugin_preview_id(instance)}
+        #return loader.render_to_string(["content/edit_block.html",
+        #                                "djpcms/content/edit_block.html"],
+        #                                c)
         return loader.render_to_string(["content/edit_block.html",
-                                        "djpcms/content/edit_block.html"],
+                                        "djpcms/content/new_edit_block.html"],
                                         c)
 
 
@@ -115,39 +131,64 @@ class ChangeContentView(appview.EditView):
         return '%s-options' % instance.pluginid()
     def plugin_preview_id(self, instance):
         return '%s-preview' % instance.pluginid()
-            
+    def plugin_edit_id(self, instance):
+        return '%s-edid' % instance.pluginid()
+    
+    def render(self, djp):
+        uni = self.get_form(djp)
+        djp.media += uni.media
+        return uni.render()
+    
+    def get_preview(self, request, instance, wrapped = True, plugin = None):
+        try:
+            view = pagecache.view_from_page(request, instance.page)
+            preview_html = instance.render(view(request), plugin = plugin, wrapper = dummy_wrap)
+        except Exception, e:
+            preview_html = u'%s' % e
+        if wrapped:
+            return mark_safe('<div id="%s">%s</div>' % (self.plugin_preview_id(instance),preview_html))
+        else:
+            return preview_html
+    
     def get_form(self, djp, all = True, **kwargs):
-        '''
-        Get the contentblock editing form
+        '''Get the contentblock editing form
         This form is composed of two formlet,
         one for choosing the plugin type,
         and one for setting the plugin options
         '''
-        app      = self.appmodel
-        instance = djp.instance
-        fhtml    = form(method = app.form_method, url = djp.url)
-        if app.form_ajax:
-            fhtml.addClass(app.ajax.ajax)
-        fhtml['topform'] = app.get_form(djp, wrapped = False, formhelper = False)
-        # We wrap the bottom part of the form with a div for ajax interaction
-        div = htmlcomp('div', id = self.plugin_form_id(instance))
-        fhtml['plugin']  = div
+        uni = super(ChangeContentView,self).get_form(djp)
         if all:
-            div['form'] = self.get_plugin_form(djp, instance.plugin)
-            fhtml['submit'] = formlet(submit = submit(value = 'change'),
-                                      layout = app.form_layout)
-        return fhtml
+            instance = djp.instance
+            pform,purl = self.get_plugin_form(djp, instance.plugin)
+            id = self.plugin_form_id(instance)
+            if pform:
+                layout = getattr(pform,'layout',None) or FormLayout()
+                layout.id = id
+                pform.layout = layout
+                uni.add(pform)
+            else:
+                uni.add('<div id="%s"></div' % id)
+            if purl:
+                sub = str(submit(value = "edit", name = 'edit_content'))
+            else:
+                sub = ''
+            id = self.plugin_edit_id(instance)
+            uni.inputs.append(mark_safe('<span id="%s">%s</span>' % (id,sub)))
+        return uni
         
-    def get_plugin_form(self, djp, plugin):
+    def get_plugin_form(self, djp, plugin, withdata = True):
+        '''If *plugin* is not ``None``, it returns a tuple with the plugin form and the url for editing plugin contents.'''
         if plugin:
             instance = djp.instance
             args     = None
             if instance.plugin == plugin:
                 args = instance.arguments
-            pform = plugin.get_form(djp,args)
-            if pform:
-                return formlet(form = pform, layout = self.appmodel.form_layout)
-    
+            pform = plugin.get_form(djp,args,withdata=withdata)
+            purl  = djp.view.appmodel.pluginurl(djp.request, instance)
+            return (pform,purl)
+        else:
+            return (None,None)
+            
     def edit_block(self, request):
         return jhtmls(identifier = '#%s' % self.instance.pluginid(),
                       html = self.instance.plugin_edit_block(request))
@@ -160,16 +201,23 @@ class ChangeContentView(appview.EditView):
         '''
         form = self.get_form(djp, all = False)
         if form.is_valid():
+            instance   = djp.instance
             new_plugin = form.cleaned_data.get('plugin_name',None)
-            pform      = self.get_plugin_form(djp, new_plugin)
+            pform,purl = self.get_plugin_form(djp, new_plugin, withdata = False)
             if pform:
-                html = pform.render()
+                html = UniForm(pform,tag=False).render()
             else:
                 html = u''
-            return jhtmls(identifier = '#%s' % self.plugin_form_id(djp.instance),
-                          html = html)
+            data = jhtmls(identifier = '#%s' % self.plugin_form_id(djp.instance), html = html)
+            preview = self.get_preview(djp.request, instance, plugin = new_plugin, wrapped = False)
+            data.add('#%s' % self.plugin_preview_id(djp.instance), preview)
+            return data
         else:
-            return form.jerrors
+            return form.json_errors()
+        
+    def ajax__edit_content(self, djp):
+        pluginview = self.appmodel.getview('plugin')
+        return pluginview.default_post(pluginview(djp.request, instance = djp.instance))
         
     def ajax__container_type(self, djp):
         return self.ajax__plugin_name(djp)
@@ -191,27 +239,28 @@ class ChangeContentView(appview.EditView):
             djp.instance.plugin_name = plugin.name
         else:
             if is_ajax:
-                return form.jerrors
+                return form.json_errors()
             else:
                 pass
         
         form      =  self.get_form(djp)
-        if form.is_valid(): 
-            instance   = form.save(commit = False)
+        if form.is_valid():
+            instance   = form[0].save(commit = False)
             pform      = instance.plugin.get_form(djp)
             instance.arguments = instance.plugin.save(pform)
             instance.save()
             # We now serialize the argument form
             if is_ajax:
                 ret = jhtmls(identifier = '#%s' % self.plugin_preview_id(instance),
-                             html = instance.render(djp))
-                ret.update(form.messagepost("Plugin changed to %s" % instance.plugin.description))
+                             html = instance.render(djp, wrapper = dummy_wrap))
+                form.add_message("Plugin changed to %s" % instance.plugin.description)
+                ret.update(form.json_message())
                 return ret
             else:
                 pass 
         else:
             if is_ajax:
-                return form.jerrors
+                return form.json_errors()
             else:
                 pass
         
@@ -265,7 +314,7 @@ class EditPluginView(appview.EditView):
             f.save()
             return f.messagepost('%s saved' % f.instance)
         else:
-            return f.jerrors
+            return f.json_errors()
         
     def ajax__cancel(self, djp):
         return jempty()
@@ -279,8 +328,11 @@ class ContentSite(appsite.ModelApplication):
     delete      = appview.DeleteView(parent = 'edit')
     plugin      = EditPluginView(regex = 'plugin', parent = 'edit')
     
+    class Media:
+        js = ['djpcms/iNettuts.js']
+    
     def submit(self, *args, **kwargs):
-        return None
+        return [submit(value = "save", name = '_save')]
     
     def objectbits(self, obj):
         return {'pageid': obj.page.id,

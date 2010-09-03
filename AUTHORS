@@ -2,8 +2,6 @@
 Authors
 ====================
 * Luca Sbardella.
-* Daniel Greenfeld for the original django-uni-form__ module contained in ``djpcms.utils.uniforms``.
 * Zain Memon for the original jogging__ module in ``contrib``.
 
-__ http://pydanny.github.com/django-uni-form
 __ http://github.com/zain/jogging 

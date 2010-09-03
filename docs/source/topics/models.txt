@@ -19,7 +19,9 @@ The content editing views is controlled by the setting :ref:`content-inline-edit
 
 .. _topics-models-additionalpagedata:
 
-AdditionalPageData Model
+Block Content Model
 =============================
 
-this model is used to inject some extra data into the head or page javascript body.
+.. autoclass:: djpcms.models.BlockContent
+   :members:
+   :member-order: bysource

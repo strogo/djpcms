@@ -11,9 +11,12 @@ from django.forms import Media, MediaDefiningClass
 
 
 from djpcms.conf import settings
+from djpcms.contrib import messages
 from djpcms.utils.ajax import jservererror, jredirect
-from djpcms.utils.html import grid960
+from djpcms.utils.html import grid960, submit
+from djpcms.forms import ShortPageForm
 from djpcms.permissions import inline_editing
+from djpcms.utils.uniforms import UniForm
 from djpcms.utils import UnicodeObject, urlbits, urlfrombits, function_module, \
                          htmltype, mark_safe, force_unicode
 
@@ -48,7 +51,7 @@ hardly used but here just in case.'''
         return Media()
     
     def get_url(self, djp, **urlargs):
-        return None
+        return djp.request.path
     
     def get_page(self):
         '''The :class:`djpcms.models.Page` instances associated with this view.'''
@@ -109,21 +112,17 @@ If *page* is ``None`` it returns :setting:`DEFAULT_TEMPLATE_NAME`.'''
     def preget(self, djp):
         pass
     
-    def update_content(self, request, c):
+    def extra_content(self, djp, c):
         pass
     
     def handle_response(self, djp):
-        '''
-        Handle the RESPONSE.
-        This function SHOULD NOT be overwritten.
-        Several functions can be overwritten for tweaking the results.
-        If that is not enough, maybe more hooks should be put in place.
-        
-        Hooks:
-            - 'preget':     for pre-processing and redirect
-            - 'render':     for creating content when there is no inner_template
-        '''
-        #First check for redirect
+        '''Handle the RESPONSE.This function SHOULD NOT be overwritten.
+Several functions can be overwritten for tweaking the results.
+If that is not enough, maybe more hooks should be put in place.
+Hooks:
+* 'preget':     for pre-processing and redirect
+* 'render':     for creating content when there is no inner_template
+* *extra_response*: for more.'''
         re = self.preget(djp)
         if isinstance(re,http.HttpResponse):
             return re
@@ -171,6 +170,7 @@ If *page* is ``None`` it returns :setting:`DEFAULT_TEMPLATE_NAME`.'''
                 return inner
         
         more_content['inner'] = inner
+        self.extra_content(djp,more_content)
         return djp.render_to_response(more_content)
     
     def get_ajax_response(djp):
@@ -373,8 +373,8 @@ class wrapview(djpcmsview):
 
 
 class editview(wrapview):
-    '''
-    Special wrap view for editing page content
+    '''Special :class:`djpcms.views.baseview.wrapview` for editing page content.
+This view is never in navigation and it provides a hook for adding the edit page form.
     '''
     def __init__(self, view, prefix):
         super(editview,self).__init__(view,prefix)
@@ -383,3 +383,16 @@ class editview(wrapview):
     def in_navigation(self, request, page):
         return 0
     
+    def extra_content(self, djp, c):
+        uni = UniForm(ShortPageForm(instance = self.get_page()), action = djp.url, csfr = True)
+        uni.inputs.append(submit(value = "change", name = '_save'))
+        c['page_form'] = uni.render()
+
+    def default_post(self, djp):
+        request = djp.request
+        f = ShortPageForm(instance = self.get_page(), data = request.POST)
+        if f.is_valid():
+            page = f.save()
+            messages.info(request, 'Page %s updated' % page)
+        pagecache.clear(request)
+        return http.HttpResponseRedirect(djp.url)

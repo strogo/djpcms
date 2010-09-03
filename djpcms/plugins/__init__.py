@@ -111,23 +111,18 @@ class DJPwrapper(UnicodeObject):
     form_layout   = None
 
     def wrap(self, djp, cblock, html):
-        '''Wrap content for block cblock
-        @param param: djp instance of djpcms.views.baseview.DjpRequestWrap 
-        @param param: cblock instance or BlockContent
-        @return: safe unicode HTML
-        '''
+        '''Wrap content for block and return safe HTML.
+This function should be implemented by derived classes.
+        
+* *djp* instance of :class:`djpcms.views.response.DjpResponse`.
+* *cblock* instance of :class:'djpcms.models.BlockContent`.
+* *html* safe unicode string of inner HTML.'''
         if html:
             return html
         else:
             return u''
     
     def __call__(self, djp, cblock, html):
-        '''
-        Wrap content for block cblock
-        @param param: djp instance of djpcms.views.baseview.DjpRequestWrap 
-        @param param: cblock instance or BlockContent
-        @return: safe unicode HTML
-        '''
         return mark_safe(u'\n'.join(['<div class="djpcms-block-element">',
                                      self.wrap(djp, cblock, html),
                                      '</div>']))
@@ -208,7 +203,7 @@ This is the function plugins need to implement.
     def save(self, pform):
         return form2json(pform)
     
-    def get_form(self, djp, args = None):
+    def get_form(self, djp, args = None, withdata = True):
         '''Return an instance of a :attr:`form` or `None`. Used to edit the plugin when in editing mode.
 Usually, there is no need to override this function. If your plugin needs input parameters when editing, simple set the
 :attr:`form` attribute.
@@ -217,7 +212,8 @@ Usually, there is no need to override this function. If your plugin needs input 
         if self.form:
             return self.form(**form_kwargs(request = djp.request,
                                            initial = initial,
-                                           withrequest = self.form_withrequest))
+                                           withrequest = self.form_withrequest,
+                                           withdata = withdata))
             
     def response(self, request, *bits):
         raise http.Http404

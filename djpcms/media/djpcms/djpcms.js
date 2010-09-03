@@ -339,19 +339,28 @@
 	dj.addDecorator({
 		id:"djpcms-box",
 		decorate: function($this,config) {
-			var cname = '.djpcms-html-box';
-			$(cname,$this).each(function() {
-				var el = $(this);
-				if(el.hasClass('collapsable')) {
-					var c = $('<a class="collapse" href="#"></a>');
-					$('.hd',el).append(c);
-					c.mousedown(function (e) {
-	                    e.stopPropagation();    
-	                });
-					c.click(function () {
-						$(this).parents(cname).toggleClass('collapsed');
-					});
-				}
+			var elements = [{cname:'.djpcms-html-box',bname:'.hd'},
+			                {cname:'.djpcms-block-element',bname:'.actions'}];
+			$.each(elements,function(i,el) {
+				var cname = el.cname;
+				var bname = el.bname;
+				$(cname,$this).each(function() {
+					var el = $(this);
+					if(el.hasClass('collapsable')) {
+						var container = $(bname,el);
+						if(container.length) {
+							var link = $('a.collapse',container);
+							if(link.length) {
+								link.mousedown(function (e) {
+									e.stopPropagation();    
+								});
+								link.click(function () {
+									$(this).parents(cname).toggleClass('collapsed');
+								});
+							}
+						}
+					}
+				});
 			});
 		}
 	});

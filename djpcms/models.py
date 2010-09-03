@@ -296,19 +296,21 @@ If not specified we get the template of the :attr:`parent` page.'''
 
 
 class BlockContent(models.Model):
-    '''
-    A block content object is responsible for mantaining
+    '''A block content object is responsible for mantaining
     relationship between html plugins and their position in page
     '''
     page           = models.ForeignKey(Page,
                                        verbose_name=_("page"),
                                        editable = False,
                                        related_name = 'blockcontents')
+    ''':class:`djpcms.models.Page` holding ``self``.'''
     block          = models.PositiveSmallIntegerField(_("block"), editable = False)
+    '''Integer indicating the block number within the page.'''
     position       = models.PositiveIntegerField(_("position"),
                                                  blank=True,
                                                  editable=False,
                                                  default = 0)
+    '''Integer indicationg the position of content within the block.'''
     plugin_name    = models.CharField(blank = True,
                                       max_length = 100)
     arguments      = models.TextField(blank = True)
@@ -359,18 +361,16 @@ class BlockContent(models.Model):
                        submit = submit(value = 'Change',
                                        name  = 'change_plugin_content'))
     
-    def render(self, djp):
+    def render(self, djp, plugin = None, wrapper = None):
         '''
         Render the plugin.
         This function call the plugin render function
         '''
-        plugin  = self.plugin
-        wrapper = self.wrapper
+        plugin  = plugin or self.plugin
+        wrapper = wrapper or self.wrapper
         if plugin:
             djp.media += plugin.media
-            #prefix  = 'bd_%s' % self.pluginid()
-            prefix = None
-            html   = plugin(djp, self.arguments, wrapper = wrapper, prefix = prefix)
+            html   = plugin(djp, self.arguments, wrapper = wrapper)
             if html:
                 return wrapper(djp, self, html)
             else:

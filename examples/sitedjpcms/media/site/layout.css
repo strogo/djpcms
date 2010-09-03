@@ -21,10 +21,11 @@ padding-top:14px;
 	background:transparent url(img/bg.gif) repeat-x;
 	height:82px;
 }
-#page-main {
+#page-body {
 	min-height: 500px;
+	background: rgb(242,242,242);
 }
-#footer {
+#page-footer {
     background: transparent url(img/ftr.gif) repeat-x;
     color:#FFFFFF;
     height:53px;

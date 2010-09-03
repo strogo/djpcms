@@ -101,6 +101,9 @@ ul.menu li.selected ul li.selected a {background: rgb(245,245,245);}
 
 /** INLINE CONTENT EDITING
 -----------------------------------------------------------*/
+.edit-contentblock .djpcms-block-element {
+	margin-bottom: 0;
+}	
 .edit-contentblock .hd {
 	padding: 5px 10px;
 	margin: 0;
@@ -156,35 +159,10 @@ form .errorlist {
 
 /* GENERAL CLASSES FOR Tags 
 -------------------------------------------------------------*/
-.form-messages {
-	font-weight: bold;
-	color: rgb(0,77,38);
-	filter:alpha(opacity=70);
-  	opacity:0.7;
-}
 .center-element {
 	display:block;
 	margin-left:auto;
 	margin-right:auto; 
-}
-
-a.editable {
-	float: right;
-	background:transparent url("img/icons/pencil.png") no-repeat;
-	display:block;
-	padding:10px 12px;
-	margin:0;
-	border:none;
-}
-a.deletable {
-	float: right;
-	background:transparent url("img/icons/cross.png") no-repeat;
-	display:block;
-	padding:0;
-	margin:0;
-	border:none;
-	height:16px;
-	width:16px;
 }
 
 div.tag-cloud {
@@ -365,17 +343,7 @@ input.openid {
 ------------------------------------------------*/
 .djpcms-html-box {
     padding: 2px;
-}
-
-.djpcms-html-box .hd a.collapse {
-	float: right;
-	background:transparent url(img/buttons.gif) no-repeat scroll -52px 0;
-	display:inline;
-	height:14px;
-	width:14px;
-}
-.djpcms-html-box.collapsed .hd a.collapse {
-	background:transparent url(img/buttons.gif) no-repeat scroll -38px 0;
+    margin-bottom: 20px;
 }
 
 .djpcms-html-box div.hd {
@@ -394,10 +362,60 @@ input.openid {
 	font-weight:normal;
 	text-transform:uppercase;
 }
-.djpcms-html-box .bd {
-	padding: 10px 10px;
+.djpcms-html-box .bd,
+.djpcms-html-box .ft {
+	padding: 5px 5px;
 	overflow: hidden;
 }
 .djpcms-html-box.collapsed .bd {
 	display: none;
+}
+
+.djpcms-html-box.edit-block .hd {
+	cursor: move;
+}
+.djpcms-html-box.edit-block .ft {
+	margin-top: 2px;
+} 
+
+/* Actions menu
+--------------------------------------------------------- */
+div.edit-menu {
+	float: right;
+}
+div.edit-menu.left {
+	float: left;
+}
+div.edit-menu a {
+	display:inline;
+	float:left;
+	border:none;
+	margin:0 0 0 3px;
+	text-indent:-9999em;
+	padding:0;
+	height:14px;
+	width:14px;
+}
+a.collapse {
+	background:transparent url(img/buttons.gif) no-repeat scroll -52px 0;
+}
+.collapsed a.collapse {
+	background:transparent url(img/buttons.gif) no-repeat scroll -38px 0;
+}
+a.editable {
+	background:transparent url("img/icons/pencil.png") no-repeat;
+}
+a.deletable {
+	background:transparent url("img/icons/cross.png") no-repeat;
+}
+
+/*  Edit Page
+---------------------------------------------------------------*/
+.edit-page {
+	padding: 0;
+}
+.edit-page .formColumn {
+	display: inline;
+	float: left;
+	width: 50%;
 }
