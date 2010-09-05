@@ -23,6 +23,7 @@ from djpcms.views.cache import pagecache
 
 dummy_wrap = lambda d,b,x : x
 
+
 # Generator of content block in editing mode.
 # Only called when we are in editing mode
 class content_view(object):
