@@ -3,6 +3,7 @@
 # Adapted from http://github.com/pydanny/django-uni-form
 #
 #
+from djpcms.contrib import messages
 from django.forms.forms import BoundField
 from django.forms.formsets import all_valid
 from django.utils.safestring import mark_safe
@@ -272,6 +273,7 @@ class UniForm(UniFormBase):
         self.tag             = tag
         self._messages       = []
         self._errors         = []
+        self.is_ajax         = False
         self.error_message   = error_message if error_message is not None else self.default_error_msg
         self.template        = template or self.default_template
         self.add(form,request,instance)
@@ -307,18 +309,31 @@ class UniForm(UniFormBase):
                     return False
         return all_valid(self.formsets)
     
-    def add_message(self, msg, error = False):
+    def save(self):
+        instance = None
+        for form in self.forms:
+            save = getattr(form[1],'save',None)
+            if save:
+                instance = save()
+        return instance
+    
+    def add_message(self, request, msg, error = False):
+        msg = str(msg)
         if error:
             self._errors.append(msg)
+            if not self.is_ajax:
+                messages.error(request,msg)
         else:
             self._messages.append(msg)
+            if not self.is_ajax:
+                messages.info(request,msg)
             
     def json_message(self):
         msg = self._make_messages('messagelist',self._messages)
         err = self._make_messages('errorlist',self._errors)
         return jhtmls(identifier = '.form-messages', html = msg+err, alldocument = False)
     
-    def json_errors(self):
+    def json_errors(self, withmessage = True):
         '''Serialize form errors for AJAX-JSON interaction.
         '''
         jerr = jhtmls()
@@ -330,9 +345,9 @@ class UniForm(UniFormBase):
                     if field_instance:
                         bound_field = BoundField(form, field_instance, name)
                         jerr.add('#%s-errors' % bound_field.auto_id,str(errs),alldocument = False)
-        if jerr and self.error_message:
-            self.add_message(self.error_message,error=True)
-            jerr.update(self.json_message())
+        #if jerr and self.error_message and withmessage:
+        #    self.add_message(self.error_message,error=True)
+        jerr.update(self.json_message())
         return jerr
     
     @property

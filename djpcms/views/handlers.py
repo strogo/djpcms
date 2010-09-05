@@ -32,6 +32,12 @@ def djpcmsHandler(request, url):
         except Exception, e:
             raise Http404
 
+def response(request, url):
+    view, args, kwargs = djpcmsHandler(request, url)
+    if isinstance(view,HttpResponseRedirect):
+        return view
+    return view(request, *args, **kwargs)
+    
 
 def Handler(request, url):
     view, args, kwargs = djpcmsHandler(request, url)

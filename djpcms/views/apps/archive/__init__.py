@@ -8,7 +8,7 @@ from django.utils.dates import MONTHS_3, MONTHS_3_REV, WEEKDAYS_ABBR, MONTHS
 from django.utils.encoding import force_unicode
 
 from djpcms.views.appsite import ModelApplication
-from djpcms.views import appview
+from djpcms.views.apps.archive import views 
 
 __all__ = ['ArchiveApplication']
 
@@ -20,10 +20,10 @@ class ArchiveApplication(ModelApplication):
     date_code     = None
     '''The model field name which is used to create time archives. Must be a date or datetime field.'''
     split_days    = False
-    search        = appview.ArchiveView()
-    year_archive  = appview.YearArchiveView(regex = '(?P<year>\d{4})')
-    month_archive = appview.MonthArchiveView(regex = '(?P<month>\w{3})', parent = 'year_archive')
-    day_archive   = appview.DayArchiveView(regex = '(?P<day>\d{2})',   parent = 'month_archive')
+    search        = views.ArchiveView()
+    year_archive  = views.YearArchiveView(regex = '(?P<year>\d{4})')
+    month_archive = views.MonthArchiveView(regex = '(?P<month>\w{3})', parent = 'year_archive')
+    day_archive   = views.DayArchiveView(regex = '(?P<day>\d{2})',   parent = 'month_archive')
     
     def get_month_value(self, month):
         return force_unicode(MONTHS_3.get(month))

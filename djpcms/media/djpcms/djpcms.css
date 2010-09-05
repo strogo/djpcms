@@ -1,4 +1,3 @@
-
 /**	TABLE
 -----------------------------------------------------------*/
 table.plain td,
@@ -16,7 +15,6 @@ div.djpcms-block-element {
 div.flat-element,
 div.flat-pannel {
 	padding: 10px;
-	background: transparent;
 }
 
 .djpcms-text-content ul {
@@ -346,15 +344,14 @@ input.openid {
     margin-bottom: 20px;
 }
 
-.djpcms-html-box div.hd {
-    background: transparent;
+.djpcms-html-box .hd {
 	padding:6px 12px;
 	margin: 0;
 	border: none;
 	min-height: 8px;
 	overflow:hidden;
 }
-.djpcms-html-box .hd  h2 {
+.djpcms-html-box .hd h2 {
 	float: left;
 	margin:0;
 	padding:0;

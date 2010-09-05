@@ -63,26 +63,14 @@ class LoginView(appview.AppView):
             f = self.get_form(djp)
             return f.render()
     
+    def _get_form(self, request, instance):
+        return LoginForm
+    
     def get_form(self, djp):
-        '''
-        Create the login form. This function can be reimplemented by
-        a derived view
-        '''
-        request = djp.request
-        mform   = LoginForm
-        initial = self.appmodel.update_initial(request, mform)
-        wrapper = djp.wrapper
-        if wrapper:
-            layout = wrapper.form_layout
-        else:
-            layout = None
-        f      = mform(**form_kwargs(request = request, initial = initial))
-        fhtm = form(cn = self.ajax.ajax, url = djp.url)
-        fhtm['form'] = formlet(form = f,
-                               layout = layout,
-                               submit = [submit(name = 'login_user', value = 'Sign in'),
-                                         submit(name = 'cancel', value = 'Cancel')])
-        return fhtm
+        form = self.appmodel.get_form(djp, form = self._get_form, addinputs = False)
+        form.inputs.append(submit(name = 'login_user', value = 'Sign in'))
+        form.inputs.append(submit(name = 'cancel', value = 'Cancel'))
+        return form
         
     def get_form_url(self, request):
         url = self.page.get_absolute_url()
@@ -104,9 +92,8 @@ class LoginView(appview.AppView):
             if not error:
                 return djp.redirect(f.cleaned_data.get('next','/'))
             else:
-                return djp.errormessage(error)
-        else:
-            return djp.formerrors(f)
+                f.add_message(error,error=True)
+        return f.json_errors(False)
         
     def process_login_data(self, request, data):
         '''

@@ -4,6 +4,7 @@ register = template.Library()
 
 class_converter = {
     "textinput":"textinput textInput",
+    "passwordinput":"passwordinput textInput",
     "fileinput":"fileinput fileUpload",
     "datetimeinput": "datetimeinput textInput",
     "dateinput": "dateinput textInput"

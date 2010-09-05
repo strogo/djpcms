@@ -2,7 +2,7 @@
 from django.utils.http import urlquote
 from djpcms.views import appsite
 from djpcms.views import appview
-from djpcms.views.apps import archive
+from djpcms.views.apps.archive import ArchiveApplication, views as archive
 
 from tagging.models import TaggedItem
 
@@ -26,7 +26,7 @@ class TagView(appview.SearchView):
             return qs
 
 
-class TagArchiveView(appview.ArchiveView):
+class TagArchiveView(archive.ArchiveView):
     
     def __init__(self, *args, **kwargs):
         super(TagArchiveView,self).__init__(*args, **kwargs)
@@ -87,14 +87,14 @@ class TagApplication(appsite.ModelApplication):
 
 
 
-class ArchiveTaggedApplication(archive.ArchiveApplication):
+class ArchiveTaggedApplication(ArchiveApplication):
     '''
     Comprehensive Tagged Archive Application urls.
     '''
-    search        = appview.ArchiveView(in_navigation = True)
-    year_archive  = appview.YearArchiveView(regex = '(?P<year>\d{4})')
-    month_archive = appview.MonthArchiveView(regex = '(?P<month>\w{3})', parent = 'year_archive')
-    day_archive   = appview.DayArchiveView(regex = '(?P<day>\d{2})',   parent = 'month_archive')
+    search        = archive.ArchiveView(in_navigation = True)
+    year_archive  = archive.YearArchiveView(regex = '(?P<year>\d{4})')
+    month_archive = archive.MonthArchiveView(regex = '(?P<month>\w{3})', parent = 'year_archive')
+    day_archive   = archive.DayArchiveView(regex = '(?P<day>\d{2})',   parent = 'month_archive')
     
     tagc0          = appview.AppView(regex = 'tags', in_navigation = True)
     tag1           = TagArchiveView(regex = '(?P<tag1>%s)' % tag_regex, parent = 'tagc0')

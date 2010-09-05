@@ -1,4 +1,4 @@
-import copy
+from copy import copy
 
 from django import http
 from django.shortcuts import render_to_response
@@ -25,7 +25,7 @@ class DjpResponse(http.HttpResponse):
         self.request    = request
         self.view       = view
         self.css        = settings.HTML_CLASSES
-        self._urlargs   = None
+        self.urlargs    = copy(kwargs)
         self.args       = args
         self.kwargs     = kwargs
         self.wrapper    = None
@@ -127,8 +127,8 @@ class DjpResponse(http.HttpResponse):
     def _set_instance(self, instance):
         self.urlargs['instance'] = instance
     instance = property(fget = _get_instance, fset = _set_instance)
-    
-    def handle_arguments(self):
+        
+    def __get_urlargs(self):
         if self._urlargs is None:
             i = 0
             urlargs = copy.copy(self.kwargs)
@@ -137,11 +137,8 @@ class DjpResponse(http.HttpResponse):
                 urlargs['arg_no_key_%s' % i] = arg
             self._urlargs = urlargs
             self.nargs   = i
-        
-    def __get_urlargs(self):
-        self.handle_arguments()
         return self._urlargs
-    urlargs = property(__get_urlargs)
+    #urlargs = property(__get_urlargs)
     
     def robots(self):
         '''

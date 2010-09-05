@@ -18,16 +18,6 @@
 
 /* boxes
 ----------------------------------------------- */
-.djpcms-html-box, div.flat-pannel {
-    -moz-border-radius: 4px;
-    -webkit-border-radius: 4px;
-}
-.djpcms-html-box .bd {
-	-moz-border-radius-bottomleft: 2px;
-    -moz-border-radius-bottomright: 2px;
-    -webkit-border-bottom-left-radius: 2px;
-    -webkit-border-bottom-right-radius: 2px;
-}
 .djpcms-html-box,
 .djpcms-html-box .bd,
 .djpcms-html-box .hd,

@@ -1,12 +1,12 @@
 
 (function($) {
 	
-	var iNettuts = {
+	var iDJP = {
 		    		    
 		    settings : {
-		        columns : '.column',
-		        widgetSelector: '.widget',
-		        handleSelector: '.widget-head',
+		        columns : '.djpcms-block',
+		        widgetSelector: '.edit-block',
+		        handleSelector: '.hd',
 		        contentSelector: '.widget-content',
 		        widgetDefault : {
 		            movable: true,
@@ -29,26 +29,30 @@
 		    },
 
 		    init : function () {
-		        /*this.makeSortable();*/
+		        this.makeSortable();
+		    },
+		    
+		    getWidgetSettings : function (id) {
+		        var settings = this.settings;
+		        return (id&&settings.widgetIndividual[id]) ? $.extend({},settings.widgetDefault,settings.widgetIndividual[id]) : settings.widgetDefault;
 		    },
 		    
 		    makeSortable : function () {
-		        var iNettuts = this,
-		            $ = this.jQuery,
-		            settings = this.settings,
-		            $sortableItems = (function () {
-		                var notSortable = '';
-		                $(settings.widgetSelector,$(settings.columns)).each(function (i) {
-		                    if (!iNettuts.getWidgetSettings(this.id).movable) {
-		                        if(!this.id) {
-		                            this.id = 'widget-no-id-' + i;
-		                        }
-		                        notSortable += '#' + this.id + ',';
-		                    }
-		                });
-		                return $('> li:not(' + notSortable + ')', settings.columns);
-		            })();
+		        var iNettuts = this, settings = this.settings;
+		        function sitems() {
+	                var notSortable = '';
+	                $(settings.widgetSelector,$(settings.columns)).each(function (i) {
+	                    if (!iNettuts.getWidgetSettings(this.id).movable) {
+	                        if(!this.id) {
+	                            this.id = 'widget-no-id-' + i;
+	                        }
+	                        notSortable += '#' + this.id + ',';
+	                    }
+	                });
+	                return $('> li:not(' + notSortable + ')', settings.columns);
+	            }
 		        
+		        var $sortableItems = sitems(); 
 		        $sortableItems.find(settings.handleSelector).css({
 		            cursor: 'move'
 		        }).mousedown(function (e) {
@@ -86,7 +90,8 @@
 		  
 		};
 
-	
+
+iDJP.init();
 
 })(jQuery);
 

@@ -117,7 +117,7 @@ class AppViewBase(djpcmsview):
         '''True if this application view represents the root view of the application.'''
         return self.appmodel.root_application is self
     
-    def get_form(self, djp):
+    def get_form(self, djp, **kwargs):
         return None
         
     def set_page(self, page):
@@ -252,7 +252,7 @@ class SearchView(AppView):
     '''Base class for searching objects in model. By default :attr:`in_navigation` is set to ``True``.
     '''
     def __init__(self, *args, **kwargs):
-        in_navigation = kwargs.pop('in_navigation',None)
+        in_navigation = kwargs.get('in_navigation',None)
         if in_navigation is None:
             kwargs['in_navigation'] = True
         super(SearchView,self).__init__(*args,**kwargs)
@@ -317,70 +317,6 @@ class SearchView(AppView):
         return loader.render_to_string(['components/pagination.html',
                                         'djpcms/components/pagination.html'],
                                         c)
-
-
-class ArchiveView(SearchView):
-    '''
-    Search view with archive subviews
-    '''
-    def __init__(self, *args, **kwargs):
-        super(ArchiveView,self).__init__(*args,**kwargs)
-    
-    def _date_code(self):
-        return self.appmodel.date_code
-    
-    def content_dict(self, djp):
-        c = super(ArchiveView,self).content_dict(djp)
-        month = c.get('month',None)
-        if month:
-            c['month'] = self.appmodel.get_month_number(month)
-        year = c.get('year',None)
-        day  = c.get('day',None)
-        if year:
-            c['year'] = int(year)
-        if day:
-            c['day'] = int(day)
-        return c
-    
-    def appquery(self, request, year = None, month = None, day = None, **kwargs):
-        qs       = super(ArchiveView,self).appquery(request, **kwargs)
-        dt       = self._date_code()
-        dateargs = {}
-        if year:
-            dateargs['%s__year' % dt] = int(year)
-        
-        if month:
-            month = self.appmodel.get_month_number(month)
-            if month:
-                dateargs['%s__month' % dt] = month
-    
-        if day:
-            dateargs['%s__day' % dt] = int(day)
-            
-        #qs = self.basequery(request, **kwargs)
-        if dateargs:
-            return qs.filter(**dateargs)
-        else:
-            return qs
-
-class DayArchiveView(ArchiveView):
-    def __init__(self, *args, **kwargs):
-        super(DayArchiveView,self).__init__(*args,**kwargs)
-    def title(self, page, **urlargs):
-        return urlargs.get('day',None)
-    
-class MonthArchiveView(ArchiveView):
-    def __init__(self, *args, **kwargs):
-        super(MonthArchiveView,self).__init__(*args,**kwargs)
-    def title(self, page, **urlargs):
-        return urlargs.get('month',None)
-    
-    
-class YearArchiveView(ArchiveView):
-    def __init__(self, *args, **kwargs):
-        super(YearArchiveView,self).__init__(*args,**kwargs)
-    def title(self, page, **urlargs):
-        return urlargs.get('year',None)
     
     
 def render_form(form, djp):
@@ -412,7 +348,6 @@ def saveform(self, djp, editing = False):
             return http.HttpResponseRedirect(redirect_url)
     
     f      = self.get_form(djp)
-    helper = f.helper
     if f.is_valid():
         try:
             mch        = 'added'
@@ -425,15 +360,19 @@ def saveform(self, djp, editing = False):
                  'dt': format(dt,settings.DATETIME_FORMAT),
                  'mch': mch}
             msg = _('The %(name)s "%(obj)s" was succesfully %(mch)s %(dt)s') % c
-            messages.info(request, msg)
+            f.add_message(request, msg)
         except Exception, e:
             if is_ajax:
-                return helper.json_form_error(f,e)
+                f.add_message(request,e,error=True)
+                return f.json_errors()
             else:
                 return self.handle_response(djp)
         
         if cont:
-            redirect_url = view.appmodel.editurl(request,instance)
+            if is_ajax:
+                return f.json_message()
+            else:
+                redirect_url = view.appmodel.editurl(request,instance)
         else:
             redirect_url = next
             if not next:
@@ -445,7 +384,7 @@ def saveform(self, djp, editing = False):
             return http.HttpResponseRedirect(redirect_url)
     else:
         if is_ajax:
-            return helper.json_errors(f)
+            return f.json_errors(f)
         else:
             return self.handle_response(djp)
         
@@ -586,8 +525,8 @@ class EditView(ObjectView):
     def title(self, page, instance = None, **urlargs):
         return 'Edit %s' % self.appmodel.title_object(instance)
     
-    def get_form(self, djp):
-        return self.appmodel.get_form(djp)
+    def get_form(self, djp, **kwargs):
+        return self.appmodel.get_form(djp, **kwargs)
     
     def render(self, djp):
         f = self.get_form(djp)

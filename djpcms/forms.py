@@ -211,17 +211,18 @@ class PluginChoice(LazyAjaxChoice):
     
 
 class ContentBlockForm(forms.ModelForm):
-    '''
-    Content Block Change form
+    '''Content Block Change form
     
     This Model form is used to change the plug-in within
     for a given BlockContent instance.
     '''
     plugin_name    = PluginChoice(label = _('Plugin'),   choices = plugingenerator, required = False)
     container_type = LazyChoiceField(label=_('Container'), choices = wrappergenerator)
+    url            = forms.CharField(widget=forms.HiddenInput, required = False)
     
     class Meta:
         model = BlockContent
+        fields = ['plugin_name','container_type','title','url']
         
     def __init__(self, instance = None, **kwargs):
         '''
@@ -231,7 +232,7 @@ class ContentBlockForm(forms.ModelForm):
             raise ValueError('No content block available')
         super(ContentBlockForm,self).__init__(instance = instance, **kwargs)
         # Hack the field ordering
-        self.fields.keyOrder = ['plugin_name', 'container_type', 'title']
+        #self.fields.keyOrder = ['plugin_name', 'container_type', 'title']
         
     def save(self, commit = True):
         pt = self.cleaned_data.pop('plugin_name')
@@ -247,9 +248,9 @@ class ContentBlockForm(forms.ModelForm):
 # Short Form for a Page
 class ShortPageForm(forms.ModelForm):
     
-    layout = FormLayout(Column('title','inner_template'),
-                        Column('link','cssinfo'))
+    layout = FormLayout(Column('title','inner_template','in_navigation'),
+                        Column('link','cssinfo','requires_login'))
     
     class Meta:
         model = Page
-        fields = ['link','title','inner_template','cssinfo']
+        fields = ['link','title','inner_template','cssinfo','in_navigation','requires_login']

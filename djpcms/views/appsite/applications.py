@@ -303,7 +303,7 @@ Reimplement for custom arguments.'''
     
     #  FORMS FOR EDITING AND SEARCHING
     #---------------------------------------------------------------------------------
-    def get_form(self, djp, initial = None, prefix = None, wrapped = True, formhelper = True, form = None):
+    def get_form(self, djp, initial = None, prefix = None, wrapped = True, formhelper = True, form = None, addinputs = True):
         '''Build a form to add or edit an application model object:
         
  * *djp*: instance of djpcms.views.DjpRequestWrap.
@@ -318,7 +318,10 @@ Reimplement for custom arguments.'''
         form = form or self.form
         
         if isinstance(form,type):
-            mform = modelform_factory(self.model, form)
+            if form._meta.model == self.model:
+                mform = form
+            else:
+                mform = modelform_factory(self.model, form)
         else:
             mform = form(request = request, instance = instance)
         
@@ -331,15 +334,19 @@ Reimplement for custom arguments.'''
                                     instance    = instance,
                                     prefix      = prefix,
                                     withrequest = self.form_withrequest))
-
+        inputs = None
+        if addinputs:
+            inputs = self.submit(instance, own_view)
+            
         if formhelper:
             wrap = UniForm(f,
                            request  = request,
                            instance = instance,
                            action   = djp.url,
-                           inputs   = self.submit(instance, own_view))
+                           inputs   = inputs)
             if self.form_ajax:
                 wrap.addClass(self.ajax.ajax)
+            wrap.is_ajax = request.is_ajax()
             return wrap
         
         # Old way of doing things. Deprecated.
@@ -375,7 +382,7 @@ Reimplement for custom arguments.'''
     
     def object_from_form(self, form):
         '''Save form and return an instance pof self.model'''
-        return form.form.save()
+        return form.save()
     
     # APPLICATION URLS
     # TODO: write it better (not use of application name)
