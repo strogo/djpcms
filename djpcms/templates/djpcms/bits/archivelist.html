@@ -1,0 +1,8 @@
+<div class="archive-list">{% for year in years %}
+ <h3><a href="{{ year.url }}">{{ year.year }}</a></h3>
+ <div>
+ <ul>{% for month in year.months %}
+  <li><a href="{{ month.url }}" title="{{ month.count }} entries">{{ month.month }}</a></li>{% endfor %}
+ </ul>
+ </div>{% endfor %}
+</div>

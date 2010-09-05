@@ -225,7 +225,9 @@ If not specified we get the template of the :attr:`parent` page.'''
                     root    = Page.objects.filter(site = self.site, level = 0)
                     if baseurl == '/':
                         if root:
-                            raise ValueError("Root page already available, cannot set application as root. Delete the flat root page first")
+                            root = root[0]
+                            if root != self:
+                                raise ValueError("Root page already available, cannot set application as root. Delete the flat root page first")
                         self.parent = None
                     else:
                         urls = baseurl[1:-1].split('/')
@@ -239,7 +241,7 @@ If not specified we get the template of the :attr:`parent` page.'''
                             self.parent = root[0]
                         else:
                             raise ValueError('Parent page "%s" not available, cannot set application %s' % (parent_url,baseurl))
-                        return baseurl
+                    return baseurl
                 else:
                     p = app.parent
                     pages = Page.objects.filter(application = p.code, site = self.site)

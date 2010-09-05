@@ -59,6 +59,6 @@ def import_modules(modules):
         for module in to_load:
             try:
                 __import__(module)
-            except ImportError:
+            except ImportError, e:
                 pass
             

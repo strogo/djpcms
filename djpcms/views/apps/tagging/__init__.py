@@ -91,7 +91,7 @@ class ArchiveTaggedApplication(ArchiveApplication):
     '''
     Comprehensive Tagged Archive Application urls.
     '''
-    search        = archive.ArchiveView(in_navigation = True)
+    search        = archive.ArchiveView()
     year_archive  = archive.YearArchiveView(regex = '(?P<year>\d{4})')
     month_archive = archive.MonthArchiveView(regex = '(?P<month>\w{3})', parent = 'year_archive')
     day_archive   = archive.DayArchiveView(regex = '(?P<day>\d{2})',   parent = 'month_archive')

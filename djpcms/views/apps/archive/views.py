@@ -5,10 +5,7 @@ from djpcms.views.appview import SearchView
 class ArchiveView(SearchView):
     '''
     Search view with archive subviews
-    '''
-    def __init__(self, *args, **kwargs):
-        super(ArchiveView,self).__init__(*args,**kwargs)
-    
+    '''    
     def _date_code(self):
         return self.appmodel.date_code
     

@@ -10,9 +10,6 @@ from djpcms.utils.importlib import import_module, import_modules
 if not settings.DEBUG:
     handler404 = 'djpcms.views.specials.http404view'
     handler500 = 'djpcms.views.specials.http500view'
-    
-import_modules(settings.DJPCMS_PLUGINS)
-import_modules(settings.DJPCMS_WRAPPERS)
 
 site_urls = ()
 
@@ -85,5 +82,10 @@ if settings.CONTENT_INLINE_EDITING['available']:
     
 # Last the djpcms Handler
 site_urls      += ((r'(.*)', 'djpcms.views.handlers.Handler'),)
+
+
+import_modules(settings.DJPCMS_PLUGINS)
+import_modules(settings.DJPCMS_WRAPPERS)
+
 
 

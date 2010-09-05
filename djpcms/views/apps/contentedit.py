@@ -214,6 +214,7 @@ class ChangeContentView(appview.EditView):
         is_ajax = djp.request.is_ajax()
         form = self.get_form(djp, all = False)
         instance = djp.instance
+        request  = djp.request
         if form.is_valid():
             plugin = form.cleaned_data.get('plugin_name',None)
             instance.plugin_name = plugin.name
@@ -232,9 +233,9 @@ class ChangeContentView(appview.EditView):
             instance.save()
             # We now serialize the argument form
             if is_ajax:
-                preview = self.get_preview(djp.request, instance,url,  wrapped = False)
+                preview = self.get_preview(request, instance, url,  wrapped = False)
                 ret = jhtmls(identifier = '#%s' % self.plugin_preview_id(instance), html = preview)
-                form.add_message("Plugin changed to %s" % instance.plugin.description)
+                form.add_message(request, "Plugin changed to %s" % instance.plugin.description)
                 ret.update(form.json_message())
                 return ret
             else:
