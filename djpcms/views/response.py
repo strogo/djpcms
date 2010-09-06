@@ -191,7 +191,8 @@ class DjpResponse(http.HttpResponse):
             d.update(more_context)
         media = self.media
         if settings.DJPCMS_STYLE:
-            media.add_css({'all':['djpcms/themes/%s.css' % settings.DJPCMS_STYLE]})
+            media.add_css({'all':['djpcms/jquery-ui-css/%s/jquery-ui-1.8.4.css' % settings.DJPCMS_STYLE,
+                                  'djpcms/themes/%s.css' % settings.DJPCMS_STYLE]})
         d.update({'djp':        self,
                   'media':      media,
                   'page':       self.page,

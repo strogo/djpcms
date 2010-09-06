@@ -1,14 +1,17 @@
-.edit-contentblock .hd {
-	border: 2px solid #E0E0E0;
-	border-top: none;
-}
-.edit-contentblock .actions {
-	background: #E0E0E0;
-}
-
 .djpcms-block-element.edit-page {
 	background: rgb(240,240,240);
 	border: 1px solid rgb(220,220,220);
+}
+
+
+/**	DJPCMS BOX
+----------------------------------------------------------**/
+.djpcms-html-box .hd {
+	background: #CCCCCC url(smoothness/images/ui-bg_highlight-soft_75_cccccc_1x100.png) repeat-x scroll 50% 50%;
+	border-bottom:1px solid rgb(160,160,160);
+}
+.djpcms-html-box {
+	border: 1px solid rgb(160,160,160);
 }
 
 /* boxes
