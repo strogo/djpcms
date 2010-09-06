@@ -3,17 +3,15 @@
 # Adapted from http://github.com/pydanny/django-uni-form
 #
 #
-from djpcms.contrib import messages
-from django.forms.forms import BoundField
 from django.forms.formsets import all_valid
-from django.utils.safestring import mark_safe
 # Wild import af all django forms stuff
 from django.forms import *
 
+from djpcms.contrib import messages
 from djpcms.template import loader
 from djpcms.utils import mark_safe
 from djpcms.utils.ajax import jhtmls
-from djpcms.utils.uniforms.uniformset import ModelFormInlineHelper
+from djpcms.utils.uniforms.uniformset import BoundField, ModelFormInlineHelper
 
 
 inlineLabels   = 'inlineLabels'
@@ -191,10 +189,13 @@ class Column(UniFormElement):
     ''' column container. Renders to a set of <div>'''
     def __init__(self, *fields, **kwargs):
         self.fields = fields
+        ncols = kwargs.get('num_cols',None)
         if 'css_class' in kwargs.keys():
             self.css = kwargs['css_class']
         else:
-            self.css = "formColumn"
+            self.css = "formColumn blockLabels2"
+        if ncols:
+            self.css += " cols%s" % ncols
 
     def _render(self, form):
         output = u'<div class="%s">' % self.css
@@ -309,12 +310,12 @@ class UniForm(UniFormBase):
                     return False
         return all_valid(self.formsets)
     
-    def save(self):
+    def save(self, commit = True):
         instance = None
         for form in self.forms:
             save = getattr(form[1],'save',None)
             if save:
-                instance = save()
+                instance = save(commit = commit)
         return instance
     
     def add_message(self, request, msg, error = False):
@@ -345,6 +346,10 @@ class UniForm(UniFormBase):
                     if field_instance:
                         bound_field = BoundField(form, field_instance, name)
                         jerr.add('#%s-errors' % bound_field.auto_id,str(errs),alldocument = False)
+        for formset in self.formsets:
+            form = formset.form
+            for name,errs in form.errors.items():
+                pass
         #if jerr and self.error_message and withmessage:
         #    self.add_message(self.error_message,error=True)
         jerr.update(self.json_message())

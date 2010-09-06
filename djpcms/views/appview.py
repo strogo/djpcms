@@ -323,6 +323,14 @@ def render_form(form, djp):
     djp.media += form.media
     return form.render()
     
+def success_message(self, instance):
+    dt = datetime.now()
+    c = {'name': force_unicode(instance._meta.verbose_name),
+         'obj': instance,
+         'dt': format(dt,settings.DATETIME_FORMAT),
+         'mch': mch}
+    return _('The %(name)s "%(obj)s" was succesfully %(mch)s %(dt)s') % c
+    
     
 def saveform(self, djp, editing = False):
     '''Save model instance'''
@@ -354,16 +362,11 @@ def saveform(self, djp, editing = False):
             if editing:
                 mch = 'changed'
             instance = self.save(f)
-            dt = datetime.now()
-            c = {'name': force_unicode(instance._meta.verbose_name),
-                 'obj': instance,
-                 'dt': format(dt,settings.DATETIME_FORMAT),
-                 'mch': mch}
-            msg = _('The %(name)s "%(obj)s" was succesfully %(mch)s %(dt)s') % c
+            msg = self.success_message(instance)
             f.add_message(request, msg)
         except Exception, e:
+            f.add_message(request,e,error=True)
             if is_ajax:
-                f.add_message(request,e,error=True)
                 return f.json_errors()
             else:
                 return self.handle_response(djp)
@@ -376,7 +379,7 @@ def saveform(self, djp, editing = False):
         else:
             redirect_url = next
             if not next:
-                redirect_url = view.appmodel.viewurl(request,instance)
+                redirect_url = view.appmodel.viewurl(request,instance) or view.appmodel.baseurl
             
         if is_ajax:
             return jredirect(url = redirect_url)                
@@ -428,6 +431,9 @@ class AddView(AppView):
         Add new model instance
         '''
         return saveform(self,djp)
+    
+    def success_message(self, instance):
+        return success_message(self,instance)
     
         
         
@@ -552,3 +558,6 @@ class EditView(ObjectView):
 
     def defaultredirect(self, djp):
         return self.appmodel.viewurl(djp.request, djp.instance) or djp.url
+    
+    def success_message(self, instance):
+        return success_message(self,instance)

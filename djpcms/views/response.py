@@ -53,6 +53,9 @@ class DjpResponse(http.HttpResponse):
         err.append(msg)
         self._errors = err
     
+    def own_view(self):
+        return self.url == self.request.path
+    
     def get_linkname(self):
         return self.view.linkname(self)
     linkname = property(get_linkname)

@@ -313,7 +313,7 @@ Reimplement for custom arguments.'''
 '''
         instance = djp.instance
         request  = djp.request
-        own_view = djp.url == request.path
+        own_view = djp.own_view()
         
         form = form or self.form
         
@@ -535,11 +535,10 @@ This dictionary should be used to render an object within a template. It returns
                                           context_instance = RequestContext(request, content))
     
     def get_object_view_template(self, obj, wrapper):
-        '''
-        Return the template file for the object
+        '''Return the template file which render the object *obj*.
         The search looks in
-         1 - components/<<module_name>>.html
-         2 - <<app_label>>/<<module_name>>.html
+         1 - components/<<model_name>>.html
+         2 - <<app_label>>/<<model_name>>.html
          3 - djpcms/components/object.html (fall back)
         '''
         opts = obj._meta

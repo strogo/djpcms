@@ -229,7 +229,8 @@ class ChangeContentView(appview.EditView):
         form  =  self.get_form(djp)
         if form.is_valid():
             instance   = form[0].save(commit = False)
-            pform      = instance.plugin.get_form(djp)
+            pform      = form[1]
+            #pform      = instance.plugin.get_form(djp)
             instance.arguments = instance.plugin.save(pform)
             instance.save()
             # We now serialize the argument form

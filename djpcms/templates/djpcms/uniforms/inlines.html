@@ -7,16 +7,23 @@
  <thead>
  <tr>{% for field in formset.fields %}{% if not field.widget.is_hidden %}
    <th{% if forloop.first %} colspan="2"{% endif %}{% if field.required %} class="required"{% endif %}>{{ field.label|capfirst }}</th>
-   {% endif %}{% endfor %}
+   {% endif %}{% endfor %}{% if formset.can_delete %}
  <th>
  Delete?
- </th>
+ </th>{% endif %}
  </tr>
  </thead>
- <tbody>{% for form in formset %}
+ <tbody>{% for form in formset %}{% if form.errors %}{% if form.non_field_errors %}
+ <tr class="error">
+ <td colspan="{{ formset.field_count }}">{{ form.non_field_errors }}</td>
+ </tr>{% endif %}
+ <tr class="error">
+ <td class="original"></td>{% for field in form %}{% if not field.is_hidden %}{% if field.errors %}
+ <td id="{{ field.auto_id }}-errors">{{ field.errors }}</td>{% else %}<td></td>{% endif %}{% endif %}{% endfor %}</tr>{% endif %}
  <tr class="{% cycle "row1" "row2" %}">
  <td class="original">{% for field in form %}{% if field.is_hidden %}
- {{ field }}{% endif %}{% endfor %}{% for field in form %}{% if not field.is_hidden %}
+ {{ field }}{% endif %}{% endfor %}
+ </td>{% for field in form %}{% if not field.is_hidden %}
  <td>{{ field|with_class }}</td>{% endif %}{% endfor %}
  </tr>{% endfor %}
  </tbody>

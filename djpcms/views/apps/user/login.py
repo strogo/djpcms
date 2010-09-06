@@ -69,7 +69,8 @@ class LoginView(appview.AppView):
     def get_form(self, djp):
         form = self.appmodel.get_form(djp, form = self._get_form, addinputs = False)
         form.inputs.append(submit(name = 'login_user', value = 'Sign in'))
-        form.inputs.append(submit(name = 'cancel', value = 'Cancel'))
+        if djp.own_view():
+            form.inputs.append(submit(name = 'cancel', value = 'Cancel'))
         return form
         
     def get_form_url(self, request):
@@ -92,7 +93,7 @@ class LoginView(appview.AppView):
             if not error:
                 return djp.redirect(f.cleaned_data.get('next','/'))
             else:
-                f.add_message(error,error=True)
+                f.add_message(request,error,error=True)
         return f.json_errors(False)
         
     def process_login_data(self, request, data):

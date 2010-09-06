@@ -1,4 +1,7 @@
+from django.forms.forms import BoundField
+
 from djpcms.utils import form_kwargs, force_unicode, mark_safe
+
 
 class ModelFormInlineHelper(object):
     '''Inline formset helper for model with foreign keys.'''
@@ -37,12 +40,36 @@ class FormsetWrap(object):
             
     def is_valid(self):
         return self.formset.is_valid()
+    
+    def __can_delete(self):
+        return self.formset.can_delete
+    can_delete = property(__can_delete)
+    
+    def field_count(self):
+        fields = list(self.fields())
+        n = len(fields)+1
+        if self.can_delete:
+            n += 1
+        return n
+        #num_of_fields = 0
+        #if self.has_auto_field():
+        #    num_of_fields += 1
+        #num_of_fields += len(self.fieldsets[0][1]["fields"])
+        #if self.formset.can_order:
+        #    num_of_fields += 1
+        #if self.formset.can_delete:
+        #    num_of_fields += 1
+        #return num_of_fields
         
     def fields(self):
         formset = self.formset
+        form    = formset.form
         fk = getattr(formset, "fk", None)
         for name,field in formset.form.base_fields.items():
             if fk and fk.name == name:
                 continue
+            #bound_field = BoundField(form, field, name)
+            if field.label is None:
+                field.label = force_unicode(name.replace('_',' '))
             yield field
 

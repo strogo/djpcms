@@ -336,3 +336,10 @@ YOU CAN VERY EASILY REVERT TO A GENERIC STYLE OF UNI-FORM. BEST OF LUCK...
 .uniForm th {
 	text-align: center;
 }
+.uniForm table .errorlist {
+	margin: 0;
+}
+.uniForm .formColumn.cols2 {
+	width: 50%;
+	float: left;
+}

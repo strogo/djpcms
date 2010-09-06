@@ -178,7 +178,7 @@ The basics:
         
     def processargs(self, kwargs):
         '''You can use this hook to perform pre-processing on plugin parameters if :attr:`form` is set.
-By defult do nothing.
+By default do nothing.
         '''
         return kwargs
     
@@ -201,6 +201,7 @@ This is the function plugins need to implement.
         return u''
     
     def save(self, pform):
+        '''Save the form plugin'''
         return form2json(pform)
     
     def get_form(self, djp, args = None, withdata = True):
