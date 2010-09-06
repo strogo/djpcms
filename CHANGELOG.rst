@@ -4,8 +4,9 @@
 Changelog
 =============================
 
-Version 0.8_alpha - Trunk
+Version 0.7.2 - (2010-Sep-06)
 ==============================
+ * updated to jQuery 1.4.2 and added two jQuery UI themes.
  * Added :setting:`DJPCMS_STYLE` setting for specifying ``css`` style.
  * :class:`djpcms.views.cache.PageCache` works when django sessions are not available. Previously it was failing.
  * Added ``AUTHORS`` to base directory and included ``jogging`` in contrib.

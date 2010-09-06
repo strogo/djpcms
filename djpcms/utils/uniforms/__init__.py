@@ -291,6 +291,14 @@ class UniForm(UniFormBase):
             self.forms.append((form,form))
         return True
     
+    def __len__(self):
+        return self.len(self.forms)
+    
+    def forms_only(self):
+        for form in self.forms:
+            if isinstance(form[1],BaseForm):
+                yield form[1]
+                
     def __getitem__(self, index):
         return self.forms[index][1]
     

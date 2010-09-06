@@ -83,6 +83,7 @@ TEMPLATE_DIRS = (os.path.join(basedir,'templates'),)
 ADMIN_MEDIA_PREFIX = '/media/admin/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(basedir, 'media')
+DJPCMS_STYLE = 'mintchoc'
 DATABASES = {
     'default': {
         'ENGINE': 'sqlite3',

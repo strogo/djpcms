@@ -1,3 +1,6 @@
+from django.utils.dates import MONTHS
+
+from djpcms.utils import force_unicode
 from djpcms.views.appview import SearchView
 
 
@@ -55,7 +58,9 @@ class MonthArchiveView(ArchiveView):
     def __init__(self, *args, **kwargs):
         super(MonthArchiveView,self).__init__(*args,**kwargs)
     def title(self, page, **urlargs):
-        return urlargs.get('month',None)
+        m = self.appmodel.get_month_number(urlargs.get('month',None))
+        return force_unicode(MONTHS[m])
+                                          
     
     
 class YearArchiveView(ArchiveView):

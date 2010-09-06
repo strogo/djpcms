@@ -58,11 +58,9 @@ class PageAdmin(SafeModelAdmin):
                        'link', 'inner_template', 'in_navigation', 'cssinfo')
         }),
         ('Authentication', {
-            'classes': ('collapse',),
             'fields': ('requires_login', 'is_published', 'redirect_to')
         }),
         ('Custom', {
-            'classes': ('collapse',),
             'fields': ('doctype', 'soft_root', 'insitemap', 'template',)
         }),
         )

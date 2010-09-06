@@ -228,8 +228,9 @@ class ChangeContentView(appview.EditView):
         url   = form.cleaned_data['url']
         form  =  self.get_form(djp)
         if form.is_valid():
+            forms      = list(form.forms_only())
             instance   = form[0].save(commit = False)
-            pform      = form[1]
+            pform = None if len(forms) == 1 else forms[1]
             #pform      = instance.plugin.get_form(djp)
             instance.arguments = instance.plugin.save(pform)
             instance.save()

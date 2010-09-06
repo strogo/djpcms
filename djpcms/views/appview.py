@@ -561,3 +561,4 @@ class EditView(ObjectView):
     
     def success_message(self, instance):
         return success_message(self,instance)
+    

@@ -2,13 +2,9 @@
 
 
 {% block branding-banner %}
+ <div id="top-banner">
   <div class="{{ grid.container_class }}">
-   <div class="{{ grid.column_1_3 }}">
-    <h1 id="branding-name">
-	<a href="/">Vino Web</a>
-	</h1>
-   </div>
-   <div class="{{ grid.column_2_3 }}">
+   <div class="{{ grid.column1 }}">
    <ul class="simple-nav right user">{% if edit_content_url %}
     <li class="secondary"><a href="{{ edit_content_url }}">edit</a></li>{% else %}{% if exit_edit_url %}
     <li class="secondary"><a href="{{ exit_edit_url }}">exit</a></li>{% endif %}{% endif %}{% if user.is_authenticated %}
@@ -21,6 +17,15 @@
    </div>
    {{ grid.clear }}
   </div>
+ </div>
+ <div class="{{ grid.container_class }}">
+   <div class="{{ grid.column1 }} middle-banner">
+    <h1 id="branding-name">
+	<a href="/">Vino Web</a>
+	</h1>
+   </div>
+   {{ grid.clear }}
+ </div>
 {% endblock %}
 
 

@@ -1,19 +1,35 @@
-html {
-	background:url("bkg.jpg") repeat fixed left top;
-	color: #fff;
+body {
+	font-family:"Helvetica Neue",Arial,Helvetica,sans-serif;
+	font-size:16px;
+	font-size-adjust:none;
+	font-stretch:normal;
+	font-style:normal;
+	font-variant:normal;
+	font-weight:normal;
+	line-height:1.4em;
+}
+#top-banner {
+	width: 100%;
+	background: #1c160d;
+	color: #add978;
+	font-size:90%;
+}
+#middle-banner {
+	height: 60px;
+}
+#branding-name {
+	line-height: 60px;
+	font-size: 150%;
 }
 a {
 	color: #fff;
 	text-decoration:none;
 }
 a:link, a:visited {
-	color: #F5B800;
+	color: #add978;
 }
 a:hover {
 	color: #C29100;
-}
-#branding-banner {
-	height: 80px;
 }
 #page-footer {
 	overflow:hidden;
