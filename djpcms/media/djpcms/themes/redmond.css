@@ -1,0 +1,119 @@
+html {
+	background:#fff;
+	color: #000;
+}
+
+.djpcms-block-element.edit-page {
+	background: rgb(240,240,240);
+	border: 1px solid rgb(220,220,220);
+}
+.djpcms-html-box.edit-block .ft {
+	background: rgb(240,240,240);
+}
+
+/* boxes
+----------------------------------------------- */
+.djpcms-html-box,
+div.flat-pannel {
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+}
+.djpcms-html-box .bd {
+	-moz-border-radius-bottomleft: 2px;
+    -moz-border-radius-bottomright: 2px;
+    -webkit-border-bottom-left-radius: 2px;
+    -webkit-border-bottom-right-radius: 2px;
+}
+.djpcms-html-box {
+    background:#5c9ccc;
+}
+.djpcms-html-box .hd h2 {
+    color: #3C3C3C;
+}
+.djpcms-html-box .bd,
+div.flat-pannel {
+	background: #FAFAFA;
+}
+
+div.flat-pannel {
+	border: 1px solid #E0E0E0;
+}
+
+
+/* Navigation
+--------------------------------------------------*/
+.nav-container {
+	background:#222222;
+}
+ul.nav {
+	background:transparent !important;
+}
+ul.nav li a {
+	color:#fff;
+	background:#666;
+}
+ul.nav li:hover a,
+ul.nav li a:hover,
+ul.nav li a:focus {color:#000; background:#ccc;}
+ul.nav li a:active {color:#666; background:#fff;}
+ul.nav li ul,
+ul.nav li {background:#ccc !important}
+ul.nav li:hover ul li a {color:#444;}
+ul.nav li:hover ul li a:hover {color:#000; background:#fff;}
+ul.nav li:hover ul li a:active {color:#666; background:#fff;}
+ul.nav li.current a {color:#666; background:#fff;}
+ul.nav li.current ul,
+ul.nav li.current {background:#ccc !important}
+ul.nav li.current ul li a {color:#444; background:#ccc;}
+ul.nav li.current ul li a:hover {color:#000; background:#fff;}
+ul.nav li ul li.current a,
+ul.nav li ul li.current a:hover,
+ul.nav li.current:hover ul li a:active {color:#666; background:#fff;}
+ul.nav li.selected a {background: #333;}
+
+ul.nav li.secondary:hover a {
+color:#fff;
+background:#666;
+}
+ul.nav li.secondary:hover a:hover {
+background:#555;
+}
+ul.nav li.secondary:hover a:active {background:#444;}
+
+ul.main li a:focus {color:#fff; background:#666;}
+
+ul.main li ul li a:hover {
+  color:#fff;
+  background:#555;
+}
+ul.main li:hover a {
+  color:#fff;
+  background:#555;
+}
+ul.main li:hover ul li a {color:#fff;}
+ul.main li:hover ul li a:hover {color:#fff; background:#444;}
+ul.main li:hover a:active {background:#444;}
+ul.main li:hover ul li a:active {color:#fff; background:#222;}
+ 
+
+/* uniForm Inputs
+----------------------------------------------*/
+.uniForm .textInput, .uniForm select, .uniForm textarea {
+	background:#FFFFFF none repeat scroll 0 0;
+	border:2px solid #DFDFDF;
+}
+
+.uniForm input[type="submit"] {
+	background: #fff url(../img/nav-bg.gif) repeat-x scroll center bottom;
+	border:1px solid #AAAAAA;
+	padding:3px 5px;
+}
+
+.uniForm input[type="submit"]:hover {
+	border:1px solid #6B6B6B;
+}
+
+.uniForm .errorlist{
+	color: #af4c4c;
+	background: #ffbfbf;
+}
