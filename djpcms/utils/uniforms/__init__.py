@@ -324,6 +324,9 @@ class UniForm(UniFormBase):
             save = getattr(form[1],'save',None)
             if save:
                 instance = save(commit = commit)
+        if instance:
+            for formset in self.formsets:
+                formset.save(instance)
         return instance
     
     def add_message(self, request, msg, error = False):
@@ -342,6 +345,13 @@ class UniForm(UniFormBase):
         err = self._make_messages('errorlist',self._errors)
         return jhtmls(identifier = '.form-messages', html = msg+err, alldocument = False)
     
+    def _formerrors(self, jerr, form):
+        for name,errs in form.errors.items():
+            field_instance = form.fields.get(name,None)
+            if field_instance:
+                bound_field = BoundField(form, field_instance, name)
+                jerr.add('#%s-errors' % bound_field.auto_id,str(errs),alldocument = False)
+        
     def json_errors(self, withmessage = True):
         '''Serialize form errors for AJAX-JSON interaction.
         '''
@@ -349,15 +359,10 @@ class UniForm(UniFormBase):
         for form in self.forms:
             form = form[1]
             if isinstance(form,BaseForm):
-                for name,errs in form.errors.items():
-                    field_instance = form.fields.get(name,None)
-                    if field_instance:
-                        bound_field = BoundField(form, field_instance, name)
-                        jerr.add('#%s-errors' % bound_field.auto_id,str(errs),alldocument = False)
+                self._formerrors(jerr, form)
         for formset in self.formsets:
-            form = formset.form
-            for name,errs in form.errors.items():
-                pass
+            for form in formset.forms:
+                self._formerrors(jerr, form)
         #if jerr and self.error_message and withmessage:
         #    self.add_message(self.error_message,error=True)
         jerr.update(self.json_message())

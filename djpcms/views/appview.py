@@ -323,7 +323,7 @@ def render_form(form, djp):
     djp.media += form.media
     return form.render()
     
-def success_message(self, instance):
+def success_message(self, instance, mch):
     dt = datetime.now()
     c = {'name': force_unicode(instance._meta.verbose_name),
          'obj': instance,
@@ -358,11 +358,8 @@ def saveform(self, djp, editing = False):
     f      = self.get_form(djp)
     if f.is_valid():
         try:
-            mch        = 'added'
-            if editing:
-                mch = 'changed'
             instance = self.save(f)
-            msg = self.success_message(instance)
+            msg = self.success_message(instance, 'changed' if editing else 'added')
             f.add_message(request, msg)
         except Exception, e:
             f.add_message(request,e,error=True)
@@ -387,7 +384,7 @@ def saveform(self, djp, editing = False):
             return http.HttpResponseRedirect(redirect_url)
     else:
         if is_ajax:
-            return f.json_errors(f)
+            return f.json_errors()
         else:
             return self.handle_response(djp)
         
@@ -432,8 +429,8 @@ class AddView(AppView):
         '''
         return saveform(self,djp)
     
-    def success_message(self, instance):
-        return success_message(self,instance)
+    def success_message(self, instance, mch):
+        return success_message(self,instance, mch)
     
         
         
@@ -559,6 +556,6 @@ class EditView(ObjectView):
     def defaultredirect(self, djp):
         return self.appmodel.viewurl(djp.request, djp.instance) or djp.url
     
-    def success_message(self, instance):
-        return success_message(self,instance)
+    def success_message(self, instance, mch):
+        return success_message(self,instance,mch)
     

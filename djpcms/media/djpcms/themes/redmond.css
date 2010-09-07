@@ -45,19 +45,18 @@ div.flat-pannel {
 .nav-container {
 	background:#222222;
 }
-ul.nav {
+ul.nav,
+ul.nav li {
 	background:transparent !important;
 }
 ul.nav li a {
 	color:#fff;
-	background:#666;
 }
 ul.nav li:hover a,
 ul.nav li a:hover,
 ul.nav li a:focus {color:#000; background:#ccc;}
 ul.nav li a:active {color:#666; background:#fff;}
-ul.nav li ul,
-ul.nav li {background:#ccc !important}
+ul.nav li ul {background:#ccc !important}
 ul.nav li:hover ul li a {color:#444;}
 ul.nav li:hover ul li a:hover {color:#000; background:#fff;}
 ul.nav li:hover ul li a:active {color:#666; background:#fff;}

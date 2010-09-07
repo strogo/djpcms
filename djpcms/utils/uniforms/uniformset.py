@@ -61,6 +61,10 @@ class FormsetWrap(object):
         #    num_of_fields += 1
         #return num_of_fields
         
+    def __get_forms(self):
+        return self.formset.forms
+    forms = property(__get_forms)
+    
     def fields(self):
         formset = self.formset
         form    = formset.form
@@ -73,3 +77,7 @@ class FormsetWrap(object):
                 field.label = force_unicode(name.replace('_',' '))
             yield field
 
+    def save(self, parent_instance):
+        self.formset.instance = parent_instance
+        return self.formset.save()
+    

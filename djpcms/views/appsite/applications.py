@@ -305,7 +305,15 @@ Reimplement for custom arguments.'''
     
     #  FORMS FOR EDITING AND SEARCHING
     #---------------------------------------------------------------------------------
-    def get_form(self, djp, initial = None, prefix = None, wrapped = True, formhelper = True, form = None, addinputs = True):
+    def get_form(self,
+                 djp,
+                 initial = None,
+                 prefix = None,
+                 wrapped = True,
+                 form = None,
+                 addinputs = True,
+                 withdata = True,
+                 formhelper = True):
         '''Build a form to add or edit an application model object:
         
  * *djp*: instance of djpcms.views.DjpRequestWrap.
@@ -335,6 +343,7 @@ Reimplement for custom arguments.'''
                                     initial     = initial,
                                     instance    = instance,
                                     prefix      = prefix,
+                                    withdata    = withdata,
                                     withrequest = self.form_withrequest))
         inputs = None
         if addinputs:

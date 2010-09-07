@@ -67,6 +67,31 @@ class SearchBox(DJPplugin):
                                                      'method':'get'})
 
 
+class EditObject(DJPplugin):
+    name = 'edit-object'
+    description = 'edit/delete object links'
+    
+    def render(self, djp, wrapper, prefix, **kwargs):
+        instance = djp.instance
+        if not instance:
+            return u''
+        else:
+            c = {}
+            view = djp.view
+            editurl = view.appmodel.editurl(djp.request, instance)
+            if editurl:
+                c['editurl'] = editurl
+            deleteurl = view.appmodel.deleteurl(djp.request, instance)
+            if deleteurl:
+                c['deleteurl'] = deleteurl
+            if c:
+                c['item'] = instance
+                return loader.render_to_string(['bits/editlinks.html',
+                                                'djpcms/bits/editlinks.html'],
+                                                c)
+            else:
+                return u''
+            
 
 
 class LatestItems(DJPplugin):
