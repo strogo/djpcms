@@ -6,6 +6,10 @@ Plugins
 
 Plugins are classes which derive from :class:`djpcms.plugins.DJPplugin`.
 
+.. admonition:: How do we tell djpcms to include our plugins?
+
+    Including plugins in your application is easy, simply add their dotted path to the :setting:`DJPCMS_PLUGINS` setting.
+
 
 .. _plugins-class:
 

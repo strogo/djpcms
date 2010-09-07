@@ -213,21 +213,10 @@ class DjpResponse(http.HttpResponse):
         else:
             return http.HttpResponseRedirect(url)
         
-    def errormessage(self, msg):
-        if self.request.is_ajax():
-            self.adderror(msg)
-            errs = '</li><li>'.join(self._errors)
-            html = '<ul class="messagelist"><li>%s</li></ul>' % errs
-            return jhtmls(html = html, identifier = '#page-messages')
-        else:
-            messages.error(djp.request,error)
-        return self.view.handle_response(self)
-        
-    def formerrors(self, f, error_message = None):
-        if self.request.is_ajax():
-            return f.errorpost(error)
-        else:
-            if error_message:
-                messages.error(djp.request,error)
-            return self.view.handle_response(self)
+    def instancecode(self):
+        '''If an instance is available, return a unique code for it. Otherwise return None.'''
+        instance = self.instance
+        if not instance:
+            return None
+        return '%s:%s' % (instance._meta,instance.id)
     
