@@ -224,6 +224,8 @@ of objects. Default is ``None``.'''
     '''If set to True, the request instance is passed to the form constructor. Default is ``False``.'''
     form_ajax        = True
     '''If True the form submits are performed using ajax. Default ``True``.'''
+    form_template    = None
+    '''Optional template for form. Default ``None``.'''
     in_navigation    = True
     '''True if application'views can go into site navigation. Default ``True``.'''
     search_fields    = None
@@ -343,7 +345,8 @@ Reimplement for custom arguments.'''
                            request  = request,
                            instance = instance,
                            action   = djp.url,
-                           inputs   = inputs)
+                           inputs   = inputs,
+                           template = self.form_template)
             if self.form_ajax:
                 wrap.addClass(self.ajax.ajax)
             wrap.is_ajax = request.is_ajax()

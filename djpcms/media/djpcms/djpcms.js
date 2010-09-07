@@ -138,7 +138,7 @@
 	dj.addJsonCallBack({
 		id: "servererror",
 		handle: function(data, elem) {
-			var el = $("<div></div>").html(data);
+			var el = $('<div title="Unhandled Server Error"></div>').html('<p>'+data+'</p>');
 			el.dialog({modal:true});
 		}
 	});

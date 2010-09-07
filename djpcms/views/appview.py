@@ -413,8 +413,8 @@ class AddView(AppView):
     def has_permission(self, request = None, obj = None):
         return self.appmodel.has_add_permission(request, obj)
     
-    def get_form(self, djp):
-        return self.appmodel.get_form(djp, form = self._form)
+    def get_form(self, djp, **kwargs):
+        return self.appmodel.get_form(djp, form = self._form, **kwargs)
     
     def save(self, f):
         return self.appmodel.object_from_form(f)
