@@ -1,11 +1,15 @@
 include CHANGELOG.rst
+include AUTHORS
 include INSTALL
 include LICENSE
 include MANIFEST.in
 include README.rst
+include runtests.py
+include requirements.txt
 include docs/make.bat
 include docs/Makefile
 include docs/source/conf.py
+recursive-include docs/source/_ext *
 recursive-include docs/source *.txt
 recursive-include djpcms/templates *
 recursive-include djpcms/tests/templates *

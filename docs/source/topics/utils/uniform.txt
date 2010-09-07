@@ -12,27 +12,20 @@ from django-uni-form__.
 
 Using uniforms to render form is easy::
 
-	from djcms.utils import uniforms
+	from djcms.utils.uniforms import FormLayout, Fieldset, blockLabels2
 	
 	class MyForm(uniforms.Form):
 	    name = forms.CharField()
 	    
-	    #create the form helper
-	    helper = uniforms.FormHelper()
+	    #create the form layout
+	    layout = FormLayout(Fieldset('name', css_class=blockLabels2))
 	    
+
+There are three types of layout: ``inlineLabels``, ``blockLabels`` and ``blockLabels2`` (the default).
 
 
 __ http://sprawsm.com/uni-form/
 __ http://github.com/pydanny/django-uni-form		
-
-
-FormHelper class
-==========================
-
-.. autoclass:: djpcms.utils.uniforms.FormHelper
-   :members:
-   :inherited-members:
-   :member-order: bysource
    	
 	
 FormLayout class

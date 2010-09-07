@@ -6,6 +6,7 @@ Changelog
 
 Version 0.7.2 (2010-Sep-07)
 ==============================
+ * Fixed few missing elements in `setup.py``.
  * This is the first ``alpha`` release of the **0.8 version**. Several new functionalities as well as a more robust codebase.
  * Removed a couple of obsolete functions in :class:`djpcms.views.response.DjpResponse` and added the new function ``instancecode`` to return an unique code for an instance of a model.
  * Added ``form_template`` in :class:`djpcms.views.appsite.ModelApplication` for customizing :ref:`uniforms <topics-utils-uniform>` rendering.

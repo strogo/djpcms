@@ -72,9 +72,9 @@ Example::
         content = forms.TextField()
     
         layout = FormLayout(Fieldset('name', 'dt'),
-        Fieldset('description'),
-        Row('password1','password2'),
-        HtmlForm('<img src="/media/somepicture.jpg"/>'))
+                            Fieldset('description'),
+                            Row('password1','password2'),
+                            Html('<img src="/media/somepicture.jpg"/>'))
 
 
 '''
