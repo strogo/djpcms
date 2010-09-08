@@ -324,7 +324,7 @@ class UniForm(UniFormBase):
             save = getattr(form[1],'save',None)
             if save:
                 instance = save(commit = commit)
-        if instance:
+        if instance and commit:
             for formset in self.formsets:
                 formset.save(instance)
         return instance
