@@ -4,7 +4,15 @@
 Overview
 =====================
 
-.. rubric:: A dynamic Content Management System using Javascript and Python.
+:Documentation: http://packages.python.org/djpcms/
+:Dowloads: http://pypi.python.org/pypi/djpcms/
+:Source: http://github.com/lsbardel/djpcms
+:Keywords: web, cms, dynamic, ajax, django, jquery
+
+--
+
+Djpcms is dynamic Content Management System which uses Python with django on the server side
+and Javascript with jQuery on the browser side. Designed to handle dynamic application which requires high level of customization.
 
 Features
 ===============================
