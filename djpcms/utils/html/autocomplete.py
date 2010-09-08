@@ -10,7 +10,8 @@ __all__ = ['autocomplete',
            'AutocompleteForeignKeyInput',
            'AutocompleteManyToManyInput',
            'ModelChoiceField',
-           'ModelMultipleChoiceField']
+           'ModelMultipleChoiceField',
+           'set_autocomplete']
 
 
 class Autocomplete(object):
@@ -25,9 +26,9 @@ class Autocomplete(object):
     def __init__(self):
         self._register = {}
     
-    def register(self, model, search_list):
+    def register(self, model, view):
         if model not in self._register:
-            self._register[model] = search_list
+            self._register[model] = view
     
     def get(self, model):
         return self._register.get(model,None)
@@ -35,46 +36,29 @@ class Autocomplete(object):
 autocomplete = Autocomplete()
 
 
-basemedia                = 'djpcms'
-base_plugin              = '%s/jquery-autocomplete' % basemedia
-autocomplete_class       = 'djp-autocomplete'
-multi_autocomplete_class = '%s multi' % autocomplete_class
-ADMIN_URL_PREFIX         = getattr(settings,"ADMIN_URL_PREFIX","/admin/")
-
-
 class BaseAutocompleteInput(forms.TextInput):
     class_for_form = forms.TextInput
     
-    def __init__(self, model, search_fields, attrs=None):
+    def __init__(self, model, separator = ',', inline = False, attrs = None):
+        self.separator = separator
+        self.inline = inline
         self.model = model
-        self.search_fields = search_fields
-        super(BaseAutocompleteInput, self).__init__(attrs)
+        self.view  = autocomplete.get(self.model)
+        self.search_fields = self.view.appmodel.search_fields
+        super(BaseAutocompleteInput,self).__init__(attrs)
         
     def get_url(self):
-        meta = self.model._meta
-        return '%s%s/%s/' % (ADMIN_URL_PREFIX,meta.app_label,meta.module_name)
-    
-    class Media:
-            css = {
-                    'all': ('%s/jquery.autocomplete.css' % base_plugin,)
-            }
-            js = (
-                    '%s/jquery.autocomplete.js' % base_plugin,
-                    '%s/autocomplete.js' % basemedia
-                )
+        if self.view:
+            return self.view.get_url()
+        else:
+            return None
 
 
 class AutocompleteForeignKeyInput(BaseAutocompleteInput):
     """
     A Widget for displaying ForeignKeys in an autocomplete search input 
     instead in a <select> box.
-    """
-    #def label_for_value(self, value, name):
-    #    rel_name = self.search_fields[0].split('__')[0]
-    #    key = self.rel.get_related_field().name
-    #    obj = self.rel.to._default_manager.get(**{key: value})
-    #    return getattr(obj,rel_name)
-
+    """        
     def render(self, name, value, attrs=None):
         attrs = attrs or {}
         if value:
@@ -100,11 +84,6 @@ class AutocompleteManyToManyInput(BaseAutocompleteInput):
     A Widget for displaying Mutliple model input in an autocomplete search input 
     instead in a <select> box.
     """
-    def __init__(self, *args, **kwargs):
-        self.separator = kwargs.pop('separator',',')
-        self.inline    = kwargs.pop('inline',False)
-        super(AutocompleteManyToManyInput,self).__init__(*args, **kwargs)
-    
     def value_from_datadict(self, data, files, name):
         if self.inline:
             return data.get(name,None)
@@ -151,24 +130,39 @@ class AutocompleteManyToManyInput(BaseAutocompleteInput):
         return loader.render_to_string('djpcms/autocomplete/%s' % stempl,ctx)
 
 
+def set_autocomplete(field):
+    attrs = field.widget.attrs
+    model = field.queryset.model
+    view  = autocomplete.get(model)
+    if view and view.appmodel.search_fields:
+        field.widget = field.auto_class(model,
+                                        separator = field.separator,
+                                        inline = field.inline,
+                                        attrs = attrs)
+    return field
+
+
 class ModelChoiceField(forms.ModelChoiceField):
+    auto_class = AutocompleteForeignKeyInput
     
-    def __init__(self, queryset, widget = None, **kwargs):
-        if not widget:
-            model = queryset.model
-            search_fields = autocomplete.get(model)
-            if search_fields:
-                widget = AutocompleteForeignKeyInput(model, search_fields)
-                self.widget = widget
-        super(ModelChoiceField,self).__init__(queryset, widget = widget, **kwargs)
+    def __init__(self, *args, **kwargs):
+        self.separator = kwargs.pop('separator',' ')
+        self.inline = kwargs.pop('inline',True)
+        super(ModelChoiceField,self).__init__(*args, **kwargs)
+        
+    def __deepcopy__(self, memo):
+        result = super(ModelChoiceField,self).__deepcopy__(memo)
+        return set_autocomplete(result)
+
             
 class ModelMultipleChoiceField(forms.ModelMultipleChoiceField):
+    auto_class = AutocompleteManyToManyInput
     
-    def __init__(self, queryset, widget = None, **kwargs):
-        if not widget:
-            model = queryset.model
-            search_fields = autocomplete.get(model)
-            if search_fields:
-                widget = AutocompleteManyToManyInput(model, search_fields)
-                self.widget = widget
-        super(ModelMultipleChoiceField,self).__init__(queryset, widget = widget, **kwargs)
+    def __init__(self, *args, **kwargs):
+        self.separator = kwargs.pop('separator',', ')
+        self.inline = kwargs.pop('inline',False)
+        super(ModelMultipleChoiceField,self).__init__(*args, **kwargs)
+        
+    def __deepcopy__(self, memo):
+        result = super(ModelMultipleChoiceField,self).__deepcopy__(memo)
+        return set_autocomplete(result)

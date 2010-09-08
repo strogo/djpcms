@@ -14,12 +14,14 @@ class ajaxhtml(object):
         d['field_separator']         = 'field-separator'
         
         # css decorators
-        d['calendar_class']          = 'dateinput'
-        d['currency_input']          = 'currency-input'
-        d['edit']                    = 'editable'
-        d['delete']                  = 'deletable'
-        d['secondary_in_list']       = 'secondary'
-        d['link_selected']           = 'selected'
+        d['autocomplete_class']       = 'djp-autocomplete'
+        d['multi_autocomplete_class'] = 'multi'
+        d['calendar_class']           = 'dateinput'
+        d['currency_input']           = 'currency-input'
+        d['edit']                     = 'editable'
+        d['delete']                   = 'deletable'
+        d['secondary_in_list']        = 'secondary'
+        d['link_selected']            = 'selected'
         
         return obj
     

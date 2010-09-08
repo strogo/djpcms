@@ -4,6 +4,11 @@
 Changelog
 =============================
 
+Version 0.8.a2
+==============================
+ * Refactored autocomplete.
+ 
+ 
 Version 0.7.2 (2010-Sep-07)
 ==============================
  * Fixed few missing elements in `setup.py``.
@@ -24,10 +29,12 @@ Version 0.7.2 (2010-Sep-07)
  * Renamed ``docview`` as ``docs`` and moved into the ``views.appsite.apps`` directory.
  * 9 unit tests. 
  
+ 
 Version 0.7.1 (2010-Aug-24)
 ==============================
  * Default value for setting ``SERVE_STATIC_FILES`` is set to ``True``.
  * Critical bug fix in :class:`siro.plugins.text.Text` which was crashing the edit form.
+
 
 Version 0.7.0 (2010-Aug-19)
 ===================================
@@ -36,21 +43,25 @@ Version 0.7.0 (2010-Aug-19)
  * ``uniforms`` moved from ``djpcms.utils.uniforms``.
  * Added ``list_per_page`` attribute to ``ModelApplication``.
 
+
 Version 0.6.3 (2010-Jun-06)
 ========================================
  * Added rightclickmenu jQuery plugin.
  * Fixed missing data in ``setup.py``.
  * ``Memcached`` monitor-plugin displays MegaBytes used.
 
+
 Version 0.6.2 (2010-May-07)
 ========================================
  * Several bug fixes.
  * Application views can specify several ajax views by passing a dictionary called ``ajax_view``.
 
+
 Version 0.6.1 (2010-Apr-30) 
 ========================================
  * Added ``utils.unipath`` from http://pypi.python.org/pypi/Unipath
  * Added ``ajax`` property to ``uniforms.FormHelper`` class
+
 
 Version 0.6 (2010-Apr-24)
 =======================================
@@ -79,6 +90,7 @@ Version 0.6 (2010-Apr-24)
  * Added autocomplete-off javascript decorator - so that xhtml validates
  * url resolver split between main urls and sub-applications
  * Better title in flowrepo contentview
+
  
 Version 0.5 (2010-Jan-13)
 ===================================
@@ -98,6 +110,7 @@ Version 0.5 (2010-Jan-13)
  * Content text plugin is now wrapped into a div with class 'djpcms-text-content'.
  * Breadcrumbs name is given by view title
  * Created the DjpResponse object in views.response.
+
  
 Version 0.4 (2009-Dec-24)
 =========================================

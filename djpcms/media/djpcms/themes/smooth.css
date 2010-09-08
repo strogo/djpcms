@@ -2,20 +2,6 @@
 	background: rgb(240,240,240);
 	border: 1px solid rgb(220,220,220);
 }
-
-
-/**	DJPCMS BOX
-----------------------------------------------------------**/
-.djpcms-html-box .hd {
-	background: #CCCCCC url(smoothness/images/ui-bg_highlight-soft_75_cccccc_1x100.png) repeat-x scroll 50% 50%;
-	border-bottom:1px solid rgb(160,160,160);
-}
-.djpcms-html-box {
-	border: 1px solid rgb(160,160,160);
-}
-
-/* boxes
------------------------------------------------ */
 .djpcms-html-box,
 div.flat-pannel {
     -moz-border-radius: 4px;
@@ -37,7 +23,9 @@ div.flat-pannel {
 div.flat-pannel {
 	background: #FAFAFA;
 }
-
+.djpcms-html-box.edit-block .ft {
+	background: #fff;
+}
 div.flat-pannel {
 	border: 1px solid #E0E0E0;
 }

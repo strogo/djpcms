@@ -77,6 +77,8 @@ class ApplicationBase(object):
     '''Flag indicating if API is available. Default ``False``.'''
     inherit          = False
     '''Flag indicating if application views are inherited from base class. Default ``False``.'''
+    hidden           = False
+    '''If ``True`` the application is only used internally. Default ``False``.'''
     
     def __init__(self, baseurl, application_site, editavailable):
         self.application_site = application_site

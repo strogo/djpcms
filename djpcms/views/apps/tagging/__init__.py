@@ -1,11 +1,39 @@
-
 from django.utils.http import urlquote
-from djpcms.views import appsite
-from djpcms.views import appview
+
+from djpcms.utils.html import AutocompleteManyToManyInput, set_autocomplete
+from djpcms.views import appsite, appview
 from djpcms.views.apps.archive import ArchiveApplication, views as archive
 
-from tagging.models import TaggedItem
+from tagging.models import Tag, TaggedItem
+from tagging.forms import TagField as TagFieldBase
 
+
+def add_tags(self, c, djp, obj):
+    request = djp.request
+    tagurls = []
+    tagview = self.getview('tag1')
+    if obj.tags and tagview:
+        tags = obj.tags.split(u' ')
+        for tag in tags:
+            djp = tagview(request, tag1 = tag)
+            tagurls.append({'url':djp.url,
+                            'name':tag})
+    c['tagurls'] = tagurls
+    return c
+
+
+def tagurl(self, request, *tags):
+    view = self.getview('tag%s' % len(tags))
+    if view:
+        kwargs = {}
+        c = 1
+        for tag in tags:
+            #tag = urlquote(tag)
+            kwargs['tag%s' % c] = tag
+            c += 1
+        return view(request, **kwargs).url
+    
+    
 # REGEX FOR A TAG
 tag_regex = '[-\.\+\#\'\:\w]+'
 
@@ -46,37 +74,15 @@ class TagArchiveView(archive.ArchiveView):
             return query
 
 
-
-def add_tags(self, c, djp, obj):
-    request = djp.request
-    tagurls = []
-    tagview = self.getview('tag1')
-    if obj.tags and tagview:
-        tags = obj.tags.split(u' ')
-        for tag in tags:
-            djp = tagview(request, tag1 = tag)
-            tagurls.append({'url':djp.url,
-                            'name':tag})
-    c['tagurls'] = tagurls
-    return c
-
-def tagurl(self, request, *tags):
-    view = self.getview('tag%s' % len(tags))
-    if view:
-        kwargs = {}
-        c = 1
-        for tag in tags:
-            #tag = urlquote(tag)
-            kwargs['tag%s' % c] = tag
-            c += 1
-        return view(request, **kwargs).url
-
+class TagsApplication(appsite.ModelApplication):
+    search_fields = ['name']
+    complete = appview.AutocompleteView()
 
 
 class TagApplication(appsite.ModelApplication):
-    search  = appview.SearchView(in_navigation = True)
-    cloud   = appview.SearchView(regex = 'tags', parent = 'search', in_navigation = True)
-    tag1    = TagView(regex = '(?P<tag1>%s)' % tag_regex, parent = 'cloud')
+    search   = appview.SearchView(in_navigation = True)
+    cloud    = appview.SearchView(regex = 'tags', parent = 'search', in_navigation = True)
+    tag1     = TagView(regex = '(?P<tag1>%s)' % tag_regex, parent = 'cloud')
     
     def tagurl(self, request, *tags):
         return tagurl(self, request, *tags)
@@ -84,7 +90,6 @@ class TagApplication(appsite.ModelApplication):
     def object_content(self, djp, obj):
         c = super(TagApplication,self).object_content(djp, obj)
         return add_tags(self, c, djp, obj)
-
 
 
 class ArchiveTaggedApplication(ArchiveApplication):
@@ -116,4 +121,20 @@ class ArchiveTaggedApplication(ArchiveApplication):
         return add_tags(self, c, djp, obj)
     
     
+class TagField(TagFieldBase):
+    auto_class = AutocompleteManyToManyInput
+    model      = Tag
+    
+    def __init__(self, *args, **kwargs):
+        self.separator = kwargs.pop('separator',' ')
+        self.inline = kwargs.pop('inline',True)
+        super(TagField,self).__init__(*args, **kwargs)
+        
+    def __deepcopy__(self, memo):
+        result = super(TagField,self).__deepcopy__(memo)
+        result._basequery()
+        return set_autocomplete(result)
+    
+    def _basequery(self):
+        self.queryset = self.model.objects.all()
     

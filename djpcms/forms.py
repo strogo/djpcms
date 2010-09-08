@@ -9,6 +9,7 @@ from djpcms.utils import lazyattr
 from djpcms import siteapp_choices
 from djpcms.plugins import get_plugin, plugingenerator, wrappergenerator
 from djpcms.utils.uniforms import FormLayout, Column
+from djpcms.utils.html import ModelChoiceField, ModelMultipleChoiceField
 
 
 class SearchForm(forms.Form):
@@ -19,7 +20,7 @@ class SearchForm(forms.Form):
     search_text = forms.CharField(required = False,
                                   widget = forms.TextInput(attrs = {'class': 'sw_qbox autocomplete-off',
                                                                     'title': 'Enter your search text'}))
-    
+
 
 class LazyChoiceField(forms.ChoiceField):
     '''

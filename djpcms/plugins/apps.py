@@ -1,25 +1,48 @@
 from django import forms
 from django.contrib.contenttypes.models import ContentType
-from django.template import loader
+from django.forms.models import modelform_factory
 
-from tagging.forms import TagField
-
+from djpcms.template import loader
 from djpcms.conf import settings
 from djpcms.plugins import DJPplugin
+from djpcms.utils.uniforms import UniForm, FormLayout, Fieldset
+from djpcms.utils.html import submit
 from djpcms.forms import SearchForm
+from djpcms.views import appsite
 
 
- 
+def registered_models():
+    ids = []
+    for model,app in appsite.site._registry.items():
+        if isinstance(app,appsite.ModelApplication) and not app.hidden:
+            ct = ContentType.objects.get_for_model(model)
+            ids.append(ct.id)
+    return ContentType.objects.filter(pk__in = ids)
 
 
-class LatestItemForm(forms.Form):
-    for_model   = forms.ModelChoiceField(queryset = ContentType.objects.all(), empty_label=None)
-    max_display = forms.IntegerField(initial = 10)
-    pagination  = forms.BooleanField(initial = False, required = False)
-    tags        = TagField(required = False)
+def app_model_from_ct(ct):
+    if ct:
+        try:
+            ct = ContentType.objects.get(id = int(ct))
+        except:
+            if settings.DEBUG:
+                return u'Content type %s not available' % ct, False
+            else:
+                return u'', False
+        model = ct.model_class()
+        appmodel = appsite.site.for_model(model)
+        if appmodel:
+            return appmodel, True
+        else:
+            return u'', False
+    else:
+        return u'', False
+    
+
+class ForModelForm(forms.Form):
+    for_model   = forms.ModelChoiceField(queryset = registered_models(), empty_label=None)
     
     def clean_for_model(self):
-        from djpcms.views import appsite
         ct = self.cleaned_data['for_model']
         model = ct.model_class()
         appmodel = appsite.site.for_model(model)
@@ -29,10 +52,22 @@ class LatestItemForm(forms.Form):
             raise forms.ValidationError('Model %s has no application installed' % ct)
 
 
+class LatestItemForm(ForModelForm):
+    max_display = forms.IntegerField(initial = 10)
+    pagination  = forms.BooleanField(initial = False, required = False)
 
-class SearchModelForm(forms.Form):
-    for_model   = forms.ModelChoiceField(queryset = ContentType.objects.all(), empty_label=None)
+
+class FormModelForm(ForModelForm):
+    method      = forms.ChoiceField(choices = (('get','get'),('post','post')))
+    ajax        = forms.BooleanField(initial = False, required = False)
+
+
+class SearchModelForm(FormModelForm):
     title       = forms.CharField(required = False, max_length = 50)
+
+
+class FilterModelForm(FormModelForm):
+    pass
 
 
 class SearchBox(DJPplugin):
@@ -44,7 +79,6 @@ class SearchBox(DJPplugin):
     form = SearchModelForm
     
     def render(self, djp, wrapper, prefix, for_model = None, title = None, **kwargs):
-        from djpcms.views import appsite
         if for_model:
             try:
                 ct = ContentType.objects.get(id = int(for_model))
@@ -67,6 +101,37 @@ class SearchBox(DJPplugin):
                                                      'method':'get'})
 
 
+class ModelFilter(DJPplugin):
+    '''Display filters for a model registered in the application registry.'''
+    name = 'model-filter'
+    description = 'Filter a model'
+    form = FilterModelForm
+    
+    def render(self, djp, wrapper, prefix, for_model = None,
+               ajax = False, method = 'get', **kwargs):
+        appmodel, ok = app_model_from_ct(for_model)
+        if not ok:
+            return appmodel
+        filters = appmodel.search_fields
+        if not filters:
+            return u''
+        request = djp.request
+        search_url = appmodel.searchurl(request)
+        if not search_url:
+            return u''
+        model = appmodel.model
+        initial = dict((request.GET or request.POST).items())
+        form = modelform_factory(model, appmodel.form, fields = filters, exclude = [])
+        form.layout = FormLayout()
+        f = UniForm(form(initial = initial),
+                    method = method,
+                    action = search_url)
+        if ajax:
+            f.addClass(djp.css.ajax)
+        f.inputs.append(submit(value = 'filter', name = '_filter'))
+        return f.render()
+    
+    
 class EditObject(DJPplugin):
     name = 'edit-object'
     description = 'edit/delete object links'
@@ -93,7 +158,6 @@ class EditObject(DJPplugin):
                 return u''
             
 
-
 class LatestItems(DJPplugin):
     name = 'latest-items'
     description   = 'Latest items for a model'
@@ -109,8 +173,7 @@ class LatestItems(DJPplugin):
             
     def render(self, djp, wrapper, prefix,
                for_model = None, max_display = 5,
-               pagination = False, tags = '', **kwargs):
-        from djpcms.views import appsite
+               pagination = False, **kwargs):
         try:
             ct = ContentType.objects.get(id = for_model)
             model = ct.model_class()

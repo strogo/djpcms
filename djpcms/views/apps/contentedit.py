@@ -308,6 +308,7 @@ class EditPluginView(appview.EditView):
 class ContentSite(appsite.ModelApplication):
     form        = ContentBlockForm
     form_layout = 'onecolumn'
+    hidden      = True
     
     edit        = ChangeContentView()
     delete      = appview.DeleteView(parent = 'edit')

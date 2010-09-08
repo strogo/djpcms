@@ -75,7 +75,12 @@ class ApplicationSite(object):
             self._nameregistry.pop(appmodel.name,None)
             
     def for_model(self, model):
-        return self._registry.get(model,None)
+        '''Obtain a :class:`djpcms.views.appsite.ModelApplication` for model *model*.
+If the application is not available, it returns ``None``. Never fails.'''
+        try:
+            return self._registry.get(model,None)
+        except:
+            return None
             
     def getapp(self, appname):
         '''Given a *appname* in the form of appname-appview

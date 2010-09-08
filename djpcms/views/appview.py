@@ -22,6 +22,7 @@ from djpcms.views.regex import RegExUrl
 from djpcms.views.cache import pagecache
 from djpcms.views.baseview import djpcmsview
 from djpcms.core.exceptions import PageNotFound
+from djpcms.utils.html import autocomplete
 
 
 class pageinfo(object):
@@ -105,7 +106,8 @@ class AppViewBase(djpcmsview):
         else:
             return page.title
         
-    def get_ajax_response(self, djp):
+    def __get_ajax_response(self, djp):
+        # Obsolete
         if self.ajax_views:
             data = djp.request.POST or djp.request.GET
             ajax_key = data.get(settings.HTML_CLASSES.post_view_key, None)
@@ -559,3 +561,61 @@ class EditView(ObjectView):
     def success_message(self, instance, mch):
         return success_message(self,instance,mch)
     
+    
+class AutocompleteView(SearchView):
+    '''AJAX Get only view for auto-complete functionalities.
+To use it, simple add it to a :class:'djpcms.views.appsite.ModelApplication` declaration.
+For example::
+    
+    from djpcms.views.appsite import ModelApplication
+    
+    class MyModelApp(ModelApplication):
+        search_fields = ['name','description']
+        complete = AutocompleteView(display = 'name')
+        
+Let's say you have a model::
+
+    from django.db import models
+    
+    class MyModel(models.Model):
+        name = models.CharField(max_length = 60)
+        description = models.TextField()
+    
+'''
+    _methods = ('get',)
+    
+    def __init__(self, regex = 'autocomplete', name = 'autocomplete', display = 'name', **kwargs):
+        self.display = display
+        super(AutocompleteView,self).__init__(regex = regex, name = name, **kwargs)
+        
+    def processurlbits(self, appmodel):
+        super(AutocompleteView,self).processurlbits(appmodel)
+        autocomplete.register(self.appmodel.model,self)
+    
+    def get_url(self, *args, **kwargs):
+        purl = self.regex.get_url(None)
+        return '%s%s' % (self.baseurl,purl)
+        
+    def get_response(self, djp):
+        # Only AJAX response is allowed
+        request = djp.request
+        if not request.is_ajax():
+            raise http.Http404
+        params = dict(request.GET.items())
+        query = request.GET.get('q', None)
+        search_fields = self.appmodel.search_fields
+        if query and search_fields:
+            q = None
+            for field_name in search_fields:
+                name = construct_search(field_name)
+                if q:
+                    q = q | Q( **{str(name):query} )
+                else:
+                    rel_name = name.split('__')[0]
+                    q = Q( **{str(name):query} )
+            qs = self.model.objects.filter(q)                    
+            data = ''.join([u'%s|%s|%s\n' % (getattr(f,rel_name),f,f.pk) for f in qs])
+        else:
+            data = ''
+        return http.HttpResponse(data)
+
