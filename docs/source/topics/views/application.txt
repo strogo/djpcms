@@ -1,0 +1,21 @@
+.. _views-application:
+
+.. module:: djpcms.views.appview
+
+===================
+Application Views
+===================
+
+Application View Base Class
+==============================
+
+.. autoclass:: djpcms.views.appview.AppViewBase
+   :members:
+   :member-order: bysource
+
+Autocomplete View
+======================
+
+.. autoclass:: djpcms.views.appview.AutocompleteView
+   :members:
+   :member-order: bysource

@@ -563,16 +563,9 @@ class EditView(ObjectView):
     
     
 class AutocompleteView(SearchView):
-    '''AJAX Get only view for auto-complete functionalities.
-To use it, simple add it to a :class:'djpcms.views.appsite.ModelApplication` declaration.
-For example::
-    
-    from djpcms.views.appsite import ModelApplication
-    
-    class MyModelApp(ModelApplication):
-        search_fields = ['name','description']
-        complete = AutocompleteView(display = 'name')
-        
+    '''This is an interesting view. It is an **AJAX Get only** view for auto-complete__ functionalities.
+To use it, simple add it to a :class:`djpcms.views.appsite.ModelApplication` declaration.
+
 Let's say you have a model::
 
     from django.db import models
@@ -581,6 +574,29 @@ Let's say you have a model::
         name = models.CharField(max_length = 60)
         description = models.TextField()
     
+And we would like to have an auto-complete view which displays the ``name`` field and search for both
+``name`` and ``description`` fields::
+
+    from djpcms.views.appsite import ModelApplication
+    
+    class MyModelApp(ModelApplication):
+        search_fields = ['name','description']
+        complete = AutocompleteView(display = 'name')
+        
+    appsite.site.register('/mymodelurl/', MyModelApp, model = MyModel)
+    
+The last bit of information is to use a different ``ModelChoiceField`` and ``ModelMultipleChoiceField`` in
+your forms. Rather than doing::
+
+    from django.forms import ModelChoiceField, ModelMultipleChoiceField
+    
+do::
+    
+    from djpcms.forms import ModelChoiceField, ModelMultipleChoiceField
+    
+and if your model has an AutocompleteView installed, it will work out of the box.
+    
+__ http://en.wikipedia.org/wiki/Autocomplete
 '''
     _methods = ('get',)
     
@@ -597,7 +613,7 @@ Let's say you have a model::
         return '%s%s' % (self.baseurl,purl)
         
     def get_response(self, djp):
-        # Only AJAX response is allowed
+        '''This response works only if it is an AJAX response. Otherwise it raises a ``Http404`` exception.'''
         request = djp.request
         if not request.is_ajax():
             raise http.Http404

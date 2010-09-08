@@ -1,0 +1,7 @@
+.. _views-flat:
+
+.. module:: djpcms.views.baseview
+
+===================
+Flat Pages Views
+===================

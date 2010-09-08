@@ -37,12 +37,15 @@ class djpcmsview(UnicodeObject):
     
     .. attribute:: _methods
 
-        Request methods handled by ``self``. By default ``GET`` and ``POST`` only.
+        Tuple of request methods handled by ``self``. By default ``GET`` and ``POST`` only::
+        
+            _methods = ('get','post')
     '''
     template_name = None
-    '''Used to override the template name in the page object (if it exists)
-hardly used but here just in case.'''
+    '''Used to override the template name in the :class:`djpcms.models.Page` model instance (if it exists).
+Not used very often but here just in case.'''
     parent        = None
+    '''The parent view of ``self``. An instance of :class:`djpcmsview` or ``None``'''
     purl          = None
     
     _methods      = ('get','post')
