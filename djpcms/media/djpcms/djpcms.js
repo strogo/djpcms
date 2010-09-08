@@ -29,7 +29,7 @@
 	$.extend({
 		djpcms: new function() { 
 		
-			var decorators = [];
+			var decorators = {};
 			var jsonCallBacks = {};
 	
 			this.options = {
@@ -71,8 +71,8 @@
 			};
 			
 			// Add a new decorator
-			this.addDecorator = function(decorator) {
-				decorators.push(decorator);
+			this.addDecorator = function(deco) {
+				decorators[deco.id] = deco;
 			};
 			// Add a new decorator
 			this.addJsonCallBack = function(jcb) {
@@ -80,11 +80,11 @@
 			};
 			
 			// Remove a decorator
-			this.removeDecorator = function(id) {
-				var ndecos = [];
-				$.each(decorators,function(n,decorator) {
-					if(decorator.id != id) {
-						ndecos.push(decorator);
+			this.removeDecorator = function(rid) {
+				var ndecos = {};
+				$.each(decorators,function(id,decorator) {
+					if(id != rid) {
+						ndecos[id] = decorator;
 					}
 				});
 				this.decorators = ndecos;
@@ -114,7 +114,7 @@
 					// store common expression for speed					
 					var $this = $(this);
 					
-					$.each(decorators,function(n,decorator) {
+					$.each(decorators,function(id,decorator) {
 						this_.log('Adding decorator ' + decorator.id);
 						decorator.decorate($this,config);
 					});
@@ -249,7 +249,7 @@
 	 * Ajax links, buttons and select 
 	 */
 	dj.addDecorator({
-		id:	"ajax-widgets",
+		id:	"ajax_widgets",
 		description: "add ajax functionality to links, buttons and selects",
 		decorate: function($this,config) {
 			var ajaxclass = config.ajaxclass ? config.ajaxclass : 'ajax';
@@ -324,7 +324,7 @@
 	 * Autocomplete Off
 	 */
 	dj.addDecorator({
-		id:"autocomplete-off",
+		id:"autocomplete_off",
 		decorate: function($this,config) {
 			$('.autocomplete-off',$this).each(function() {
 				$(this).attr('autocomplete','off');
@@ -337,7 +337,7 @@
 	 * 
 	 */
 	dj.addDecorator({
-		id:"djpcms-box",
+		id:"djpcms_box",
 		decorate: function($this,config) {
 			var cname = '.djpcms-html-box';
 			var bname = '.hd';
@@ -369,7 +369,7 @@
 	 * Accordion menu
 	 */
 	dj.addDecorator({
-		id:"accordion-menu",
+		id:"accordion_menu",
 		decorate: function($this,config) {
 			$('ul.accordionmenu',$this).each(function() {
 				var menu = $(this);
@@ -403,7 +403,7 @@
 	
 	// Calendar Date Picker Decorator
 	dj.addDecorator({
-		id:"Date-Picker",
+		id:"Date_Picker",
 		decorate: function($this, config) {
 			var ajaxclass = config.calendar_class ? config.calendar_class : 'dateinput';
 			$('input.'+ajaxclass,$this).each(function() {
@@ -416,7 +416,7 @@
 	 * jQuery UI Tabs
 	 */
 	dj.addDecorator({
-		id:"ui-tabs",
+		id:"ui_tabs",
 		decorate: function($this, config) {
 			$('.ui-tabs',$this).tabs();
 		}
@@ -427,7 +427,7 @@
 	 * 
 	 */ 
 	dj.addDecorator({
-		id:"image-cycle",
+		id:"image_cycle",
 		decorate: function($this, config) {
 			$('.image-cycle', $this).each(function() {
 				var this_ = $(this);
@@ -461,7 +461,7 @@
 	});
 	
 	dj.addDecorator({
-		id:"color-picker",
+		id:"color_picker",
 		decorate: function($this, config) {
 			$('input.color-picker', $this).each(function() {
 				var div = $('<div class="color-picker"></div>');
