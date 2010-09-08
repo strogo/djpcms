@@ -11,8 +11,9 @@ Overview
 
 --
 
-Djpcms is dynamic Content Management System which uses Python with django on the server side
-and Javascript with jQuery on the browser side. Designed to handle dynamic application which requires high level of customization.
+Djpcms is a dynamic Content Management System which uses Python with django on the server side
+and Javascript with jQuery on the browser side. Designed to handle dynamic applications which require
+high level of customization.
 
 Features
 ===============================
