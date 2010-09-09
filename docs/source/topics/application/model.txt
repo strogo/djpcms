@@ -22,6 +22,11 @@ A dynamic application is registered to the site by invoking::
 	appsite.site.register('/project/', Project, ProjectApplication)
         
 
+This application is pretty useles since it has no ``views``. To add views we need to go to the
+``djpcms.views.appview`` module where we find the :class:`djpcms.views.appview.AppView` which is the
+base class of all model applications.
+
+
 .. _modelapplication-class:
 
 ModelApplication Class

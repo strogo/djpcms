@@ -6,12 +6,13 @@ Changelog
 
 Version 0.8.a2
 ==============================
- * Refactored autocomplete.
+ * Refactored autocomplete with tests.
+ * **11 unit tests**.
  
  
 Version 0.7.2 (2010-Sep-07)
 ==============================
- * Fixed few missing elements in `setup.py``.
+ * Fixed few missing elements in :file:`setup.py`.
  * This is the first ``alpha`` release of the **0.8 version**. Several new functionalities as well as a more robust codebase.
  * Removed a couple of obsolete functions in :class:`djpcms.views.response.DjpResponse` and added the new function ``instancecode`` to return an unique code for an instance of a model.
  * Added ``form_template`` in :class:`djpcms.views.appsite.ModelApplication` for customizing :ref:`uniforms <topics-utils-uniform>` rendering.
@@ -27,7 +28,7 @@ Version 0.7.2 (2010-Sep-07)
  * Unified ``ApplicationBase`` and ``ModelApplication``. They now are of the same ``ApplicationMetaClass`` type.
  * Moved the ``user`` application into ``views.appsite.apps`` for consistency.
  * Renamed ``docview`` as ``docs`` and moved into the ``views.appsite.apps`` directory.
- * 9 unit tests. 
+ * **9 unit tests**. 
  
  
 Version 0.7.1 (2010-Aug-24)

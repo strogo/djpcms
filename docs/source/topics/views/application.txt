@@ -12,6 +12,14 @@ Application View Base Class
 .. autoclass:: djpcms.views.appview.AppViewBase
    :members:
    :member-order: bysource
+   
+   
+Model Application View Base Class
+============================================
+
+.. autoclass:: djpcms.views.appview.AppView
+   :members:
+   :member-order: bysource
 
 Autocomplete View
 ======================
@@ -19,3 +27,10 @@ Autocomplete View
 .. autoclass:: djpcms.views.appview.AutocompleteView
    :members:
    :member-order: bysource
+   
+.. admonition:: Rember the four points to have autocomplete out of the box:
+
+	* When using the model in Forms, import from ``djpcms.forms`` and not ``django.forms``.
+    * Your model application must have a ``search_fields`` list
+    * Your model application must have the :class:`djpcms.views.appview.AutocompleteView`.
+    * Register your application as usual.

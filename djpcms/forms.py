@@ -12,7 +12,9 @@ from djpcms.utils.uniforms import FormLayout, Column
 from djpcms.utils.html import ModelChoiceField, ModelMultipleChoiceField
 
 
-class SearchForm(forms.Form):
+Form = forms.Form
+
+class SearchForm(Form):
     '''
     A simple search form used by plugins.apps.SearchBox.
     The search_text name will be used by SearchViews to handle text search
