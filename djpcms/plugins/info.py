@@ -1,6 +1,6 @@
+from djpcms.template import loader
 from djpcms.plugins import DJPplugin
-from django.template import loader
-from djpcms.utils import version, timezone
+from djpcms.utils import version
 
 
 class PoweredBy(DJPplugin):
@@ -30,6 +30,7 @@ class Deploy(DJPplugin):
         Information about deployment
         '''
         from djpcms.conf import settings
+        from djpcms.utils import timezone
         if 'djpcms.contrib.jdep' in settings.INSTALLED_APPS:
             from djpcms.contrib.jdep.models import DeploySite
             try:

@@ -3,6 +3,7 @@ import datetime
 from django import http
 from django.conf.urls.defaults import url
 
+from djpcms.conf import settings
 from djpcms.utils import mark_safe, json 
 from djpcms.template import loader
 from djpcms.utils.unipath import FSPath as Path
@@ -60,7 +61,9 @@ class DocView(AppViewBase):
                           'djpcms/docs/%s.html' % namet,
                           'docs/doc.html',
                           ]
-        c = {'doc':     json.load(open(doc, 'rb')),
+        doc = json.load(open(doc, 'rb'))
+        djp.breadcrumbs = self.makebreadcrumbs(djp,doc)
+        c = {'doc':     doc,
              'env':     json.load(open(docroot.child('globalcontext.json'), 'rb')),
              'lang':    lang,
              'version': version,
@@ -72,6 +75,27 @@ class DocView(AppViewBase):
         
         return loader.render_to_string(template_names, c)
         
+    def makebreadcrumbs(self, djp, doc):
+        parent = djp
+        if djp.urlargs:
+            parent = parent.parent
+        parents = doc.get('parents',None)
+        b = []
+        while parent:
+            b.append({'name': parent.title,
+                      'url':  parent.url})
+            parent = parent.parent
+        b = list(reversed(b))
+        for parent in parents:
+            b.append({'url': parent.get('link',''),
+                      'name': parent.get('title','')})
+        if djp.urlargs:
+            b.append({'name': doc.get('title','')})
+        for p in range(settings.ENABLE_BREADCRUMBS):
+            b.pop(0)
+        if b:
+            b[-1].pop('url',None)
+        return b
 
 class DocApplication(ApplicationBase):
     deflang          = 'en'
@@ -79,7 +103,7 @@ class DocApplication(ApplicationBase):
     DOCS_PICKLE_ROOT = None
     
     index = DocView(regex = '')
-    document = DocView()
+    document = DocView(parent = 'index')
     
     def __init__(self, baseurl, application_site, editavailable):
         super(DocApplication,self).__init__(baseurl, application_site, False)
@@ -109,9 +133,6 @@ class DocApplication(ApplicationBase):
         css = {
             'all': ('djpcms/sphinx/smooth.css',)
         }
-    
-    
-    
     
     
 class __OldDocApplication(ApplicationBase):

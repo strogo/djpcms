@@ -3,29 +3,98 @@
 .. module:: djpcms.views.apps
 
 ====================================
-Included Model Applications
+Included Applications
 ====================================
+
+The application framework ``djpcms.views.appsite`` is flexible and powerful enough to handle most
+uses one can think of. It also comes with few ``battery-included`` implementations.
+These implementations are located in the ``djpcms.views.apps`` module since
+they may depend on external libraries and therefore are not part of the core
+``djpcms.views.appsite`` module.
+If you want to use them, all you need to do is to make sure
+the dependencies are met. No settings involved.
 
 
 .. _included-archiveapplication:
 
 .. module:: djpcms.views.apps.archive
 
-Archive Application
+Archive
 ======================
 
-.. autoclass:: djpcms.views.apps.archive.ArchiveApplication
-   :members:
-   :member-order: bysource
-   
+Application which creates several views for models with a date field.
+
 
 .. _included-taggingapplication:
    
 .. module:: djpcms.views.apps.tagging
 
-Tagging Application
+Tagging
 ======================
 
-.. autoclass:: djpcms.views.apps.tagging.TaggingApplication
-   :members:
-   :member-order: bysource
+The tagging application module contains three different applications which can be used
+for different projects:
+
+
+TagApplication
+~~~~~~~~~~~~~~~~~~~~~
+This is a :class:`djpcms.views.appsite.ModelApplication` which implements a tag view.
+
+.. admonition:: Dependencies:
+
+    If you want to use the tagging applications you need to install django-tagging__.
+    
+__ http://code.google.com/p/django-tagging/
+
+TagsApplication
+~~~~~~~~~~~~~~~~~~~~~
+A :class:`djpcms.views.appsite.ModelApplication` used to handle auto-complete__ tagging.
+
+__ http://en.wikipedia.org/wiki/Autocomplete
+
+To use it, simply do the following to your :setting:`APPLICATION_URL_MODULE`::
+
+	from djpcms.views import appsite
+	from djpcms.views.apps.tagging import Tag, TagsApplication
+	
+	appsite.site.register('/tagtools/', TagsApplication, model = Tag)
+	
+
+Then, when using tags in a form, use the following field::
+
+	from djpcms.views.apps.tagging import TagField
+	
+	class myform(forms.Form):
+	    tags = TagField()
+		
+and tag autocomplete is done.
+	
+	
+   
+
+.. _included-docapplication:
+
+.. module:: djpcms.views.apps.docs
+
+Sphinx Documentation
+========================================
+
+To create an application which display sphinx documentation::
+
+	from djpcms.views.docview import DocApplication
+	
+	class MyProjectDocs(DocApplication):
+	    name = 'myprojectdocs'
+	
+	
+In order to display documentation you need to create a template directory.
+In our example, ``djpcms`` will look into the following directories::
+
+	['myprojectdocs/%s.html' % pagename,
+	 'myprojectdocs/doc.html',
+	 'docs/%s.html' % pagename,
+	 'docs/doc.html']
+	 
+where ``pagename`` is the sphinx page name (*index*, *contents*, and so forth).
+To get started quickly,
+cut and past the entire ``docs`` directory in :file:`djpcms/templates/djpcms`.

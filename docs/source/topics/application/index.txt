@@ -1,10 +1,10 @@
-.. _application-index:
-
-.. module:: djpcms.views.appsite
+.. _topics-applications-index:
 
 ======================
 Applications
 ======================
+
+.. module:: djpcms.views.appsite
 
 Applications are subclasses of ``ApplicationBase``
 

@@ -446,8 +446,22 @@ Reimplement for custom arguments.'''
             djp = view(request)
             return djp.url
         
-    def tagurl(self, request, tag):
-        return None
+    def objurl(self, request, name, obj = None):
+        '''Application view **name** url.'''
+        view = self.getview(name)
+        if not view:
+            return None
+        permission_function = getattr(self,
+                                      'has_%s_permission' % name,
+                                      self.has_permission)
+        try:
+            if permission_function(request,obj):
+                djp = view(request, instance = obj)
+                return djp.url
+            else:
+                return None
+        except:
+            return None
     
     # PERMISSIONS
     #-----------------------------------------------------------------------------------------
@@ -579,4 +593,10 @@ This dictionary should be used to render an object within a template. It returns
         
     def sitemapchildren(self, view):
         return []
+    
+    def instancecode(self, request, obj):
+        '''Obtain an unique code for an instance.
+Can be overritten to include request dictionary.'''
+        return '%s:%s' % (obj._meta,obj.id)
+    
     

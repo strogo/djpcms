@@ -24,6 +24,7 @@ The python dotted path to the application urls module.
 This module is where applications can be registered to the site.
 If not provided, no dynamic application will be available.
 
+See: :ref:`topics-applications-index`
 
 
 .. setting:: CONTENT_INLINE_EDITING

@@ -1,4 +1,4 @@
-/**	TABLE
+/**	TABLE PLAIN
 -----------------------------------------------------------*/
 table.plain td,
 table.plain th {padding: 3px 15px 3px 0; text-align: left;}
@@ -9,7 +9,8 @@ table.plain td.first {font-weight: bold;}
 
 /*		BOX and CONTENT BLOCKS
 -------------------------------------------------*/
-div.djpcms-block-element {
+div.djpcms-block-element,
+div.edit-block {
 	overflow: hidden;
 	margin-bottom: 20px;
 }
@@ -342,7 +343,6 @@ input.openid {
 ------------------------------------------------*/
 .djpcms-html-box {
     padding: 2px;
-    margin-bottom: 20px;
 }
 
 .djpcms-html-box .hd {

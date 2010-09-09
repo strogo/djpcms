@@ -13,6 +13,7 @@
 }
 .documentation p.rubric {
     margin-top: 30px;
+    padding: 0 30px;
     font-weight: bold;
 }
 

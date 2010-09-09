@@ -12,8 +12,7 @@ from djpcms.utils.navigation import Navigator, Breadcrumbs
 
 
 class DjpResponse(http.HttpResponse):
-    '''
-    Lazy HttpResponse Class
+    '''Lazy HttpResponse Class
     '''
     def __init__(self, request, view, *args, **kwargs):
         '''
@@ -52,6 +51,9 @@ class DjpResponse(http.HttpResponse):
             err = []
         err.append(msg)
         self._errors = err
+    
+    def is_ajax(self):
+        return self.request.is_ajax()
     
     def own_view(self):
         return self.url == self.request.path
@@ -201,7 +203,10 @@ class DjpResponse(http.HttpResponse):
                   'admin_site': False,
                   'sitenav':    Navigator(self)})
         if settings.ENABLE_BREADCRUMBS:
-            d['breadcrumbs'] = Breadcrumbs(self,min_length = settings.ENABLE_BREADCRUMBS)
+            b = getattr(self,'breadcrumbs',None)
+            if b is None:
+                 b = Breadcrumbs(self,min_length = settings.ENABLE_BREADCRUMBS)
+            d['breadcrumbs'] = b
         template_file = template_file or self.template_file
         return render_to_response(template_file, context_instance=context, **kwargs)
         #self.content = res.content
@@ -215,8 +220,13 @@ class DjpResponse(http.HttpResponse):
         
     def instancecode(self):
         '''If an instance is available, return a unique code for it. Otherwise return None.'''
+        from djpcms.views import appsite 
         instance = self.instance
         if not instance:
             return None
-        return '%s:%s' % (instance._meta,instance.id)
+        appmodel = appsite.site.for_model(instance.__class__)
+        if appmodel:
+            return appmodel.instancecode(self.request, instance)
+        else:
+            return '%s:%s' % (instance._meta,instance.id)
     
