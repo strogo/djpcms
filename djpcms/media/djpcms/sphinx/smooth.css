@@ -33,17 +33,19 @@
 	list-style-type:disc;
 	margin-bottom: 10px;
 }
-.documentation .section li.toctree-l1 {
-	font-weight: bold;
-}
 .documentation .section li.toctree-l2 {
-	font-weight: normal;
 	list-style-type:circle;
 	margin-bottom: 0;
 	margin-top: 3px;
 }
-
-
+.documentation .section li.toctree-l1 a {
+	font-weight: bold;
+	font-size: 110%;
+}
+.documentation .section li.toctree-l2 a {
+	font-weight: normal;
+	font-size: 100%;
+}
 .documentation pre {
 	background: #fff;
 	border: 1px solid #C6C9CB;
