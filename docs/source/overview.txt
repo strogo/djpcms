@@ -1,1 +1,7 @@
-/home/lsbardel/workspace/djpcms/README.rst
+.. _intro-overview:
+
+==========
+Overview
+==========
+
+.. include:: ../../README.rst

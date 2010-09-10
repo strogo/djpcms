@@ -1,8 +1,3 @@
-.. _intro-overview:
-
-=====================
-Overview
-=====================
 
 :Documentation: http://packages.python.org/djpcms/
 :Dowloads: http://pypi.python.org/pypi/djpcms/

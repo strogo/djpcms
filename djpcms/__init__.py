@@ -29,7 +29,7 @@ def runtests(verbosity = 1, interactive = True, failfast = False):
     '''Run tests::
     
     import djpcms
-    djpcms.run_tests()'''
+    djpcms.runtests()'''
     import os
     import sys
     parent = lambda x : os.path.split(x)[0]

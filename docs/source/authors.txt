@@ -1,1 +1,7 @@
-/home/lsbardel/workspace/djpcms/AUTHORS
+.. _authors:
+
+==========
+Authors
+==========
+
+.. include:: ../../AUTHORS
