@@ -101,10 +101,8 @@ class AppViewBase(djpcmsview):
         return link
         
     def title(self, page, **urlargs):
-        if not page:
-            return self.appmodel.name
-        else:
-            return page.title
+        title = None if not page else page.title
+        return title or self.appmodel.name
         
     def __get_ajax_response(self, djp):
         # Obsolete

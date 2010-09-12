@@ -13,18 +13,23 @@ from djpcms.utils.html import ModelChoiceField, ModelMultipleChoiceField
 
 
 Form = forms.Form
+ModelForm = forms.ModelForm
+BooleanField = forms.BooleanField
+CharField = forms.CharField
+ChoiceField = forms.ChoiceField
+
 
 class SearchForm(Form):
     '''
     A simple search form used by plugins.apps.SearchBox.
     The search_text name will be used by SearchViews to handle text search
     '''
-    search_text = forms.CharField(required = False,
-                                  widget = forms.TextInput(attrs = {'class': 'sw_qbox autocomplete-off',
-                                                                    'title': 'Enter your search text'}))
+    search_text = CharField(required = False,
+                            widget = forms.TextInput(attrs = {'class': 'sw_qbox autocomplete-off',
+                                                              'title': 'Enter your search text'}))
 
 
-class LazyChoiceField(forms.ChoiceField):
+class LazyChoiceField(ChoiceField):
     '''
     A Lazy ChoiceField.
     This ChoiceField does not unwind choices until a deepcopy is called on it.
@@ -52,7 +57,7 @@ class LazyAjaxChoice(LazyChoiceField):
         return {'class': settings.HTML_CLASSES.ajax}
     
 
-class ModelCharField(forms.CharField):
+class ModelCharField(CharField):
     
     def __init__(self, model, fieldname, extrafilters = None, *args, **kwargs):
         self.model       = model
@@ -98,7 +103,7 @@ class SlugField(ModelCharField):
     
 
 # Form for a Page
-class PageForm(forms.ModelForm):
+class PageForm(ModelForm):
     '''
     Page form
     This specialized form takes care of all the possible permutation
@@ -109,7 +114,7 @@ class PageForm(forms.ModelForm):
             b) an application page (application field must be available)
         2) 
     '''
-    site        = forms.ModelChoiceField(queryset = Site.objects.all(), required = False)
+    site        = ModelChoiceField(queryset = Site.objects.all(), required = False)
     application = LazyChoiceField(choices = siteapp_choices,
                                   required = False,
                                   label = _('application'))
@@ -213,7 +218,7 @@ class PluginChoice(LazyAjaxChoice):
         return value
     
 
-class ContentBlockForm(forms.ModelForm):
+class ContentBlockForm(ModelForm):
     '''Content Block Change form
     
     This Model form is used to change the plug-in within
@@ -221,7 +226,7 @@ class ContentBlockForm(forms.ModelForm):
     '''
     plugin_name    = PluginChoice(label = _('Plugin'),   choices = plugingenerator, required = False)
     container_type = LazyChoiceField(label=_('Container'), choices = wrappergenerator)
-    url            = forms.CharField(widget=forms.HiddenInput, required = False)
+    url            = CharField(widget=forms.HiddenInput, required = False)
     
     class Meta:
         model = BlockContent
@@ -249,7 +254,7 @@ class ContentBlockForm(forms.ModelForm):
 
 
 # Short Form for a Page
-class ShortPageForm(forms.ModelForm):
+class ShortPageForm(ModelForm):
     
     layout = FormLayout(Column('title','inner_template','in_navigation'),
                         Column('link','cssinfo','requires_login'))
