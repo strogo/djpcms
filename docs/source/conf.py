@@ -22,9 +22,9 @@ sys.path.append(os.path.join(source_dir, "_ext"))
 sys.path.insert(0,base_dir)
 
 # The short X.Y version.
-version = '0.7.2'
+version = '0.7'
 # The full version, including alpha/beta/rc tags.
-release = '0.7.2'
+release = '0.7.3'
 
 # -- General configuration -----------------------------------------------------
 

@@ -1,4 +1,8 @@
 
+.. rubric:: Dynamic Content management System for Python and Javascript
+
+--
+
 :Documentation: http://packages.python.org/djpcms/
 :Dowloads: http://pypi.python.org/pypi/djpcms/
 :Source: http://github.com/lsbardel/djpcms

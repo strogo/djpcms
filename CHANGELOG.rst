@@ -1,5 +1,5 @@
 
-Version 0.8.a2
+Version 0.7.3 (2010-Sep-13)
 ==============================
  * Reregistering a model to ``djpcms.views.appsite.site`` won't raise any error. It overrides the previous model application.
  * Included ``examples`` directory in the package compressed file.

@@ -6,7 +6,7 @@ import sys
 
 package_name  = 'djpcms'
 root_dir      = os.path.split(os.path.abspath(__file__))[0]
-package_dirs  = os.path.join(root_dir, package_name) 
+package_dir   = os.path.join(root_dir, package_name) 
 
 def get_module():
     if root_dir not in sys.path:
@@ -100,7 +100,6 @@ setup(
             'Intended Audience :: Developers',
             'License :: OSI Approved :: BSD License',
             'Operating System :: OS Independent',
-            'Environment :: Web Environment',
             'Framework :: Django',
             'Programming Language :: Python',
             'Programming Language :: JavaScript',
