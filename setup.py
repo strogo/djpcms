@@ -6,7 +6,7 @@ import sys
 
 package_name  = 'djpcms'
 root_dir      = os.path.split(os.path.abspath(__file__))[0]
-package_dirs  = [os.path.join(root_dir, package_name), os.path.join(root_dir, 'examples')] 
+package_dirs  = os.path.join(root_dir, package_name) 
 
 def get_module():
     if root_dir not in sys.path:
@@ -68,22 +68,19 @@ if pieces[-1] == '':
 else:
     len_root_dir = len(pieces)
 
-for package_dir in package_dirs:
-    for dirpath, dirnames, filenames in os.walk(package_dir):
-        # Ignore dirnames that start with '.'
-        for i, dirname in enumerate(dirnames):
-            if dirname.startswith('.'): del dirnames[i]
-        if '__init__.py' in filenames:
-            packages.append('.'.join(fullsplit(dirpath)[len_root_dir:]))
-        elif filenames:
-            rel_dir = get_rel_dir(dirpath,root_dir)
-            data_files.append([rel_dir, [os.path.join(dirpath, f) for f in filenames]])
+for dirpath, dirnames, filenames in os.walk(package_dir):
+    # Ignore dirnames that start with '.'
+    for i, dirname in enumerate(dirnames):
+        if dirname.startswith('.'): del dirnames[i]
+    if '__init__.py' in filenames:
+        packages.append('.'.join(fullsplit(dirpath)[len_root_dir:]))
+    elif filenames:
+        rel_dir = get_rel_dir(dirpath,root_dir)
+        data_files.append([rel_dir, [os.path.join(dirpath, f) for f in filenames]])
 
 if len(sys.argv) > 1 and sys.argv[1] == 'bdist_wininst':
     for file_info in data_files:
         file_info[0] = '\\PURELIB\\%s' % file_info[0]
-
-
 
 setup(
         name         = package_name,
@@ -103,6 +100,7 @@ setup(
             'Intended Audience :: Developers',
             'License :: OSI Approved :: BSD License',
             'Operating System :: OS Independent',
+            'Environment :: Web Environment',
             'Framework :: Django',
             'Programming Language :: Python',
             'Programming Language :: JavaScript',

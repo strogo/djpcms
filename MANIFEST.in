@@ -20,6 +20,7 @@ recursive-include djpcms/contrib/admin/templates *
 recursive-include djpcms/contrib/admin/media *
 recursive-include djpcms/contrib/compressor/templates *
 recursive-include djpcms/contrib/compressor/media *
+recursive-include examples *.py
 recursive-include examples/sitedjpcms/templates *
 recursive-include examples/sitedjpcms/media *
 recursive-include examples/vinoweb/templates *
