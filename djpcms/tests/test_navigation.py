@@ -23,7 +23,7 @@ class TestSiteNavigation(TestCase):
         sitenav = context["sitenav"]
         self.assertTrue(isinstance(sitenav,navigation.Navigator))
         for item in sitenav:
-            url = item['url']
+            url = item.url
             self.assertTrue(len(url)>2)
             self.assertTrue(url.startswith('/'))
             self.assertTrue(url.endswith('/'))

@@ -48,6 +48,7 @@ class Navigator(lazycounter):
     A navigator for a web site
     '''
     def __init__(self, *args, **kwargs):
+        self.soft    = self.kwargs.pop('soft',False)
         self.name    = self.kwargs.pop('name','')
         self.url     = self.kwargs.pop('url','')
         self.levels  = self.kwargs.pop('levels',1)
@@ -64,6 +65,8 @@ class Navigator(lazycounter):
                          **self.kwargs)
     
     def buildselects(self, djp, urlselects):
+        if self.soft and djp.is_soft():
+            return djp
         parent = djp.parent
         if parent:
             try:

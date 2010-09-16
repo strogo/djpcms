@@ -55,6 +55,9 @@ class DjpResponse(http.HttpResponse):
     def is_ajax(self):
         return self.request.is_ajax()
     
+    def is_soft(self):
+        return self.view.is_soft(self)
+    
     def own_view(self):
         return self.url == self.request.path
     

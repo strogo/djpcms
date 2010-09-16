@@ -123,6 +123,10 @@ class AppViewBase(djpcmsview):
     def set_page(self, page):
         self.__page = page
         
+    def is_soft(self, djp):
+        page = pagecache.get_for_application(self.code)
+        return False if not page else page.soft_root
+        
     def get_page(self):
         if self.__page:
             return self.__page

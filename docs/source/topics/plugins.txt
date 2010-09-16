@@ -53,6 +53,11 @@ Text Plugin
 The text plugin allows to write content in a straightforward manner.
    
 
+Soft Navigation
+----------------------
+
+.. autoclass:: djpcms.plugins.defaults.SoftNavigation
+   :members:
 
 
 .. _plugins-wrapper-class:

@@ -60,6 +60,9 @@ Not used very often but here just in case.'''
         '''The :class:`djpcms.models.Page` instances associated with this view.'''
         return None
     
+    def is_soft(self, djp):
+        return not self.parentresponse(djp)
+    
     def __call__(self, request, *args, **kwargs):
         return DjpResponse(request, self, *args, **kwargs)
     
@@ -334,6 +337,9 @@ class pageview(djpcmsview):
     
     def get_page(self):
         return self.page
+    
+    def is_soft(self, djp):
+        return self.page.soft_root
     
     def has_permission(self, request = None, obj = None):
         if self.page.requires_login:

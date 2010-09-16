@@ -1,6 +1,7 @@
 
 Development
 ==============================
+* Added the new :class:`djpcms.plugins.defaults.SoftNavigation` plugin.
 * Added :setting:`SITE_NAVIGATION_LEVELS` setting for controlling
   the number of nesting on the main site navigation.
   The site navigation is included in the template by
