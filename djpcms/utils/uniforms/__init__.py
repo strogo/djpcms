@@ -15,6 +15,7 @@ from djpcms.utils.uniforms.uniformset import BoundField, ModelFormInlineHelper
 
 
 inlineLabels   = 'inlineLabels'
+inlineLabels2  = 'inlineLabels fullwidth'
 blockLabels    = 'blockLabels'
 blockLabels2   = 'blockLabels2'
 inlineFormsets = 'blockLabels2'
@@ -27,11 +28,11 @@ _required_tag = mark_safe('')
 def_renderer = lambda x: x
 
 
-def render_field(field, form):
+def render_field(field, form, layout):
     if isinstance(field, str):
-        return render_form_field(field, form)
+        return render_form_field(field, form, layout)
     else:
-        return field.render(form)
+        return field.render(form, layout)
     
 def get_rendered_fields(form):
     rf = getattr(form, 'rendered_fields', [])
@@ -39,7 +40,7 @@ def get_rendered_fields(form):
     return rf
 
 
-def render_form_field(field, form):
+def render_form_field(field, form, layout):
     try:
         field_instance = form.fields[field]
     except KeyError:
@@ -57,14 +58,7 @@ def render_form_field(field, form):
 
 
 class FormLayout(object):
-    '''Form Layout, add fieldsets, rows, columns and html.
-Valid key-value arguments are (all optionals):
-
-* *id*: string id for layout.
-* *template*: a template file name.
-* *default_style*: the default layout style used for fields left out.
-
-Example::
+    '''Main class for defining the layout of a uniform. For example::
 
     class NoteForm(forms.Form):
         name = forms.CharField()
@@ -75,7 +69,20 @@ Example::
                             Fieldset('description'),
                             Row('password1','password2'),
                             Html('<img src="/media/somepicture.jpg"/>'))
+                            
+    
+.. attribute:: id
 
+    String id for layout.
+    
+.. attribute:: template
+
+    Template file name or ``None``
+    
+.. attribute:: default_style
+
+    The default layout style of :class:`UniFormElement` in self.
+    One of :ref:`layout types <uniforms-layouts>`. Default ``inlineLabels``.
 
 '''
     def __init__(self, *fields, **kwargs):
@@ -95,17 +102,15 @@ Example::
                     setattr(self,field.key,field)
 
     def render(self, form):
-        '''Render the uniform layout:
-* *form* a form instance.
-* *formsets* a string which render inline formsets.
-* *inputs* safe string which render the submit inputs.'''
+        '''Render the uniform layout or *form*.'''
         ctx  = {}
         html = ''
         for field in self._allfields:
+            h = field.render(form, self)
             if field.key and self.template:
-                ctx[field.key] = render_field(field, form)
+                ctx[field.key] = h
             else:
-                html += render_field(field, form)
+                html += h
         
         missing_fields = []
         rendered_fields = get_rendered_fields(form)
@@ -115,7 +120,7 @@ Example::
         
         if missing_fields:
             fset = Fieldset(*missing_fields,**{'css_class':self.default_style})        
-            html += fset.render(form)
+            html += fset.render(form,self)
                 
         if ctx:
             ctx['html'] = mark_safe(html)
@@ -130,89 +135,115 @@ Example::
 
 
 class UniFormElement(object):
-    '''Base class of elements in a uni-form :class:`FormLayout`'''
+    '''Base class for elements in a uniform :class:`FormLayout`.
+    
+    .. attribute:: css_class
+    
+        The class used for the form element, one of :ref:`layout types <uniforms-layouts>`.
+        If missing the :attr:`FormLayout.default_style` will be used.
+        
+    .. attribute:: elem_css
+    
+        Extra css class for the element. Default ``None``.
+        
+    .. attribute:: template
+    
+        An optional template file name for rendering the element. Default ``None``.
+    '''
     __metaclass__ = MediaDefiningClass
+    elem_css = None
     
     def __new__(cls, *args, **kwargs):
         obj = super(UniFormElement,cls).__new__(cls)
         obj.renderer = kwargs.pop('renderer',def_renderer)
         obj.key = kwargs.pop('key',None)
+        obj.css = kwargs.get('css_class',None)
+        obj.template = kwargs.get('template',None)
+        obj.elem_css = kwargs.get('elem_css',cls.elem_css)
         return obj
-
-    def render(self, form):
-        return self.renderer(self._render(form))
     
-    def _render(self, form):
+    def _css(self, layout):
+        dcss = None if layout is None else layout.default_style
+        css = self.css or dcss
+        if self.elem_css:
+            css = '%s %s' % (css,self.elem_css)
+        return css
+
+    def render(self, form, layout = None):
+        '''Render the uniform element. This function is called the the instance of
+:class:`FormLayout` which contains ``self``.'''
+        return self.renderer(self._render(form, layout))
+    
+    def _render(self, form, layout):
         raise NotImplementedError
 
 
 class Fieldset(UniFormElement):
-    ''' Fieldset container. Renders to a <fieldset>. '''
+    '''A :class:`UniFormElement` which renders to a <fieldset>.'''
     
     def __init__(self, *fields, **kwargs):
-        self.css = kwargs.get('css_class',blockLabels2)
         self.legend_html = kwargs.get('legend','')
         if self.legend_html:
             self.legend_html = '<legend>%s</legend>' % unicode(self.legend_html)
         self.fields = fields
 
-    def _render(self, form):
+    def _render(self, form, layout):
         if self.css:
             html = u'<fieldset class="%s">' % self.css
         else:
             html = u'<fieldset>'
         html += self.legend_html
         for field in self.fields:
-            html += render_field(field, form)
+            html += render_field(field, form, layout)
         html += u'</fieldset>'
         return mark_safe(html)
 
 
 class Row(UniFormElement):
-    ''' row container. Renders to a set of <div>'''
+    '''A :class:`UniFormElement` which renders to a <div>.'''
+    elem_css = "formRow"
     def __init__(self, *fields, **kwargs):
         self.fields = fields
-        if 'css_class' in kwargs.keys():
-            self.css = kwargs['css_class']
-        else:
-            self.css = "formRow"
 
-    def _render(self, form):
-        output = u'<div class="%s">' % self.css
+    def _render(self, form, layout):
+        css = self._css(layout)
+        output = u'<div class="%s">' % css
         for field in self.fields:
-            output += render_field(field, form)
+            output += render_field(field, form, layout)
         output += u'</div>'
         return u''.join(output)
 
 
-class Column(UniFormElement):
-    ''' column container. Renders to a set of <div>'''
-    def __init__(self, *fields, **kwargs):
-        self.fields = fields
-        ncols = kwargs.get('num_cols',None)
-        if 'css_class' in kwargs.keys():
-            self.css = kwargs['css_class']
-        else:
-            self.css = "formColumn blockLabels2"
-        if ncols:
-            self.css += " cols%s" % ncols
+class Columns(UniFormElement):
+    '''A :class:`UniFormElement` whiche defines a set of columns. Renders to a set of <div>.'''
+    elem_css  = "formColumn"
+    templates = {2: 'djpcms/yui/yui-simple.html'}
+    def __init__(self, *columns, **kwargs):
+        self.columns = columns
+        ncols = len(columns)
+        if not self.template:
+            self.template = self.templates.get(ncols,None)
+        if not self.template:
+            raise ValueError('Template not available in uniform Column.')
 
-    def _render(self, form):
-        output = u'<div class="%s">' % self.css
-        for field in self.fields:
-            output += render_field(field, form)
-        output += u'</div>'
-        return u''.join(output)
+    def _render(self, form, layout):
+        css = self._css(layout)
+        content = {}
+        for i,column in enumerate(self.columns):
+            output = u'<div class="%s">' % css
+            for field in column:
+                output += render_field(field, form, layout)
+            output += u'</div>'
+            content['content%s' % i] = mark_safe(output)
+        return loader.render_to_string(self.template, content)
 
 
 class Html(UniFormElement):
-
-    ''' HTML container '''
-
+    '''A :class:`UniFormElement` which renders to `self`.'''
     def __init__(self, html, **kwargs):
         self.html = mark_safe(html)
 
-    def _render(self, form):
+    def _render(self, form, layout):
         return self.html
     
     

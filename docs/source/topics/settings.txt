@@ -142,3 +142,12 @@ Default: ``True``
 Whether static files are served by the server running the Django
 site (and therefore included in the urls) or not. It should be set to ``True`` only during development.
 
+
+.. SETTING:: SITE_NAVIGATION_LEVELS
+
+SITE_NAVIGATION_LEVELS
+--------------------------------
+
+Default: ``2``
+
+Number of nested levels in the main site navigation.

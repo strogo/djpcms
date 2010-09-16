@@ -27,6 +27,12 @@ There are three types of layout: ``inlineLabels``, ``blockLabels`` and ``blockLa
 __ http://sprawsm.com/uni-form/
 __ http://github.com/pydanny/django-uni-form		
    	
+
+.. _uniforms-layouts:
+
+Layout Types
+====================
+``inlineLabels``, ``blockLabels``, ``blockLabels2``.
 	
 FormLayout class
 ==========================
@@ -36,4 +42,22 @@ FormLayout class
    :inherited-members:
    :member-order: bysource
 
- 
+
+Form Element Class
+=========================
+
+.. autoclass:: djpcms.utils.uniforms.UniFormElement
+   :members:
+   :inherited-members:
+   :member-order: bysource
+
+Form Elements
+=========================
+
+.. autoclass:: djpcms.utils.uniforms.Fieldset
+
+.. autoclass:: djpcms.utils.uniforms.Row
+
+.. autoclass:: djpcms.utils.uniforms.Columns
+
+.. autoclass:: djpcms.utils.uniforms.Html

@@ -1,4 +1,12 @@
 
+Development
+==============================
+* Added :setting:`SITE_NAVIGATION_LEVELS` setting for controlling the number of nesting on the main site navigation.
+* Refactored :mod:`djpcms.utils.uniforms` so that :attr:`djpcms.utils.uniforms.FormLayout.default_style` is passed to the :func:`djpcms.utils.uniforms.UniFormElement.render` method.
+* YUI-grid templates completed in ``djpcms/yui`` template directory.
+* Refactoring in :mod:`djpcms.plugins`.
+
+
 Version 0.7.3 (2010-Sep-13)
 ==============================
  * Reregistering a model to ``djpcms.views.appsite.site`` won't raise any error. It overrides the previous model application.

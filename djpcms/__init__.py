@@ -1,15 +1,11 @@
 '''Dynamic content management system using Javascript and Python'''
 
-VERSION = (0, 7, 3)
+VERSION = (0, 7, 4)
 
 
 def get_version():
     if len(VERSION) == 3:
-        try:
-            vi = int(VERSION[2])
-            v  = '%s.%s.%s' % VERSION
-        except:
-            v = '%s.%s_%s' % VERSION
+        v = '%s.%s.%s' % VERSION
     else:
         v = '%s.%s' % VERSION[:2]
     return v

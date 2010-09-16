@@ -154,8 +154,8 @@ The basics:
     '''Equivalent to :attr:`djpcms.views.appsite.ModelApplication.form_withrequest`. If set to ``True``,
     the ``request`` instance is passed to the form constructor. Default is ``False``.'''
     edit_form     = False
-    storage       = _plugin_dictionary
-    URL           = None
+    #storage       = _plugin_dictionary
+    #URL           = None
     
     def js(self, **kwargs):
         return None
@@ -209,15 +209,15 @@ This is the function plugins need to implement.
 Usually, there is no need to override this function. If your plugin needs input parameters when editing, simple set the
 :attr:`form` attribute.
         '''
-        initial = self.arguments(args) or None
         if self.form:
+            initial = self.arguments(args) or None
             return self.form(**form_kwargs(request = djp.request,
                                            initial = initial,
                                            withrequest = self.form_withrequest,
                                            withdata = withdata))
             
-    def response(self, request, *bits):
-        raise http.Http404
+    #def response(self, request, *bits):
+    #    raise http.Http404
     
     def _register(self):
         global _plugin_dictionary

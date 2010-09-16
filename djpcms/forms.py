@@ -8,7 +8,7 @@ from djpcms.models import Page, BlockContent, SiteContent
 from djpcms.utils import lazyattr
 from djpcms import siteapp_choices
 from djpcms.plugins import get_plugin, plugingenerator, wrappergenerator
-from djpcms.utils.uniforms import FormLayout, Column
+from djpcms.utils.uniforms import FormLayout, Columns, Row
 from djpcms.utils.html import ModelChoiceField, ModelMultipleChoiceField
 
 
@@ -255,10 +255,13 @@ class ContentBlockForm(ModelForm):
 
 # Short Form for a Page
 class ShortPageForm(ModelForm):
-    
-    layout = FormLayout(Column('title','inner_template','in_navigation'),
-                        Column('link','cssinfo','requires_login'))
+    '''Form to used to edit inline a page'''
+    layout = FormLayout(Columns(('title','parent','inner_template','in_navigation'),
+                                ('link','cssinfo',Row('soft_root','requires_login')))
+                        )
     
     class Meta:
         model = Page
-        fields = ['link','title','inner_template','cssinfo','in_navigation','requires_login']
+        fields = ['link','title','inner_template','cssinfo',
+                  'in_navigation','requires_login','soft_root',
+                  'parent']

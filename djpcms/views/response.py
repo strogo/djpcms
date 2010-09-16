@@ -195,13 +195,14 @@ class DjpResponse(http.HttpResponse):
         if settings.DJPCMS_STYLE:
             media.add_css({'all':['djpcms/jquery-ui-css/%s/jquery-ui-1.8.4.css' % settings.DJPCMS_STYLE,
                                   'djpcms/themes/%s.css' % settings.DJPCMS_STYLE]})
+        sitenav = Navigator(self, classes = 'nav main', levels = settings.SITE_NAVIGATION_LEVELS)
         d.update({'djp':        self,
                   'media':      media,
                   'page':       self.page,
                   'cssajax':    self.css,
                   'is_popup':   False,
                   'admin_site': False,
-                  'sitenav':    Navigator(self)})
+                  'sitenav':    sitenav})
         if settings.ENABLE_BREADCRUMBS:
             b = getattr(self,'breadcrumbs',None)
             if b is None:

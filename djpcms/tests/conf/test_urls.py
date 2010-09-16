@@ -37,6 +37,7 @@ class DocTestApplication(DocApplication):
         return ('docs',)
     
     
+#Register few applications for testing
 appsite.site.register('/content/', ContentArchiveApplication, model = SiteContent)
 appsite.site.register('/strategies/', StrategyApplication, model = Strategy)
 appsite.site.register('/docs/', DocTestApplication)

@@ -122,6 +122,7 @@ class Page(TimeStamp):
                                    help_text=_('Optional. Templale file for the page.'))
     
     in_navigation = models.PositiveIntegerField(default=1,
+                                                verbose_name = _("Position in navigation"),
                                                 help_text = _("Position in navigation. If 0 it won't be in navigation"))
     '''Integer flag indicating positioning in the site navigation (see :class:`djpcms.utils.navigation.Navigator`). If set to ``0`` the page won't be displayed in the navigation.'''
     

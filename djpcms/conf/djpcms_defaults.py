@@ -27,6 +27,7 @@ EXTRA_CONTENT_PLUGIN            = None
 GOOGLE_ANALYTICS_ID             = None
 LLOOGG_ANALYTICS_ID             = None
 
+SITE_NAVIGATION_LEVELS          = 2
 ENABLE_BREADCRUMBS              = 1
 
 APPLICATION_URL_MODULE          = None
