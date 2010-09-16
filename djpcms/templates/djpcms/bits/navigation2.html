@@ -1,5 +1,0 @@
-{% extends "djpcms/bits/navigation1.html" %}
-{% block nested-nav %}{% if navitem.nav.count %}
-<ul>{% for sitem in navitem.nav %}
-<li><a href="{{ sitem.url }}">{{ sitem.name }}</a></li>{% endfor %}
-</ul>{% endif %}{% endblock %}

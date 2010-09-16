@@ -1,8 +1,12 @@
 
 Development
 ==============================
-* Added :setting:`SITE_NAVIGATION_LEVELS` setting for controlling the number of nesting on the main site navigation.
-* Refactored :mod:`djpcms.utils.uniforms` so that :attr:`djpcms.utils.uniforms.FormLayout.default_style` is passed to the :func:`djpcms.utils.uniforms.UniFormElement.render` method.
+* Added :setting:`SITE_NAVIGATION_LEVELS` setting for controlling
+  the number of nesting on the main site navigation.
+  The site navigation is included in the template by
+  using ``{{ sitenav.render }}``.
+* Refactored :mod:`djpcms.utils.uniforms` so that :attr:`djpcms.utils.uniforms.FormLayout.default_style` is passed
+  to the :func:`djpcms.utils.uniforms.UniFormElement.render` method.
 * YUI-grid templates completed in ``djpcms/yui`` template directory.
 * Refactoring in :mod:`djpcms.plugins`.
 
