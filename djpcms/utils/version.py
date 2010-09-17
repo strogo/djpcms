@@ -54,6 +54,6 @@ for app in settings.INSTALLED_APPS:
                     v = module.get_version()
                 except:
                     continue
-        addversion('django-%s' % app,cleanversion(v))
+        addversion('%s' % app,cleanversion(v))
 
 

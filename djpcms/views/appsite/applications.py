@@ -330,8 +330,11 @@ Reimplement for custom arguments.'''
         form = form or self.form
         
         if isinstance(form,type):
-            if form._meta.model == self.model:
-                mform = form
+            try:
+                if form._meta.model == self.model:
+                    mform = form
+            except:
+                mform = modelform_factory(self.model, form)
             else:
                 mform = modelform_factory(self.model, form)
         else:
