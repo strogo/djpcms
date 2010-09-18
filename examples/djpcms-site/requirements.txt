@@ -1,2 +1,2 @@
 django>=1.2
-djpcms>=0.7.3
+djpcms>=0.8
