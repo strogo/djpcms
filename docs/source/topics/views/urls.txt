@@ -1,0 +1,15 @@
+.. _urls:
+
+.. module:: djpcms.urls
+
+===================
+Urls
+===================
+
+A clean, elegant URL scheme is an important detail in a high-quality Web application.
+Djpcms lets you design URLs however you want and it comes with `battery included` patterns.
+
+To use it (of course you use it)::
+
+	from djpcms.urls import site_urls
+	urlpatterns = site_urls.patterns()

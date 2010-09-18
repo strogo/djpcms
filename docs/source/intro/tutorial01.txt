@@ -130,9 +130,9 @@ In your settings file replace the default media settings with these::
 
 .. _intro-tutorial-urls:
 
-Urls files
+Urls
 ========================
-Last step of this first tutorial concerns the setting up of urls.
+Last step of this first tutorial concerns the setting up of ``urls``.
 First edit the :file:`urls.py` which was created when we started the project and
 replace its content with::
 
@@ -140,8 +140,6 @@ replace its content with::
 	from djpcms.urls import *
 	
 	urlpatterns = patterns('', *site_urls)
-	
-The ``site_urls`` tuple is defined in the ``djpcms.urls`` module.
 
 Second, edit the :file:`settings.py` and add the ``djpcms`` specific :setting:`APPLICATION_URL_MODULE` setting::
 

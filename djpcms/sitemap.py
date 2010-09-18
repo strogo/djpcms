@@ -1,10 +1,37 @@
 import datetime
+from copy import copy
 
+from django.conf.urls.defaults import patterns
 from django.contrib.sitemaps import Sitemap
 
 from djpcms.views import appsite
 from djpcms.views.cache import pagecache
 
+
+class DjpUrl(object):
+    
+    def __init__(self):
+        self._pre = []
+        self._after = []
+        
+    def __str__(self):
+        return str(self._pre)
+    
+    def append(self, url):
+        self._pre.append(url)
+        
+    def after(self, url):
+        self._after.append(url)
+        
+    def all(self):
+        lurl = copy(self._pre)
+        lurl.append((r'(.*)', 'djpcms.views.handlers.Handler'))
+        lurl.extend(self._after)
+        return tuple(lurl)
+    
+    def patterns(self):
+        return patterns('', *self.all())
+    
 
 class DjpPage(Sitemap):
     changefreq = "monthly"

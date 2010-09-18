@@ -37,6 +37,7 @@ DJPCMS_PLUGINS                  = ['djpcms.plugins.*']
 DJPCMS_WRAPPERS                 = ['djpcms.plugins.extrawrappers']
 DJPCMS_CONTENT_FUNCTION         = None
 DJPCMS_MARKUP_MODULE            = 'djpcms.utils.markups'
+DJPCMS_SITE_MAP                 = True
 
 #
 # API url prefix

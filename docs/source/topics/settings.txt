@@ -57,6 +57,16 @@ default: ``['base.html','djpcms/base.html']``
 A list of template files of a single string. This is the template file name used when no templates are found in the page/view.
 
 
+.. setting:: DJPCMS_SITE_MAP
+
+DJPCMS_SITE_MAP
+-------------------------
+
+default: ``True``
+
+if ``False`` sitemap won't be added to the urls.
+
+
 .. setting:: DJPCMS_MARKUP_MODULE
 
 DJPCMS_MARKUP_MODULE

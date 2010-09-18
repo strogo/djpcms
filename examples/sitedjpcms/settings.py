@@ -1,37 +1,18 @@
+from localsettings import *
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    # ('Your Name', 'your_email@domain.com'),
+     ('Luca Sbardella', 'luca.sbardella@gmail.com'),
 )
 
 MANAGERS = ADMINS
-
-# Local time zone for this installation. Choices can be found here:
-# http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
-# although not all choices may be available on all operating systems.
-# On Unix systems, a value of None will cause Django to use the same
-# timezone as the operating system.
-# If running in a Windows environment this must be set to the same as your
-# system time zone.
-TIME_ZONE = 'America/Chicago'
-
-# Language code for this installation. All choices can be found here:
-# http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = 'en-us'
-
+TIME_ZONE     = 'Europe/London'
+LANGUAGE_CODE = 'en-uk'
 SITE_ID = 1
-
-# If you set this to False, Django will make some optimizations so as not
-# to load the internationalization machinery.
-USE_I18N = True
-
-# If you set this to False, Django will not format dates, numbers and
-# calendars according to the current locale
+USE_I18N = False
 USE_L10N = True
-
-# Make this unique, and don't share it with anybody.
 SECRET_KEY = 'vctw)*^2z!1fzie12zzdxf45)-rc(^7qvd(vabn&1&ogwehidr'
 
 # List of callables that know how to import templates from various sources.
@@ -58,6 +39,8 @@ INSTALLED_APPS = (
     #
     'djpcms',
     'djpcms.contrib.admin',
+    'socialauth',
+    'openid_consumer',
     #'django.contrib.admin',
 )
 
