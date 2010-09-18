@@ -49,6 +49,7 @@ Contents
    topics/javascript/index
    topics/settings
    topics/utils/index
+   topics/contrib/index
    authors
    changelog
 

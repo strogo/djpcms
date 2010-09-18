@@ -24,48 +24,16 @@
 #
 #
 from __future__ import with_statement # needed for python 2.5
-import os
 
-from django.template import loader
-from django.contrib.auth import authenticate
+from fabric.api import env, run
+from fabric.contrib import django
 
-from fabric.api import *
-
-from models import DeploySite
+import utils
 
 #___________________________________________________________ SETTINGS DEFAULT
+env.update(utils.defaults)
 env.module_name      = None          # Specify the module which contain the settings file
 env.project_name     = None          # if None it will be set to server_name, only used for local testing really!
-env.no_site_packages = False
-
-# Target machine settings and configuration
-target = {'system':             'p',          #p for POSIX, w for WINDOWS  
-          'server_type':        'mod_wsgi',   #mod_wsgi or mod_python for now
-          'server_user':        'www-data',
-          'server_group':       'www-data',
-          'server_name':        None,
-          'threads':            15,
-          'apache_port':        90,
-          'python_version':     '2.6',
-          'path':               None,
-          'project_name':       None,
-          'no_site_packages':   False,
-          'server_admin':       None}
-
-
-def initialize():
-    base  = target.get('path',None)
-    pname = target.get('project_name',None)
-    if base and pname:
-        path = '%s/%s' % (base,pname)
-        #if target.get('system','p') == 'p':
-        #    path = os.path.join(base,pname)
-        #else:
-        #    path = '%s//%s' % (base,pname)
-        env.path = path
-    else:
-        raise ValueError('Target path not specified')
-    env.host_string = target.get('host',target.get('server_name',None))
     
 
 def clear():
@@ -160,16 +128,9 @@ def deploy():
     required third party modules, install the virtual host and 
     then restart the webserver
     """
-    username = prompt('username: ')
-    password = prompt('password: ')
-    comment  = prompt('comment: ')
-    user = authenticate(username = username, password = password)
-    if user is not None and user.is_active:
-        dep = DeploySite(user = user, comment = comment)
-        dep.save()
-    else:
-        exit(1)
-        
+    #username = prompt('site username: ')
+    #password = prompt('site password: ')
+    #comment  = prompt('comment: ')    
     import time
     try:
         env.release = time.strftime('%Y%m%d-%H%M%S')
@@ -178,22 +139,20 @@ def deploy():
         install_requirements()
         install_site()
         symlink_current_release()
-        #migrate()
+        ##migrate()
         reboot()
     except:
         dep.delete()
 
 
 def python_version():
-    initialize()
     return run('python --version')
 
 def python_path():
     env.python_path = '{0[path]}/lib/python{0[version]}/site-packages'.format(env)
     
 def host_type():
-    '''
-    type of operative system on the host machine
+    '''type of operative system on the host machine
     '''
     run('uname -s')
 

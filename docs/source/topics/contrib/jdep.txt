@@ -1,0 +1,9 @@
+.. _jdep:
+
+.. _module:: djpcms.contrib.jdep
+
+==============================
+jDep
+==============================
+
+.. include:: ../../../../djpcms/contrib/jdep/README.rst

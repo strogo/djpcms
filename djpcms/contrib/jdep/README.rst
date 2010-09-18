@@ -1,31 +1,38 @@
-JDEP
-===================
 
-Django module for managing deployment of applications using fabric, virtualenv and pip.
-The favorite configuration is djago served by Apache using `mod_wsgi`.
+Django module for managing deployment of applications using fabric_, virtualenv_ and pip_.
+The favorite configuration is django served by Apache using `mod_wsgi`.
+
+**Only Ubuntu server supported for now**
 
 
 Requirements
 =========================
- * fabric
- * pip
- * djpcms
- 
+
+On the developer machine
+
+* fabric_
+* pip_
+
+
 On the server side
- * virtualenv
- * pip
+
+* virtualenv_
+* pip_
 
  
 Usage
 ==================
 On the root directory of your django project create a file called `fabfile.py` which starts as::
 
-    from django.core.management import setup_environ
-    from myproject import settings
-    setup_environ(settings)
     from djpcms.contrib.jdep.fabtool import *
-    
-    
-    def winserver():
-        "Use the production virtual server"
-        context['server_type'] = 'w'
+    utils.project('myproject')
+        
+        
+Then run::
+
+	fab deploy
+
+
+.. _fabric: http://docs.fabfile.org/
+.. _virtualenv: http://virtualenv.openplans.org/
+.. _pip: http://pip.openplans.org/
