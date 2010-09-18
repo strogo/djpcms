@@ -13,6 +13,7 @@ INSTALLED_APPS  = ['django.contrib.auth',
                    'django.contrib.sites',
                    'django.contrib.contenttypes',
                    'djpcms',
+                   'djpcms.contrib.jdep',
                    'djpcms.tests.testmodel']
 
 

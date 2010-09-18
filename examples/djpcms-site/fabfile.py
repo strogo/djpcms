@@ -1,6 +1,5 @@
-from djpcms.contrib.jdep.fabtool import *
-
-utils.project('sitedjpcms')
+from djpcms.contrib.jdep.fabtools import *
+utils.project('sitedjpcms','djpcms.com', apache_port = 93)
 
 
     

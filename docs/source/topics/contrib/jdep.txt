@@ -1,6 +1,6 @@
 .. _jdep:
 
-.. _module:: djpcms.contrib.jdep
+.. module:: djpcms.contrib.jdep
 
 ==============================
 jDep

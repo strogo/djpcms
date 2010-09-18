@@ -43,6 +43,6 @@ def runtests(verbosity = 1, interactive = True, failfast = False):
     test_runner = TestRunner(verbosity=verbosity,
                              interactive=interactive,
                              failfast=failfast)
-    failures = test_runner.run_tests(('djpcms',))
+    failures = test_runner.run_tests(('djpcms','jdep'))
 
 

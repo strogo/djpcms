@@ -8,6 +8,7 @@ Development
 	from djpcms.urls import site_urls
 	urlpatterns = site_urls.patterns()
 	
+* Documentation and tests for :mod:`djpcms.contrib.jdep`.
 * Added :setting:`DJPCMS_SITE_MAP` setting to opt out of sitemap urls.
 * Added the new :class:`djpcms.plugins.defaults.SoftNavigation` plugin.
 * Added :setting:`SITE_NAVIGATION_LEVELS` setting for controlling

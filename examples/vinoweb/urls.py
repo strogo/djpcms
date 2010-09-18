@@ -1,5 +1,2 @@
-# STANDARD URLS FILE FOR DJPCMS
-from django.conf.urls.defaults import patterns
-from djpcms.urls import *
- 
-urlpatterns = patterns('', *site_urls)
+from djpcms.urls import site_urls
+urlpatterns = site_urls.patterns()
