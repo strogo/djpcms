@@ -31,6 +31,7 @@ class Deployment(TestCase):
         nginx = deploy(False)['nginx']
         self.assertTrue(env.apps)
         media_inconf = 0
+        self.assertTrue(env.project_path in nginx)
         for app in env.apps:
             if app.exists:
                 media_inconf += 1

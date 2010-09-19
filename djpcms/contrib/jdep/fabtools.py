@@ -38,9 +38,11 @@ with the name of the project.'''
 def upload(release = True):
     "Upload the site to the server"
     import time
+    import os
     env.tarfile = archive()
     env.release = time.strftime('%Y%m%d-%H%M%S')
     env.release_path = '%(path)s/%(release)s' % env
+    env.project_path = os.path.join(env.release_path,env.project)
     # put tar package
     if release:
         utils.makedir(env.release_path)
