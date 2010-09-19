@@ -20,8 +20,8 @@ recursive-include djpcms/contrib/admin/templates *
 recursive-include djpcms/contrib/admin/media *
 recursive-include djpcms/contrib/compressor/templates *
 recursive-include examples *.py
-recursive-include examples/sitedjpcms/templates *
-recursive-include examples/sitedjpcms/media *
+recursive-include examples/djpcms-site/sitedjpcms/templates *
+recursive-include examples/djpcms-site/sitedjpcms/media *
 recursive-include examples/vinoweb/templates *
 recursive-include examples/vinoweb/media *
 include examples/djpcmstest/djpcmstest.sqlite

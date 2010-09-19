@@ -19,6 +19,15 @@ mod = get_module()
 def read(fname):
     return open(os.path.join(root_dir, fname)).read()
 
+def requirements():
+    req = read('requirements.txt').split('\n')
+    result = []
+    for r in req:
+        r = r.replace(' ','')
+        if r:
+            result.append(r)
+    return result    
+
 class osx_install_data(install_data):
 
     def finalize_options(self):
@@ -82,6 +91,7 @@ if len(sys.argv) > 1 and sys.argv[1] == 'bdist_wininst':
     for file_info in data_files:
         file_info[0] = '\\PURELIB\\%s' % file_info[0]
 
+
 setup(
         name         = package_name,
         version      = mod.get_version(),
@@ -94,6 +104,7 @@ setup(
         packages     = packages,
         cmdclass     = cmdclasses,
         data_files   = data_files,
+        install_requires = requirements(),
         classifiers = [
             'Development Status :: 4 - Beta',
             'Environment :: Web Environment',
