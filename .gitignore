@@ -3,3 +3,4 @@ djpcms.egg-info/*
 *.egg
 dist/*
 docs/build/*
+examples/djpcms-site/sitedjpcms/settings.py
