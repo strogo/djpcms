@@ -1,0 +1,1 @@
+from djpcms.testsettings import *

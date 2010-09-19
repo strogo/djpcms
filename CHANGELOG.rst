@@ -19,7 +19,7 @@ Development
   to the :func:`djpcms.utils.uniforms.UniFormElement.render` method.
 * YUI-grid templates completed in ``djpcms/yui`` template directory.
 * Refactoring in :mod:`djpcms.plugins`.
-* **12 unit tests**.
+* **14 unit tests**.
 
 
 Version 0.7.3 (2010-Sep-13)

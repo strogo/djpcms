@@ -102,25 +102,37 @@ def rmfiles(path, ext = None):
 
 
 def config_file(fname, ext = 'conf', dir = None):
-    '''Create a configuration file from template
-    @param fname: one of nginx, mod_wsgi, mod_python, django
-    @param ext: conf or wsgi
-    @param dir: directory containing the file or None. If none the __file__ directory is used
-    @return: file name
+    '''Create a configuration file from template and return the filename
+
+* fname: one of nginx, mod_wsgi, mod_python, django
+* ext: conf or wsgi
+* dir: directory containing the file or None. If none no file will be saved.
     '''
-    filename = 'jdep/{0[project_name]}_{1}.{2}'.format(env,fname,ext)
-    data = loader.render_to_string(filename,env)
-    dir = dir or os.path.dirname(__file__)
-    data = open('{2}/{0}.{1}'.format(fname,ext,dir),'r').read()
-    ngdata = data.format(env)
-    f = open(filename,'w')
-    f.write(ngdata)
-    f.close()
-    return filename
+    filename = '%s.%s' % (fname,ext)
+    template = os.path.join('jdep',filename)
+    data = loader.render_to_string(template,env)
+    if dir:
+        data = open('{2}/{0}.{1}'.format(fname,ext,dir),'r').read()
+        ngdata = data.format(env)
+        f = open(filename,'w')
+        f.write(ngdata)
+        f.close()
+        return filename
+    else:
+        return data
 
 
 def startvirtualenv():
     run('cd %(release_path)s; source bin/activate' % env)
+    
+    
+def install_site(release = True):
+    env.logdir = '%(release_path)s/logs' % env
+    env.confdir = '%(release_path)s/conf' % env
+    if release:
+        run('cd; mkdir %(logdir)s; mkdir %(confdir)s' % env)
+    server = server_types[env.server_type]
+    return server.install(release)
 
 
 class ServerInstaller(object):
@@ -132,37 +144,35 @@ class nginx_apache_wsgi(ServerInstaller):
     def __str__(self):
         return 'nginx + apache (mod_wsgi)'
     
-    def install(self):
-        env.nginx_assess_log = '%(release_path)s/logs/nginx_access.log' % env
+    def install(self, release = True):
+        env.nginx_assess_log = '%(logdir)s/nginx_access.log' % env
+        dir = None if not release else os.getcwd()
+        result = {}
+        result['nginx']  = config_file('nginx',dir=dir)
+        result['apache'] = config_file('mod_wsgi',dir=dir)
+        result['wsgi']   = config_file('django','wsgi',dir=dir)
         
-        nginx  = config_file('nginx')
-        apache = config_file('mod_wsgi')
-        wsgi   = config_file('django','wsgi')
-    
-        release = '{0[path]}/releases/{0[release]}'.format(env)
-        put(nginx, release)
-        local('rm {0}'.format(nginx))
-        put(apache, release)
-        local('rm {0}'.format(apache))
-        if wsgi:
-            put(wsgi,release)
-            local('rm {0}'.format(wsgi))
+        if release:
+            for k,v in result.items():
+                put(v, env.confdir)
+                local('rm %s' % k)
         
-        sudo('cp {0}/{1} /etc/apache2/sites-available/'.format(release,apache))
-        try:
-            sudo('rm /etc/apache2/sites-enabled/{0}'.format(apache))
-        except:
-            pass
-        sudo('ln -s /etc/apache2/sites-available/{0} /etc/apache2/sites-enabled/{0}'.format(apache))
-        
-        sudo('cp {0}/{1} /etc/nginx/sites-available/'.format(release,nginx))
-        try:
-            sudo('rm /etc/nginx/sites-enabled/{0}'.format(nginx))
-        except:
-            pass
-        sudo('ln -s /etc/nginx/sites-available/{0} /etc/nginx/sites-enabled/{0}'.format(nginx))
-        if env.get('server_user',None):
-            sudo('chown {0[server_user]}:{0[server_group]} -R {0[logdir]}'.format(target))
+            sudo('cp {0}/{1} /etc/apache2/sites-available/'.format(release,apache))
+            try:
+                sudo('rm /etc/apache2/sites-enabled/{0}'.format(apache))
+            except:
+                pass
+            sudo('ln -s /etc/apache2/sites-available/{0} /etc/apache2/sites-enabled/{0}'.format(apache))
+            
+            sudo('cp {0}/{1} /etc/nginx/sites-available/'.format(release,nginx))
+            try:
+                sudo('rm /etc/nginx/sites-enabled/{0}'.format(nginx))
+            except:
+                pass
+            sudo('ln -s /etc/nginx/sites-available/{0} /etc/nginx/sites-enabled/{0}'.format(nginx))
+            if env.get('server_user',None):
+                sudo('chown {0[server_user]}:{0[server_group]} -R {0[logdir]}'.format(target))
+        return result
 
     def reboot(self):
         sudo("/etc/init.d/nginx restart")

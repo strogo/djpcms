@@ -19,7 +19,7 @@ import utils
 env.update(utils.defaults)    
 
 
-def archive():
+def archive(release = True):
     '''Create a .tar.gz archive of the project directory.
 The :func:`djpcms.contrib.jdep.utils.project` must have been called already
 with the name of the project.'''
@@ -27,25 +27,27 @@ with the name of the project.'''
     import tarfile
     utils.rmfiles(os.curdir, ext = 'pyc')
     filename = '%s.tar.gz' % env.project
-    t = tarfile.open(filename, mode = 'w:gz')
-    t.add(env.project)
-    t.add('requirements.txt')
-    t.close()
+    if release:
+        t = tarfile.open(filename, mode = 'w:gz')
+        t.add(env.project)
+        t.add('requirements.txt')
+        t.close()
     return filename
 
 
-def upload():
+def upload(release = True):
     "Upload the site to the server"
     import time
     env.tarfile = archive()
     env.release = time.strftime('%Y%m%d-%H%M%S')
     env.release_path = '%(path)s/%(release)s' % env
-    utils.makedir(env.release_path)
     # put tar package
-    put(env.tarfile, '%(path)s' % env)
-    run('cd %(release_path)s && tar zxf ../%(tarfile)s' % env)
-    run('rm %(path)s/%(tarfile)s' % env)
-    local('rm %(tarfile)s' % env)
+    if release:
+        utils.makedir(env.release_path)
+        put(env.tarfile, '%(path)s' % env)
+        run('cd %(release_path)s && tar zxf ../%(tarfile)s' % env)
+        run('rm %(path)s/%(tarfile)s' % env)
+        local('rm %(tarfile)s' % env)
 
 
 def clear():
@@ -62,15 +64,6 @@ def setup():
     else:
         run('virtualenv --no-site-packages %(release_path)s' % env)
     run('cd %(release_path)s; pip install -E . -r ./requirements.txt' % env)
-    
-
-def install_site():
-    '''Create nginx and apache configuration files
-    '''
-    env.logdir = '%(release_path)s/logs' % env
-    run('mkdir %(logdir)s' % env)
-    server = utils.server_types[env.server_type]
-    server.install()
     
 
 def reboot():
@@ -94,14 +87,8 @@ def deploy():
     #username = prompt('site username: ')
     #password = prompt('site password: ')
     #comment  = prompt('comment: ')
-    try:
-        upload()
-        install_site()
-        symlink_current_release()
-        ##migrate()
-        reboot()
-    except:
-        dep.delete()
+    setup()
+    utils.install_site()
     
     
 def info():

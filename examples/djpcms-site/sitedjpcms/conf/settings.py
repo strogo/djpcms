@@ -30,6 +30,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     #
     'djpcms',
+    'djpcms.contrib.jdep',
     'djpcms.contrib.admin',
     'socialauth',
     'openid_consumer',
