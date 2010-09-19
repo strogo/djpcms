@@ -1,6 +1,11 @@
 import os
+
 from django.template import loader
+from django.utils._os import safe_join
+
 from fabric.api import env, run, put, local, sudo
+
+from djpcms.utils.importlib import import_module
 
 
 # Target machine settings and configuration
@@ -126,9 +131,65 @@ def startvirtualenv():
     run('cd %(release_path)s; source bin/activate' % env)
     
     
+class pathHandler(object):
+    
+    def __init__(self, mediaprefix, name, path):
+        self.mediaprefix = mediaprefix
+        self.name        = name
+        self.base        = path
+        self._path       = os.path.join(path,'media')
+        self.fullpath    = self.path(name)
+        self.exists      = os.path.exists(self._path)
+    
+    def path(self, name):
+        return safe_join(self._path, name)
+    
+    def url(self):
+        return '%s%s/' % (self.mediaprefix,self.name)
+        
+    def __str__(self):
+        return self.name
+
+
+class djangoAdminHandler(pathHandler):
+    
+    def path(self, name):
+        name = (name.split('/')[1:])
+        return safe_join(self._path, *name)
+
+
+def application_map():
+    map = {}
+    from django.conf import settings
+    #settings = import_module(os.environ['DJANGO_SETTINGS_MODULE'])
+    for app in settings.INSTALLED_APPS:
+        sapp = app.split('.')
+        name = sapp[-1]
+        if app.startswith('django.'):
+            if app == 'django.contrib.admin':
+                base = settings.ADMIN_MEDIA_PREFIX[1:-1].split('/')[-1]
+                handler = djangoAdminHandler
+            else:
+                continue
+        else:
+            base    = name
+            handler = pathHandler
+            
+        try:
+            module = import_module(app)
+        except:
+            continue
+
+        path   = module.__path__[0]
+        map[base] = handler(settings.MEDIA_URL,name,path)
+    return map
+
+    
+    
 def install_site(release = True):
     env.logdir = '%(release_path)s/logs' % env
     env.confdir = '%(release_path)s/conf' % env
+    env.apps = application_map().values()
     if release:
         run('cd; mkdir %(logdir)s; mkdir %(confdir)s' % env)
     server = server_types[env.server_type]

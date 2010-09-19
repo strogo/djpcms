@@ -1,4 +1,5 @@
 import os
+import sys
 import datetime
 
 from django.test import TestCase
@@ -12,7 +13,10 @@ class Deployment(TestCase):
     
     def setUp(self):
         self.curdir = os.getcwd()
-        os.chdir(os.path.split(os.path.abspath(__file__))[0])
+        path = os.path.split(os.path.abspath(__file__))[0]
+        os.chdir(path)
+        if path not in sys.path:
+            sys.path.insert(0,path)
         env.host_string = 'localhost'
         utils.project('testjdep','testjdep.com', apache_port = 103)
     
@@ -23,9 +27,19 @@ class Deployment(TestCase):
         self.assertTrue(env.release)
         self.assertTrue(env.release_path)
         
+    def testApps(self):
+        nginx = deploy(False)['nginx']
+        self.assertTrue(env.apps)
+        media_inconf = 0
+        for app in env.apps:
+            if app.exists:
+                media_inconf += 1
+                self.assertTrue('location %s {' % app.url() in nginx)
+                self.assertTrue(app.base in nginx)
+        self.assertEqual(media_inconf,2)
+        
     def testServer(self):
-        upload(False)
-        result = utils.install_site(False)
+        result = deploy(False)
         self.assertTrue(env.logdir)
         self.assertTrue(env.confdir)
         self.assertEqual(split(env.logdir)[0],split(env.confdir)[0])

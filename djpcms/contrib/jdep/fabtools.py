@@ -55,15 +55,16 @@ def clear():
     run('rm -rf %(path)s' % env)
 
     
-def setup():
+def setup(release = True):
     '''Install the site and requirements on server
     '''
-    upload()
-    if env.get('with_site_packages',False):
-        run('virtualenv %(release_path)s'% env)
-    else:
-        run('virtualenv --no-site-packages %(release_path)s' % env)
-    run('cd %(release_path)s; pip install -E . -r ./requirements.txt' % env)
+    upload(release)
+    if release:
+        if env.get('with_site_packages',False):
+            run('virtualenv %(release_path)s'% env)
+        else:
+            run('virtualenv --no-site-packages %(release_path)s' % env)
+        run('cd %(release_path)s; pip install -E . -r ./requirements.txt' % env)
     
 
 def reboot():
@@ -79,7 +80,7 @@ def syncdb():
     run('cd %(release_path)s/%(project)s; python manage.py syncdb' % env)
         
         
-def deploy():
+def deploy(release = True):
     '''Deploy site to the server'''
     #the latest version of the site to the servers, install any
     #required third party modules, install the virtual host and 
@@ -87,8 +88,8 @@ def deploy():
     #username = prompt('site username: ')
     #password = prompt('site password: ')
     #comment  = prompt('comment: ')
-    setup()
-    utils.install_site()
+    setup(release)
+    return utils.install_site(release)
     
     
 def info():
