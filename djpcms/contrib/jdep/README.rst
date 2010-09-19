@@ -3,6 +3,8 @@ Django module for managing deployment of applications using fabric_, virtualenv_
 
 Currently the only server configuration available is nginx_ + apache with mod_wsgi_.
 
+**It works on linux servers, no idea about windows.**
+
 
 Requirements
 =========================

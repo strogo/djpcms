@@ -119,6 +119,9 @@ def config_file(fname, ext = 'conf', dir = None):
     return filename
 
 
+def startvirtualenv():
+    run('cd %(release_path)s; source bin/activate' % env)
+
 
 class ServerInstaller(object):
     pass

@@ -29,6 +29,7 @@ with the name of the project.'''
     filename = '%s.tar.gz' % env.project
     t = tarfile.open(filename, mode = 'w:gz')
     t.add(env.project)
+    t.add('requirements.txt')
     t.close()
     return filename
 
@@ -60,7 +61,7 @@ def setup():
         run('virtualenv %(release_path)s'% env)
     else:
         run('virtualenv --no-site-packages %(release_path)s' % env)
-    run('cd %(release_path)s; pip install -E . -r ./%(project)s/requirements.txt' % env)
+    run('cd %(release_path)s; pip install -E . -r ./requirements.txt' % env)
     
 
 def install_site():
@@ -80,8 +81,9 @@ def reboot():
 
 def syncdb():
     '''Syncdb on the server.'''
-    upload()
-    run('cd %(release_path)s; python manage.py syncdb' % env)
+    setup()
+    utils.startvirtualenv()
+    run('cd %(release_path)s/%(project)s; python manage.py syncdb' % env)
         
         
 def deploy():

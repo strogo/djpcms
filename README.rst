@@ -55,14 +55,20 @@ Otherwise, once installed::
 Dependencies
 ========================
 It requires Python__ 2.5 or above. It is not yet compatible with Python 3 series.
-Currently it depends on django__, however in the long term this dependency will be removed so that it can be used with other web-frameworks as well.
+Currently it depends on django_, however in the long term this dependency will be removed so that it can be used with other web-frameworks as well.
+
+* django_.
+* PIL_, the python image library.
+
 
 Optional requirements:
 
- * django-tagging__ for tag management.
+ * django-tagging_ for tag management.
 
 
 __ http://pypi.python.org/pypi?:action=display&name=djpcms
 __ http://www.python.org/
-__ http://www.djangoproject.com/
-__ http://code.google.com/p/django-tagging/
+.. _django: http://www.djangoproject.com/
+.. _django-tagging: http://code.google.com/p/django-tagging/
+.. _PIL: http://www.pythonware.com/products/pil/
+
