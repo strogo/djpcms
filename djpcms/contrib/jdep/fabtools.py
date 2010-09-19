@@ -78,21 +78,22 @@ def reboot():
     server.reboot()
     
 
+def syncdb():
+    '''Syncdb on the server.'''
+    upload()
+    run('cd %(release_path)s; python manage.py syncdb' % env)
+        
+        
 def deploy():
-    """
-    Deploy the latest version of the site to the servers, install any
-    required third party modules, install the virtual host and 
-    then restart the webserver
-    """
+    '''Deploy site to the server'''
+    #the latest version of the site to the servers, install any
+    #required third party modules, install the virtual host and 
+    #then restart the webserver
     #username = prompt('site username: ')
     #password = prompt('site password: ')
-    #comment  = prompt('comment: ')    
-    import time
+    #comment  = prompt('comment: ')
     try:
-        env.release = time.strftime('%Y%m%d-%H%M%S')
-        python_path()
-        upload_tar_from_git()
-        install_requirements()
+        upload()
         install_site()
         symlink_current_release()
         ##migrate()

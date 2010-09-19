@@ -9,3 +9,4 @@ Other battery Included
    :maxdepth: 2
 
    jdep
+   admin

@@ -136,10 +136,8 @@ Last step of this first tutorial concerns the setting up of ``urls``.
 First edit the :file:`urls.py` which was created when we started the project and
 replace its content with::
 
-	from django.conf.urls.defaults import patterns
-	from djpcms.urls import *
-	
-	urlpatterns = patterns('', *site_urls)
+	from djpcms.urls import site_urls
+	urlpatterns = site_urls.patterns()
 
 Second, edit the :file:`settings.py` and add the ``djpcms`` specific :setting:`APPLICATION_URL_MODULE` setting::
 

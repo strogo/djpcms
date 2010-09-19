@@ -1,13 +1,5 @@
-from localsettings import *
-
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
-
-ADMINS = (
-     ('Luca Sbardella', 'luca.sbardella@gmail.com'),
-)
-
-MANAGERS = ADMINS
 TIME_ZONE     = 'Europe/London'
 LANGUAGE_CODE = 'en-uk'
 SITE_ID = 1
@@ -48,19 +40,13 @@ INSTALLED_APPS = (
 # The settings changed by the application
 #==========================================================
 import os
-basedir = os.path.split(os.path.abspath(__file__))[0]
+basedir = os.path.split(os.path.split(os.path.abspath(__file__))[0])[0]
 ROOT_URLCONF = 'sitedjpcms.urls'
 APPLICATION_URL_MODULE = 'sitedjpcms.appurls'
 TEMPLATE_DIRS = (os.path.join(basedir,'templates'),)
 ADMIN_MEDIA_PREFIX = '/media/admin/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(basedir, 'media')
-DATABASES = {
-    'default': {
-        'ENGINE': 'sqlite3',
-        'NAME': os.path.join(basedir,'sitedjpcms.sqlite'),
-    }
-}
 DJPCMS_STYLE = 'green'
 TEMPLATE_CONTEXT_PROCESSORS = (
             "django.contrib.auth.context_processors.auth",
