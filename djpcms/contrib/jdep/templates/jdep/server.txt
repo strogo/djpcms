@@ -1,0 +1,15 @@
+# Create server configuration files. This script runs on the server.
+#
+
+def run():
+	import os
+	import sys
+	import django
+	env = {{ env }}
+	os.environ['DJANGO_SETTINGS_MODULE'] = env['setting_module']
+	env['python_path'] = os.path.split(django.__path__[0])[0]
+	from djpcms.contrib.jdep.static import server_types
+	server = server_types[env['server_type']]
+	server.config_files(env,{{ release }})
+
+run()

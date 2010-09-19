@@ -25,13 +25,23 @@ The :func:`djpcms.contrib.jdep.utils.project` must have been called already
 with the name of the project.'''
     import os
     import tarfile
+    from django.template import loader
+    from djpcms.utils import mark_safe
     utils.rmfiles(os.curdir, ext = 'pyc')
     filename = '%s.tar.gz' % env.project
+    data = loader.render_to_string('jdep/server.txt', {'env':mark_safe('%s\n' % env), 'release': release})
     if release:
+        f = open('server.py','w')
+        f.write(data)
+        f.close()
         t = tarfile.open(filename, mode = 'w:gz')
         t.add(env.project)
         t.add('requirements.txt')
+        t.add('server.py')
         t.close()
+        local('rm server.py')
+    else:
+        env.server_script = data
     return filename
 
 
@@ -39,13 +49,20 @@ def upload(release = True):
     "Upload the site to the server"
     import time
     import os
-    env.tarfile = archive()
+    if release and not env.path.startswith('/'):
+        result = run('pwd').split(' ')[0]
+        env.path = os.path.join(result,env.path)
+        
     env.release = time.strftime('%Y%m%d-%H%M%S')
     env.release_path = '%(path)s/%(release)s' % env
     env.project_path = os.path.join(env.release_path,env.project)
+    env.logdir  = os.path.join(env.release_path,'logs')
+    env.confdir = os.path.join(env.release_path,'conf')
+    env.tarfile = archive(release)
     # put tar package
     if release:
         utils.makedir(env.release_path)
+        run('cd; mkdir %(logdir)s; mkdir %(confdir)s' % env)
         put(env.tarfile, '%(path)s' % env)
         run('cd %(release_path)s && tar zxf ../%(tarfile)s' % env)
         run('rm %(path)s/%(tarfile)s' % env)
@@ -62,11 +79,7 @@ def setup(release = True):
     '''
     upload(release)
     if release:
-        if env.get('with_site_packages',False):
-            run('virtualenv %(release_path)s'% env)
-        else:
-            run('virtualenv --no-site-packages %(release_path)s' % env)
-        run('cd %(release_path)s; pip install -E . -r ./requirements.txt' % env)
+        utils.install_environ(True)
     
 
 def reboot():
@@ -90,8 +103,28 @@ def deploy(release = True):
     #username = prompt('site username: ')
     #password = prompt('site password: ')
     #comment  = prompt('comment: ')
+    from static import server_types
     setup(release)
-    return utils.install_site(release)
+    if release:
+        utils.install_environ(release)
+    server = server_types[env.server_type]
+    server.install(release)
+    #.reboot()
+    if not release:
+        return server.result
+
+
+def deploy_no_install(release = True):
+    '''Deploy to the server without installing requirements.'''
+    from static import server_types
+    upload(release)
+    server = server_types[env.server_type]
+    if release:
+        utils.install_environ(False)
+    server = server_types[env.server_type]
+    server.install(release)
+    if not release:
+        return server.result
     
     
 def info():
