@@ -3,4 +3,9 @@ djpcms.egg-info/*
 *.egg
 dist/*
 docs/build/*
+MANIFEST
+.project
+.pydevproject
+.settings/*
+examples/djpcms-site/runfab.py
 examples/djpcms-site/sitedjpcms/settings.py
