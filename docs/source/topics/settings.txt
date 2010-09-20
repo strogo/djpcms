@@ -57,15 +57,6 @@ default: ``['base.html','djpcms/base.html']``
 A list of template files of a single string. This is the template file name used when no templates are found in the page/view.
 
 
-.. setting:: DJPCMS_SITE_MAP
-
-DJPCMS_SITE_MAP
--------------------------
-
-default: ``True``
-
-if ``False`` sitemap won't be added to the urls.
-
 
 .. setting:: DJPCMS_MARKUP_MODULE
 
@@ -85,6 +76,28 @@ DJPCMS_PLUGINS
 Default: ``['djpcms.plugins.*]``
 
 A list of python dotted paths to where plugins are defined.
+
+
+
+.. setting:: DJPCMS_SITE_MAP
+
+DJPCMS_SITE_MAP
+-------------------------
+
+default: ``True``
+
+if ``False`` sitemap won't be added to the urls.
+
+
+.. setting:: DJPCMS_STYLING_FUNCTION
+
+DJPCMS_STYLING_FUNCTION
+---------------------------
+
+default: ``None``
+
+A python dotted path to a styling function which takes ``request``
+as the only parameter.
 
 
 .. settings:: DJPCMS_STYLE

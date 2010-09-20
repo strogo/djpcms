@@ -5,6 +5,7 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 
 from djpcms.conf import settings
+from djpcms.uploads import apply_styling
 from djpcms.utils.ajax import jredirect, jhtmls
 from djpcms.template import Template, Context
 from djpcms.utils import lazyattr, mark_safe, smart_str
@@ -195,9 +196,9 @@ class DjpResponse(http.HttpResponse):
         if more_context:
             d.update(more_context)
         media = self.media
-        if settings.DJPCMS_STYLE:
-            media.add_css({'all':['djpcms/jquery-ui-css/%s/jquery-ui-1.8.4.css' % settings.DJPCMS_STYLE,
-                                  'djpcms/themes/%s.css' % settings.DJPCMS_STYLE]})
+        style = apply_styling(self.request)
+        if style:
+            media.add_css(style)
         sitenav = Navigator(self, classes = 'nav main', levels = settings.SITE_NAVIGATION_LEVELS)
         d.update({'djp':        self,
                   'media':      media,

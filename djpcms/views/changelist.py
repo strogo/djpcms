@@ -75,7 +75,19 @@ class ChangeList(object):
             
 
 
-def table(queryset, djp, model = None):    
+def table(queryset, djp, model = None):
+    try:
+        queryset.model
+    except AttributeError:
+        return dict_table(queryset, djp, model = model)
+    else:
+        return queryset_table(queryset, djp, model = model)
+    
+
+def dict_table(data, djp, model = None):
+    return data    
+    
+def queryset_table(queryset, djp, model = None):
     model = model or queryset.model
     request = djp.request
     cl      = ChangeList(model, request)

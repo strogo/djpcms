@@ -43,7 +43,7 @@
 				twitter_user:	   null,
 				fadetime:		   200,
 				ajaxtimeout:	   30,
-				tablesorter:	   {},
+				tablesorter:	   {widgets:['zebra']},
 				debug:			   false
 			};
 			

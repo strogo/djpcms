@@ -33,6 +33,25 @@ def upload_function(obj, name):
         return _default_uploads(obj, name)
     
     
+def _default_style(request):
+    from djpcms.conf import settings
+    style = settings.DJPCMS_STYLE
+    if style:
+        return {'all':['djpcms/jquery-ui-css/%s/jquery-ui-1.8.4.css' % style,
+                       'djpcms/tablesorter/themes/%s/style.css' % style,
+                       'djpcms/themes/%s.css' % style]}
+    
+def apply_styling(request):
+    from djpcms.conf import settings
+    if settings.DJPCMS_STYLING_FUNCTION:
+        func = function_module(settings.DJPCMS_STYLING_FUNCTION,_default_style)
+        try:
+            return func(request)
+        except:
+            return _default_style(request)
+    else:
+        return _default_style(request)
+    
     
 def site_image_storage():
     return FileSystemStorage()

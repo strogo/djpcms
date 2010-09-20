@@ -5,10 +5,11 @@ Development
 * To use this version, changes needs to be made when importing :mod:`djpcms.urls` module.
   Your site ``urls`` file can simply be::
 	
-	from djpcms.urls import site_urls
+	from djpcms.urls import *
 	urlpatterns = site_urls.patterns()
 	
 * Documentation and tests for :mod:`djpcms.contrib.jdep`.
+* Added :setting:`DJPCMS_STYLING_FUNCTION` setting for specifying custom styles.
 * Added :setting:`DJPCMS_SITE_MAP` setting to opt out of sitemap urls.
 * Added the new :class:`djpcms.plugins.defaults.SoftNavigation` plugin.
 * Added :setting:`SITE_NAVIGATION_LEVELS` setting for controlling

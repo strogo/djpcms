@@ -13,6 +13,7 @@ SERVE_STATIC_FILES              = True
 
 #styling
 DJPCMS_STYLE                    = 'smooth'
+DJPCMS_STYLING_FUNCTION         = None
 
 #Logging
 GLOBAL_LOG_LEVEL                = logging.INFO
