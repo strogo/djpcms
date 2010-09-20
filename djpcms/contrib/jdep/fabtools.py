@@ -1,20 +1,7 @@
-#
-#def myserver():
-#    env.hosts            = ['myserver.com']
-#    env.virtualhost_path = "/"
-#    env.version          = '2.5'
-#    env.path             = '/home/%(user)s/deployment/%(server_name)s' % env
-#
-# command
-#    clear             completely remove the virtual environment
-#    setup             clear and create a new virtual environment
-#    deploy            add requirements and set up web servers. The environment must be available
-#    clearanddeploy    run setup and deploy in one go
-#
-#
 from __future__ import with_statement
 
 from fabric.api import env, run, put, local, sudo
+
 import utils
 env.update(utils.defaults)    
 
@@ -110,19 +97,6 @@ def deploy(release = True):
     server = server_types[env.server_type]
     server.install(release)
     #.reboot()
-    if not release:
-        return server.result
-
-
-def deploy_no_install(release = True):
-    '''Deploy to the server without installing requirements.'''
-    from static import server_types
-    upload(release)
-    server = server_types[env.server_type]
-    if release:
-        utils.install_environ(False)
-    server = server_types[env.server_type]
-    server.install(release)
     if not release:
         return server.result
     

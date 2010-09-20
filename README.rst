@@ -17,9 +17,14 @@ high level of customization.
 Features
 ===============================
 
- * Extendible using plugins
- * Dynamic pages based on database models
- * Sitemap design
+ * Extendible using plugins.
+ * Dynamic pages based on database models (not only django models).
+ * Inline editing of plugins and pages.
+ * Autocomplete when you register a model to have autocomplete.
+ * Extendible ajax decorators.
+ * Tagging with django-tagging_ (optional).
+ * Several battery included application classes.
+ * Sitemap design.
 
 
 .. _intro-installing:
@@ -64,6 +69,7 @@ Currently it depends on django_, however in the long term this dependency will b
 Optional requirements:
 
  * django-tagging_ for tag management.
+ * fabric_ and pip_ for the ``djpcms.contrib.jdep`` module.
 
 
 __ http://pypi.python.org/pypi?:action=display&name=djpcms
@@ -71,4 +77,5 @@ __ http://www.python.org/
 .. _django: http://www.djangoproject.com/
 .. _django-tagging: http://code.google.com/p/django-tagging/
 .. _PIL: http://www.pythonware.com/products/pil/
-
+.. _fabric: http://docs.fabfile.org/
+.. _pip: http://pip.openplans.org/

@@ -1,6 +1,5 @@
-# Create server configuration files. This script runs on the server.
-#
-
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 def run():
 	import os
 	import sys

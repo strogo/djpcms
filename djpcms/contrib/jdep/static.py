@@ -2,8 +2,6 @@ import os
 from django.template import loader
 from django.utils._os import safe_join
 
-from fabric.api import env, run, put, local, sudo
-
 from djpcms.utils.importlib import import_module
 
     
@@ -71,7 +69,7 @@ def config_file(fname, ext = 'conf', environ=None, dir = None):
     template = os.path.join('jdep',filename)
     data = loader.render_to_string(template,environ)
     if dir:
-        filename = '%s_%s' % (env.project,filename)
+        filename = '%s_%s' % (environ['project'],filename)
         fullpath = os.path.join(dir,filename)
         f = open(fullpath,'w')
         f.write(data)
@@ -84,6 +82,7 @@ def config_file(fname, ext = 'conf', environ=None, dir = None):
 class ServerInstaller(object):
     
     def config(self, release = True):
+        from fabric.api import env, run
         if release:
             run('python server.py')
             run('rm server.py')
@@ -111,6 +110,7 @@ class nginx_apache_wsgi(ServerInstaller):
             g['script_result'] = environ
         
     def install(self, release = True):
+        from fabric.api import env, sudo
         self.config(release)
         if release:
             sudo('cp %(confdir)s/%(apache)s /etc/apache2/sites-available/' % env)
@@ -133,11 +133,13 @@ class nginx_apache_wsgi(ServerInstaller):
         return self
 
     def reboot(self):
+        from fabric.api import sudo
         sudo("/etc/init.d/nginx restart")
         sudo('/etc/init.d/apache2 restart')
         return self
 
     def info(self):
+        from fabric.api import env
         print('apache port:        %(apache_port)s' % env)
         
         
