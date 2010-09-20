@@ -79,7 +79,7 @@ class EditWrapperHandler(CollapsedWrapper):
         c['classes'].append('edit-block')
         delurl   = view.appmodel.deleteurl(djp.request, instance)
         if delurl:
-            menulist.append(mark_safe('<a class="deletable" href="%s">DELETE</a>' % delurl))
+            menulist.append(mark_safe('<a class="deletable ajax" href="%s">DELETE</a>' % delurl))
         return c
     
     def footer(self, djp, cblock, html):

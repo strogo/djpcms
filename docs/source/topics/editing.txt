@@ -1,0 +1,16 @@
+.. _inline-editing:
+
+
+.. module:: djpcms.views.apps.contentedit
+
+============================
+Inline edting
+============================
+Djpcms is designed with inline editing of pages and applications. This feature is enabled by default
+and it is controlled by the :setting:`CONTENT_INLINE_EDITING` setting. The setting is a dictionary of
+parameters.
+
+* *available* if set to ``True`` (default), inline editing is available, otherwise is not.
+* *preurl* this is a slug which is preappended to form the editing url for a given page. Let's say
+  we have a page with url ``/strategies/view/``, and *preurl* is set to the default value ``edit-content``,
+  than the editing url will be ``/edit-content/strategies/view/``. 

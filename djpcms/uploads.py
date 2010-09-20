@@ -37,7 +37,7 @@ def _default_style(request):
     from djpcms.conf import settings
     style = settings.DJPCMS_STYLE
     if style:
-        return {'all':['djpcms/jquery-ui-css/%s/jquery-ui-1.8.4.css' % style,
+        return {'all':['djpcms/jquery-ui-css/%s/jquery-ui.css' % style,
                        'djpcms/tablesorter/themes/%s/style.css' % style,
                        'djpcms/themes/%s.css' % style]}
     

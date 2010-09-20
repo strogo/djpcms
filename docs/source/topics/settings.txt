@@ -47,6 +47,8 @@ Dictionary of information for `inline content editing`.
 The ``pagecontent`` key define the base url for editing page contents.
 It must contain trailing slashes.
 
+.. hint:: Check out the :ref:`inline editing <inline-editing>` documentation for more information.
+
 .. setting:: DEFAULT_TEMPLATE_NAME
 
 DEFAULT_TEMPLATE_NAME
@@ -77,6 +79,7 @@ Default: ``['djpcms.plugins.*]``
 
 A list of python dotted paths to where plugins are defined.
 
+.. hint:: Check out the :ref:`plugins <plugins-index>` documentation for more information.
 
 
 .. setting:: DJPCMS_SITE_MAP

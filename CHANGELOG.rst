@@ -7,7 +7,8 @@ Development
 	
 	from djpcms.urls import *
 	urlpatterns = site_urls.patterns()
-	
+
+* Fixed a silly bug in inline editing. The delete link did not have the ``ajax`` class.
 * Documentation and tests for :mod:`djpcms.contrib.jdep`.
 * Added :setting:`DJPCMS_STYLING_FUNCTION` setting for specifying custom styles.
 * Added :setting:`DJPCMS_SITE_MAP` setting to opt out of sitemap urls.
@@ -20,7 +21,7 @@ Development
   to the :func:`djpcms.utils.uniforms.UniFormElement.render` method.
 * YUI-grid templates completed in ``djpcms/yui`` template directory.
 * Refactoring in :mod:`djpcms.plugins`.
-* **15 unit tests**.
+* **19 unit tests**.
 
 
 Version 0.7.3 (2010-Sep-13)

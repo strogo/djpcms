@@ -1,7 +1,0 @@
-.. _misc-philosophies:
-
-===================
-Design philosophies
-===================
-
-This document explains some of the fundamental philosophies of djpcms.

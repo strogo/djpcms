@@ -34,6 +34,8 @@ First steps
 :ref:`Part 3 <intro-tutorial03>` |
 :ref:`Part 4 <intro-tutorial04>`
 
+**Managing Content:**
+:ref:`Plugins <plugins-index>` | :ref:`Inline editing <inline-editing>`
 
 Contents
 =====================
