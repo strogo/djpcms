@@ -24,6 +24,7 @@ with the name of the project.'''
         t = tarfile.open(filename, mode = 'w:gz')
         t.add(env.project)
         t.add('requirements.txt')
+        t.add('__init__.py')
         t.add('server.py')
         t.close()
         local('rm server.py')

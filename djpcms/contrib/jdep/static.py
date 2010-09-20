@@ -101,9 +101,10 @@ class nginx_apache_wsgi(ServerInstaller):
     def config_files(self, environ, release = True):
         environ['apps']  = application_map().values()
         dir = None if not release else environ['confdir']
+        wsgi = None if not release else environ['release_path']
         environ['nginx'] = config_file('nginx',environ=environ,dir=dir)
+        environ['wsgi'] = config_file('django','wsgi',environ=environ,dir=wsgi)
         environ['apache'] = config_file('mod_wsgi',environ=environ,dir=dir)
-        environ['wsgi'] = config_file('django','wsgi',environ=environ,dir=dir)
         if not release:
             from __builtin__ import globals
             g = globals()
