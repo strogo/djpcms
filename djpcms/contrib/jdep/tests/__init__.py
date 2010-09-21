@@ -57,6 +57,11 @@ if fabric_available:
             self.assertTrue('access_log   %s' % env.logdir in nginx)
             self.assertTrue('proxy_pass http://127.0.0.1:103/;' in nginx)
             
+        def testApache(self):
+            result = deploy(False)
+            apache = result['apache']
+            self.assertTrue('ServerName %s' % env.domain_name in apache)
+            
         def tearDown(self):
             os.chdir(self.curdir)
             
