@@ -84,7 +84,8 @@ class ServerInstaller(object):
     def config(self, release = True):
         from fabric.api import env, run
         if release:
-            run('python ./server.py')
+            run('pwd')
+            run('python %(release_path)s/server.py' % env)
             run('rm server.py')
         else:
             exec(env.server_script)
