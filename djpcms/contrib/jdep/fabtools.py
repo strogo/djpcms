@@ -72,7 +72,8 @@ def setup(release = True):
 
 def reboot():
     "Reboot web servers"
-    installer = utils.server_types[env.server_type]
+    from static import server_types
+    server = server_types[env.server_type]
     server.reboot()
     
 
