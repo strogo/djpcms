@@ -8,7 +8,7 @@ from django.conf import settings
 try:
     from djpcms.contrib.jdep.fabtools import *
     fabric_available = True
-except:
+except ImportError:
     fabric_available = False
 
 

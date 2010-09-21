@@ -58,18 +58,20 @@ def application_map():
     return map
 
 
-def config_file(fname, ext = 'conf', environ=None, dir = None):
+def config_file_name(fname, environ):
+    return '%s_%s' % (environ['project'],fname)
+
+
+def config_file(fname, environ=None, dir = None):
     '''Create a configuration file from template and return the filename
 
-* fname: one of nginx, mod_wsgi, mod_python, django
-* ext: conf or wsgi
-* dir: directory containing the file or None. If none no file will be saved.
+* *fname*: The template used to create the file
+* *dir*: directory containing the file or None. If none no file will be saved.
     '''
-    filename = '%s.%s' % (fname,ext)
-    template = os.path.join('jdep',filename)
+    template = os.path.join('jdep',fname)
     data = loader.render_to_string(template,environ)
     if dir:
-        filename = '%s_%s' % (environ['project'],filename)
+        filename = config_file_name(fname, environ)
         fullpath = os.path.join(dir,filename)
         f = open(fullpath,'w')
         f.write(data)
@@ -86,6 +88,7 @@ class ServerInstaller(object):
         if release:
             run('cd %(release_path)s; source bin/activate; python server.py;' % env)
         else:
+            # very problematic to debug this statement. Need a better way.
             exec(env.server_script)
 
     def reboot(self):
@@ -93,17 +96,22 @@ class ServerInstaller(object):
 
 
 class nginx_apache_wsgi(ServerInstaller):
-
+    '''Nginx + Apache mod_wsgi server'''
+    nginx  = 'nginx.conf'
+    apache = 'apache_mod_wsgi.conf'
+    django = 'django.wsgi'
+     
     def __str__(self):
         return 'nginx + apache (mod_wsgi)'
     
     def config_files(self, environ, release = True):
+        # Create the config files. Function called from remote server
         environ['apps']  = application_map().values()
         dir = None if not release else environ['confdir']
         wsgi = None if not release else environ['release_path']
-        environ['nginx'] = config_file('nginx',environ=environ,dir=dir)
-        environ['wsgi'] = config_file('django','wsgi',environ=environ,dir=wsgi)
-        environ['apache'] = config_file('mod_wsgi',environ=environ,dir=dir)
+        environ['nginx']  = config_file(self.nginx,environ=environ,dir=dir)
+        environ['wsgi']   = config_file(self.django,environ=environ,dir=wsgi)
+        environ['apache'] = config_file(self.apache,environ=environ,dir=dir)
         if not release:
             from __builtin__ import globals
             g = globals()
@@ -113,6 +121,9 @@ class nginx_apache_wsgi(ServerInstaller):
         from fabric.api import env, sudo
         self.config(release)
         if release:
+            env.apache = config_file_name(self.apache,env)
+            env.nginx  = config_file_name(self.nginx,env)
+            
             sudo('cp %(confdir)s/%(apache)s /etc/apache2/sites-available/' % env)
             try:
                 sudo('rm /etc/apache2/sites-enabled/%(apache)s' % env)

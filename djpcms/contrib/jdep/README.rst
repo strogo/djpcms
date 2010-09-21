@@ -24,11 +24,20 @@ On the server side
 Usage
 ==================
 An example on how to use the package is in the ``examples\djpcms-site`` directory.
-On the root directory of your django project create a file called ``fabfile.py`` which contains::
+The directory structure of your site, which we call ``greatsite`` looks like this::
+
+	greatsite-project/
+	  greatsite/
+	  __init__.py
+	  requirements.txt
+	  fabfile.py
+	  
+The ``fabfile.py`` is needed by fabric_ and should, at least, contain::
 
     from djpcms.contrib.jdep.fabtool import *
-    utils.project('myproject','myproject.com')
+    utils.project('greatsite','greatsite.com')
         
+The ``requirement.txt`` is needed by pip_ to install your site required pacakges.
 
 Then run::
 

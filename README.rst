@@ -60,7 +60,8 @@ Otherwise, once installed::
 Dependencies
 ========================
 It requires Python__ 2.5 or above. It is not yet compatible with Python 3 series.
-Currently it depends on django_, however in the long term this dependency will be removed so that it can be used with other web-frameworks as well.
+Currently it depends on django_, however in the long run, this dependency will be
+removed so that it can be used with other web-frameworks as well.
 
 * django_.
 * PIL_, the python image library.
