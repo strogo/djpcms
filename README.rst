@@ -24,6 +24,7 @@ Features
  * Extendible ajax decorators.
  * Tagging with django-tagging_ (optional).
  * Several battery included application classes.
+ * Integration of any Django app which provides ``urls.py``.
  * Sitemap design.
 
 

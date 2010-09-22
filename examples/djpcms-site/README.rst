@@ -1,12 +1,12 @@
 
-This application runs the http://www.djpcms.org web site.
+This application runs the http://djpcms.com web site.
 Early days, but it will be fun.
 
 
 Requirements
 ==================
 
-* Django-Socialauth_ for third-parties authentication.
+* Django-Socialauth_ and all its requirements, for third-parties authentication.
 
 
 Make sure postgres dev files are available. In ubuntu::

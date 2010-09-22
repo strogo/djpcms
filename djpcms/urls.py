@@ -1,6 +1,6 @@
 import os
 
-from django.conf.urls.defaults import url
+from django.conf.urls.defaults import url, include
 
 import djpcms
 from djpcms.conf import settings

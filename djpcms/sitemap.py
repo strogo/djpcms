@@ -7,6 +7,12 @@ from django.contrib.sitemaps import Sitemap
 from djpcms.views import appsite
 from djpcms.views.cache import pagecache
 
+def urliterable(urls):
+    if isinstance(urls,list):
+        return True
+    else:
+        return False
+    
 
 class DjpUrl(object):
     
@@ -18,10 +24,16 @@ class DjpUrl(object):
         return str(self._pre)
     
     def append(self, url):
-        self._pre.append(url)
+        if url:
+            if not urliterable(url):
+                url = [url]
+            self._pre.extend(url)
         
     def after(self, url):
-        self._after.append(url)
+        if url:
+            if not urliterable(url):
+                url = [url]
+            self._after.extend(url)
         
     def all(self):
         lurl = copy(self._pre)
