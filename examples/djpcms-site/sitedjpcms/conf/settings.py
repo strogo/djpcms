@@ -19,6 +19,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     #'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'openid_consumer.middleware.OpenIDMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
 )
 
@@ -50,6 +51,7 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(basedir, 'media')
 DJPCMS_STYLE = 'green'
 TEMPLATE_CONTEXT_PROCESSORS = (
+            "socialauth.context_processors.facebook_api_key",
             "django.contrib.auth.context_processors.auth",
             "django.core.context_processors.debug",
             "django.core.context_processors.i18n",

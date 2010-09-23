@@ -3,7 +3,7 @@ from __future__ import with_statement
 from fabric.api import env, run, put, local, sudo
 
 import utils
-env.update(utils.defaults)    
+env.update(utils.defaults)
 
 
 def archive(release = True):
@@ -98,6 +98,9 @@ def deploy(release = True):
         utils.install_environ(release)
     server = server_types[env.server_type]
     server.install(release)
+    # call functions in after deploy hook
+    for hook in utils.after_deploy_hook:
+        hook()
     #.reboot()
     if not release:
         return server.result

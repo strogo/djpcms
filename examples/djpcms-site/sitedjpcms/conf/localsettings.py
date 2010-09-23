@@ -24,9 +24,6 @@ OPENID_AX_PROVIDER_MAP = {'Google': {'email': 'http://axschema.org/contact/email
                                       'nickname': 'http://axschema.org/namePerson/friendly'}
                           }
 
-TWITTER_CONSUMER_KEY = ''
-TWITTER_CONSUMER_SECRET = ''
-
 FACEBOOK_APP_ID = ''
 FACEBOOK_API_KEY = ''
 FACEBOOK_SECRET_KEY = ''

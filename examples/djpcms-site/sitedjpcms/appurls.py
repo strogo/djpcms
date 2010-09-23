@@ -11,7 +11,7 @@ from djpcms.views.apps.docs import DocApplication, DocView
 parent = lambda x : os.path.split(x)[0]
 
 
-docdir = os.path.join(parentdir(os.path.abspath(__file__),3),'docs')
+docdir = os.path.join(parentdir(os.path.abspath(__file__),2),'docs')
 
 #_________________________________________________ Create the documentation view handler
 class DjpcmsDoc(DocApplication):

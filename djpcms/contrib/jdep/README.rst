@@ -49,6 +49,22 @@ and you will have a list of possible commands. Type::
 	
 to deploy your site.
 
+After deploy hook
+========================
+There is the possibility of registering function to call once the deployment has been performed. To
+register a function, your ``fabfile.py`` could be::
+
+	from djpcms.contrib.jdep.fabtool import *
+    utils.project('greatsite','greatsite.com')
+    
+    def myhook1():
+    	#do some clever stuff here
+    	return
+    
+    utils.after_deploy_hook.append(myhook1)
+
+	
+
 
 .. _fabric: http://docs.fabfile.org/
 .. _virtualenv: http://virtualenv.openplans.org/

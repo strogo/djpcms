@@ -4,6 +4,7 @@ from fabric.api import env, run, put, local, sudo
 
 from djpcms.contrib.jdep.static import application_map
 
+after_deploy_hook = []
 
 # Target machine settings and configuration
 defaults = {'server_type':        'nginx-apache-mod_wsgi',
@@ -16,7 +17,8 @@ defaults = {'server_type':        'nginx-apache-mod_wsgi',
             'path':               None,
             'project_name':       None,
             'with_site_packages': False,
-            'server_admin':       None}
+            'server_admin':       None,
+            'redirects':          []}
 
 
 def project(module, domain_name, deploy_root_dir = 'deployment', setting_name = None, **kwargs):
