@@ -98,3 +98,7 @@ In our example, ``djpcms`` will look into the following directories::
 where ``pagename`` is the sphinx page name (*index*, *contents*, and so forth).
 To get started quickly,
 cut and past the entire ``docs`` directory in :file:`djpcms/templates/djpcms`.
+
+.. autoclass:: djpcms.views.apps.docs.DocApplication
+   :members:
+   :member-order: bysource

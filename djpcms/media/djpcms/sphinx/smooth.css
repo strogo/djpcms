@@ -1,6 +1,14 @@
 .documentation h2, .documentation h3, .documentation h4 {
 	margin-top:1.4em;
 }
+.documentation .section h1 {display: none;}
+.documentation .section h2 {font-size: 150%;}
+.documentation .section h3 {
+	font-size: 120%;
+	font-weight: bold;
+	color: rgb(103,105,107);
+	padding-left: 10px;
+}
 .documentation :hover > a.headerlink {
 	visibility:visible;
 }
@@ -15,13 +23,6 @@
     margin-top: 30px;
     padding: 0 30px;
     font-weight: bold;
-}
-
-.documentation .section h1 {
-	display: none;
-}
-.documentation .section h2 {
-	font-size: 150%;
 }
 /*
 ------------------------------- LISTS */

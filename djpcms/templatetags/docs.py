@@ -15,3 +15,6 @@ def search_form(context, search_form_id='search'):
         'search_form_id': search_form_id,
         'action': context['search'],
     }
+    
+    
+    

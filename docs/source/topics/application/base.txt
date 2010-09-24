@@ -6,6 +6,6 @@ ApplicationBase
 
 .. autoclass:: djpcms.views.appsite.ApplicationBase
    :members:
-   :member-order: groupwise
+   :member-order: bysource
    
    

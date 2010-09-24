@@ -4,14 +4,18 @@
 {% block toc-wrapper %}{% endblock %}
 {% block current-page-title %}Module Index{% endblock %}
 
-{% block body %}
+{% block main-doc %}
   <h1>Module Index</h1>
 
-  <dl>
-  {% for modname, collapse, cgroup, indent, fname, synops, pform, dep in doc.modindexentries %}
-    <dt><a href="{{ fname }}"><tt class="literal xref">{{ modname }}</tt></a></dt>
+  <dl>{% for content in doc.content %}
+  {% for subcontent in content %}
+  <dt><a href="{{ fname }}"><tt class="literal xref">{{ modname }}</tt></a></dt>
     <dd>{{ synops }}</dd>
+  {{ subcontent }}
+  {% endfor %}
   {% endfor %}
   </dl>
 
 {% endblock %}
+
+{% block right-column %}{% endblock %}

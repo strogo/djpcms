@@ -8,6 +8,7 @@ Development
 	from djpcms.urls import *
 	urlpatterns = site_urls.patterns()
 
+* Introduced :attr:`djpcms.views.apps.docs.DocApplication.master_doc` attribute for specifying the master document of sphinx.
 * Fixed a silly bug in inline editing. The delete link did not have the ``ajax`` class.
 * Documentation and tests for :mod:`djpcms.contrib.jdep`.
 * Added :setting:`DJPCMS_STYLING_FUNCTION` setting for specifying custom styles.
