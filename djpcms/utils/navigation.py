@@ -44,8 +44,7 @@ class lazycounter(object):
 
 
 class Navigator(lazycounter):
-    '''
-    A navigator for a web site
+    '''A navigator for the web site
     '''
     def __init__(self, *args, **kwargs):
         self.soft    = self.kwargs.pop('soft',False)

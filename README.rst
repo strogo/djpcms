@@ -11,8 +11,11 @@
 --
 
 Djpcms is a dynamic Content Management System which uses Python with django on the server side
-and Javascript with jQuery on the browser side. Designed to handle dynamic applications which require
-high level of customization.
+and Javascript with jQuery on the browser side. It is designed to handle dynamic applications which require
+high level of customization. Lots of AJAX enabled features including inline editing, autocomplete and
+ajax forms.
+
+.. _intro-features:
 
 Features
 ===============================
@@ -20,11 +23,13 @@ Features
  * Extendible using plugins.
  * Dynamic pages based on database models (not only django models).
  * Inline editing of plugins and pages.
- * Autocomplete when you register a model to have autocomplete.
- * Extendible ajax decorators.
+ * Autocomplete for models when registered.
+ * Extendible AJAX decorators.
  * Tagging with django-tagging_ (optional).
  * Several battery included application classes.
  * Integration of any Django app which provides ``urls.py``.
+ * Extendible uniforms.
+ * Deployment tool using fabric_.
  * Sitemap design.
 
 

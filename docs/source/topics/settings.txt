@@ -44,8 +44,13 @@ default::
 	}
 
 Dictionary of information for `inline content editing`.
-The ``pagecontent`` key define the base url for editing page contents.
-It must contain trailing slashes.
+
+* ``preurl`` is the prefix to add to a page url in editing mode.
+* ``pagecontent`` defines the base url for editing page contents. It must contain trailing slashes.
+* ``permission`` can be used to customise permissions for editing. If specified it must be a function
+  which takes two positional parameters: ``request`` and ``view``. The function return a boolean
+  indicating if inline-editing is available, or not, for the currenct page.
+* ``width`` and ``height`` are the size of the floating dialog used for editing plugin content.
 
 .. hint:: Check out the :ref:`inline editing <inline-editing>` documentation for more information.
 
@@ -185,4 +190,14 @@ SITE_NAVIGATION_LEVELS
 
 Default: ``2``
 
-Number of nested levels in the main site navigation.
+Number of nested levels in the main site navigation. This setting is used by the
+main site navigation which can be found in the context dictionary at key ``sitenav``.
+To include the site navigation in your page add::
+
+	{{ sitenav.render }}
+	
+somewhere in your template file.
+
+.. seealso::
+
+	Check out the ``djpcms/bits/navitem.html`` template which renders the navigation.

@@ -1,3 +1,6 @@
+body {
+	background: rgb(242,242,242);
+}
 #brandline {
     color: #ffffff;   
 }
@@ -30,4 +33,14 @@ a.headerlink {
 }
 a.headerlink:hover {
 	color: #3F3C29;
+}
+#top-header a {
+	color: #fff;
+}
+.nav-container {
+	background: #3A3A3A;
+}
+#page-footer {
+ 	background: #333333;
+ 	min-height: 300px;
 }

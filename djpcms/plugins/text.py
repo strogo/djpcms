@@ -142,25 +142,3 @@ You can use several different markup languages or simply raw HTML.'''
         text = pform.update()
         return json.dumps({'site_content': text.id})
         
-
-
-class HtmlContent(forms.Form):
-    content = forms.CharField(label="HTML content", widget = forms.Textarea())
-    layout = FormLayout(Fieldset('content',css_class=blockLabels2))
-
-        
-class Html(DJPplugin):
-    '''Html plugin. Write what you like, javascript and HTML.'''
-    name          = "html"
-    description   = "HTML Snippet"
-    form          = HtmlContent
-    
-    def html(self):
-        if self.site_content:
-            return self.site_content.bodyhtml()
-        else:
-            return u''
-            
-    def render(self, djp, wrapper, prefix, content = None, **kwargs):
-        return u'' if  not content else mark_safe(content)
-    

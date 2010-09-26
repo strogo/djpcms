@@ -125,6 +125,7 @@ ul.menu li.selected ul li.selected a {background: rgb(245,245,245);}
 .edit fieldset.editing label {display: none;}
 .edit .editing #id_body {
 	font-family:Monaco,"Courier New","DejaVu Sans Mono","Bitstream Vera Sans Mono",monospace;
+	font-size: 12px;
 	width: 100%;
 	min-height: 98%;
 	height: 98%;

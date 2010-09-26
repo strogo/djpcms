@@ -1,0 +1,8 @@
+{% extends "djpcms/bits/usernav.html" %}
+
+{% block not-authenticated %}
+<form action="/accounts/login/openid/" method="post">
+    <input type="text" class="openid" name="openid_url">
+    <input type="submit" value="login" class="submit">
+</form>
+ {% endblock %}

@@ -452,7 +452,8 @@ class SiteContent(models.Model):
         if mkp:
             handler = mkp.get('handler')
             text = handler(text)
-        return mark_safe(force_unicode(text))
+            text = mark_safe(force_unicode(text))
+        return text
     
     def update(self, user = None, body = ''):
         self.body = body

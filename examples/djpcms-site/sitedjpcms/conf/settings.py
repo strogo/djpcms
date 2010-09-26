@@ -49,7 +49,7 @@ TEMPLATE_DIRS = (os.path.join(basedir,'templates'),)
 ADMIN_MEDIA_PREFIX = '/media/admin/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(basedir, 'media')
-DJPCMS_STYLE = 'green'
+DJPCMS_STYLE = 'smooth'
 TEMPLATE_CONTEXT_PROCESSORS = (
             "socialauth.context_processors.facebook_api_key",
             "django.contrib.auth.context_processors.auth",

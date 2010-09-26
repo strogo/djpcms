@@ -114,7 +114,7 @@ class ChangeContentView(appview.EditView):
     
     def get_preview(self, request, instance, url, wrapped = True, plugin = None):
         try:
-            djpview = handlers.response(request, url)
+            djpview = handlers.response(request, url[1:])
             preview_html = instance.render(djpview, plugin = plugin, wrapper = dummy_wrap)
         except Exception, e:
             preview_html = u'%s' % e

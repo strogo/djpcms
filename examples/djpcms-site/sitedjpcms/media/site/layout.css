@@ -1,18 +1,19 @@
 #page-header {
-	background: transparent url(img/header2.gif) repeat-x scroll 0 0;
-    height:328px;
+	/*background: transparent url(img/header2.gif) repeat-x scroll 0 0;
+    height:328px;*/
+}
+.nav-container {
+	width: 100%;
+	overflow: hidden;
+}
+ul.user {
+	line-height: 2.5em;
+}
+.nav.main {
+	float: left;
 }
 .site-logo {
     padding: 0 30px;
-}
-#navigation {
-background:transparent url(images/brd.gif) no-repeat scroll 0 8px;
-display:inline;
-float:left;
-height:44px;
-margin-left:270px;
-padding-left:8px;
-padding-top:14px;
 }
 #brandline {
     padding: 30px 10px;   
@@ -23,12 +24,6 @@ padding-top:14px;
 }
 #page-body {
 	min-height: 500px;
-	background: rgb(242,242,242);
-}
-#page-footer {
-    background: transparent url(img/ftr.gif) repeat-x;
-    color:#FFFFFF;
-    height:53px;
 }
 #navigation li a:hover {
     background:transparent url(img/hover.gif) repeat-x;

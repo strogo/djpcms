@@ -163,10 +163,7 @@ Hooks:
             # Call the inner-template renderer
             inner = page.inner_template.render(Context(cb))
             
-            if self.editurl:
-                b = urlbits(request.path)[1:]
-                more_content['exit_edit_url'] = urlfrombits(b)
-            else:
+            if not self.editurl:
                 more_content['edit_content_url'] = inline_editing(request,self)
              
         else:
@@ -396,7 +393,7 @@ This view is never in navigation and it provides a hook for adding the edit page
         uni = UniForm(ShortPageForm(instance = self.get_page()), action = djp.url, csfr = True)
         uni.inputs.append(submit(value = "change", name = '_save'))
         c['page_form'] = uni.render()
-        c['page_url'] = '/%s' % self.page_url(djp.request)
+        c['page_url'] = self.page_url(djp.request)
 
     def default_post(self, djp):
         request = djp.request
@@ -408,4 +405,4 @@ This view is never in navigation and it provides a hook for adding the edit page
         return http.HttpResponseRedirect(djp.url)
     
     def page_url(self, request):
-        return '/'.join(request.path.split('/')[2:])
+        return urlfrombits(urlbits(request.path)[1:])
