@@ -28,3 +28,11 @@ Block Content Model
 .. autoclass:: djpcms.models.BlockContent
    :members:
    :member-order: bysource
+   
+   
+SiteContent Model
+=========================
+
+.. autoclass:: djpcms.models.SiteContent
+   :members:
+   :member-order: bysource

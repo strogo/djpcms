@@ -290,7 +290,8 @@ class UniForm(UniFormBase):
                  action = '.',
                  inputs = None,
                  tag = True,
-                 csfr = True):
+                 csfr = True,
+                 is_ajax = False):
         self.use_csrf_protection = csfr
         self.attr = {}
         self.attr['method']  = method
@@ -305,7 +306,7 @@ class UniForm(UniFormBase):
         self.tag             = tag
         self._messages       = []
         self._errors         = []
-        self.is_ajax         = False
+        self.is_ajax         = is_ajax
         self.error_message   = error_message if error_message is not None else self.default_error_msg
         self.template        = template or self.default_template
         self.add(form,request,instance)
@@ -315,6 +316,7 @@ class UniForm(UniFormBase):
             return False
         elif isinstance(form,BaseForm):
             form.layout = getattr(form,'layout',None) or FormLayout()
+            instance = instance or getattr(form,'instance',None)
             self._build_fsets(form,request,instance)
             self.forms.append((form.layout,form))
         else:
@@ -370,6 +372,7 @@ class UniForm(UniFormBase):
             self._messages.append(msg)
             if not self.is_ajax:
                 messages.info(request,msg)
+        return self
             
     def json_message(self):
         msg = self._make_messages('messagelist',self._messages)

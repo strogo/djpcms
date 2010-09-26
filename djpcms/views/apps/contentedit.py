@@ -12,8 +12,8 @@ from djpcms.conf import settings
 from djpcms.models import BlockContent
 from djpcms.utils import form_kwargs, mark_safe
 from djpcms.utils.func import isforminstance
-from djpcms.utils.ajax import jhtmls, jremove, dialog, jempty
-from djpcms.utils.html import form, formlet, submit, htmlcomp
+from djpcms.utils.ajax import jhtmls, jremove, dialog, jempty, jerror
+from djpcms.utils.html import submit, htmlcomp
 from djpcms.utils.uniforms import UniForm, FormLayout
 from djpcms.forms import ContentBlockForm
 from djpcms.plugins import get_plugin
@@ -34,12 +34,10 @@ class content_view(object):
         self.blockcontents = BlockContent.objects.for_page_block(page, b)
     
     def __call__(self, djp):
-        '''
-        Return a generator
-        blockcontents is a queryset of BlockContent model
+        '''Return a generator of edit blocks.
         '''
         request  = djp.request
-        url      = '/'.join(request.path.split('/')[2:])
+        url      = djp.view.page_url(request)
         appmodel = appsite.site.for_model(BlockContent)
         editview = appmodel.getview('edit')
         wrapper  = EditWrapperHandler(url)
@@ -127,7 +125,7 @@ class ChangeContentView(appview.EditView):
     
     def get_form(self, djp, all = True, url = None, **kwargs):
         '''Get the contentblock editing form
-        This form is composed of two formlet,
+        This form is composed of two parts,
         one for choosing the plugin type,
         and one for setting the plugin options
         '''
@@ -147,12 +145,10 @@ class ChangeContentView(appview.EditView):
                 uni.add(pform)
             else:
                 uni.add('<div id="%s"></div' % id)
-            if purl:
-                sub = str(submit(value = "edit", name = 'edit_content'))
-            else:
-                sub = ''
+            sub = str(submit(value = "edit", name = 'edit_content'))
             id = self.plugin_edit_id(instance)
-            uni.inputs.append(mark_safe('<span id="%s">%s</span>' % (id,sub)))
+            cl = '' if purl else ' class="djphide"'
+            uni.inputs.append(mark_safe('<span id="%s"%s>%s</span>' % (id,cl,sub)))
         return uni
         
     def get_plugin_form(self, djp, plugin, withdata = True):
@@ -175,8 +171,7 @@ class ChangeContentView(appview.EditView):
     def ajax__plugin_name(self, djp):
         '''
         Ajax post view function which handle the change of pluging within one html block.
-        @param request: django HttpRequest instance
-        @return JSON serializable object 
+        It return JSON serializable object 
         '''
         form = self.get_form(djp, all = False)
         if form.is_valid():
@@ -191,6 +186,11 @@ class ChangeContentView(appview.EditView):
             data = jhtmls(identifier = '#%s' % self.plugin_form_id(djp.instance), html = html)
             preview = self.get_preview(djp.request, instance, url, plugin = new_plugin, wrapped = False)
             data.add('#%s' % self.plugin_preview_id(djp.instance), preview)
+            id = self.plugin_edit_id(instance)
+            if callable(new_plugin.edit_form):
+                data.add('#%s' % id, type = 'show')
+            else:
+                data.add('#%s' % id, type = 'hide')
             return data
         else:
             return form.json_errors()
@@ -248,6 +248,11 @@ class ChangeContentView(appview.EditView):
                 return form.json_errors()
             else:
                 pass
+            
+    def get_preview_response(self, djp, url):
+        instance = djp.instance
+        preview = self.get_preview(djp.request, instance, url,  wrapped = False)
+        return jhtmls(identifier = '#%s' % self.plugin_preview_id(instance), html = preview)
         
 
 class EditPluginView(appview.EditView):
@@ -263,46 +268,46 @@ class EditPluginView(appview.EditView):
                                             isapp = False,
                                             name = 'edit_plugin')
     
-    def get_form(self, djp, withdata = True, **kwargs):
+    def get_form(self, djp, withdata = True, initial = None, **kwargs):
         instance = djp.instance
         p = instance.plugin
         if p:
-            flet = p.edit(djp, instance.arguments, withdata = withdata)
-            if isforminstance(flet):
-                flet = formlet(form = flet,
-                               layout = 'onecolumn')
-            if isinstance(flet,formlet):
-                f = form(url = djp.url, cn = self.ajax.ajax)
-                f['form'] = flet
-                return f
+            return p.edit(djp, instance.arguments, initial = initial, withdata = withdata)
     
     def default_post(self, djp):
+        data = dict(djp.request.POST.items())
         is_ajax = djp.request.is_ajax()
-        f = self.get_form(djp, withdata = False)
-        if is_ajax:
-            d = dialog(hd = f.instance.code,
-                       bd = f.render(),
-                       modal  = True,
-                       width  = settings.CONTENT_INLINE_EDITING.get('width','auto'),
-                       height = settings.CONTENT_INLINE_EDITING.get('height','auto'))
-            d.addbutton('Ok', url = djp.url, func = 'save')
-            d.addbutton('Cancel', url = djp.url, func = 'cancel')
-            d.addbutton('Save', url = djp.url, func = 'save', close = False)
-            return d
+        f = self.get_form(djp, initial = {'url':data['url']}, withdata = False)
+        if f:
+            uni = UniForm(f,
+                          request  = djp.request,
+                          action = djp.url).addClass(self.ajax.ajax).addClass('editing')
+            if is_ajax:
+                d = dialog(hd = unicode(f.instance),
+                           bd = uni.render(),
+                           modal  = True,
+                           width  = settings.CONTENT_INLINE_EDITING.get('width','auto'),
+                           height = settings.CONTENT_INLINE_EDITING.get('height','auto'))
+                d.addbutton('Ok', url = djp.url, func = 'save')
+                d.addbutton('Cancel', func = 'cancel')
+                d.addbutton('Save', url = djp.url, func = 'save', close = False)
+                return d
+            else:
+                #todo write the non-ajax POST view
+                pass
         else:
-            #todo write the non-ajax POST view
-            pass
+            return jerror('Nothing selected. Cannot edit.')
     
     def ajax__save(self, djp):
         f = self.get_form(djp)
         if f.is_valid():
             f.save()
-            return f.messagepost('%s saved' % f.instance)
+            instance = djp.instance
+            editview = self.appmodel.getview('edit')
+            return editview.get_preview_response(djp,f.cleaned_data['url'])
         else:
             return f.json_errors()
         
-    def ajax__cancel(self, djp):
-        return jempty()
 
 
 class ContentSite(appsite.ModelApplication):

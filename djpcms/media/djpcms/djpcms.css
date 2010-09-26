@@ -119,9 +119,11 @@ ul.menu li.selected ul li.selected a {background: rgb(245,245,245);}
 	overflow:hidden;
 	min-height:16px;
 }
-.edit form {height: 100%;}
-.edit .writing {height: 100%;}
-.edit .writing #id_body {
+.edit form.editing ,
+.edit fieldset.editing .ctrlHolder {height: 100%;}
+.edit fieldset.editing {height: 80%;}
+.edit fieldset.editing label {display: none;}
+.edit .editing #id_body {
 	font-family:Monaco,"Courier New","DejaVu Sans Mono","Bitstream Vera Sans Mono",monospace;
 	width: 100%;
 	min-height: 98%;
@@ -415,4 +417,16 @@ a.deletable {
 .edit-page .formColumn {
 	display: inline;
 	float: left;
+}
+.edit-page h1 {
+	font-size: 150%;
+	text-align: center;
+	margin-top: 10px;
+	margin-botton: 15px;
+}
+
+/* Special classes
+--------------------------------------------------------*/
+.djphide {
+	display: none;
 }

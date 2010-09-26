@@ -1,11 +1,9 @@
-#
-# Load the markup module
-# This hook is provided so that third-party markup libraries
-# can be used rather than the limited one in djpcms
-#
+
 
 class MarkupLib(object):
-    
+    '''Load the markup module. This hook is provided so that third-party markup libraries
+can be used rather than the limited one in djpcms'''
+
     def __init__(self):
         self._module = None
         

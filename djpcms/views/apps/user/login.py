@@ -3,7 +3,7 @@ from django.contrib import messages
 from django import http
 
 from djpcms.views import appview
-from djpcms.utils.html import form, formlet, submit
+from djpcms.utils.html import submit
 from djpcms.utils import form_kwargs
 from djpcms.utils.ajax import jredirect
 

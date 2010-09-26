@@ -133,8 +133,15 @@
 	
 	
 	/**
-	 * SERVER ERROR callback
+	 * ERROR and SERVER ERROR callback
 	 */
+	dj.addJsonCallBack({
+		id: "error",
+		handle: function(data, elem) {
+			var el = $('<div title="Something did not work."></div>').html('<p>'+data+'</p>');
+			el.dialog({modal:true});
+		}
+	});
 	dj.addJsonCallBack({
 		id: "servererror",
 		handle: function(data, elem) {
@@ -155,15 +162,22 @@
 					el = $(b.identifier);
 				}
 				if(el) {
-					el.html(b.html);
-					//if(b.type == "replace") {
-					//	el.html(nel);
-					//}
-					//else {
-					//	el.html(el.html() + nel);
-					//}
-					el.djpcms();
-					el.show();
+					if(b.type == 'hide') {
+						el.hide();
+					}
+					else if(b.type == 'show') {
+						el.show();
+					}
+					else {
+						if(b.type == 'append') {
+							el.html(el.html() + nel);
+						}
+						else {
+							el.html(b.html);
+						}
+						el.djpcms();
+						el.show();
+					}
 				}
 			});
 			return true;
@@ -214,7 +228,7 @@
 					b.d = $(this);
 					
 					b.dialogcallBack = function(data) {
-						$.djpcms.jsonCallBack(data,el);
+						$.djpcms.jsonCallBack(data,'success',el);
 						if(b.close) {
 							b.d.dialog("close");
 						}
@@ -229,6 +243,9 @@
 							});
 						}
 						$.post(b.url,$.param(params),b.dialogcallBack,"json");
+					}
+					else {
+						b.d.dialog('close');
 					}
 				};
 			});

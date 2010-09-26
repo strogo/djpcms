@@ -189,3 +189,11 @@ class htmlcomp(htmltag):
                 'djpcms/%s' % top,
                 'components/htmlcomp.html',
                 'djpcms/components/htmlcomp.html']
+        
+    
+class submit(htmltiny):
+    
+    def __init__(self, name = 'submit', value = 'submit', **attrs):
+        super(submit,self).__init__('input', name = name, value = value, **attrs)
+        self._attrs['type'] = 'submit'
+

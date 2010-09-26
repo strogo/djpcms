@@ -50,8 +50,9 @@ ApplicationPlugin
 Text Plugin
 --------------------
 
-The text plugin allows to write content in a straightforward manner.
-   
+.. autoclass:: djpcms.plugins.text.Text
+   :members:   
+
 
 Soft Navigation
 ----------------------

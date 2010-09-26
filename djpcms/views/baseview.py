@@ -396,6 +396,7 @@ This view is never in navigation and it provides a hook for adding the edit page
         uni = UniForm(ShortPageForm(instance = self.get_page()), action = djp.url, csfr = True)
         uni.inputs.append(submit(value = "change", name = '_save'))
         c['page_form'] = uni.render()
+        c['page_url'] = '/%s' % self.page_url(djp.request)
 
     def default_post(self, djp):
         request = djp.request
@@ -405,3 +406,6 @@ This view is never in navigation and it provides a hook for adding the edit page
             messages.info(request, 'Page %s updated' % page)
         pagecache.clear(request)
         return http.HttpResponseRedirect(djp.url)
+    
+    def page_url(self, request):
+        return '/'.join(request.path.split('/')[2:])

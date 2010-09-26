@@ -69,6 +69,15 @@ default: ``'djpcms.utils.markups'``
 
 Python dotted path to the markup module. This module exposes four functions:
 
+* ``choices()`` return a iterable over two-element tuple.
+* ``get(name)`` return the handle for rendering with markup *name*.
+* ``add(handle)`` add a new markup handle.
+* ``default()`` return the default markup handle.
+
+.. seealso::
+
+	This setting is used in the :class:`djpcms.plugins.text.Text` plugin.
+
 
 .. setting:: DJPCMS_PLUGINS
 

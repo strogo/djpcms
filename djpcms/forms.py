@@ -13,6 +13,7 @@ from djpcms.utils.html import ModelChoiceField, ModelMultipleChoiceField
 
 
 Form = forms.Form
+Textarea = forms.Textarea
 ModelForm = forms.ModelForm
 BooleanField = forms.BooleanField
 CharField = forms.CharField
@@ -217,8 +218,13 @@ class PluginChoice(LazyAjaxChoice):
             raise forms.ValidationError('%s not a plugin object' % name)
         return value
     
+    
+class EditingForm(ModelForm):
+    url  = CharField(widget=forms.HiddenInput, required = False)
+    
+    
 
-class ContentBlockForm(ModelForm):
+class ContentBlockForm(EditingForm):
     '''Content Block Change form
     
     This Model form is used to change the plug-in within
@@ -226,7 +232,6 @@ class ContentBlockForm(ModelForm):
     '''
     plugin_name    = PluginChoice(label = _('Plugin'),   choices = plugingenerator, required = False)
     container_type = LazyChoiceField(label=_('Container'), choices = wrappergenerator)
-    url            = CharField(widget=forms.HiddenInput, required = False)
     
     class Meta:
         model = BlockContent

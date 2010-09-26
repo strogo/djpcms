@@ -1,21 +1,19 @@
 #
 #
-from django import forms
 from django.template import RequestContext
 
 from djpcms.conf import settings
+from djpcms import forms
 from djpcms.utils import json, form_kwargs, mark_safe
 from djpcms.models import SiteContent
 from djpcms.plugins import DJPplugin
-from djpcms.forms import SlugField, LazyChoiceField
-from djpcms.utils.html import formlet
-from djpcms.utils.uniforms import FormLayout, Fieldset, blockLabels2
+from djpcms.utils.uniforms import FormLayout, Fieldset, blockLabels2, inlineLabels
 from djpcms.markup import markuplib
 
 from djpcms.utils import uniforms
 
 
-class NewContentCode(SlugField):
+class NewContentCode(forms.SlugField):
     
     def __init__(self, *args, **kwargs):
         super(NewContentCode,self).__init__(*args,**kwargs)
@@ -27,34 +25,29 @@ class NewContentCode(SlugField):
         return super(NewContentCode,self).clean(value)
 
 
+class SiteContentField(forms.ModelChoiceField):
+    
+    def widget_attrs(self, widget):
+        return {'class': settings.HTML_CLASSES.ajax}
+
+
 class ChangeTextContent(forms.Form):
     '''
     Form for changing text content during inline editing
     '''
-    site_content = forms.ModelChoiceField(queryset = SiteContent.objects.all(),
-                                          empty_label=u"New Content", required = False)
+    site_content = SiteContentField(queryset = SiteContent.objects.all(),
+                                    empty_label=u"New Content",
+                                    required = False)
     new_content  = NewContentCode(SiteContent,
                                   'code',
                                   label = 'New content unique code',
                                   help_text = 'When creating a new content give a unique name you like',
                                   required = False)
-    markup       = LazyChoiceField(choices = markuplib.choices,
-                                   initial = markuplib.default,
-                                   required = False)
     
     def __init__(self, *args, **kwargs):
         request = kwargs.pop('request',None)
         if not request:
             raise ValueError('Request not available')
-        initial = kwargs.pop('initial',None)
-        if initial:
-            site_content = initial.get('site_content',None)
-            try:
-                site_content = SiteContent.objects.get(id = int(site_content))
-                initial['markup'] = site_content.markup
-            except:
-                pass
-        kwargs['initial'] = initial
         self.user = request.user
         super(ChangeTextContent,self).__init__(*args,**kwargs)
         
@@ -77,14 +70,19 @@ class ChangeTextContent(forms.Form):
             # If new_content is available. A new SiteContent object is created
             if not text:
                 text = SiteContent(code = nc)
-            text.markup    = cd.get('markup')
             text.user_last = self.user
             text.save()
             return text
         
 
 
-class EditContentForm(forms.ModelForm):
+class EditContentForm(forms.EditingForm):
+    markup       = forms.LazyChoiceField(choices = markuplib.choices,
+                                         initial = markuplib.default,
+                                         required = False)
+    
+    layout = FormLayout(Fieldset('markup',css_class=inlineLabels),
+                        Fieldset('body',css_class='%s editing' % blockLabels2))
     
     def __init__(self, *args, **kwargs):
         request = kwargs.pop('request',None)
@@ -95,13 +93,15 @@ class EditContentForm(forms.ModelForm):
         
     class Meta:
         model = SiteContent
-        fields = ('body',)
+        fields = ('body','markup','url')
 
     
 class Text(DJPplugin):
-    '''plugin for writing text using several different markup languages.'''
+    '''The text plugin allows to write content in a straightforward manner.
+You can use several different markup languages or simply raw HTML.'''
     name               = "text"
     description        = "Text Editor"
+    long_description   = "Write text or raw HTML"
     form_withrequest   = True
     form               = ChangeTextContent
     
@@ -130,11 +130,11 @@ class Text(DJPplugin):
         if site_content:
             try:
                 site_content = SiteContent.objects.get(id = int(site_content))
-                f = EditContentForm(**form_kwargs(request = djp.request,
-                                                  instance = site_content,
-                                                  withrequest = True,
-                                                  **kwargs))
-                return formlet(form = f, layout = 'djpcms/form/text-edit-form.html')
+                return EditContentForm(**form_kwargs(request = djp.request,
+                                                     instance = site_content,
+                                                     withrequest = True,
+                                                     **kwargs))
+                #return formlet(form = f, layout = 'djpcms/form/text-edit-form.html')
             except Exception, e:
                 return None
             

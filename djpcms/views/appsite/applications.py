@@ -18,7 +18,7 @@ from djpcms.core.exceptions import PermissionDenied, ApplicationUrlException
 from djpcms.utils import form_kwargs, UnicodeObject, slugify
 from djpcms.utils.forms import add_hidden_field
 from djpcms.plugins import register_application
-from djpcms.utils.html import formlet, submit, form
+from djpcms.utils.html import submit
 from djpcms.utils.uniforms import UniForm
 from djpcms.views.baseview import editview
 from djpcms.views.appview import AppViewBase
@@ -314,8 +314,7 @@ Reimplement for custom arguments.'''
                  wrapped = True,
                  form = None,
                  addinputs = True,
-                 withdata = True,
-                 formhelper = True):
+                 withdata = True):
         '''Build a form to add or edit an application model object:
         
  * *djp*: instance of djpcms.views.DjpRequestWrap.
@@ -354,35 +353,16 @@ Reimplement for custom arguments.'''
         if addinputs:
             inputs = self.submit(instance, own_view)
             
-        if formhelper:
-            wrap = UniForm(f,
-                           request  = request,
-                           instance = instance,
-                           action   = djp.url,
-                           inputs   = inputs,
-                           template = self.form_template)
-            if self.form_ajax:
-                wrap.addClass(self.ajax.ajax)
-            wrap.is_ajax = request.is_ajax()
-            return wrap
-        
-        # Old way of doing things. Deprecated.
-        raise ValueError('This is old')
-        layout = None
-        if wrapper:
-            layout = wrapper.form_layout
-            
-        submit = self.submit(instance, own_view)
-        fl = formlet(form = f, layout = layout, submit = submit)
-        
-        if wrapped:
-            fhtml  = form(method = self.form_method, url = djp.url)
-            if self.form_ajax:
-                fhtml.addClass(self.ajax.ajax)
-            fhtml['form'] = fl
-            return fhtml
-        else:
-            return fl
+        wrap = UniForm(f,
+                       request  = request,
+                       instance = instance,
+                       action   = djp.url,
+                       inputs   = inputs,
+                       template = self.form_template)
+        if self.form_ajax:
+            wrap.addClass(self.ajax.ajax)
+        wrap.is_ajax = request.is_ajax()
+        return wrap
         
     def submit(self, instance, own_view = False):
         '''Generate the submits elements to be added to the model form.

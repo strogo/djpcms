@@ -425,6 +425,7 @@ class SiteContentManager(models.Manager):
 
 
 class SiteContent(models.Model):
+    '''Store content for your web site. It can store markup or raw HTML.'''
     last_modified = models.DateTimeField(auto_now = True, editable = False)
     user_last     = models.ForeignKey(User, null = True, blank = True)
     code          = SlugCode(max_length = 64,
@@ -432,7 +433,8 @@ class SiteContent(models.Model):
                              help_text  = _("Unique name for the content. Choose one you like"))
     description   = models.TextField(blank = True)
     body          = models.TextField(_('body'),blank=True)
-    markup        = models.CharField(max_length = 3, null = False)
+    markup        = models.CharField(max_length = 3, blank = True, null = False)
+    '''Markup type. If not specified it will be treated as raw HTML.'''
     
     objects = SiteContentManager()
     

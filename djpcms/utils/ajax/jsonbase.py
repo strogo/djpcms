@@ -97,6 +97,18 @@ class jservererror(HeaderBody):
     def body(self):
         return self.html
     
+    
+class jerror(HeaderBody):
+    
+    def __init__(self, msg):
+        self.html = msg
+    
+    def header(self):
+        return 'error'
+    
+    def body(self):
+        return self.html
+    
 
 class jhtmls(HeaderBody):
     '''
@@ -120,7 +132,7 @@ class jhtmls(HeaderBody):
         else:
             objr['html'] += obj['html']
         
-    def add(self, identifier, html, type = 'replace', alldocument = True):
+    def add(self, identifier, html = '', type = 'replace', alldocument = True):
         obj = {'identifier':    identifier,
                'html':          html,
                'type':          type,

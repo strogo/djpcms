@@ -10,7 +10,7 @@ def add(code, name, handler):
 
 def choices():
     global MARKUP_HANDLERS
-    tup = []
+    tup = [('','None')]
     for k,v in MARKUP_HANDLERS.items():
         tup.append((k,v.get('name')))
     return tup
