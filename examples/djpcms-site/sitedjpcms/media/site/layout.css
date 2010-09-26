@@ -18,6 +18,10 @@ ul.user {
 #brandline {
     padding: 30px 10px;   
 }
+#bread-crumbs {
+	min-height: 30px;
+	line-height: 30px;
+}
 #tagline {
 	background:transparent url(img/bg.gif) repeat-x;
 	height:82px;

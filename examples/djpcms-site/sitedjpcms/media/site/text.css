@@ -9,7 +9,9 @@ body {
 	line-height:1.4em;
 }
 #brandline {
-	font-weight: bold;
+	font-family:Georgia,"Times New Roman","Bitstream Charter",Times,serif;
+	font-weight: normal;
+	font-style: italic;
 	font-size: 150%;
 }
 #tag-line {
