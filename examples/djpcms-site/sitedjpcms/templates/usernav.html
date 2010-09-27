@@ -1,8 +1,10 @@
 {% extends "djpcms/bits/usernav.html" %}
 
+{% block userlink %}/accounts/{{ user.username }}/{% endblock %}
 {% block not-authenticated %}
-<form action="/accounts/login/openid/" method="post">
-    <input type="text" class="openid" name="openid_url">
-    <input type="submit" value="login" class="submit">
-</form>
- {% endblock %}
+<a href="/accounts/twitter/login/?next={{ djp.url }}" class="signin-button-twitter">Sign in with Twitter</a>
+{% endblock %}
+
+
+{# <form action="/accounts/login/openid/" method="post"><input type="text" class="openid" name="openid_url">
+{# <input type="submit" value="login" class="submit"> </form> #}

@@ -1,12 +1,18 @@
 body {
 	background: rgb(242,242,242);
+	background: #94BA65;
+}
+#site-content {
+	background: #94BA65;
+}
+#top-header {
+	background: #353432;
 }
 #branding-banner {
-	background: #464449;
 	overflow: hidden;
 }
 #brandline {
-    color: #FF9900;  
+    color: #FF9900;
 }
 p.rubric {
 	color:#487858;
@@ -32,6 +38,12 @@ h2.deck {
 	color: #D2FF4D;
 }
 */
+a:link, a:visited {
+	color: #2B4E72;
+}
+a:hover {
+	color: #2790B0;
+}
 a.headerlink {
 	color: #ffffff;
 }
@@ -46,5 +58,38 @@ a.headerlink:hover {
 }
 #page-footer {
  	background: #333333;
- 	min-height: 300px;
+ 	color: rgb(240,240,240);
+}
+pre {
+	background: #4E4D4A;
+	color: #fff;
+}
+#page-footer a:link,
+#page-footer a:visited {
+	color: #2790B0;
+}
+#page-footer a:hover {
+	color: #fff;
+}
+
+.djpcms-html-box {
+	background: #4E4D4A;
+}
+.djpcms-html-box .hd h2 {
+	color:#fff;
+}
+div.flat-pannel {
+	border: 2px solid #4E4D4A;
+}
+.signin-button-twitter {
+	background:url("img/signin_twitter.png") no-repeat;
+	float:left;
+	height:22px;
+	margin-right:5px;
+	overflow:hidden;
+	text-indent:-9999px;
+	width:150px;
+}
+.signin-button-twitter:hover {
+	background:url("img/signin_twitter.png") no-repeat 0 -24px;
 }

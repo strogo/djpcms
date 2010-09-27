@@ -20,6 +20,11 @@ body {
 	font-style: italic;
 	font-family:Georgia,"Times New Roman","Bitstream Charter",Times,serif;
 }
+#bread-crumbs {
+	font-family:Georgia,"Times New Roman","Bitstream Charter",Times,serif;
+	font-size:140%;
+	font-style:italic;
+}
 p.rubric {
 	font-size:150%;
 	font-weight:normal;
@@ -27,11 +32,14 @@ p.rubric {
 .site-logo {
 	font-family:Georgia,"Times New Roman","Bitstream Charter",Times,serif;
 	font-weight: bold;
-	font-size: 40px;
-	line-height: 60px;
+	font-size: 30px;
 }
-
-
+#page-footer {
+	font-size: 90%;
+}
+.signin-button-twitter {
+	margin-top: 9px;
+}
 h1 {
 	font-size:218%;
 	line-height:1.1em;
@@ -46,4 +54,7 @@ h2.deck {
 
 strong {
 	font-weight: bold;
+}
+.documentation-main .section h1 {
+	display: none;
 }

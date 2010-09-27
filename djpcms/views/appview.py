@@ -454,7 +454,7 @@ class ObjectView(AppView):
         If instance not defined it return None
         '''
         if instance:
-            urlargs = self.appmodel.objectbits(instance)
+            urlargs.update(self.appmodel.objectbits(instance))
         else:
             instance = self.appmodel.get_object(**urlargs)
         
@@ -562,7 +562,8 @@ class EditView(ObjectView):
     
     def success_message(self, instance, mch):
         return success_message(self,instance,mch)
-    
+
+
     
 class AutocompleteView(SearchView):
     '''This is an interesting view. It is an **AJAX Get only** view for auto-complete__ functionalities.

@@ -3,12 +3,31 @@ from django.contrib.auth.models import User
 
 from djpcms.conf import settings
 from djpcms.utils.pathtool import parentdir
-from djpcms.views import appsite
+from djpcms.views import appsite, appview
 from djpcms.views.apps.user import UserApplication
 from djpcms.views.apps.docs import DocApplication, DocView
 
-#from djpcms.contrib.djp_oauth.appurl import OAuthApplication
+from sitedjpcms import views
+import sitedjpcms.signals
+
 parent = lambda x : os.path.split(x)[0]
+
+
+class SocialUserApplication(UserApplication):
+    inherit = True
+    twitter_login = views.TwitterLogin()
+    twitter_done = views.TwitterDone()
+    
+    def objectbits(self, obj):
+        return {'username': obj.username}
+    
+    def get_object(self, *args, **kwargs):
+        try:
+            return self.model.objects.get(username = kwargs.get('username',None))
+        except:
+            return None
+
+
 
 
 docdir = os.path.join(parentdir(os.path.abspath(__file__),2),'docs')
@@ -24,6 +43,6 @@ class DjpcmsDoc(DocApplication):
 
 
 #__________________________________________________ Add user account support
-appsite.site.register(settings.USER_ACCOUNT_HOME_URL, UserApplication, model = User)
+appsite.site.register(settings.USER_ACCOUNT_HOME_URL, SocialUserApplication, model = User)
 #appsite.site.register(settings.USER_ACCOUNT_HOME_URL, OAuthApplication, model = User)
 appsite.site.register('/docs/',DjpcmsDoc)

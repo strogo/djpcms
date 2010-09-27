@@ -2,7 +2,7 @@
  <li class="secondary"><a href="{{ edit_content_url }}">edit</a></li>{% else %}{% if page_url %}
  <li class="secondary"><a href="{{ page_url }}" class="exit-edit-inline" title="Exit inline editing">exit</a></li>{% endif %}{% endif %}{% if user.is_authenticated %}
 {% block authenticated %}
- <li class="secondary"><a href="/accounts/">{{ user.username }}</a></li>{% if user.is_staff %}
+ <li class="secondary"><a href="{% block userlink %}/accounts/{% endblock %}">{{ user.username }}</a></li>{% if user.is_staff %}
  <li class="secondary"><a href="{{ site_admin_url }}">admin</a></li>{% endif %}
  <li class="secondary"><a href="{{ logout_url }}?next={{ djp.url }}">logout</a></li>{% endblock %}{% else %}
  {% block not-authenticated %}{% if login_url %}

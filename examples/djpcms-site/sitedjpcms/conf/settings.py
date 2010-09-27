@@ -32,10 +32,11 @@ INSTALLED_APPS = (
     #
     'djpcms',
     'djpcms.contrib.jdep',
-    'djpcms.contrib.admin',
+    #'djpcms.contrib.admin',
     'socialauth',
     'openid_consumer',
-    #'django.contrib.admin',
+    'south',
+    'django.contrib.admin',
 )
 
 

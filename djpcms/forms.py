@@ -4,12 +4,12 @@ from django.contrib.sites.models import Site
 from django.utils.translation import ugettext_lazy as _
 
 from djpcms.conf import settings
-from djpcms.models import Page, BlockContent, SiteContent
+from djpcms.models import Page, BlockContent, SiteContent, create_page
 from djpcms.utils import lazyattr
 from djpcms import siteapp_choices
 from djpcms.plugins import get_plugin, plugingenerator, wrappergenerator
-from djpcms.utils.uniforms import FormLayout, Columns, Row
-from djpcms.utils.html import ModelChoiceField, ModelMultipleChoiceField
+from djpcms.utils.uniforms import FormLayout, Fieldset, Columns, Row, Html, inlineLabels
+from djpcms.utils.html import ModelChoiceField, ModelMultipleChoiceField, submit
 
 
 Form = forms.Form
@@ -262,11 +262,35 @@ class ContentBlockForm(EditingForm):
 class ShortPageForm(ModelForm):
     '''Form to used to edit inline a page'''
     layout = FormLayout(Columns(('title','parent','inner_template','in_navigation'),
-                                ('link','cssinfo',Row('soft_root','requires_login')))
+                                ('link','url_pattern','cssinfo',Row('soft_root','requires_login')))
                         )
     
     class Meta:
         model = Page
-        fields = ['link','title','inner_template','cssinfo',
+        fields = ['link','title','inner_template','url_pattern','cssinfo',
                   'in_navigation','requires_login','soft_root',
                   'parent']
+
+
+class NewChildForm(Form):
+    child  = CharField(label = 'New child page url', required = True)
+    layout = FormLayout(Fieldset('child', css_class = inlineLabels))
+    
+    def __init__(self, *args, **kwargs):
+        self.response = kwargs.pop('response',None)
+        super(NewChildForm,self).__init__(*args, **kwargs)
+    
+    def clean_child(self):
+        name = self.cleaned_data.get('child',None)
+        if name and self.response:
+            child = self.response.page.children.filter(url_pattern = name)
+            if child:
+                raise Form.ValidationError('child page %s already available' % name)
+        return name
+    
+    def save(self):
+        djp    = self.response
+        parent = djp.page
+        url    = self.cleaned_data['child']
+        return create_page(url, parent = parent, user = parent.user)
+

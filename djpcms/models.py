@@ -165,6 +165,8 @@ class Page(TimeStamp):
     # Denormalized level in the tree and url, for performance 
     level       = models.IntegerField(default = 0, editable = False)
     url         = models.CharField(editable = False, max_length = 1000)
+    
+    user        = models.ForeignKey(User, null = True, blank = True)
 
     objects = PageManager()
 
@@ -215,6 +217,12 @@ If not specified we get the template of the :attr:`parent` page.'''
         '''Calculate the url. Called during saving.
         '''
         try:
+            # Check if this page is part of an application
+            #if not self.application and self.parent and self.url_pattern:
+            #    application = self.parent.application
+            #    if application:
+            #        self.application = '%s_%s' % (self.parent,self.url_pattern)
+                 
             if self.application:
                 from djpcms.views import appsite
                 app = appsite.site.getapp(self.application)
@@ -488,17 +496,34 @@ class AdditionalPageData(models.Model):
         verbose_name_plural = 'Additional page data'
 
 
-class Application(models.Model):
-    '''
-    A general method for creating applications
-    '''
-    name        = models.CharField(max_length=200, unique = True)
-    description = models.TextField(blank = True)
-    stylesheet  = models.TextField(blank=True)
-    javascript  = models.TextField(blank=True)
-    mark        = models.IntegerField(default = 0)
-    markup      = models.CharField(max_length = 3, null = False)
+#class Application(models.Model):
+#    '''
+#    A general method for creating applications
+#    '''
+#    name        = models.CharField(max_length=200, unique = True)
+#    description = models.TextField(blank = True)
+#    stylesheet  = models.TextField(blank=True)
+#    javascript  = models.TextField(blank=True)
+#    mark        = models.IntegerField(default = 0)
+#    markup      = models.CharField(max_length = 3, null = False)
     
 
 
 #mptt.register(Page)
+
+
+def create_page(url_pattern, parent = None, user = None, title = None,
+                link = None, **kwargs):
+    page = Page.objects.filter(parent = parent, url_pattern = url_pattern, user = user)
+    if page:
+        return page[0]
+    else:
+        page = Page(parent = parent,
+                    site = parent.site,
+                    user = user,
+                    title = title or url_pattern,
+                    link = link or url_pattern,
+                    url_pattern = url_pattern,
+                    inner_template = parent.inner_template,
+                    **kwargs)
+        page.save()

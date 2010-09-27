@@ -46,7 +46,7 @@ class InnerTemplateAdmin(SafeModelAdmin):
 
 
 class PageAdmin(SafeModelAdmin):
-    list_display        = ('url','application','in_navigation','link','redirect_to','requires_login','inner_template', 'cssinfo',
+    list_display        = ('url','application','in_navigation','link','user','redirect_to','requires_login','inner_template', 'cssinfo',
                            'is_published','get_template','level')
     inlines             = [AdditionalPageDataInline]
     save_on_top         = True
@@ -55,7 +55,7 @@ class PageAdmin(SafeModelAdmin):
     fieldsets = (
         (None, {
             'fields': ('site', 'application', 'parent', 'title', 'url_pattern',
-                       'link', 'inner_template', 'in_navigation', 'cssinfo')
+                       'link', 'user', 'inner_template', 'in_navigation', 'cssinfo')
         }),
         ('Authentication', {
             'fields': ('requires_login', 'is_published', 'redirect_to')

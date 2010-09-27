@@ -384,11 +384,15 @@ Reimplement for custom arguments.'''
     # APPLICATION URLS
     # TODO: write it better (not use of application name)
     #----------------------------------------------------------------
-    def addurl(self, request):
-        view = self.getview('add')
-        if view and self.has_add_permission(request):
-            djp = view(request)
+    def appviewurl(self, request, name, obj = None, permissionfun = None):
+        view = self.getview(name)
+        permissionfun = permissionfun or self.has_view_permission
+        if view and permissionfun(request, obj):
+            djp = view(request, instance = obj)
             return djp.url
+        
+    def addurl(self, request):
+        return self.appviewurl(request,'add')
         
     def deleteurl(self, request, obj):
         #TODO: change this so that we are not tide up with name

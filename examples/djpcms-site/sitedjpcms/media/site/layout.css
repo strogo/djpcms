@@ -2,6 +2,16 @@
 	/*background: transparent url(img/header2.gif) repeat-x scroll 0 0;
     height:328px;*/
 }
+#top-header {
+	width: 100%;
+	position: fixed;
+	height: 40px;
+	line-height: 40px;
+	top: 0;
+}
+#body-container {
+	margin-top: 40px;
+}
 .nav-container {
 	width: 100%;
 	overflow: hidden;
@@ -21,19 +31,23 @@ ul.user {
 #bread-crumbs {
 	min-height: 30px;
 	line-height: 30px;
+	margin-bottom: 10px;
 }
 #tagline {
 	background:transparent url(img/bg.gif) repeat-x;
 	height:82px;
 }
 #page-body {
-	min-height: 500px;
+	min-height: 700px;
 }
 #navigation li a:hover {
     background:transparent url(img/hover.gif) repeat-x;
     text-decoration:none;
 }
-
+#page-footer {
+	min-height: 300px;
+	padding: 30px 0;
+}
 a, a.link {
 	text-decoration: none;
 }
@@ -83,4 +97,6 @@ ul.user-nav li {
 	margin:0;
 	padding:0 0 0 15px;
 }
-
+pre {
+	padding: 10px;
+}

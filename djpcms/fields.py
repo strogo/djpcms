@@ -41,3 +41,9 @@ class SlugCode(CharField):
         setattr(model_instance, self.attname, value)
         return value
 
+
+try:
+    from south.modelsinspector import add_introspection_rules
+    add_introspection_rules([], ["^djpcms\.fields\.SlugCode"])
+except:
+    pass
