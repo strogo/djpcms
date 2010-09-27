@@ -84,6 +84,7 @@ def config_file(fname, environ=None, dir = None):
 
 def vrun(command = ''):
     '''Run a command in the server virtual environment.'''
+    from fabric.api import env, run
     elem = 'cd %(release_path)s; source bin/activate' % env
     if command:
         elem = '%s; %s' % (elem,command)
