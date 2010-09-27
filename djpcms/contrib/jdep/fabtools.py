@@ -75,13 +75,6 @@ def reboot():
     from static import server_types
     server = server_types[env.server_type]
     server.reboot()
-    
-
-def syncdb():
-    '''Syncdb on the server.'''
-    setup()
-    utils.startvirtualenv()
-    run('cd %(release_path)s/%(project)s; python manage.py syncdb' % env)
         
         
 def deploy(release = True):

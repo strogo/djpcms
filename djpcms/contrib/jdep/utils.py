@@ -54,7 +54,7 @@ def makedir(path):
 
 def create_deploy():
     '''Create deploy object'''
-    vrun('cd %(project_path)s; python manage.py deploy')
+    vrun('cd %(project_path)s; python manage.py deploy' % env)
         
         
 def rmgeneric(path, __func__):
@@ -89,6 +89,7 @@ def rmfiles(path, ext = None):
 
 
 def install_environ(install_requirements = True):
+    '''Install virtual environment'''
     if env.get('with_site_packages',False):
         run('virtualenv %(release_path)s'% env)
     else:
