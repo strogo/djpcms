@@ -18,22 +18,13 @@ site_urls = DjpUrl()
 
 #######################################################################################
 #ADMIN SITE IF AVAILABLE
+settings.ADMIN_MEDIA_PREFIX = '%sadmin/' % settings.MEDIA_URL
 if 'djpcms.contrib.admin' in settings.INSTALLED_APPS:
     from djpcms.contrib import admin
-    settings.ADMIN_MEDIA_PREFIX = '%sadmin/' % settings.MEDIA_URL
 elif 'django.contrib.admin' in settings.INSTALLED_APPS:
     from django.contrib import admin
 else:
     admin = None
-
-if admin:
-    admin.autodiscover()
-    try:
-        admin_url_prefix = settings.ADMIN_URL_PREFIX
-        #site_urls  = url(r'^{0}(.*)'.format(admin_url_prefix[1:]),    admin.site.root),
-        site_urls.append(url(r'^%s(.*)' % admin_url_prefix[1:],    admin.site.root))
-    except:
-        pass
         
 
 #######################################################################################
@@ -68,6 +59,28 @@ if settings.SERVE_STATIC_FILES and settings.MEDIA_URL:
     site_urls.append(url(r'^favicon.ico$',
                          'django.views.static.serve',
                          {'document_root': mediasite, 'show_indexes': True}))
+    #if 'django.contrib.admin' in settings.INSTALLED_APPS:
+    #    from django.contrib import admin
+    #    path = admin.__path__[0]
+    #    app    = app.split('.')[-1]
+    #    mediapath = os.path.join(path,'media')
+    #    site_urls.append(url(r'%s(?P<path>.*)$' % murl,
+    #                         'django.views.static.serve',
+    #                         {'document_root': mediaroot, 'show_indexes': True}
+    #                         ))
+else:
+    if 'django.contrib.admin' in settings.INSTALLED_APPS:
+        settings.ADMIN_MEDIA_PREFIX = settings.MEDIA_URL        
+
+
+if admin:
+    admin.autodiscover()
+    try:
+        admin_url_prefix = settings.ADMIN_URL_PREFIX
+        #site_urls  = url(r'^{0}(.*)'.format(admin_url_prefix[1:]),    admin.site.root),
+        site_urls.append(url(r'^%s(.*)' % admin_url_prefix[1:],    admin.site.root))
+    except:
+        pass
 
 
 #################################################################################

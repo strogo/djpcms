@@ -1,4 +1,5 @@
 -e git+http://github.com/lsbardel/djpcms.git/#egg=djpcms
+-e git+http://github.com/lsbardel/django-flowrepo.git/#egg=flowrepo
 psycopg2
 django-socialauth
 python-openid>=2.0.0

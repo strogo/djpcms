@@ -37,7 +37,7 @@ INSTALLED_APPS = (
     #'djpcms.contrib.admin',
     'socialauth',
     'openid_consumer',
-    #'south',
+    'south',
     'django.contrib.admin',
 )
 
@@ -49,7 +49,6 @@ basedir = os.path.split(os.path.split(os.path.abspath(__file__))[0])[0]
 ROOT_URLCONF = 'sitedjpcms.urls'
 APPLICATION_URL_MODULE = 'sitedjpcms.appurls'
 TEMPLATE_DIRS = (os.path.join(basedir,'templates'),)
-ADMIN_MEDIA_PREFIX = '/media/admin/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(basedir, 'media')
 DJPCMS_STYLE = 'smooth'
