@@ -2,7 +2,7 @@ import os
 
 from fabric.api import env, run, put, local, sudo
 
-from djpcms.contrib.jdep.static import application_map
+from djpcms.contrib.jdep.static import application_map, vrun
 
 after_deploy_hook = []
 
@@ -54,7 +54,7 @@ def makedir(path):
 
 def create_deploy():
     '''Create deploy object'''
-    vrun('cd %(project_path)s; python manage.py deploy' % env)
+    vrun('cd %(project_path)s; python manage.py deploy_site')
         
         
 def rmgeneric(path, __func__):
@@ -89,7 +89,6 @@ def rmfiles(path, ext = None):
 
 
 def install_environ(install_requirements = True):
-    '''Install virtual environment'''
     if env.get('with_site_packages',False):
         run('virtualenv %(release_path)s'% env)
     else:
@@ -98,21 +97,9 @@ def install_environ(install_requirements = True):
         run('cd %(release_path)s; pip install -E . -r ./requirements.txt' % env)
 
 
-def vrun(command = ''):
-    '''Run a command in the server virtual environment.'''
-    elem = 'cd %(release_path)s; source bin/activate' % env
-    if command:
-        elem = '%s; %s' % (elem,command)
-    run(elem)
-
-
 def python_version():
     '''Python version'''
     run('python --version')
-
-
-def python_path():
-    env.python_path = '{0[path]}/lib/python{0[version]}/site-packages'.format(env)
 
 
 def git_pull():

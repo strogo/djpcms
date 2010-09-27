@@ -5,7 +5,18 @@ from django.core.management.base import BaseCommand
 from django.contrib.auth import authenticate
 
 from djpcms.contrib.jdep.models import DeploySite
-from djpcms.contrib.jdep.utils import prompt
+
+
+def prompt(text, default=''):
+    '''Prompt to input in the console.'''
+    default_str = ''
+    if default != '':
+        default_str = ' [%s] ' % str(default).strip()
+    else:
+        default_str = ' '
+    prompt_str = text.strip() + default_str
+    return raw_input(prompt_str) or default
+
  
 class Command(BaseCommand):
     

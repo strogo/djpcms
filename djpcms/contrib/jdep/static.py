@@ -81,12 +81,22 @@ def config_file(fname, environ=None, dir = None):
         return data
     
     
+
+def vrun(command = ''):
+    '''Run a command in the server virtual environment.'''
+    elem = 'cd %(release_path)s; source bin/activate' % env
+    if command:
+        elem = '%s; %s' % (elem,command)
+    run(elem)
+    
+    
+    
 class ServerInstaller(object):
     
     def config(self, release = True):
         from fabric.api import env, run
         if release:
-            run('cd %(release_path)s; source bin/activate; python server.py;' % env)
+            vrun('python server.py')
         else:
             # very problematic to debug this statement. Need a better way.
             exec(env.server_script)
