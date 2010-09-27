@@ -50,28 +50,11 @@ def makedir(path):
     for dir in reversed(tomake):
         path = os.path.join(path,dir)
         run('mkdir %s' % path)
-            
-    
-def prompt(text, default=''):
-    default_str = ''
-    if default != '':
-        default_str = ' [%s] ' % str(default).strip()
-    else:
-        default_str = ' '
-    prompt_str = text.strip() + default_str
-    return raw_input(prompt_str) or default
 
 
 def create_deploy():
-    from django.template import loader
-    from django.contrib.auth import authenticate
-    from models import DeploySite
-    user = authenticate(username = username, password = password)
-    if user is not None and user.is_active:
-        dep = DeploySite(user = user, comment = comment)
-        dep.save()
-    else:
-        exit(1)
+    '''Create deploy object'''
+    vrun('cd %(project_path)s; python manage.py deploy')
         
         
 def rmgeneric(path, __func__):
@@ -112,12 +95,14 @@ def install_environ(install_requirements = True):
         run('virtualenv --no-site-packages %(release_path)s' % env)
     if install_requirements:
         run('cd %(release_path)s; pip install -E . -r ./requirements.txt' % env)
-    startvirtualenv()
 
 
-
-def startvirtualenv():
-    run('cd; cd %(release_path)s; source bin/activate' % env)
+def vrun(command = ''):
+    '''Run a command in the server virtual environment.'''
+    elem = 'cd %(release_path)s; source bin/activate' % env
+    if command:
+        elem = '%s; %s' % (elem,command)
+    run(elem)
 
 
 def python_version():

@@ -32,10 +32,12 @@ INSTALLED_APPS = (
     #
     'djpcms',
     'djpcms.contrib.jdep',
+    'flowrepo',
+    'tagging',
     #'djpcms.contrib.admin',
     'socialauth',
     'openid_consumer',
-    'south',
+    #'south',
     'django.contrib.admin',
 )
 
@@ -60,4 +62,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
             "django.contrib.messages.context_processors.messages",
             "djpcms.core.context_processors.djpcms"
             )
+DJPCMS_PLUGINS = ['djpcms.plugins.*',
+                  'flowrepo.cms.plugins']
 #=========================================================
+FLOWREPO_STORAGE_IMAGE      = 'sitedjpcms.storage.SiteFileSystemStorage'
+

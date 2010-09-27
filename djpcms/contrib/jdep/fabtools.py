@@ -98,6 +98,8 @@ def deploy(release = True):
         utils.install_environ(release)
     server = server_types[env.server_type]
     server.install(release)
+    if release:
+        utils.create_deploy()
     # call functions in after deploy hook
     for hook in utils.after_deploy_hook:
         hook()

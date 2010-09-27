@@ -28,6 +28,11 @@ class SocialUserApplication(UserApplication):
             return None
 
 
+from flowrepo import cms
+
+class FlowApplication(cms.FlowItemApplication):
+    inherit = True
+
 
 
 docdir = os.path.join(parentdir(os.path.abspath(__file__),2),'docs')
@@ -44,5 +49,5 @@ class DjpcmsDoc(DocApplication):
 
 #__________________________________________________ Add user account support
 appsite.site.register(settings.USER_ACCOUNT_HOME_URL, SocialUserApplication, model = User)
-#appsite.site.register(settings.USER_ACCOUNT_HOME_URL, OAuthApplication, model = User)
+appsite.site.register('/flow/', FlowApplication, model = cms.FlowItem)
 appsite.site.register('/docs/',DjpcmsDoc)

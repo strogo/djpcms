@@ -10,7 +10,7 @@ class DeploySite(models.Model):
     user     = models.ForeignKey(User)
     created  = models.DateTimeField(auto_now_add = True)
     comment  = models.TextField(blank = True)
-    location = models.CharField(max_length = 500)
+    location = models.CharField(blank = True, max_length = 500)
     
     def __unicode__(self):
         return u'%s' % self.created
