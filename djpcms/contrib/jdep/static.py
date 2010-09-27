@@ -30,6 +30,9 @@ class djangoAdminHandler(pathHandler):
     def path(self, name):
         name = (name.split('/')[1:])
         return safe_join(self._path, *name)
+    
+    def url(self):
+        return self.mediaprefix
 
 
 def application_map():
@@ -40,7 +43,7 @@ def application_map():
         name = sapp[-1]
         if app.startswith('django.'):
             if app == 'django.contrib.admin':
-                base = settings.ADMIN_MEDIA_PREFIX[1:-1].split('/')[-1]
+                base = 'admin'
                 handler = djangoAdminHandler
             else:
                 continue
