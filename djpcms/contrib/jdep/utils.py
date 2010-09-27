@@ -54,7 +54,7 @@ def makedir(path):
 
 def create_deploy():
     '''Create deploy object'''
-    vrun('cd %(project_path)s; python manage.py deploy_site')
+    vrun('cd %(project_path)s; python manage.py deploy_site' % env)
         
         
 def rmgeneric(path, __func__):
