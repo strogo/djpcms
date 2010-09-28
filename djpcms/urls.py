@@ -78,10 +78,7 @@ if settings.SERVE_STATIC_FILES and settings.MEDIA_URL:
     #    site_urls.append(url(r'%s(?P<path>.*)$' % murl,
     #                         'django.views.static.serve',
     #                         {'document_root': mediaroot, 'show_indexes': True}
-    #                         ))
-else:
-    if 'django.contrib.admin' in settings.INSTALLED_APPS:
-        settings.ADMIN_MEDIA_PREFIX = settings.MEDIA_URL        
+    #                         ))       
 
 
 
