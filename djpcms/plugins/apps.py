@@ -94,7 +94,8 @@ class SearchBox(DJPplugin):
                 if search_url:
                     f = SearchForm(data = djp.request.GET)
                     return loader.render_to_string(['search_form.html',
-                                                    'djpcms/form/search_form.html'],
+                                                    'bits/search_form.html',
+                                                    'djpcms/bits/search_form.html'],
                                                     {'html':  f,
                                                      'title': title or 'Enter your search term',
                                                      'url':   search_url,

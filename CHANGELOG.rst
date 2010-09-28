@@ -9,6 +9,7 @@ Development
 	urlpatterns = site_urls.patterns()
 
 * Phased out ``form.py`` in ``djpcms.utils.html`` module.
+* Mirations included in the source. Compatible with South.
 * HTML plugin removed. Raw html is handled by the :class:`djpcms.plugins.text.Text` plugin when no markup is selected.
 * Introduced :attr:`djpcms.views.apps.docs.DocApplication.master_doc` attribute for specifying the master document of sphinx.
 * Fixed a silly bug in inline editing. The delete link did not have the ``ajax`` class.

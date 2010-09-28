@@ -28,8 +28,9 @@ Features
  * Tagging with django-tagging_ (optional).
  * Several battery included application classes.
  * Integration of any Django app which provides ``urls.py``.
- * Extendible uniforms.
- * Deployment tool using fabric_.
+ * Nice form layout with extendible uniforms.
+ * Deployment tools using fabric_.
+ * South_ support for database migration.
  * Sitemap design.
 
 
@@ -86,3 +87,4 @@ __ http://www.python.org/
 .. _PIL: http://www.pythonware.com/products/pil/
 .. _fabric: http://docs.fabfile.org/
 .. _pip: http://pip.openplans.org/
+.. _South: http://south.aeracode.org/

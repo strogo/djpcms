@@ -18,8 +18,8 @@ site_urls = DjpUrl()
 
 #######################################################################################
 #ADMIN SITE IF AVAILABLE
-settings.ADMIN_MEDIA_PREFIX = '%sadmin/' % settings.MEDIA_URL
 if 'djpcms.contrib.admin' in settings.INSTALLED_APPS:
+    settings.ADMIN_MEDIA_PREFIX = '%sadmin/' % settings.MEDIA_URL
     from djpcms.contrib import admin
 elif 'django.contrib.admin' in settings.INSTALLED_APPS:
     from django.contrib import admin

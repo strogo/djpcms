@@ -1,10 +1,9 @@
 import logging
 
-ADMIN_URL_PREFIX                = '/admin/'
 TEMPLATE_ENGINE                 = 'django'
 LANGUAGE_REDIRECT               = False
 DEFAULT_TEMPLATE_NAME           = ['base.html','djpcms/base.html']
-DEFAULT_VIEW_MODULE             = 'djpcms.views.pageview.pageview'
+#DEFAULT_VIEW_MODULE             = 'djpcms.views.pageview.pageview'
 HTML_CLASSES                    = None
 MAX_SEARCH_DISPLAY              = 20
 CACHE_VIEW_OBJECTS              = True
