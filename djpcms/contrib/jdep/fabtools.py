@@ -82,7 +82,6 @@ def deploy(release = True):
     if release:
         env.site_username = utils.prompt('site username: ')
         env.site_password = utils.prompt('site password: ')
-        env._site_comment = utils.prompt('comment: ')
     from static import server_types
     setup(release)
     if release:

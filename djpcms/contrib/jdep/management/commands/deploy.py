@@ -1,4 +1,6 @@
 import os
+import sys
+import optparse
 
 from django.contrib.sites.models import Site
 from django.core.management.base import BaseCommand
@@ -19,25 +21,54 @@ def prompt(text, default=''):
 
  
 class Command(BaseCommand):
+    option_list = BaseCommand.option_list + (
+        optparse.make_option(
+            "-u", "--username", 
+            dest="username", 
+            action="store",
+            default=None, 
+            help="Username"
+        ),
+        optparse.make_option(
+            "-p", "--password", 
+            dest="password", 
+            action="store",
+            default=None, 
+            help="User Password"
+        ),
+        optparse.make_option(
+            "-d", "--domain", 
+            dest="domain", 
+            action="store",
+            default=None, 
+            help="Web site domain name"
+        ),
+        optparse.make_option(
+            "-c", "--comment", 
+            dest="comment", 
+            action="store",
+            default="", 
+            help="Deploy Comment"
+        ))
+    
+    help = "Add deploy timestamp to database"     
     
     def handle(self, *args, **options):
-        site = None
+        stdout   = options.get('stdout',sys.stdout)
+        username = options.get('username', None)
+        password = options.get('password', None)
         user = None
-        while not user:        
-            username = prompt('username: ')
-            password = prompt('password: ')
+        if username and password:
             user = authenticate(username = username, password = password)
-            if not user or not user.is_active:
-                user = None
-                print("username or password not correct")
-            
-        comment  = prompt('comment: ')
-        while not site:
-            domain   = prompt('domain: ')
-            site = Site.objects.filter(domain = domain)
-            if not site:
-                print("No such site domain: %s" % domain)
-                
+        if not user:
+            stdout.write('no user. nothing done.')
+            return
+        comment = options.get('comment','')
+        site = Site.objects.filter(domain = options.get('domain',''))
+        if not site:
+            stdout.write('no site. nothing done.')
+            return
         dep = DeploySite(user = user, comment = comment, site = site[0])
         dep.save()
+        stdout.write('ok. %s deployed %s.' % (dep.user.username,dep.site.domain))
         

@@ -3,6 +3,9 @@ import sys
 import datetime
 
 from django.test import TestCase
+from django.contrib.auth.models import User
+from django.contrib.sites.models import Site
+from django.core import management
 from django.conf import settings
 
 try:
@@ -10,6 +13,32 @@ try:
     fabric_available = True
 except ImportError:
     fabric_available = False
+    
+    
+from StringIO import StringIO
+from django.core.management.base import CommandError
+
+class CommandDeploy(TestCase):
+    
+    def setUp(self):
+        User.objects.create_superuser('pinco', 'pinco@pinco.com', 'pallino')
+        Site(domain='mysite.com', name='mysite.com').save()
+        
+    def test_command(self):
+        out = StringIO()
+        management.call_command('deploy', stdout=out)
+        self.assertEquals(out.getvalue(),'no user. nothing done.')
+
+    def test_no_site(self):
+        out = StringIO()
+        management.call_command('deploy', username='pinco', password='pallino', stdout=out)
+        self.assertEquals(out.getvalue(),"no site. nothing done.")
+
+    def test_done(self):
+        out = StringIO()
+        management.call_command('deploy', username='pinco', password='pallino', domain='mysite.com', stdout=out)
+        self.assertTrue("ok. pinco deployed mysite.com." in out.getvalue())
+
 
 
 if fabric_available:
