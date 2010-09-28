@@ -18,8 +18,8 @@
     {{ sitenav.render }}
     </div>
     <div class="{{ grid.column_1_2 }}">
-      <div id="brandline">
-        Dynamic Content Management System
+      <div id="brandline">{% block brandline %}
+        Dynamic Content Management System {% endblock %}
       </div>
     </div>
  </div>

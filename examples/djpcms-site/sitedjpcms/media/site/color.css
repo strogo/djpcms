@@ -93,3 +93,11 @@ div.flat-pannel {
 .signin-button-twitter:hover {
 	background:url("img/signin_twitter.png") no-repeat 0 -24px;
 }
+#error-404 {
+	background: url("img/404-Error-21.jpg") no-repeat center;
+	height: 353px;
+}
+#error-500 {
+	background: url("img/500.jpeg") no-repeat center;
+	height: 165px;
+}

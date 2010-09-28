@@ -100,3 +100,6 @@ ul.user-nav li {
 pre {
 	padding: 10px;
 }
+.server-error-elem {
+	margin: 50px auto;
+}

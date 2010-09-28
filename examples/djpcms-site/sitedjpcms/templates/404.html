@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block page-prebody %}{% endblock %}
+
+{% block title %}
+Whoops! We can't find what you are looking for, sorry.{% endblock %}
+
+{% block brandline %}
+Whoops! We can't find what you are looking for, sorry.{% endblock %}
+        
+{% block page-body %}
+<div id="{% block error-id %}error-404{% endblock %}" class="server-error-elem"></div>
+{% endblock %}
