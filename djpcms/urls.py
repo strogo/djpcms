@@ -25,6 +25,17 @@ elif 'django.contrib.admin' in settings.INSTALLED_APPS:
     from django.contrib import admin
 else:
     admin = None
+    
+
+
+if admin:
+    admin.autodiscover()
+    try:
+        admin_url_prefix = settings.ADMIN_URL_PREFIX
+        #site_urls  = url(r'^{0}(.*)'.format(admin_url_prefix[1:]),    admin.site.root),
+        site_urls.append(url(r'^%s(.*)' % admin_url_prefix[1:],    admin.site.root))
+    except:
+        pass
         
 
 #######################################################################################
@@ -72,15 +83,6 @@ else:
     if 'django.contrib.admin' in settings.INSTALLED_APPS:
         settings.ADMIN_MEDIA_PREFIX = settings.MEDIA_URL        
 
-
-if admin:
-    admin.autodiscover()
-    try:
-        admin_url_prefix = settings.ADMIN_URL_PREFIX
-        #site_urls  = url(r'^{0}(.*)'.format(admin_url_prefix[1:]),    admin.site.root),
-        site_urls.append(url(r'^%s(.*)' % admin_url_prefix[1:],    admin.site.root))
-    except:
-        pass
 
 
 #################################################################################

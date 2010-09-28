@@ -79,12 +79,10 @@ def reboot():
         
 def deploy(release = True):
     '''Deploy site to the server'''
-    #the latest version of the site to the servers, install any
-    #required third party modules, install the virtual host and 
-    #then restart the webserver
-    #username = prompt('site username: ')
-    #password = prompt('site password: ')
-    #comment  = prompt('comment: ')
+    if release:
+        env.site_username = utils.prompt('site username: ')
+        env.site_password = utils.prompt('site password: ')
+        env._site_comment = utils.prompt('comment: ')
     from static import server_types
     setup(release)
     if release:

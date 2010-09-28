@@ -10,7 +10,7 @@ after_deploy_hook = []
 defaults = {'server_type':        'nginx-apache-mod_wsgi',
             'server_user':        'www-data',
             'server_group':       'www-data',
-            'server_name':        None,
+            'domain_name':        None,
             'threads':            15,
             'nginx_port':         80,
             'apache_port':        90,
@@ -18,6 +18,8 @@ defaults = {'server_type':        'nginx-apache-mod_wsgi',
             'project_name':       None,
             'with_site_packages': False,
             'server_admin':       None,
+            'username':           None,
+            'password':           None,
             'redirects':          []}
 
 
@@ -34,7 +36,19 @@ def project(module, domain_name, deploy_root_dir = 'deployment', setting_name = 
     env.setting_module = '%s.%s' % (module,setting_name or 'settings')
     os.environ['DJANGO_SETTINGS_MODULE'] = env.setting_module
     env.update(kwargs)
-    
+
+
+
+def prompt(text, default=''):
+    '''Prompt to input in the console.'''
+    default_str = ''
+    if default != '':
+        default_str = ' [%s] ' % str(default).strip()
+    else:
+        default_str = ' '
+    prompt_str = text.strip() + default_str
+    return raw_input(prompt_str) or default
+
 
 def makedir(path):
     '''Safely create a directory in the server'''
@@ -54,7 +68,7 @@ def makedir(path):
 
 def create_deploy():
     '''Create deploy object'''
-    vrun('cd %(project_path)s; python manage.py deploy_site' % env)
+    vrun('cd %(project_path)s; python manage.py deploy_site -u %(site_username)s -p %(site_password) -d %(domain_name)s' % env)
         
         
 def rmgeneric(path, __func__):
