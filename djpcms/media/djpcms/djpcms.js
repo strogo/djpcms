@@ -50,7 +50,7 @@
 			this.log = function(s) {
 				if(this.options.debug) {
 					if (typeof console != "undefined" && typeof console.debug != "undefined") {
-						console.log(s);
+						console.log('$.djpcms: '+ s);
 					} else {
 						//alert(s);
 					}
