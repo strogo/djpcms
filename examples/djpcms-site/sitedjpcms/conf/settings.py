@@ -32,7 +32,7 @@ INSTALLED_APPS = (
     #
     'djpcms',
     'djpcms.contrib.jdep',
-    #'flowrepo',
+    'flowrepo',
     'tagging',
     #'djpcms.contrib.admin',
     'socialauth',

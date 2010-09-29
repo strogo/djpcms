@@ -369,6 +369,8 @@ def saveform(self, djp, editing = False):
             f.add_message(request,e,error=True)
             if is_ajax:
                 return f.json_errors()
+            elif next:
+                return http.HttpResponseRedirect(next)
             else:
                 return self.handle_response(djp)
         
@@ -389,6 +391,9 @@ def saveform(self, djp, editing = False):
     else:
         if is_ajax:
             return f.json_errors()
+        #TODO: it would be nice to do this but we cannot pass the errors
+        #elif next:
+        #    return http.HttpResponseRedirect(next)
         else:
             return self.handle_response(djp)
         
