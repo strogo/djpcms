@@ -3,7 +3,8 @@
 
 --
 
-:Documentation: http://packages.python.org/djpcms/
+:Web:
+:Documentation: http://djpcms.com/docs/
 :Dowloads: http://pypi.python.org/pypi/djpcms/
 :Source: http://github.com/lsbardel/djpcms
 :Keywords: web, cms, dynamic, ajax, django, jquery

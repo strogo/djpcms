@@ -28,10 +28,9 @@ class SocialUserApplication(UserApplication):
             return None
 
 
-from flowrepo import cms
-
-class FlowApplication(cms.FlowItemApplication):
-    inherit = True
+#from flowrepo import cms
+#class FlowApplication(cms.FlowItemApplication):
+#    inherit = True
 
 
 
@@ -49,5 +48,5 @@ class DjpcmsDoc(DocApplication):
 
 #__________________________________________________ Add user account support
 appsite.site.register(settings.USER_ACCOUNT_HOME_URL, SocialUserApplication, model = User)
-appsite.site.register('/flow/', FlowApplication, model = cms.FlowItem)
+#appsite.site.register('/flow/', FlowApplication, model = cms.FlowItem)
 appsite.site.register('/docs/',DjpcmsDoc)

@@ -1,5 +1,4 @@
 -e git+http://github.com/lsbardel/djpcms.git/#egg=djpcms
--e git+http://github.com/lsbardel/django-flowrepo.git/#egg=flowrepo
 psycopg2
 django-socialauth
 python-openid>=2.0.0
@@ -8,4 +7,3 @@ south
 pytz
 -e git+http://github.com/facebook/python-sdk.git#egg=facebook_python_sdk
 hg+https://pylinkedin.googlecode.com/hg/pylinkedin>=0.1
--e svn+http://django-tagging.googlecode.com/svn/trunk/@186#egg=django-tagging

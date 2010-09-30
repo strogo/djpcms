@@ -18,7 +18,7 @@ __version__  = get_version()
 __license__  = "BSD"
 __author__   = "Luca Sbardella"
 __contact__  = "luca.sbardella@gmail.com"
-__homepage__ = "http://github.com/lsbardel/djpcms"
+__homepage__ = "http://djpcms.com/"
 
 
 def runtests(verbosity = 1, interactive = True, failfast = False):

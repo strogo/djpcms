@@ -1,5 +1,5 @@
 
-Development
+Version 0.8 (2010-Sep-30)
 ==============================
 * **BACKWARD INCOMPATIBLE CHANGES**
 * To use this version, changes needs to be made when importing :mod:`djpcms.urls` module.

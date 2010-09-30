@@ -1,5 +1,6 @@
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
+SERVE_STATIC_FILES = DEBUG
 TIME_ZONE     = 'Europe/London'
 LANGUAGE_CODE = 'en-uk'
 SITE_ID = 1
@@ -32,8 +33,8 @@ INSTALLED_APPS = (
     #
     'djpcms',
     'djpcms.contrib.jdep',
-    'flowrepo',
-    'tagging',
+    #'flowrepo',
+    #'tagging',
     #'djpcms.contrib.admin',
     'socialauth',
     'openid_consumer',
