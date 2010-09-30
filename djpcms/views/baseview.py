@@ -153,6 +153,10 @@ Hooks:
         else:
             more_content['htmldoc'] = htmltype.get()
             
+        if page:
+            if not self.editurl:
+                more_content['edit_content_url'] = inline_editing(request,page,djp.instance)
+            
         if page and page.inner_template:
             cb = {'djp':  djp,
                   'grid': grid}
@@ -162,10 +166,6 @@ Hooks:
             
             # Call the inner-template renderer
             inner = page.inner_template.render(Context(cb))
-            
-            if not self.editurl:
-                more_content['edit_content_url'] = inline_editing(request,page,djp.instance)
-             
         else:
             # No page or no inner_template. Get the inner content directly
             inner = self.render(djp)

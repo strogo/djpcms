@@ -37,8 +37,7 @@ class TimeStamp(models.Model):
     
 
 class InnerTemplate(TimeStamp):
-    '''
-    Page Inner template
+    '''Page Inner template
     '''
     name     = models.CharField(max_length = 200)
     image    = models.ImageField(upload_to = upload_function, storage = site_image_storage(), null = True, blank = True)

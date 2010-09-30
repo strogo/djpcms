@@ -8,8 +8,11 @@ Development
 	from djpcms.urls import *
 	urlpatterns = site_urls.patterns()
 
+* Launch the web site http://djpcms.com
+* Three working examples. One is running http://djpcms.com, one is the subject of the tutorial and one is used for testing. 
+* If no pages are available in the database a root page is created by the framework.
 * Phased out ``form.py`` in ``djpcms.utils.html`` module.
-* Mirations included in the source. Compatible with South.
+* Migrations included in the source. Compatible with South_.
 * HTML plugin removed. Raw html is handled by the :class:`djpcms.plugins.text.Text` plugin when no markup is selected.
 * Introduced :attr:`djpcms.views.apps.docs.DocApplication.master_doc` attribute for specifying the master document of sphinx.
 * Fixed a silly bug in inline editing. The delete link did not have the ``ajax`` class.
@@ -145,4 +148,5 @@ Version 0.4 (2009-Dec-24)
 
 * First official Alpha release.
 
- 
+
+.. _South: http://south.aeracode.org/

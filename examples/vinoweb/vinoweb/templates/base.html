@@ -1,0 +1,30 @@
+{% extends "djpcms/base.html" %}
+
+
+{% block branding-banner %}
+ <div id="top-banner">
+  <div class="{{ grid.container_class }}">
+   <div class="{{ grid.column1 }}">
+   {% include "djpcms/bits/usernav.html" %}
+   </div>
+   {{ grid.clear }}
+  </div>
+ </div>
+ <div class="{{ grid.container_class }}">
+   <div class="{{ grid.column1 }} middle-banner">
+    <h1 id="branding-name">
+	<a href="/">Vino Web</a>
+	</h1>
+   </div>
+   {{ grid.clear }}
+ </div>
+{% endblock %}
+
+
+{% block page-footer %}
+ <div class="{{ grid.container_class }}">
+  <div class="{{ grid.column1 }}">
+   &copy; 2010 Vino web
+  </div>
+ </div>
+{% endblock %}

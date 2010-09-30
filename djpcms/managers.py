@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.sites.models import Site
 
 
@@ -30,7 +31,15 @@ class PageManager(models.Manager):
     
     def sitepage(self, **kwargs):
         site = Site.objects.get_current()
-        return self.get(site = site, **kwargs)
+        try:
+            return self.get(site = site, **kwargs)
+        except ObjectDoesNotExist:
+            if kwargs.get('url',None) == '/':
+                page = self.model(site = site)
+                page.save()
+                return page
+            else:
+                raise
 
     def clear_cache(self):
         self.__class__._cache.clear()
