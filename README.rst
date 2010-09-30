@@ -3,7 +3,7 @@
 
 --
 
-:Web:
+:Web: http://djpcms.com/
 :Documentation: http://djpcms.com/docs/
 :Dowloads: http://pypi.python.org/pypi/djpcms/
 :Source: http://github.com/lsbardel/djpcms

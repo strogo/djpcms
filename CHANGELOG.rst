@@ -2,13 +2,13 @@
 Version 0.8 (2010-Sep-30)
 ==============================
 * **BACKWARD INCOMPATIBLE CHANGES**
-* To use this version, changes needs to be made when importing :mod:`djpcms.urls` module.
+* To use this version, changes needs to be made when importing the :mod:`djpcms.urls` module.
   Your site ``urls`` file can simply be::
 	
 	from djpcms.urls import *
 	urlpatterns = site_urls.patterns()
 
-* Launch the web site http://djpcms.com
+* http://djpcms.com has gone live!
 * Three working examples. One is running http://djpcms.com, one is the subject of the tutorial and one is used for testing. 
 * If no pages are available in the database a root page is created by the framework.
 * Phased out ``form.py`` in ``djpcms.utils.html`` module.

@@ -1,4 +1,4 @@
--e git+http://github.com/lsbardel/djpcms.git/#egg=djpcms
+djpcms==0.8
 psycopg2
 django-socialauth
 python-openid>=2.0.0
