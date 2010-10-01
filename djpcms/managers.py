@@ -155,3 +155,37 @@ class BlockContentManager(models.Manager):
             return True
         else:
             return False
+        
+        
+        
+        
+
+class SiteContentManager(models.Manager):
+    CACHE_VIEW_OBJECTS = False
+    
+    _cache  = {}
+    
+    def get_from_code(self, code):
+        c = code.lower()
+        try:
+            return self.__class__._cache[c]
+        except:
+            try:
+                obj = self.get(code = c)
+                if self.CACHE_VIEW_OBJECTS:
+                    self.__class__._cache[c] = obj
+                return obj
+            except:
+                pass
+            
+    def get_from_codes(self, codes):
+        objs = []
+        for code in codes:
+            obj = self.get_from_code(code)
+            if obj:
+                objs.append(obj)
+        return objs        
+    
+    def clear_cache(self):
+        self.__class__._cache = {}
+

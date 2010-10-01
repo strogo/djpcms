@@ -19,7 +19,7 @@ from djpcms.plugins import get_wrapper, default_content_wrapper, get_plugin
 from djpcms.utils import lazyattr, function_module, force_unicode, mark_safe, htmltype
 from djpcms.utils.func import PathList
 from djpcms.uploads import upload_function, site_image_storage
-from djpcms.managers import PageManager, BlockContentManager
+from djpcms.managers import PageManager, BlockContentManager, SiteContentManager
 from djpcms.markup import markuplib
 
 protocol_re = re.compile('^\w+://')
@@ -399,36 +399,6 @@ class BlockContent(models.Model):
                           html = self.render(request = request)) 
         else:
             return f.jerrors
-        
-        
-
-class SiteContentManager(models.Manager):
-    
-    _cache  = {}
-    
-    def get_from_code(self, code):
-        c = code.lower()
-        try:
-            return self.__class__._cache[c]
-        except:
-            try:
-                obj = SiteContent.objects.get(code = c)
-                if CACHE_VIEW_OBJECTS:
-                    self.__class__._cache[c] = obj
-                return obj
-            except:
-                pass
-            
-    def get_from_codes(self, codes):
-        objs = []
-        for code in codes:
-            obj = self.get_from_code(code)
-            if obj:
-                objs.append(obj)
-        return objs        
-    
-    def clear_cache(self):
-        self.__class__._cache = {}
 
 
 class SiteContent(models.Model):
@@ -493,22 +463,6 @@ class AdditionalPageData(models.Model):
     
     class Meta:
         verbose_name_plural = 'Additional page data'
-
-
-#class Application(models.Model):
-#    '''
-#    A general method for creating applications
-#    '''
-#    name        = models.CharField(max_length=200, unique = True)
-#    description = models.TextField(blank = True)
-#    stylesheet  = models.TextField(blank=True)
-#    javascript  = models.TextField(blank=True)
-#    mark        = models.IntegerField(default = 0)
-#    markup      = models.CharField(max_length = 3, null = False)
-    
-
-
-#mptt.register(Page)
 
 
 def create_page(url_pattern, parent = None, user = None, title = None,
