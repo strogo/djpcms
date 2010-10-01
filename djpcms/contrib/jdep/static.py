@@ -105,6 +105,9 @@ class ServerInstaller(object):
             # very problematic to debug this statement. Need a better way.
             exec(env.server_script)
 
+    def install(self, release = True):
+        return self
+    
     def reboot(self):
         pass
 
@@ -167,7 +170,14 @@ class nginx_apache_wsgi(ServerInstaller):
         from fabric.api import env
         print('apache port:        %(apache_port)s' % env)
         
-        
+
+
+class twisted_wsgi(ServerInstaller):
+    '''Twisted web wsgi server'''
+     
+    def __str__(self):
+        return 'Twisted web wsgi'
+    
         
 server_types = {'nginx-apache-mod_wsgi':nginx_apache_wsgi(),
-                }
+                'twisted':twisted_wsgi}
