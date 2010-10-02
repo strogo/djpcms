@@ -29,14 +29,13 @@ class PannelWrapper(DJPwrapper):
 
 class BoxWrapper(DJPwrapper):
     name = 'box'
-    template_name = 'djpcms/content/box.html'
     collapsable = False
     collapsed = False
     def wrap(self, djp, cblock, html):
         if html:
-            c = self._wrap(djp, cblock, html)
-            c['classes'] = mark_safe(' '.join(c['classes']))
-            return loader.render_to_string(self.template_name, c)
+            return box(id = cblock.htmlid(), hd = cblock.title, bd = html,
+                       ft = self.footer(djp,cblock,html),
+                       collapsable = self.collapsable, collapsed = self.collapsed)
         else:
             return u''
     

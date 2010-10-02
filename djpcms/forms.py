@@ -19,6 +19,7 @@ BooleanField = forms.BooleanField
 CharField = forms.CharField
 ChoiceField = forms.ChoiceField
 FileField = forms.FileField
+ValidationError = forms.ValidationError
 
 
 class SearchForm(Form):

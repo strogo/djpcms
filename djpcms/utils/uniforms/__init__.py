@@ -103,7 +103,7 @@ class FormLayout(object):
 
     def render(self, form, inputs):
         '''Render the uniform layout or *form*.'''
-        ctx  = {'inputs': inputs}
+        ctx  = {}
         html = ''
         for field in self._allfields:
             h = field.render(form, self)
@@ -123,6 +123,7 @@ class FormLayout(object):
             html += fset.render(form,self)
                 
         if ctx:
+            ctx['inputs'] = inputs
             ctx['html'] = mark_safe(html)
             html = loader.render_to_string(self.template, ctx)
         else:
