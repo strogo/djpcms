@@ -1,4 +1,11 @@
 
+Development
+==============================
+* :meth:`djpcms.utils.uniforms.UniForm.render` passes ``inputs`` into :meth:`djpcms.utils.uniforms.FormLayout.render`. Useful for custom layouts. 
+* :attr:`djpcms.views.appsite.ModelApplication.form_template` attribute can be a callable.
+* :meth:`djpcms.views.appsite.ModelApplication.get_form` add a class name to the form equal to ``appname-modelname``.
+
+
 Version 0.8 (2010-Sep-30)
 ==============================
 * **BACKWARD INCOMPATIBLE CHANGES**

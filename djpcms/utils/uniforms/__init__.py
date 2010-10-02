@@ -101,9 +101,9 @@ class FormLayout(object):
                 if field.key:
                     setattr(self,field.key,field)
 
-    def render(self, form):
+    def render(self, form, inputs):
         '''Render the uniform layout or *form*.'''
-        ctx  = {}
+        ctx  = {'inputs': inputs}
         html = ''
         for field in self._allfields:
             h = field.render(form, self)
@@ -410,19 +410,21 @@ class UniForm(UniFormBase):
         return cd
 
     def render(self):
+        '''Render the uniform by rendering individual forms, inline forms and inputs.'''
         fdict = {}
         forms = []
         num = 0
+        inputs = self.render_inputs()
         for layout,form in self.forms:
             num += 1
-            html = layout.render(form)
+            html = layout.render(form, inputs)
             forms.append(html)
             fdict['html%s' % num] = html
         return loader.render_to_string(self.template,
                                        {'uniform': self,
                                         'forms': forms,
                                         'fdict': fdict,
-                                        'inputs': self.render_inputs(),
+                                        'inputs': inputs,
                                         'inlines': self.render_inlines()})
         
     def render_inputs(self):

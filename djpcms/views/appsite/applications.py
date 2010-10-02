@@ -227,7 +227,7 @@ of objects. Default is ``None``.'''
     form_ajax        = True
     '''If True the form submits are performed using ajax. Default ``True``.'''
     form_template    = None
-    '''Optional template for form. Default ``None``.'''
+    '''Optional template for form. Can be a callable with parameter ``djp``. Default ``None``.'''
     in_navigation    = True
     '''True if application'views can go into site navigation. Default ``True``.'''
     search_fields    = None
@@ -352,16 +352,21 @@ Reimplement for custom arguments.'''
         inputs = None
         if addinputs:
             inputs = self.submit(instance, own_view)
+        
+        template = self.form_template
+        if callable(template):
+            template = template(djp)
             
         wrap = UniForm(f,
                        request  = request,
                        instance = instance,
                        action   = djp.url,
                        inputs   = inputs,
-                       template = self.form_template)
+                       template = template)
         if self.form_ajax:
             wrap.addClass(self.ajax.ajax)
         wrap.is_ajax = request.is_ajax()
+        wrap.addClass(str(self.model._meta).replace('.','-'))
         return wrap
         
     def submit(self, instance, own_view = False):

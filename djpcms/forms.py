@@ -18,6 +18,7 @@ ModelForm = forms.ModelForm
 BooleanField = forms.BooleanField
 CharField = forms.CharField
 ChoiceField = forms.ChoiceField
+FileField = forms.FileField
 
 
 class SearchForm(Form):

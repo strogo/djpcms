@@ -20,11 +20,10 @@ docs_dir   = os.path.split(source_dir)[0]
 base_dir   = os.path.split(docs_dir)[0]
 sys.path.append(os.path.join(source_dir, "_ext"))
 sys.path.insert(0,base_dir)
+import djpcms
 
-# The short X.Y version.
-version = '0.8'
-# The full version, including alpha/beta/rc tags.
-release = '0.8'
+version = djpcms.__version__
+release = version
 
 # -- General configuration -----------------------------------------------------
 

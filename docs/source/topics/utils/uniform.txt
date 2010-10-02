@@ -61,3 +61,13 @@ Form Elements
 .. autoclass:: djpcms.utils.uniforms.Columns
 
 .. autoclass:: djpcms.utils.uniforms.Html
+
+
+UniForm Wrapper
+========================
+
+.. autoclass:: djpcms.utils.uniforms.UniForm
+   :members:
+   :inherited-members:
+   :member-order: bysource
+   

@@ -138,6 +138,7 @@ class DjpResponse(http.HttpResponse):
     instance = property(fget = _get_instance, fset = _set_instance)
         
     def __get_urlargs(self):
+        return self.kwargs
         if self._urlargs is None:
             i = 0
             urlargs = copy.copy(self.kwargs)
