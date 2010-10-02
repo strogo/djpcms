@@ -33,28 +33,20 @@ class BoxWrapper(DJPwrapper):
     collapsed = False
     def wrap(self, djp, cblock, html):
         if html:
-            return box(id = cblock.htmlid(), hd = cblock.title, bd = html,
+            classes,deleteurl = self._wrap(djp, cblock, html)
+            return box(id = cblock.htmlid(),
+                       hd = cblock.title,
+                       bd = html,
                        ft = self.footer(djp,cblock,html),
-                       collapsable = self.collapsable, collapsed = self.collapsed)
+                       collapsable = self.collapsable,
+                       collapsed = self.collapsed,
+                       delurl = deleteurl,
+                       classes = classes)
         else:
             return u''
     
     def _wrap(self, djp, cblock, html):
-        classes = []
-        menulist = []
-        if self.collapsable:
-            classes.append('collapsable')
-            menulist.append(mark_safe('<a class="collapse" href="#">COLLAPSE</a>'))
-        if self.collapsed:
-            classes.append('collapsed')
-        c = {'id': cblock.htmlid(),
-             'title': mark_safe(cblock.title),
-             'hd': True,
-             'bd': html,
-             'ft': self.footer(djp,cblock,html),
-             'menulist': menulist,
-             'classes': classes}
-        return c
+        return None,None
     
     def footer(self, djp, cblock, html):
         return ''

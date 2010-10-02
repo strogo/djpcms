@@ -64,21 +64,11 @@ class EditWrapperHandler(CollapsedWrapper):
         self.url = url
         
     def prefix(self, instance):
-        '''
-        prefix for given block
-        '''
+        '''prefix for given block'''
         return 'bd_%s' % instance.pluginid()
     
     def _wrap(self, djp, cblock, html):
-        c = super(EditWrapperHandler,self)._wrap(djp, cblock, html)
-        view     = djp.view
-        instance = djp.instance
-        menulist = c['menulist']
-        c['classes'].append('edit-block')
-        delurl   = view.appmodel.deleteurl(djp.request, instance)
-        if delurl:
-            menulist.append(mark_safe('<a class="deletable ajax" href="%s">DELETE</a>' % delurl))
-        return c
+        return ['edit-block'],djp.view.appmodel.deleteurl(djp.request, djp.instance)
     
     def footer(self, djp, cblock, html):
         return djp.view.get_preview(djp.request, djp.instance, self.url)
