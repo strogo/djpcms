@@ -19,10 +19,10 @@ def box(hd = None, bd = None, ft = None, minimize = False, rounded = True,
     if delurl:
         menulist.append(mark_safe('<a class="deletable ajax" href="%s">DELETE</a>' % delurl))
     c = {'id': id,
-         'title': mark_safe(hd),
+         'title': None if not hd else mark_safe(hd),
          'hd': True,
-         'bd': mark_safe(bd),
-         'ft': mark_safe(ft),
+         'bd': None if not bd else mark_safe(bd),
+         'ft': None if not ft else mark_safe(ft),
          'menulist': menulist,
          'classes': mark_safe(' '.join(classes))}
     return loader.render_to_string(['box.html',

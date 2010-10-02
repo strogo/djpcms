@@ -545,7 +545,9 @@
 						opts.multiple = true;
 						opts.multipleSeparator = sep || " ";
 						if(!inline) {
-							el.click(function(e) {
+							el.mousedown(function (e) {
+								e.stopPropagation();    
+							}).mouseup(function(e) {
 								var originalElement = e.originalTarget || e.srcElement;
 								try {
 									var al = $(originalElement);

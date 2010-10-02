@@ -23,7 +23,7 @@ There are four points to have autocomplete working for a model:
 	from djpcms.views import appsite,appview
 	
 	class GrapeApp(appsite.ModelApplication):
-	    search_list = ['name','extended']
+	    search_fields = ['name','extended']
 	    autocomplete = appview.AutocompleteView(display = 'name')
 		
 * Register your application as usual::

@@ -332,13 +332,20 @@ input.openid {
 }
 .djp-autocomplete a.deletable {
 	float: left;
+	border:medium none;
+	display:inline;
+	height:1.2em;
+	margin:0 0 0 3px;
+	padding:0;
+	text-indent:-9999em;
+	width:20px;
 	cursor:pointer;
-	padding-left:14px;
-	background: url("img/icons/cross.png") no-repeat;
+	background: url("img/icons/cross.png") no-repeat center;
 }
 	
 .djp-autocomplete div.to_delete {
 	margin-top: 3px;
+	line-height: 1.2em;
 	overflow: hidden;
 }
 

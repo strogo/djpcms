@@ -4,7 +4,9 @@
 <div id="top-header">
   <div class="{{ grid.container_class }}">
    <div class="{{ grid.column1 }}">
-    <a id="menu-site" class="site-logo" href="/">djpcms</a>
+    <a id="site-logo" href="/" title="home">
+    <img src="{{ MEDIA_URL }}site/djpcms.png" alt="djpcms"/>
+    </a>
     {% include "usernav.html" %}
    </div>
   </div>
