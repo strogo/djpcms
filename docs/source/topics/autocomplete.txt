@@ -1,0 +1,47 @@
+.. _autocomplete:
+
+
+============================
+Autocomplete
+============================
+
+Djpcms comes with autocomplete__ functionalities out of the box. The autocomplete is associated with a
+database model and its registered :class:`djpcms.views.appsite.ModelApplication`.
+
+Lets say we have the following model (from vinoweb example)::
+
+	class Grape(models.Model):
+	    name = models.CharField(unique = True, max_length = 200)
+	    extended = models.CharField(blank = True, max_length = 500)
+    	
+    	 
+There are four points to have autocomplete working for a model:
+
+* Your model application must have a ``search_fields`` list.
+* Your model application must have the :class:`djpcms.views.appview.AutocompleteView`::
+
+	from djpcms.views import appsite,appview
+	
+	class GrapeApp(appsite.ModelApplication):
+	    search_list = ['name','extended']
+	    autocomplete = appview.AutocompleteView(display = 'name')
+		
+* Register your application as usual::
+
+	appsite.site.register('/grape/', GrapeApp, model = Grape)
+	
+* When using the model in Forms, import from ``djpcms.forms`` and not ``django.forms``::
+
+	from djpcms import forms
+	
+	class WineForm(forms.Form):
+	    grape = forms.ModelChoiceField(queryset = Grape.objects.all())
+	    name  = forms.CharField()
+		
+
+There is also a :ref:`tagging autocomplete <tag-autocomplete>` functionality.
+
+
+
+__ http://en.wikipedia.org/wiki/Autocomplete
+

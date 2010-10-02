@@ -46,13 +46,13 @@ This is a :class:`djpcms.views.appsite.ModelApplication` which implements a tag 
     
 __ http://code.google.com/p/django-tagging/
 
+
+.. _tag-autocomplete:
+
 TagsApplication
 ~~~~~~~~~~~~~~~~~~~~~
-A :class:`djpcms.views.appsite.ModelApplication` used to handle auto-complete__ tagging.
-
-__ http://en.wikipedia.org/wiki/Autocomplete
-
-To use it, simply do the following to your :setting:`APPLICATION_URL_MODULE`::
+A :class:`djpcms.views.appsite.ModelApplication` used to handle :ref:`auto-complete <autocomplete>` tagging.
+To use it, simply add the following three lines in your :setting:`APPLICATION_URL_MODULE`::
 
 	from djpcms.views import appsite
 	from djpcms.views.apps.tagging import Tag, TagsApplication

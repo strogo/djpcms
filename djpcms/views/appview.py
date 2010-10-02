@@ -571,8 +571,8 @@ class EditView(ObjectView):
 
     
 class AutocompleteView(SearchView):
-    '''This is an interesting view. It is an **AJAX Get only** view for auto-complete__ functionalities.
-To use it, simple add it to a :class:`djpcms.views.appsite.ModelApplication` declaration.
+    '''This is an interesting view. It is an **AJAX Get only** view for :ref:`auto-complete <autocomplete>` functionalities.
+To use it, add it to a :class:`djpcms.views.appsite.ModelApplication` declaration.
 
 Let's say you have a model::
 
@@ -603,8 +603,6 @@ do::
     from djpcms.forms import ModelChoiceField, ModelMultipleChoiceField
     
 and if your model has an AutocompleteView installed, it will work out of the box.
-    
-__ http://en.wikipedia.org/wiki/Autocomplete
 '''
     _methods = ('get',)
     

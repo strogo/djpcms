@@ -35,7 +35,9 @@ First steps
 :ref:`Part 4 <intro-tutorial04>`
 
 **Managing Content:**
-:ref:`Plugins <plugins-index>` | :ref:`Inline editing <inline-editing>`
+:ref:`Plugins <plugins-index>` |
+:ref:`Inline editing <inline-editing>` |
+:ref:`Autocomplete <autocomplete>`
 
 Contents
 =====================
