@@ -59,6 +59,27 @@ class ApplicationMetaClass(forms.MediaDefiningClass):
         return new_class
 
 
+def process_views(view,views,app):
+    pkey = view.parent
+    if pkey:
+        if isinstance(pkey,basestring):
+            parent  = app.views.get(pkey,None)
+            if not parent:
+                raise ApplicationUrlException('Parent %s for %s not in children tree' % (pkey,view))
+            view.parent = parent
+        else:
+            parent = pkey
+        
+        if parent in views:
+            process_views(parent,views,app)
+        else:
+            views.remove(view)
+            view.processurlbits(app)
+    else:
+        views.remove(view)
+        view.processurlbits(app)
+
+
 class ApplicationBase(object):
     '''Base class for djpcms applications.
 * *baseurl* the root part of the application views urls. Must be provided with trailing slashes (ex. "/docs/")
@@ -84,6 +105,10 @@ class ApplicationBase(object):
         self.application_site = application_site
         self.editavailable    = editavailable
         self.root_application = None
+        if not baseurl.endswith('/'):
+            baseurl = '%s/' % baseurl
+        if not baseurl.startswith('/'):
+            baseurl = '/%s' % baseurl
         self.__baseurl        = baseurl
         self.name             = self._makename()
         self.description      = self._makedescription()
@@ -161,22 +186,19 @@ class ApplicationBase(object):
     def _create_views(self):
         #Build views for this application
         roots = []
+        views = self.views.values()
+            
+        while views:
+            process_views(views[0],views,self)
+                
         for app_name,child in self.views.items():
             child.name   = app_name
-            pkey         = child.parent
-            if pkey:
-                parent  = self.views.get(pkey,None)
-                if not parent:
-                    raise ApplicationUrlException('Parent %s for %s not in children tree' % (pkey,child))
-                child.parent = parent
+            if not child.parent and not child.urlbit:
+                if self.root_application:
+                    raise ApplicationUrlException('Could not resolve root application')
+                self.root_application = child
             else:
-                if not child.urlbit:
-                    if self.root_application:
-                        raise ApplicationUrlException('Could not resolve root application')
-                    self.root_application = child
-                else:
-                    roots.append(child)
-            child.processurlbits(self)
+                roots.append(child)
             code = u'%s-%s' % (self.name,child.name)
             child.code = code
                 

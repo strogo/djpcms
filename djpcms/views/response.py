@@ -25,13 +25,14 @@ class DjpResponse(http.HttpResponse):
         self.request    = request
         self.view       = view
         self.css        = settings.HTML_CLASSES
-        self.urlargs    = copy(kwargs)
         self.args       = args
-        self.kwargs     = kwargs
+        self.kwargs     = copy(kwargs)
         self.wrapper    = None
         self.prefix     = None
         self._errors    = None
         self.media      = view.get_media()
+        view.specialkwargs(self.kwargs)
+        self.urlargs    = self.kwargs
         self._plugincss = {}
     
     def __repr__(self):
@@ -67,7 +68,7 @@ class DjpResponse(http.HttpResponse):
     linkname = property(get_linkname)
         
     def get_title(self):
-        return self.view.title(self.page, **self.urlargs)
+        return self.view.title(self.page, **self.kwargs)
     title = property(get_title)
     
     def bodybits(self):
@@ -93,24 +94,13 @@ class DjpResponse(http.HttpResponse):
         '''
         Build the url for this application view
         '''
-        return self.view.get_url(self, **self.urlargs)
+        return self.view.get_url(self, **self.kwargs)
     url = property(get_url)
     
     @lazyattr
     def _get_template(self):
         return self.view.get_template(self.page)
     template_file = property(_get_template)
-    
-    def _get_instance(self):
-        instance = self.urlargs.get('instance',None)
-        if not instance:
-            self.url
-            return self.urlargs.get('instance',None)
-        else:
-            return instance
-    def _set_instance(self, instance):
-        self.urlargs['instance'] = instance
-    instance = property(fget = _get_instance, fset = _set_instance)
     
     @lazyattr
     def _get_parent(self):
@@ -123,32 +113,19 @@ class DjpResponse(http.HttpResponse):
     @lazyattr
     def get_children(self):
         self.instance
-        return self.view.children(self.request, **self.urlargs) or []
+        return self.view.children(self.request, **self.kwargs) or []
     children = property(get_children)
     
     def _get_instance(self):
-        instance = self.urlargs.get('instance',None)
+        instance = self.kwargs.get('instance',None)
         if not instance:
             self.url
-            return self.urlargs.get('instance',None)
+            return self.kwargs.get('instance',None)
         else:
             return instance
     def _set_instance(self, instance):
-        self.urlargs['instance'] = instance
+        self.kwargs['instance'] = instance
     instance = property(fget = _get_instance, fset = _set_instance)
-        
-    def __get_urlargs(self):
-        return self.kwargs
-        if self._urlargs is None:
-            i = 0
-            urlargs = copy.copy(self.kwargs)
-            for arg in self.args:
-                i += 1
-                urlargs['arg_no_key_%s' % i] = arg
-            self._urlargs = urlargs
-            self.nargs   = i
-        return self._urlargs
-    #urlargs = property(__get_urlargs)
     
     def robots(self):
         '''

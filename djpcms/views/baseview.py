@@ -72,6 +72,9 @@ Not used very often but here just in case.'''
         '''
         return self.__class__._methods
     
+    def specialkwargs(self, kwargs):
+        pass
+    
     def get_template(self, page = None):
         '''Given a :class:`djpcms.models.Page` instance *page*, which may be ``None``,
 returns the template file for the ``GET`` response. If :attr:`template_name` is specified,

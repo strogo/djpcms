@@ -20,6 +20,7 @@ CharField = forms.CharField
 ChoiceField = forms.ChoiceField
 FileField = forms.FileField
 ValidationError = forms.ValidationError
+model_to_dict = forms.model_to_dict
 
 
 class SearchForm(Form):
@@ -148,27 +149,38 @@ class PageForm(ModelForm):
     def clean_site(self):
         '''
         Check for site.
-        If site not provided, The parent page must be available
+        If site not provided and the parent page is available, we return the parent page site.
+        Otherwise we return the currenct site.
         '''
         site   = self.cleaned_data.get('site',None)
         parent = self.get_parent()
         if not site:
             if not parent:
-                raise forms.ValidationError('Either site or parent must be specified')
-            return parent.site
+                return Site.objects.get_current()
+            else:
+                return parent.site
         elif parent:
             return parent.site
         else:
             return site
     
     def clean_application(self):
+        '''If application type is specified, than it must be unique
         '''
-        If application type is specified, than it must be unique
-        '''
+        from djpcms.views import appsite
         data = self.data
         app = data.get('application',None)
         if app:
-            others = Page.objects.filter(application = app)
+            try:
+                application = appsite.site.getapp(app)
+            except KeyError:
+                raise forms.ValidationError('Application %s not available' % app)
+            bit = data.get('url_pattern','')
+            if not application.regex.names:
+                bit = ''
+            others = Page.objects.filter(application = application.code,
+                                         site = self.clean_site(),
+                                         url_pattern = bit)
             for other in others:
                 if other != self.instance:
                     raise forms.ValidationError('Application page %s already avaiable' % app)

@@ -1,5 +1,7 @@
+from copy import deepcopy
 from django.core.cache import cache
 from django.contrib.sites.models import Site
+from django.db.models import signals
 from django.http import Http404
 
 from djpcms.models import Page
@@ -11,9 +13,10 @@ class PageCache(object):
         self._domain = None
         self.applications_url = None
         
-    def clear(self, request):
+    def clear(self, request = None):
         cache.clear()
-        self.session(request)['application-urls-built'] = 0
+        if request:
+            self.session(request)['application-urls-built'] = 0
         
     def session(self, request):
         return getattr(request,'session',{})
@@ -61,6 +64,8 @@ class PageCache(object):
             view = appsite.site.getapp(page.application)
             if not view:
                 raise Http404
+            if page.url_pattern:
+                view = deepcopy(view)
             view.set_page(page)
         else:
             view = pageview(page)
@@ -154,3 +159,9 @@ class PageCache(object):
         return map
 
 pagecache = PageCache()
+
+def clearcache(*args, **kwargs):
+    pagecache.clear()
+    
+signals.post_save.connect(clearcache, sender=Page)
+

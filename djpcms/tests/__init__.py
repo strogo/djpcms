@@ -5,4 +5,5 @@ from djpcms.tests.test_urls import *
 from djpcms.tests.doc_views import *
 from djpcms.tests.uniforms import *
 from djpcms.tests.test_plugins import *
+from djpcms.tests.test_page import *
 from autocomplete import *

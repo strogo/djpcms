@@ -4,22 +4,32 @@
 import os
 BASE = os.path.split(os.path.abspath(__file__))[0]
 SITE_ID = 1
-DATABASE_ENGINE = 'sqlite3'
-DATABASE_NAME   = '/tmp/testdjpcms.db'
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'sqlite3',
+        'NAME': os.path.join(BASE,'tests','testdjpcms.sqlite')
+    }
+}
 
 
 INSTALLED_APPS  = ['django.contrib.auth',
                    'django.contrib.sessions',
                    'django.contrib.sites',
                    'django.contrib.contenttypes',
+                   'django.contrib.admin',
                    'djpcms',
                    'djpcms.contrib.jdep',
                    'djpcms.tests.testmodel']
 
+#try:
+#    import south
+#    INSTALLED_APPS.append('south')
+#except:
+#    pass
 
 TEMPLATE_DIRS     = os.path.join(BASE, 'tests', 'templates'),
 ADMIN_MEDIA_PREFIX = '/media/admin/'
-MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE, 'tests', 'media')
 
 # Silence logging

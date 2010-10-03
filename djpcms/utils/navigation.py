@@ -2,12 +2,11 @@
 Utility module for creating a navigation list
 '''
 from djpcms.template import loader
-from djpcms.utils import lazyattr    
+from djpcms.utils import lazyattr
 
 
 class lazycounter(object):
-    '''
-    A lazy view counter used to build navigations type iterators
+    '''A lazy view counter used to build navigations type iterators
     '''
     def __new__(cls, djp, **kwargs):
         obj = super(lazycounter, cls).__new__(cls)

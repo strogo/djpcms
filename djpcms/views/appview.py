@@ -1,5 +1,6 @@
 import operator
 import copy
+from itertools import izip
 from datetime import datetime
 
 from django import http
@@ -78,7 +79,7 @@ class AppViewBase(djpcmsview):
     baseurl = property(__get_baseurl)
     
     def get_url(self, request, **kwargs):
-        purl = self.regex.get_url(request, **kwargs)
+        purl = self.regex.get_url(**kwargs)
         return '%s%s' % (self.baseurl,purl)
     
     def get_media(self):
@@ -170,6 +171,12 @@ class AppViewBase(djpcmsview):
             self.regex = self.parent.regex + self.urlbit
         else:
             self.regex = self.urlbit
+            
+    def specialkwargs(self, kwargs):
+        page = self.get_page()
+        if page and page.url_pattern and self.regex.names:
+            bits = page.url_pattern.split('/')
+            kwargs.update(dict(izip(self.regex.names,bits)))
             
     def __deepcopy__(self, memo):
         return copy.copy(self)  
@@ -615,7 +622,7 @@ and if your model has an AutocompleteView installed, it will work out of the box
         autocomplete.register(self.appmodel.model,self)
     
     def get_url(self, *args, **kwargs):
-        purl = self.regex.get_url(None)
+        purl = self.regex.get_url()
         return '%s%s' % (self.baseurl,purl)
         
     def get_response(self, djp):

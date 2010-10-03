@@ -10,7 +10,7 @@ class ContentBlockError(Exception):
 class PageManager(models.Manager):
     '''
     Page manager
-    '''    
+    '''
     def hierarchy(self, parent=None):
         if parent:
             filter = self.filter(parent=parent)
@@ -24,6 +24,12 @@ class PageManager(models.Manager):
     
     def applications(self):
         return self.sitepages().exclude(app_type = u'')
+    
+    def create_for_site(self, site = None, **kwargs):
+        site = site or Site.objects.get_current()
+        page = self.model(site=site,**kwargs)
+        page.save()
+        return page
     
     def sitepages(self, **kwargs):
         site = Site.objects.get_current()

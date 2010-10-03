@@ -1,9 +1,15 @@
 
 Development
 ==============================
+* Added support for multiple Pages in an application view with parameters (such as the object view).
+  This is a very important addition which allows applications with input parameters
+  to have different pages for different parameters.
+* Added a post save :class:`djpcms.models.Page` signal in :mod:`djpcms.views.cache`
+  to clear the page cache after every page database update.
 * :meth:`djpcms.utils.uniforms.UniForm.render` passes ``inputs`` into :meth:`djpcms.utils.uniforms.FormLayout.render`. Useful for custom layouts. 
 * :attr:`djpcms.views.appsite.ModelApplication.form_template` attribute can be a callable.
 * :meth:`djpcms.views.appsite.ModelApplication.get_form` add a class name to the form equal to ``appname-modelname``.
+* **27 unit tests**.
 
 
 Version 0.8 (2010-Sep-30)

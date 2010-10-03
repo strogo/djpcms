@@ -23,6 +23,7 @@ class RegExUrl(object):
         self.nargs  = 0
         self._split = split
         self.breadcrumbs = []
+        self.names = []
         if self.url:
             self.__process()
             self.url  = '%s/' % self.url
@@ -39,7 +40,7 @@ class RegExUrl(object):
     def __str__(self):
         return '^%s$' % self.url
 
-    def get_url(self, request, **kwargs):
+    def get_url(self, **kwargs):
         if kwargs:
             return iri_to_uri(self.purl % kwargs)
         else:
@@ -59,6 +60,7 @@ class RegExUrl(object):
                 else:
                     raise ApplicationUrlException('Regular expression for urls requires a keyworld. %s does not have one.' % bit)             
                 bit  = '%(' + name + ')s'
+                self.names.append(name)
             self.breadcrumbs.append(bit)
             self.purl  += '%s/' % bit
 

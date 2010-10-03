@@ -45,4 +45,4 @@ class TestAutocomplete(TestCase):
         
     def tearDown(self):
         appsite.site.unregister(Strategy)
-        appsite.site.register('/strategy/',StrategyApplication,model = Strategy)
+        appsite.site.register('/strategies/',StrategyApplication,model = Strategy)

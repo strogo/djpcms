@@ -102,7 +102,7 @@ class Page(TimeStamp):
     
     url_pattern = models.CharField(max_length = 200,
                                    blank = True,
-                                   help_text=_('URL bit for flat pages only'))
+                                   help_text=_('URL bit. No slashes.'))
     
     link        = models.CharField(max_length = 60,
                                    blank = True,
@@ -122,7 +122,7 @@ class Page(TimeStamp):
     
     in_navigation = models.PositiveIntegerField(default=1,
                                                 verbose_name = _("Position in navigation"),
-                                                help_text = _("Position in navigation. If 0 it won't be in navigation"))
+                                                help_text = _("Position in navigation. If 0 it won't be in navigation. If bigger than 100 it will be a secondary navigation item."))
     '''Integer flag indicating positioning in the site navigation (see :class:`djpcms.utils.navigation.Navigator`). If set to ``0`` the page won't be displayed in the navigation.'''
     
     cssinfo     = models.ForeignKey(CssPageInfo,
@@ -134,8 +134,7 @@ class Page(TimeStamp):
                                        help_text=_('Whether or not the page is accessible from the web.'),
                                        verbose_name='published')
     # Access
-    requires_login = models.BooleanField(verbose_name = 'login',
-                                         help_text=_('If checked, only logged-in users can view the page.'))
+    requires_login = models.BooleanField(verbose_name = _('login required'))
        
     soft_root = models.BooleanField(_("soft root"),
                                     db_index=True,
@@ -257,6 +256,10 @@ If not specified we get the template of the :attr:`parent` page.'''
                         self.parent = pages[0]
                     else:
                         raise ValueError('Parent page not defined %s' % app.code)
+                    if self.url_pattern and app.regex.names:
+                        bits = self.url_pattern.split('/')
+                        kwargs = dict(zip(app.regex.names,bits))
+                        purl = app.regex.get_url(**kwargs)
                     url = purl
             else:
                 url = self.url_pattern

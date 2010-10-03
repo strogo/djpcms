@@ -74,7 +74,7 @@ if fabric_available:
                     media_inconf += 1
                     self.assertTrue('location %s {' % app.url() in nginx)
                     self.assertTrue(app.base in nginx)
-            self.assertEqual(media_inconf,2)
+            self.assertEqual(media_inconf,3)
             
         def testServer(self):
             result = deploy(False)
