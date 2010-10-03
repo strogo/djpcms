@@ -19,7 +19,7 @@ class TestCase(test.TestCase):
         
     def clear(self):
         self.pagecache.clear()
-        self.get()
+        return self.get()['page']
         
     def makepage(self, view, model, bit = '', fail = False):
         appmodel = self.site.for_model(model)

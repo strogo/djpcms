@@ -29,6 +29,10 @@ class TestPage(TestCase):
         self.assertEqual(page.url,'/strategies/')
         self.assertEqual(page.parent,self.Page.objects.root_for_site())
         
+    def testUrlPattern1(self):
+        p = self.makepage('search',Strategy,'blabla')
+        self.assertEqual(p.url_pattern,'')
+        
     def testObjectView(self):
         Strategy(name = 'test').save()
         self.makepage('search',Strategy)

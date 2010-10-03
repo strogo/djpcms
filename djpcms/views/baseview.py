@@ -319,7 +319,12 @@ It includes views not in navigation.'''
             if cview.has_permission(request):
                 djp = cview(request, **kwargs)
                 if isinstance(djp,DjpResponse):
-                    views.append(djp)
+                    try:
+                        djp.url
+                    except:
+                        pass
+                    else:
+                        views.append(djp)
         return views
 
 

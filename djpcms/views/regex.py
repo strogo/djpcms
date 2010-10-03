@@ -67,11 +67,12 @@ class RegExUrl(object):
     def __add__(self, other):
         if not isinstance(other,self.__class__):
             raise ValueError
-        res = copy.copy(self)
+        res = copy.deepcopy(self)
         res.url  = '%s%s' % (res.url,other.url)
         res.purl = '%s%s' % (res.purl,other.purl)
         res.targs += other.targs
         res.nargs += other.nargs
+        res.names.extend(other.names)
         return res
         
         

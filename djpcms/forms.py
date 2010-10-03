@@ -177,6 +177,7 @@ class PageForm(ModelForm):
                 raise forms.ValidationError('Application %s not available' % app)
             bit = data.get('url_pattern','')
             if not application.regex.names:
+                data['url_pattern'] = ''
                 bit = ''
             others = Page.objects.filter(application = application.code,
                                          site = self.clean_site(),
