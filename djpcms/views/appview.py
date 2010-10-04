@@ -86,11 +86,10 @@ class AppViewBase(djpcmsview):
         return self.appmodel.media
     
     def in_navigation(self, request, page):
+        if page:
+            return page.in_navigation
         if self.in_nav:
-            if page:
-                return page.in_navigation
-            else:
-                return 1
+            return 1
         else:
             return 0
         

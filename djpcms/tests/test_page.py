@@ -7,11 +7,6 @@ from testmodel.models import Strategy
 
 
 class TestPage(TestCase):
-        
-    def get(self, url = '/', status = 200):
-        response = self.client.get(url)
-        self.assertEqual(response.status_code,status)
-        return response.context
     
     def testRoot(self):
         context = self.get()
@@ -73,9 +68,8 @@ class TestPage(TestCase):
         sp = self.makepage('search',Strategy)
         vp = self.makepage('view',Strategy)
         vp1 = self.makepage('view',Strategy,'1')
-        cp = self.makepage('add',Strategy)
-        cp1 = self.makepage('add',Strategy,parent=vp1)
-        self.assertNotEqual(cp,cp1)
-        self.assertTrue(cp1.parent,vp1)
-        self.assertTrue(cp.parent,vp)
+        vp1 = self.makepage('view',Strategy,'2')
+        ep = self.makepage('edit',Strategy)
+        #self.assertEqual(ep.parent,vp)
+        
         

@@ -126,7 +126,6 @@ class PageForm(ModelForm):
     class Meta:
         model = Page
         
-    @lazyattr
     def get_parent(self):
         pid = self.data.get('parent',None)
         if pid:
@@ -145,7 +144,6 @@ class PageForm(ModelForm):
                 raise forms.ValidationError('Code must be specified')
             return code
         
-    @lazyattr
     def clean_site(self):
         '''
         Check for site.
@@ -192,7 +190,9 @@ class PageForm(ModelForm):
                 # No parent specified. Let's check that a root is not available
                 root = Page.objects.root(self.clean_site())
                 if root and root != self.instance:
-                    raise forms.ValidationError('Page root already avaiable')
+                    # We assume the page to be child of root. Lets check it is not already avialble
+                    self.data['parent'] = root.id
+                    #raise forms.ValidationError('Page root already avaiable')
         return app
         
     def clean_url_pattern(self):
