@@ -46,8 +46,10 @@ class InnerTemplateAdmin(SafeModelAdmin):
 
 
 class PageAdmin(SafeModelAdmin):
-    list_display        = ('url','application','in_navigation','link','user','redirect_to','requires_login','inner_template', 'cssinfo',
-                           'is_published','get_template','level')
+    list_display        = ('url','level','url_pattern','application',
+                           'in_navigation','link','user','redirect_to',
+                           'requires_login','inner_template','cssinfo',
+                           'is_published','get_template')
     inlines             = [AdditionalPageDataInline]
     save_on_top         = True
     form                = PageForm

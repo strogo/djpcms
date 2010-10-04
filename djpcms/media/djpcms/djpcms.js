@@ -503,6 +503,14 @@
 	});
 	
 	$.djpcms.addDecorator({
+		id:	"anchorbutton",
+		description: "Decorate anchor as button using jQuery UI",
+		decorate: function($this,config) {
+			$('a.nice-button',$this).button();
+		}
+	});
+	
+	$.djpcms.addDecorator({
 		id:	"autocomplete",
 		description: "add ajax autocomplete to a input",
 		decorate: function($this,config) {

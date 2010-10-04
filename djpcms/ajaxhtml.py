@@ -22,6 +22,7 @@ class ajaxhtml(object):
         d['delete']                   = 'deletable'
         d['secondary_in_list']        = 'secondary'
         d['link_selected']            = 'selected'
+        d['nicebutton']               = 'nice-button'
         
         return obj
     

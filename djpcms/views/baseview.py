@@ -326,6 +326,10 @@ It includes views not in navigation.'''
                     else:
                         views.append(djp)
         return views
+    
+    def redirect(self, url):
+        '''Shortcut function for redirecting to *url*.'''
+        return http.HttpResponseRedirect(url)
 
 
 class pageview(djpcmsview):
@@ -430,7 +434,7 @@ This view is never in navigation and it provides a hook for adding the edit page
             else:
                 return self.handle_response(djp)
         pagecache.clear(request)
-        return http.HttpResponseRedirect(djp.url)
+        return self.redirect(djp.url)
     
     def page_url(self, request):
         return urlfrombits(urlbits(request.path)[1:])
