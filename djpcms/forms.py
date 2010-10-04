@@ -175,6 +175,7 @@ class PageForm(ModelForm):
                 application = appsite.site.getapp(app)
             except KeyError:
                 raise forms.ValidationError('Application %s not available' % app)
+            parent = self.get_parent()
             bit = data.get('url_pattern','')
             if not application.regex.names:
                 data['url_pattern'] = ''

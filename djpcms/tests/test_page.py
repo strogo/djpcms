@@ -67,3 +67,15 @@ class TestPage(TestCase):
         self.assertNotEqual(djp.view,djp1.view)
         self.assertEqual(djp.view.code,djp1.view.code)
         
+    def testObjectViewSpecialChild(self):
+        Strategy(name = 'test1').save()
+        Strategy(name = 'test2').save()
+        sp = self.makepage('search',Strategy)
+        vp = self.makepage('view',Strategy)
+        vp1 = self.makepage('view',Strategy,'1')
+        cp = self.makepage('add',Strategy)
+        cp1 = self.makepage('add',Strategy,parent=vp1)
+        self.assertNotEqual(cp,cp1)
+        self.assertTrue(cp1.parent,vp1)
+        self.assertTrue(cp.parent,vp)
+        

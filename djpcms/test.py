@@ -21,12 +21,14 @@ class TestCase(test.TestCase):
         self.pagecache.clear()
         return self.get()['page']
         
-    def makepage(self, view, model, bit = '', fail = False):
+    def makepage(self, view, model, bit = '', parent = None, fail = False):
         appmodel = self.site.for_model(model)
         view = appmodel.getview(view)
         form = PageForm()
         data = model_to_dict(form.instance, form._meta.fields, form._meta.exclude)
-        data.update({'application': view.code, 'url_pattern': bit})
+        data.update({'application': view.code,
+                     'url_pattern': bit,
+                     'parent': None if not parent else parent.id})
         form = PageForm(data = data)
         if fail:
             self.assertFalse(form.is_valid())
