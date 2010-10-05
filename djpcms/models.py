@@ -19,7 +19,7 @@ from djpcms.plugins import get_wrapper, default_content_wrapper, get_plugin
 from djpcms.utils import lazyattr, function_module, force_unicode, mark_safe, htmltype
 from djpcms.utils.func import PathList
 from djpcms.uploads import upload_function, site_image_storage
-from djpcms.managers import PageManager, BlockContentManager, SiteContentManager
+from djpcms.managers import PageManager, BlockContentManager, SiteContentManager, CalculateUrl
 from djpcms.markup import markuplib
 
 protocol_re = re.compile('^\w+://')
@@ -176,7 +176,7 @@ class Page(TimeStamp):
         return u'%s%s' % (self.site.domain,self.url)
     
     def save(self, **kwargs):
-        self.url   = self.__calculate_url()
+        self.url = CalculateUrl(self)
         if self.url is None:
             return
         self.level = self.get_level()
@@ -192,96 +192,6 @@ If not specified we get the template of the :attr:`parent` page.'''
                 return settings.DEFAULT_TEMPLATE_NAME
         else:
             return self.template
-
-    @lazyattr
-    def get_parent_path(self):
-        path = []
-        parent = self.parent
-        while parent:
-            path.append(parent)
-            parent = parent.parent
-        return PathList(reversed(path))
-        
-    @lazyattr
-    def get_path(self):
-        p = self.get_parent_path()
-        p.append(self)
-        return p
-
-    def on_path(self, super):
-        return super in self.get_path()
-        
-    def __calculate_url(self):
-        '''Calculate the url. Called during saving.
-        '''
-        try:
-            # Check if this page is part of an application
-            #if not self.application and self.parent and self.url_pattern:
-            #    application = self.parent.application
-            #    if application:
-            #        self.application = '%s_%s' % (self.parent,self.url_pattern)
-                 
-            if self.application:
-                from djpcms.views import appsite
-                app = appsite.site.getapp(self.application)
-                if not app:
-                    raise ValueError("Application %s not available on site." % self.application)
-                purl = app.urlbit.url
-                if app.isroot():
-                    baseurl = app.baseurl
-                    root    = Page.objects.filter(site = self.site, level = 0)
-                    if baseurl == '/':
-                        if root:
-                            root = root[0]
-                            if root != self:
-                                raise ValueError("Root page already available, cannot set application as root. Delete the flat root page first")
-                        self.parent = None
-                    else:
-                        urls = baseurl[1:-1].split('/')
-                        if len(urls) > 1:
-                            parent_url = '/%s/' % '/'.join(urls[:-1])
-                            root    = Page.objects.filter(site = self.site, url = parent_url)
-                        else:
-                            parent_url = '/'
-                            
-                        if root:
-                            self.parent = root[0]
-                        else:
-                            raise ValueError('Parent page "%s" not available, cannot set application %s' % (parent_url,baseurl))
-                    return baseurl
-                else:
-                    p = app.parent
-                    pages = Page.objects.filter(application = p.code, site = self.site)
-                    if pages:
-                        self.parent = pages[0]
-                    else:
-                        raise ValueError('Parent page not defined %s' % app.code)
-                    if self.url_pattern and app.regex.names:
-                        bits = self.url_pattern.split('/')
-                        kwargs = dict(zip(app.regex.names,bits))
-                        purl = app.regex.get_url(**kwargs)
-                    url = purl
-            else:
-                url = self.url_pattern
-            
-            if self.parent:
-                url = '%s%s' % (self.parent.url,url)
-            if not url.endswith('/'):
-                url += '/'
-            if not url.startswith('/'):
-                url = '/%s' % url
-            return url
-        except Exception, e:
-            raise ValueError("Unhandled error while saving page: %s." % e)
-
-    def get_children(self):
-        '''Alias of ``self.children.all()``. Return all children of ``self``.
-        '''
-        return Page.objects.filter(parent=self)
-    
-    def get_next_position(self):
-        children = Page.objects.filter(parent=self).order_by('-position')
-        return children and (children[0].position+1) or 1
 
     def get_level(self):
         try:

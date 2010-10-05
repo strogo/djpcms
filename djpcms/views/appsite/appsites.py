@@ -70,9 +70,12 @@ class ApplicationSite(object):
             self.choices.append((app.name,app.name))
     
     def unregister(self, model):
+        '''Unregister the :class:`djpcms.views.appsite.ModelApplication registered for *model*. Return the
+application class which has been unregistered.'''
         appmodel = self._registry.pop(model,None)
         if appmodel:
             self._nameregistry.pop(appmodel.name,None)
+        return None if not appmodel else appmodel.__class__
             
     def for_model(self, model):
         '''Obtain a :class:`djpcms.views.appsite.ModelApplication` for model *model*.

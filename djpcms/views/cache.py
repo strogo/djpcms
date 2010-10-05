@@ -164,4 +164,5 @@ def clearcache(*args, **kwargs):
     pagecache.clear()
     
 signals.post_save.connect(clearcache, sender=Page)
+signals.post_delete.connect(clearcache, sender=Page)
 

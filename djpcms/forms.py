@@ -132,35 +132,6 @@ class PageForm(ModelForm):
             return Page.objects.get(id = int(pid))
         else:
             return None
-        
-    def clean_code(self):
-        parent = self.get_parent()
-        app_type = self.data.get('app_type',None)
-        if parent and app_type:
-            return u'%s_%s' % (parent.code,app_type)
-        else:
-            code = self.data.get('code',None)
-            if not code:
-                raise forms.ValidationError('Code must be specified')
-            return code
-        
-    def clean_site(self):
-        '''
-        Check for site.
-        If site not provided and the parent page is available, we return the parent page site.
-        Otherwise we return the currenct site.
-        '''
-        site   = self.cleaned_data.get('site',None)
-        parent = self.get_parent()
-        if not site:
-            if not parent:
-                return Site.objects.get_current()
-            else:
-                return parent.site
-        elif parent:
-            return parent.site
-        else:
-            return site
     
     def clean_application(self):
         '''If application type is specified, than it must be unique
@@ -178,6 +149,10 @@ class PageForm(ModelForm):
             if not application.regex.names:
                 data['url_pattern'] = ''
                 bit = ''
+            elif parent and application.parent:
+                if parent.application == application.parent.code and parent.url_pattern:
+                    bit = parent.url_pattern
+                    data['url_pattern'] = bit
             others = Page.objects.filter(application = application.code,
                                          site = self.clean_site(),
                                          url_pattern = bit)
@@ -194,6 +169,24 @@ class PageForm(ModelForm):
                     self.data['parent'] = root.id
                     #raise forms.ValidationError('Page root already avaiable')
         return app
+    
+    def clean_site(self):
+        '''
+        Check for site.
+        If site not provided and the parent page is available, we return the parent page site.
+        Otherwise we return the currenct site.
+        '''
+        site   = self.cleaned_data.get('site',None)
+        parent = self.get_parent()
+        if not site:
+            if not parent:
+                return Site.objects.get_current()
+            else:
+                return parent.site
+        elif parent:
+            return parent.site
+        else:
+            return site
         
     def clean_url_pattern(self):
         '''

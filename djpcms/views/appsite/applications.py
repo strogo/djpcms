@@ -71,13 +71,15 @@ def process_views(view,views,app):
             parent = pkey
         
         if parent in views:
-            process_views(parent,views,app)
+            return process_views(parent,views,app)
         else:
             views.remove(view)
-            view.processurlbits(app)
+            return view
     else:
+        if view is not app.root_application:
+            view.parent = app.root_application
         views.remove(view)
-        view.processurlbits(app)
+        return view
 
 
 class ApplicationBase(object):
@@ -186,43 +188,38 @@ class ApplicationBase(object):
     def _create_views(self):
         #Build views for this application
         roots = []
-        views = self.views.values()
-            
-        while views:
-            process_views(views[0],views,self)
-                
-        for app_name,child in self.views.items():
-            child.name   = app_name
-            if not child.parent and not child.urlbit:
-                if self.root_application:
-                    raise ApplicationUrlException('Could not resolve root application')
-                self.root_application = child
-            else:
-                roots.append(child)
-            code = u'%s-%s' % (self.name,child.name)
-            child.code = code
-                
-            if child.isapp:
-                name = u'%s %s' % (self.name,child.name.replace('_',' '))
-                self.application_site.choices.append((code,name))
-            if child.isplugin:
-                register_application(child)
         
-        # No root application. See if there is one candidate    
-        if roots:
-            if not self.root_application:
-                possible = []
-                for app in roots:
-                    if not app.parent:
-                        possible.append(app)
-                if len(possible) == 1:
-                    self.root_application = possible[0]
-                    roots.remove(self.root_application)
+        # Find the root view
+        for name,view in self.views.items():
+            view.name = name
+            view.code = u'%s-%s' % (self.name,view.name)
+            if not view.parent:
+                if not view.urlbit:
+                    if self.root_application:
+                        raise ApplicationUrlException('Could not resolve root application')
+                    self.root_application = view
                 else:
-                    raise ApplicationUrlException("Could not define root application.")
-            
-            for app in roots:
-                app.parent = self.root_application
+                    roots.append(view)
+        
+        # No root application. See if there is one candidate
+        if not self.root_application:
+            if roots:
+                #just pick one. We should not be here really! need more testing.
+                self.root_application = roots[0]
+            else:
+                raise ApplicationUrlException("Could not define root application.")
+        
+        # Pre-process urls
+        views = self.views.values()
+        while views:
+            view = process_views(views[0],views,self)
+            view.processurlbits(self)
+            if view.isapp:
+                name = u'%s %s' % (self.name,view.name.replace('_',' '))
+                self.application_site.choices.append((view.code,name))
+            if view.isplugin:
+                register_application(view)
+                
 
 
 class ModelApplication(ApplicationBase):

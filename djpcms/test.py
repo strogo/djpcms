@@ -9,7 +9,7 @@ from djpcms.forms import PageForm
 
 
 class TestCase(test.TestCase):
-    '''Implements shurtcuts function for testing djpcms'''
+    '''Implements shortcut functions for testing djpcms'''
     
     def setUp(self):
         self.pagecache = pagecache
@@ -44,7 +44,9 @@ class TestCase(test.TestCase):
             self.assertFalse(form.is_valid())
         else:
             self.assertTrue(form.is_valid())
-            return form.save()
+            instance = form.save()
+            self.assertTrue(instance.pk)
+            return instance
         
     def login(self, username = None, password = None):
         if not username:

@@ -87,7 +87,10 @@ class AppViewBase(djpcmsview):
     
     def in_navigation(self, request, page):
         if page:
-            return page.in_navigation
+            if self.regex.names and not page.url_pattern:
+                return 0
+            else:
+                return page.in_navigation
         if self.in_nav:
             return 1
         else:
@@ -174,6 +177,7 @@ class AppViewBase(djpcmsview):
     def specialkwargs(self, kwargs):
         page = self.get_page()
         if page and page.url_pattern and self.regex.names:
+            kwargs.pop('instance',None)
             bits = page.url_pattern.split('/')
             kwargs.update(dict(izip(self.regex.names,bits)))
             
