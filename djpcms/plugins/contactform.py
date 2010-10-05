@@ -11,9 +11,9 @@ from django.template import loader, RequestContext
 from django.contrib.sites.models import Site
 
 from djpcms.utils import form_kwargs
-from djpcms.utils.html import formlet, form, submit
-from djpcms.settings import HTML_CLASSES
+from djpcms.utils.html import submit
 from djpcms.plugins import DJPplugin
+from djpcms.utils.uniforms import UniForm
 
 
 class ContactForm(forms.Form):
@@ -129,11 +129,11 @@ class ContactForm(forms.Form):
     pass silently, unless explicitly silenced").
    
     """
-    def __init__(self, data=None, files=None, request=None, *args, **kwargs):
-        if request is None:
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request',None)
+        if self.request is None:
             raise TypeError("Keyword argument 'request' must be supplied")
-        super(ContactForm, self).__init__(data=data, files=files, *args, **kwargs)
-        self.request = request
+        super(ContactForm, self).__init__(*args, **kwargs)
    
     name  = forms.CharField(max_length=100, label=u'Your name')
     email = forms.EmailField(max_length=200, label=u'Your email address')
@@ -228,29 +228,25 @@ class ContactFormPlugin(DJPplugin):
     name = 'contact-form'
     description = "Contact Form"
     
-    def contactform(self, request, wrapper = None, prefix = None):
+    def contactform(self, djp, wrapper = None, prefix = None):
         '''
         Information about deployment
         '''
-        f     = ContactForm(**form_kwargs(request     = request,
+        f     = ContactForm(**form_kwargs(request     = djp.request,
                                           prefix      = prefix,
                                           withrequest = True))
-        if wrapper:
-            layout = wrapper.form_layout
-        else:
-            layout = None
-        fl = formlet(form = f, layout = layout, submit = submit(value = 'Submit', name = 'contact'))
-        cf = form(url = self.url)
-        cf.addClass(settings.HTML_CLASSES.ajax)
-        cf['form'] = fl
-        return cf
+        uni = UniForm(f,
+                      action   = self.url,
+                      inputs   = [submit(value = 'Submit', name = 'contact')])
+        uni.addClass(sjp.css.ajax)
+        return uni
         
 
     def render(self, djp, wrapper, prefix, **kwargs):
         '''
         Information about deployment
         '''
-        cf = self.contactform(djp.request, wrapper, prefix)
+        cf = self.contactform(djp, wrapper, prefix)
         return cf.render()
     
     def response(self, request, *bits):

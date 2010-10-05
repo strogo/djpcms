@@ -301,9 +301,11 @@ Hooks:
     def defaultredirect(self, djp):
         return djp.url
     
-    def children(self, request, **kwargs):
+    def children(self, request, instance = None, **kwargs):
         '''Return children permitted views for self.
-It includes views not in navigation.'''
+It includes views not in navigation. In scanning for children we porposefully
+leave a possible object instance out of the key-values arguments.
+If we didn't do that, test_navigation.testMultiPageApplication would fail.'''
         views = []
         page      = self.get_page()
         if not page:

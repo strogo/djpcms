@@ -177,7 +177,6 @@ class AppViewBase(djpcmsview):
     def specialkwargs(self, kwargs):
         page = self.get_page()
         if page and page.url_pattern and self.regex.names:
-            kwargs.pop('instance',None)
             bits = page.url_pattern.split('/')
             kwargs.update(dict(izip(self.regex.names,bits)))
             

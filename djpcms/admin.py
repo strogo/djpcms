@@ -50,6 +50,7 @@ class PageAdmin(SafeModelAdmin):
                            'in_navigation','link','user','redirect_to',
                            'requires_login','inner_template','cssinfo',
                            'is_published','get_template')
+    list_filter         = ('level','url_pattern','application','user')
     inlines             = [AdditionalPageDataInline]
     save_on_top         = True
     form                = PageForm

@@ -5,11 +5,12 @@ from django.utils.translation import ugettext_lazy as _
 
 from djpcms.conf import settings
 from djpcms.models import Page, BlockContent, SiteContent, create_page
-from djpcms.utils import lazyattr
+from djpcms.utils import lazyattr, smart_unicode
 from djpcms import siteapp_choices
 from djpcms.plugins import get_plugin, plugingenerator, wrappergenerator
 from djpcms.utils.uniforms import FormLayout, Fieldset, Columns, Row, Html, inlineLabels
 from djpcms.utils.html import ModelChoiceField, ModelMultipleChoiceField, submit
+from djpcms.utils.func import slugify
 
 
 Form = forms.Form
@@ -145,6 +146,12 @@ class PageForm(ModelForm):
             except KeyError:
                 raise forms.ValidationError('Application %s not available' % app)
             parent = self.get_parent()
+            if parent:
+                if not application.parent:
+                    raise forms.ValidationError("Application %s is a root application. Don't specify a parent please." % application)
+                if application.parent.code != parent.application:
+                    raise forms.ValidationError("Page %s is not a parent of %s" % (parent,application))
+            
             bit = data.get('url_pattern','')
             if not application.regex.names:
                 data['url_pattern'] = ''
@@ -199,14 +206,18 @@ class PageForm(ModelForm):
         data     = self.data
         value    = data.get('url_pattern',None)
         if value:
+            value = slugify(smart_unicode(value))
+        if data.get('application',None):
             return value
-        app      = data.get('application',None)
-        if app:
-            return value
-        parent   = data.get('parent',None)
+        parent = self.get_parent()
         if parent:
-            raise forms.ValidationError('url_pattern or application must be provided if not root page')
+            if not value:
+                raise forms.ValidationError('url_pattern or application must be provided if not root page')
+            page = parent.children.filter(url_pattern = value)
+            if page and page[0].id != self.instance.id:
+                raise forms.ValidationError("page %s already available" % page)
         return value
+        
         
     def save(self, commit = True):
         return super(PageForm,self).save(commit)

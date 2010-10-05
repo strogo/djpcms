@@ -339,7 +339,8 @@ Reimplement for custom arguments.'''
                  wrapped = True,
                  form = None,
                  addinputs = True,
-                 withdata = True):
+                 withdata = True,
+                 forceform = False):
         '''Build a form to add or edit an application model object:
         
  * *djp*: instance of djpcms.views.DjpRequestWrap.
@@ -354,13 +355,16 @@ Reimplement for custom arguments.'''
         form = form or self.form
         
         if isinstance(form,type):
-            try:
-                if form._meta.model == self.model:
-                    mform = form
-            except:
-                mform = modelform_factory(self.model, form)
+            if forceform:
+                mform = form
             else:
-                mform = modelform_factory(self.model, form)
+                try:
+                    if form._meta.model == self.model:
+                        mform = form
+                except:
+                    mform = modelform_factory(self.model, form)
+                else:
+                    mform = modelform_factory(self.model, form)
         else:
             mform = form(request = request, instance = instance)
         
@@ -412,56 +416,31 @@ Reimplement for custom arguments.'''
         return form.save()
     
     # APPLICATION URLS
-    # TODO: write it better (not use of application name)
     #----------------------------------------------------------------
     def appviewurl(self, request, name, obj = None, permissionfun = None):
-        view = self.getview(name)
-        permissionfun = permissionfun or self.has_view_permission
-        if view and permissionfun(request, obj):
-            djp = view(request, instance = obj)
-            return djp.url
-        
-    def addurl(self, request):
-        return self.appviewurl(request,'add')
-        
-    def deleteurl(self, request, obj):
-        #TODO: change this so that we are not tide up with name
-        view = self.getview('delete')
-        if view and self.has_delete_permission(request, obj):
-            djp = view(request, instance = obj)
-            return djp.url
-        
-    def editurl(self, request, obj):
-        '''
-        Get the edit url if available
-        '''
-        #TODO: change this so that we are not tide up with name
-        view = self.getview('edit')
-        if view and self.has_edit_permission(request, obj):
-            djp = view(request, instance = obj)
-            return djp.url
-    
-    def viewurl(self, request, obj):
-        '''
-        Get the view url if available
-        '''
-        #TODO: change this so that we are not tide up with name
         try:
-            view = self.getview('view')
-            if view and self.has_view_permission(request, obj):
+            view = self.getview(name)
+            permissionfun = permissionfun or self.has_view_permission
+            if view and permissionfun(request, obj):
                 djp = view(request, instance = obj)
                 return djp.url
         except:
             return None
+        
+    def addurl(self, request):
+        return self.appviewurl(request,'add',None,self.has_add_permission)
+        
+    def deleteurl(self, request, obj):
+        return self.appviewurl(request,'delete',obj,self.has_delete_permission)
+        
+    def editurl(self, request, obj):
+        return self.appviewurl(request,'edit',obj,self.has_edit_permission)
+    
+    def viewurl(self, request, obj):
+        return self.appviewurl(request,'view',obj)
     
     def searchurl(self, request):
-        '''
-        The search url for the model
-        '''
-        view = self.getview('search')
-        if view and self.has_view_permission(request):
-            djp = view(request)
-            return djp.url
+        return self.appviewurl(request,'search')
         
     def objurl(self, request, name, obj = None):
         '''Application view **name** url.'''
