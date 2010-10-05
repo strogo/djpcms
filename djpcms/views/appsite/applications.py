@@ -125,6 +125,12 @@ class ApplicationBase(object):
             urls.append(nurl)
         self.urls = tuple(urls)
     
+    def __repr__(self):
+        return '%s: %s' % (self.__class__.__name__,self.baseurl)
+    
+    def __str__(self):
+        return self.__repr__()
+    
     def getview(self, code):
         '''Get an application view from the view code.'''
         return self.views.get(code, None)
@@ -196,7 +202,7 @@ class ApplicationBase(object):
             if not view.parent:
                 if not view.urlbit:
                     if self.root_application:
-                        raise ApplicationUrlException('Could not resolve root application')
+                        raise ApplicationUrlException('Could not resolve root application for %s' % self)
                     self.root_application = view
                 else:
                     roots.append(view)
@@ -207,7 +213,7 @@ class ApplicationBase(object):
                 #just pick one. We should not be here really! need more testing.
                 self.root_application = roots[0]
             else:
-                raise ApplicationUrlException("Could not define root application.")
+                raise ApplicationUrlException("Could not define root application for %s." % self)
         
         # Pre-process urls
         views = self.views.values()
