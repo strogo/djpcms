@@ -1,5 +1,5 @@
 
-Development
+Version 0.8.1 (2010-Oct-06)
 ==============================
 * :attr:`djpcms.models.Page.in_navigation` overrides application default.
 * Relaxed :class:`djpcms.forms.PageForm` validation by allowing several defaults.
