@@ -4,6 +4,8 @@
 #
 #
 from django.forms.formsets import all_valid
+from django.conf import settings
+
 # Wild import af all django forms stuff
 from django.forms import *
 
@@ -20,6 +22,7 @@ blockLabels    = 'blockLabels'
 blockLabels2   = 'blockLabels2'
 inlineFormsets = 'blockLabels2'
 
+default_csrf = 'django.middleware.csrf.CsrfMiddleware' in settings.MIDDLEWARE_CLASSES
 
 #_required_tag = mark_safe('<em>*</em>')
 _required_tag = mark_safe('')
@@ -291,9 +294,9 @@ class UniForm(UniFormBase):
                  action = '.',
                  inputs = None,
                  tag = True,
-                 csfr = True,
+                 csrf = default_csrf,
                  is_ajax = False):
-        self.use_csrf_protection = csfr
+        self.use_csrf_protection = csrf
         self.attr = {}
         self.attr['method']  = method
         self.attr['action']  = ''
@@ -452,6 +455,7 @@ class UniForm(UniFormBase):
             if prefixes[prefix] != 1:
                 prefix = "%s-%s" % (prefix, prefixes[prefix])
             formset = inline.get_formset(request = request,
+                                         data = form.data,
                                          instance = instance,
                                          prefix   = prefix)
             formsets.append(formset)
