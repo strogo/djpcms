@@ -13,33 +13,40 @@ from djpcms.utils.navigation import Navigator, Breadcrumbs
 
 
 class DjpResponse(http.HttpResponse):
-    '''Lazy HttpResponse Class
+    '''Djpcms Http Response class. It which contains information associated with a given url.
+        
+        .. attribute: request
+        
+            a HttpRequest instance
+            
+        .. attribute: view
+        
+            instance of :class:`djpcms.views.baseview.djpcmsview`
+            
+        .. attribute: url
+        
+            url associated with response. Note this url is not always the same as request.path.
     '''
     def __init__(self, request, view, *args, **kwargs):
-        '''
-        @param request: instance of HttpRequest
-        @param view: instance of djpcmsview  
-        '''
         super(DjpResponse,self).__init__()
         self._container = None
         self.request    = request
         self.view       = view
         self.css        = settings.HTML_CLASSES
         self.args       = args
-        self.kwargs     = copy(kwargs)
+        self.kwargs     = kwargs
         self.wrapper    = None
         self.prefix     = None
         self._errors    = None
         self.media      = view.get_media()
         view.specialkwargs(self.kwargs)
-        self.urlargs    = self.kwargs
         self._plugincss = {}
     
     def __repr__(self):
         return self.url
     
     def __str__(self):
-        return self.url
+        return self.__repr__()
     
     def __call__(self, prefix = None, wrapper = None):
         djp = copy.copy(self)
@@ -137,8 +144,7 @@ class DjpResponse(http.HttpResponse):
         return u'NONE,NOARCHIVE'
         
     def response(self):
-        '''
-        return the type of response or an instance of HttpResponse
+        '''return the type of response or an instance of HttpResponse
         '''
         view    = self.view
         request = self.request
@@ -192,8 +198,6 @@ class DjpResponse(http.HttpResponse):
             d['breadcrumbs'] = b
         template_file = template_file or self.template_file
         return render_to_response(template_file, context_instance=context, **kwargs)
-        #self.content = res.content
-        #return self
         
     def redirect(self, url):
         if self.request.is_ajax():

@@ -104,7 +104,7 @@ class FormLayout(object):
                 if field.key:
                     setattr(self,field.key,field)
 
-    def render(self, form, inputs):
+    def render(self, form, inputs = None):
         '''Render the uniform layout or *form*.'''
         ctx  = {}
         html = ''

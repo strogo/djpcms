@@ -172,7 +172,7 @@ class ApplicationBase(object):
                 if page:
                     app.parent = pagecache.view_from_page(djp.request, page)
         if app.parent:
-            return app.parent(djp.request, **djp.urlargs)
+            return app.parent(djp.request, **djp.kwargs)
     
     def _makename(self):
         cls = self.__class__

@@ -1,5 +1,5 @@
 import operator
-import copy
+from copy import copy
 from itertools import izip
 from datetime import datetime
 
@@ -103,7 +103,7 @@ class AppViewBase(djpcmsview):
             link = self.appmodel.name
         return link
         
-    def title(self, page, **urlargs):
+    def title(self, page, **kwargs):
         title = None if not page else page.title
         return title or self.appmodel.name
         
@@ -181,7 +181,7 @@ class AppViewBase(djpcmsview):
             kwargs.update(dict(izip(self.regex.names,bits)))
             
     def __deepcopy__(self, memo):
-        return copy.copy(self)  
+        return copy(self)  
     
     
 class AppView(AppViewBase):
@@ -208,9 +208,6 @@ class AppView(AppViewBase):
             return r'^%s/%s%s$' % (edit,baseurl[1:],self.regex)
         else:
             return None
-        
-    def content_dict(self, cl):
-        return copy.copy(cl.urlargs)
     
     def modelparent(self):
         '''
@@ -312,12 +309,12 @@ class SearchView(AppView):
         request  = djp.request
         appmodel = self.appmodel
         if kwargs:
-            urlargs = djp.urlargs
+            urlargs = djp.kwargs
             urlargs.update(kwargs)
-            djp = self(request, *urlargs)
+            djp = self(request, **urlargs)
         query = self.appquery(request, *djp.args, **djp.kwargs)
         p  = Paginator(request, query, per_page = appmodel.list_per_page)
-        c  = self.content_dict(djp)
+        c  = copy(djp.kwargs)
         c.update({'paginator': p,
                   'djp': djp,
                   'url': djp.url,

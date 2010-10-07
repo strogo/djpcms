@@ -24,10 +24,6 @@ from djpcms.views.cache import pagecache
 from djpcms.views.response import DjpResponse
 from djpcms.views.contentgenerator import BlockContentGen
 
-more_content = lambda djp : {}
-build_base_context = function_module(settings.DJPCMS_CONTENT_FUNCTION, more_content)
-
-
 
 # THE DJPCMS INTERFACE CLASS for handling views
 # the response method handle all the views in djpcms
@@ -146,19 +142,18 @@ Hooks:
         if not request.user.is_authenticated() and request.method == 'GET':
             request.session.set_test_cookie()
         
-        more_content = build_base_context(djp)
-        more_content['grid'] = grid
+        context = {'grid': grid}
         
         # Inner template available, fill the context dictionary
         # with has many content keys as the number of blocks in the page
         if page:
-            more_content['htmldoc'] = htmltype.get(page.doctype)
+            context['htmldoc'] = htmltype.get(page.doctype)
         else:
-            more_content['htmldoc'] = htmltype.get()
+            context['htmldoc'] = htmltype.get()
             
         if page:
             if not self.editurl:
-                more_content['edit_content_url'] = inline_editing(request,page,djp.instance)
+                context['edit_content_url'] = inline_editing(request,page,djp.instance)
             
         if page and page.inner_template:
             cb = {'djp':  djp,
@@ -175,9 +170,9 @@ Hooks:
             if isinstance(inner,http.HttpResponse):
                 return inner
         
-        more_content['inner'] = inner
-        self.extra_content(djp,more_content)
-        return djp.render_to_response(more_content)
+        context['inner'] = inner
+        self.extra_content(djp,context)
+        return djp.render_to_response(context)
     
     def get_ajax_response(djp):
         return None
@@ -189,30 +184,26 @@ Hooks:
         raise NotImplementedError('Default Post view not implemented')
     
     def post_response(self, djp):
-        '''
-        Handle the post view.
-        This function checks the request.POST dictionary
-        for a post_view_key specified in HTML_CLASSES (by default 'xhr')
+        '''Handle the post view. This function checks the request.POST dictionary
+for a post_view_key specified in HTML_CLASSES (by default 'xhr')
         
-        If it finds this key, the post view
-        is an AJAX-JSON request and the key VALUE represents
-        a function responsible for handling the response.
+If it finds this key, the post view is an AJAX-JSON request and the key VALUE represents
+ a function responsible for handling the response.
         
-        These ajax enabled post view functions must start with the prefix
-        ajax__ followed by the VALUE of the post_view_key.
-        
-        Example:
-            so lets say we find in the POST dictionary
-            
-            {
-            ...
-            'xhr': 'change_parameter',
-            ...
-            }
-            
-            Than there should be a function called   'ajax__change_parameter'
-            which handle the response
-        '''
+These ajax enabled post view functions must start with the prefix
+ajax__ followed by the VALUE of the post_view_key.
+
+Example:
+    so lets say we find in the POST dictionary
+    
+    {
+    ...
+    'xhr': 'change_parameter',
+    ...
+    }
+
+Than there should be a function called   'ajax__change_parameter'
+which handle the response'''
         request   = djp.request
         post      = request.POST
         is_ajax   = request.is_ajax()
@@ -410,10 +401,10 @@ This view is never in navigation and it provides a hook for adding the edit page
             return False  
     
     def extra_content(self, djp, c):
-        uni = UniForm(ShortPageForm(instance = self.get_page()), action = djp.url, csfr = True)
+        uni = UniForm(ShortPageForm(instance = self.get_page()), action = djp.url)
         uni.inputs.append(submit(value = "change", name = '_save'))
         c['page_form'] = uni.render()
-        uni = UniForm(NewChildForm(), action = djp.url, csfr = True)
+        uni = UniForm(NewChildForm(), action = djp.url)
         uni.inputs.append(submit(value = "create", name = '_child'))
         c['new_child_form'] = uni.render()
         c['page_url'] = self.page_url(djp.request)
