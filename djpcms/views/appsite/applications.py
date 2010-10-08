@@ -417,7 +417,9 @@ Reimplement for custom arguments.'''
     
     # APPLICATION URLS
     #----------------------------------------------------------------
-    def appviewurl(self, request, name, obj = None, permissionfun = None):
+    def appviewurl(self, request, name, obj = None, permissionfun = None, objrequired=False):
+        if objrequired and not isinstance(obj,self.model):
+            return None
         try:
             view = self.getview(name)
             permissionfun = permissionfun or self.has_view_permission
@@ -431,13 +433,13 @@ Reimplement for custom arguments.'''
         return self.appviewurl(request,'add',None,self.has_add_permission)
         
     def deleteurl(self, request, obj):
-        return self.appviewurl(request,'delete',obj,self.has_delete_permission)
+        return self.appviewurl(request,'delete',obj,self.has_delete_permission,objrequired=True)
         
     def editurl(self, request, obj):
-        return self.appviewurl(request,'edit',obj,self.has_edit_permission)
+        return self.appviewurl(request,'edit',obj,self.has_edit_permission,objrequired=True)
     
     def viewurl(self, request, obj):
-        return self.appviewurl(request,'view',obj)
+        return self.appviewurl(request,'view',obj,objrequired=True)
     
     def searchurl(self, request):
         return self.appviewurl(request,'search')

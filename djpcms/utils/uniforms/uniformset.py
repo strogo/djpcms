@@ -1,6 +1,18 @@
 from django.forms.forms import BoundField
+from django.forms import formsets
 
 from djpcms.utils import form_kwargs, force_unicode, mark_safe
+
+__all__ = ['ModelFormInlineHelper',
+           'BoundField']
+
+
+# special field names
+TOTAL_FORM_COUNT = formsets.TOTAL_FORM_COUNT
+INITIAL_FORM_COUNT = formsets.INITIAL_FORM_COUNT
+MAX_NUM_FORM_COUNT = formsets.MAX_NUM_FORM_COUNT
+ORDERING_FIELD_NAME = formsets.ORDERING_FIELD_NAME
+DELETION_FIELD_NAME = formsets.DELETION_FIELD_NAME
 
 
 class ModelFormInlineHelper(object):

@@ -267,7 +267,7 @@ class ApplicationPlugin(DJPplugin):
         request = djp.request
         if app.has_permission(request):
             if djp.view != app:
-                args = copy.copy(djp.urlargs)
+                args = copy.copy(djp.kwargs)
                 args.update(kwargs)
                 t_djp = self.app(djp.request, **args)
             else:
@@ -280,19 +280,6 @@ class ApplicationPlugin(DJPplugin):
             return html
         else:
             return ''
-        #args = copy.copy(djp.urlargs)
-        #args.update(kwargs)
-        # Application plugin with instance are not supported!!
-        #instance = args.pop('instance',None)
-        #if instance and not isinstance(instance,app.model):
-        #    instance = None 
-        #ndjp = self.app(djp.request, instance = instance, **args)
-        #ndjp.wrapper = wrapper
-        #ndjp.prefix  = prefix
-        #if app.has_permission(request):
-        #    return self.app.render(ndjp)
-        #else:
-        #    return ''
     
 
 class SimpleWrap(DJPwrapper):

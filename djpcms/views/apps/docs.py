@@ -38,7 +38,7 @@ class DocView(AppViewBase):
     def render(self, djp):
         app     = self.appmodel
         request = djp.request
-        args    = djp.urlargs
+        args    = djp.kwargs
         page    = djp.page
         lang    = args.get('lang',app.deflang)
         version = args.get('version',app.defversion)
@@ -84,7 +84,7 @@ class DocView(AppViewBase):
         
     def makebreadcrumbs(self, djp, doc):
         parent = djp
-        if djp.urlargs:
+        if djp.kwargs:
             parent = parent.parent
         parents = doc.get('parents',[])
         b = []
@@ -96,7 +96,7 @@ class DocView(AppViewBase):
         for parent in parents:
             b.append({'url': parent.get('link',''),
                       'name': parent.get('title','')})
-        if djp.urlargs:
+        if djp.kwargs:
             title = doc.get('title','')
             if not title:
                 title = doc.get('indextitle','')

@@ -13,7 +13,7 @@ from djpcms.contrib import messages
 from djpcms.template import loader
 from djpcms.utils import mark_safe
 from djpcms.utils.ajax import jhtmls
-from djpcms.utils.uniforms.uniformset import BoundField, ModelFormInlineHelper
+from djpcms.utils.uniforms.uniformset import *
 
 
 inlineLabels   = 'inlineLabels'
@@ -58,6 +58,20 @@ def render_form_field(field, form, layout):
     else:
         raise Exception("A field should only be rendered once: %s" % field)
     return html
+
+
+def fill_form_data(f):
+    '''Utility for filling a dictionary with data contained in a form'''
+    data = {}
+    initial = f.initial
+    is_bound = f.is_bound
+    for field in f:
+        v = field.data
+        if v is None and not is_bound:
+             v = initial.get(field.name,None)
+        if v is not None:
+            data[field.html_name] = v
+    return data     
 
 
 class FormLayout(object):
@@ -361,10 +375,13 @@ class UniForm(UniFormBase):
             save = getattr(form[1],'save',None)
             if save:
                 instance = save(commit = commit)
-        if instance and commit:
+        if instance is not None and commit:
             for formset in self.formsets:
                 formset.save(instance)
-        return instance
+        if instance and instance.id:
+            return instance.__class__.objects.get(id = instance.id)
+        else:
+            return instance
     
     def add_message(self, request, msg, error = False):
         msg = str(msg)
@@ -466,3 +483,14 @@ class UniForm(UniFormBase):
         else:
             return ''
             
+    def htmldata(self):
+        data = {}
+        for form in self.forms:
+            data.update(fill_form_data(form[1]))
+        for fset in self.formsets:
+            formset = fset.formset
+            for f in formset.forms:
+                data.update(fill_form_data(f))
+            data.update(fill_form_data(formset.management_form))
+        return data
+

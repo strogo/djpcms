@@ -29,6 +29,12 @@ class TestCase(test.TestCase):
         self.assertEqual(response.status_code,status)
         return response.context
     
+    def post(self, url = '/', data = {}, status = 200):
+        '''Quick function for posting some content'''
+        response = self.client.post(url,data)
+        self.assertEqual(response.status_code,status)
+        return response.context
+    
     def makepage(self, view = None, model = None, bit = '', parent = None, fail = False, **kwargs):
         form = PageForm()
         data = model_to_dict(form.instance, form._meta.fields, form._meta.exclude)
