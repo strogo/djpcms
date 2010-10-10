@@ -1,6 +1,6 @@
 '''Dynamic content management system using Javascript and Python'''
 
-VERSION = (0, 8, 1)
+VERSION = (0, 8, 2)
 
 
 def get_version():
