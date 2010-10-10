@@ -20,7 +20,7 @@ def read(fname):
     return open(os.path.join(root_dir, fname)).read()
 
 def requirements():
-    req = read('requirements.txt').split('\n')
+    req = read('requirements.txt').replace('\r','').split('\n')
     result = []
     for r in req:
         r = r.replace(' ','')
