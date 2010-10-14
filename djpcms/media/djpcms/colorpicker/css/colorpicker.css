@@ -164,6 +164,7 @@ input.color-picker {
 	display: none;
 }
 div.color-picker {
+	overflow:hidden;
     width: 36px;
     height: 36px;
     background: url(../images/select2.png);

@@ -339,7 +339,7 @@ YOU CAN VERY EASILY REVERT TO A GENERIC STYLE OF UNI-FORM. BEST OF LUCK...
 .uniForm table .errorlist {
 	margin: 0;
 }
-.uniForm .formColumn.cols2 {
-	width: 50%;
-	float: left;
+.uniForm .formRow {
+	overflow: hidden;
+	margin-bottom: 10px;
 }

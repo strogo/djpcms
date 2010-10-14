@@ -1,3 +1,9 @@
+Development
+=====================
+* Added ``yui-simple3.html`` template to ``templates/djpcms/yui`` directory.
+* :class:`djpcms.utils.uniform.FormLayout` injects its ``default_style`` to
+  :class:`djpcms.utils.uniform.UniFormElement` instances without a style class defined.
+
 Version 0.8.2 (2010-Oct-10)
 ==============================
 * bug fixes

@@ -68,7 +68,9 @@ def fill_form_data(f):
     for field in f:
         v = field.data
         if v is None and not is_bound:
-             v = initial.get(field.name,None)
+             v = getattr(field.field,'initial',None)
+             if v is None:
+                 v = initial.get(field.name,None)
         if v is not None:
             data[field.html_name] = v
     return data     
@@ -114,6 +116,8 @@ class FormLayout(object):
         '''Add *fields* to all fields. A field must be an instance of :class:`UniFormElement`.'''
         for field in fields:
             if isinstance(field,UniFormElement):
+                if not field.css:
+                    field.css = self.default_style
                 self._allfields.append(field)
                 if field.key:
                     setattr(self,field.key,field)
@@ -221,11 +225,14 @@ class Row(UniFormElement):
     '''A :class:`UniFormElement` which renders to a <div>.'''
     elem_css = "formRow"
     def __init__(self, *fields, **kwargs):
+        self.legend_html = kwargs.get('legend','')
+        if self.legend_html:
+            self.legend_html = '<legend>%s</legend>' % unicode(self.legend_html)
         self.fields = fields
 
     def _render(self, form, layout):
         css = self._css(layout)
-        output = u'<div class="%s">' % css
+        output = u'%s<div class="%s">' % (self.legend_html,css)
         for field in self.fields:
             output += render_field(field, form, layout)
         output += u'</div>'
@@ -235,7 +242,8 @@ class Row(UniFormElement):
 class Columns(UniFormElement):
     '''A :class:`UniFormElement` whiche defines a set of columns. Renders to a set of <div>.'''
     elem_css  = "formColumn"
-    templates = {2: 'djpcms/yui/yui-simple.html'}
+    templates = {2: 'djpcms/yui/yui-simple.html',
+                 3: 'djpcms/yui/yui-simple3.html'}
     def __init__(self, *columns, **kwargs):
         self.columns = columns
         ncols = len(columns)
