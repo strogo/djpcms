@@ -2,6 +2,7 @@
 #
 from django.template import RequestContext
 
+from djpcms.core.exceptions import PermissionDenied
 from djpcms.conf import settings
 from djpcms import forms
 from djpcms.utils import json, form_kwargs, mark_safe
@@ -49,7 +50,12 @@ class ChangeTextContent(forms.Form):
         if not request:
             raise ValueError('Request not available')
         self.user = request.user
+        queryset = self.queryset_for_user()
         super(ChangeTextContent,self).__init__(*args,**kwargs)
+        
+    def queryset_for_user(self):
+        if self.user.is_authenticated() and self.user.is_active:
+            pass            
         
     def clean_new_content(self):
         sc = self.cleaned_data['site_content']
@@ -129,14 +135,18 @@ You can use several different markup languages or simply raw HTML.'''
     def edit_form(self, djp, site_content = None, **kwargs):
         if site_content:
             try:
-                site_content = SiteContent.objects.get(id = int(site_content))
-                return EditContentForm(**form_kwargs(request = djp.request,
-                                                     instance = site_content,
-                                                     withrequest = True,
-                                                     **kwargs))
-                #return formlet(form = f, layout = 'djpcms/form/text-edit-form.html')
+                obj = SiteContent.objects.get(id = int(site_content))
             except Exception, e:
                 return None
+            # Check for permissions
+            opts = obj._meta
+            if djp.request.user.has_perm(opts.app_label + '.' + opts.get_change_permission(), obj):
+                return EditContentForm(**form_kwargs(request = djp.request,
+                                                     instance = obj,
+                                                     withrequest = True,
+                                                     **kwargs))
+            else:
+                raise PermissionDenied("Cannot edit '%s'. You don't have the right permissions" % obj)
             
     def save(self, pform):
         text = pform.update()

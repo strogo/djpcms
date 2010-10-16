@@ -19,13 +19,13 @@
     <div class="{{ grid.column_1_3 }}"  class="nav-container">
     {{ sitenav.render }}
     </div>
-    <div class="{{ grid.column_1_2 }}">
+    <div class="{{ grid.column_2_3 }}">
       <div id="brandline">{% block brandline %}
         Dynamic Content Management System {% endblock %}
       </div>
     </div>
+    {{ grid.clear }}
  </div>
- {{ grid.clear }}
 {% endblock %}
 
 {% block page-footer %}

@@ -148,6 +148,7 @@ class DocApplication(ApplicationBase):
         return '%s%s/' % (self.doc_index(),'contents')
     
     class Media:
+        js = ['djpcms/sphinx/deco.js']
         css = {
             'all': ('djpcms/sphinx/smooth.css',)
         }

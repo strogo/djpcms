@@ -81,6 +81,9 @@ class DjpResponse(http.HttpResponse):
     def bodybits(self):
         return self.view.bodybits(self.page)
     
+    def contentbits(self):
+        return self.view.contentbits(self.page)
+    
     def set_content_type(self, ct):
         h = self._headers['content-type']
         h[1] = ct

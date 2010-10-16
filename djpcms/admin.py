@@ -118,10 +118,15 @@ class PageAdmin(SafeModelAdmin):
             return http.HttpResponse(js.dumps(), mimetype='application/javascript') 
         else:
             return super(PageAdmin,self).changelist_view(request, extra_context)
-                
+
+
+class ObjectPermissionAdmin(admin.ModelAdmin):
+    list_display = ('permission','user','group','content','content_type')
+    
     
 admin.site.register(models.SiteContent, SiteContentAdmin)
 admin.site.register(models.InnerTemplate, InnerTemplateAdmin)
 admin.site.register(models.CssPageInfo, list_display=['id','body_class_name','conteiner_class','fixed'])
 admin.site.register(models.Page, PageAdmin)    
 admin.site.register(models.BlockContent,    BlockContentAdmin)
+admin.site.register(models.ObjectPermission,ObjectPermissionAdmin)

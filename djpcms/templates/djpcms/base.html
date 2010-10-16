@@ -20,7 +20,7 @@
      <ul class="messagelist">{% for message in messages %}<li>{{ message }}</li>{% endfor %}</ul>{% endif %}
     </div>
    {{ grid.clear }}{% endblock %}
-   <div id="content"{% block contentbits %}{% endblock %}>{% if page_url %}{% block edit-page %}
+   <div id="content"{% block contentbits %}{{ djp.contentbits }}{% endblock %}>{% if page_url %}{% block edit-page %}
    {% include "djpcms/content/edit_page.html" %}{% endblock %}{% endif %}{% block page-body %}
    {{ inner }}{% endblock %}
    </div>

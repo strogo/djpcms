@@ -107,6 +107,8 @@ class DJPwrapperMeta(DJPpluginMetaBase):
 class DJPwrapper(UnicodeObject):
     '''Class responsible for wrapping :ref:`djpcms plugins <plugins-class>`.
     '''
+    name          = None
+    '''Unique name. If not provided the class name will be used. Default ``None``.'''
     __metaclass__ = DJPwrapperMeta
     form_layout   = None
 
@@ -149,18 +151,19 @@ The basics:
     description   = None
     '''A short description to display in forms.'''
     form          = None
-    '''Form class for editing the plugin. Default ``None``, the plugin has no arguments.'''
+    '''Form class for editing the plugin parameters. Default ``None``, the plugin has no arguments.'''
     form_withrequest = False
     '''Equivalent to :attr:`djpcms.views.appsite.ModelApplication.form_withrequest`. If set to ``True``,
-    the ``request`` instance is passed to the form constructor. Default is ``False``.'''
-    edit_form     = False
+    the ``request`` instance is passed to the :attr:`form` constructor. Default is ``False``.'''
     #storage       = _plugin_dictionary
     #URL           = None
     
     def js(self, **kwargs):
+        '''Function which can be used to inject javascript dynamically.'''
         return None
     
     def css(self):
+        '''Function which can be used to inject css dynamically.'''
         return None
     
     def arguments(self, args):
@@ -186,9 +189,14 @@ By default do nothing.
         return self.render(djp, wrapper, prefix, **self.arguments(args))
     
     def edit(self, djp, args = None, **kwargs):
-        if self.edit_form:
-            kwargs.update(**self.arguments(args))
-            return self.edit_form(djp, **kwargs)
+        kwargs.update(**self.arguments(args))
+        return self.edit_form(djp, **kwargs)
+        
+    def edit_form(self, djp, **kwargs):
+        '''Returns the form used to edit the plugin **content**. Most plugins don't need to implement this
+        functions but some do. Check
+        the :class:`djpcms.plugins.text.Text` for example. By default it returns ``None``.'''
+        return None
     
     def render(self, djp, wrapper, prefix, **kwargs):
         '''Render the plugin. It returns a safe string to be included in the HTML page.

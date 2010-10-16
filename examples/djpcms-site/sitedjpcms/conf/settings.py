@@ -24,6 +24,10 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
 )
 
+AUTHENTICATION_BACKENDS = (
+    'djpcms.permissions.Backend',
+)
+
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -35,10 +39,9 @@ INSTALLED_APPS = (
     'djpcms.contrib.jdep',
     #'flowrepo',
     #'tagging',
-    #'djpcms.contrib.admin',
     'socialauth',
     'openid_consumer',
-    'south',
+    #'south',
     'django.contrib.admin',
 )
 
@@ -65,6 +68,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 DJPCMS_PLUGINS = ['djpcms.plugins.*']
 #DJPCMS_PLUGINS = ['djpcms.plugins.*',
 #                  'flowrepo.cms.plugins']
+DJPCMS_USER_CAN_EDIT_PAGES = True
 #=========================================================
 FLOWREPO_STORAGE_IMAGE      = 'sitedjpcms.storage.SiteFileSystemStorage'
 

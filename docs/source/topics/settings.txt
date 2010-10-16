@@ -61,7 +61,8 @@ DEFAULT_TEMPLATE_NAME
 
 default: ``['base.html','djpcms/base.html']``
 
-A list of template files of a single string. This is the template file name used when no templates are found in the page/view.
+A list of template files or a string.
+Used when no :attr:`djpcms.models.Page.template` is specified.
 
 
 

@@ -1,5 +1,9 @@
 Development
 =====================
+* Added :attr:`djpcms.models.BlockContent.for_not_authenticated` boolean field.
+  If set to ``True`` (default is ``False``) the content block will be displayed **only**
+  to non authenticated users.
+* Refactored permissions for views and introduced the :class:`djpcms.permissions.Backend`.
 * Added ``yui-simple3.html`` template to ``templates/djpcms/yui`` directory.
 * :class:`djpcms.utils.uniform.FormLayout` injects its ``default_style`` to
   :class:`djpcms.utils.uniform.UniFormElement` instances without a style class defined.

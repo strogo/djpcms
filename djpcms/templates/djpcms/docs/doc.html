@@ -1,5 +1,5 @@
 {% extends "djpcms/yui/yui-gc.html" %}
-
+{% block extra-class %} documentation{% endblock %}
 
 {% block left-column %}<div class = "documentation-main">{% block main-doc %}
   {{ doc.body|safe }}{% endblock %}

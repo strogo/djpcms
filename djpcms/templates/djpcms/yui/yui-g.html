@@ -1,6 +1,6 @@
 {# YUI STANDARD NESTING GRID (1/2,1/2) #}
 {% block pre-yui %}{% endblock %}
-<div class="yui-g{% block yui-class %}{% endblock %}">
+<div class="yui-g{% block yui-class %}{% endblock %}{% block extra-class %}{% endblock %}">
 	<div class="yui-u first">
 		{% block left-column %}{% endblock %}
 	</div>

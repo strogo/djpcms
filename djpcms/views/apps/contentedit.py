@@ -9,6 +9,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.template import RequestContext, loader
 
 from djpcms.conf import settings
+from djpcms.core.exceptions import PermissionDenied
 from djpcms.models import BlockContent
 from djpcms.utils import form_kwargs, mark_safe
 from djpcms.utils.func import isforminstance
@@ -250,7 +251,7 @@ class ChangeContentView(appview.EditView):
 
 class EditPluginView(appview.EditView):
     '''
-    View class for managing inline editing of a content block.
+    View class for editing the content of a plugin.
     The url is given by the ContentBlocks models
     '''
     _methods = ('post',)
@@ -266,11 +267,16 @@ class EditPluginView(appview.EditView):
         p = instance.plugin
         if p:
             return p.edit(djp, instance.arguments, initial = initial, withdata = withdata)
+                
     
     def default_post(self, djp):
         data = dict(djp.request.POST.items())
         is_ajax = djp.request.is_ajax()
-        f = self.get_form(djp, initial = {'url':data['url']}, withdata = False)
+        try:
+            f = self.get_form(djp, initial = {'url':data['url']}, withdata = False)
+        except PermissionDenied, e:
+            return jerror(str(e))
+        
         if f:
             uni = UniForm(f,
                           request  = djp.request,

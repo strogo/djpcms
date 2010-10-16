@@ -39,6 +39,7 @@ DJPCMS_WRAPPERS                 = ['djpcms.plugins.extrawrappers']
 DJPCMS_MARKUP_MODULE            = 'djpcms.utils.markups'
 DJPCMS_SITE_MAP                 = True
 
+DJPCMS_USER_CAN_EDIT_PAGES      = False
 #
 # API url prefix
 API_PREFIX               = 'api'

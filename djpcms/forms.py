@@ -1,5 +1,6 @@
 from django import forms
 from django.db import models
+from django.contrib.auth.models import Group
 from django.contrib.sites.models import Site
 from django.utils.translation import ugettext_lazy as _
 
@@ -250,12 +251,13 @@ class ContentBlockForm(EditingForm):
     This Model form is used to change the plug-in within
     for a given BlockContent instance.
     '''
-    plugin_name    = PluginChoice(label = _('Plugin'),   choices = plugingenerator, required = False)
-    container_type = LazyChoiceField(label=_('Container'), choices = wrappergenerator)
+    plugin_name     = PluginChoice(label = _('Plugin'),   choices = plugingenerator, required = False)
+    container_type  = LazyChoiceField(label=_('Container'), choices = wrappergenerator)
+    view_permission = ModelMultipleChoiceField(queryset = Group.objects.all())
     
     class Meta:
         model = BlockContent
-        fields = ['plugin_name','container_type','title','url']
+        fields = ['plugin_name','container_type','title','for_not_authenticated']
         
     def __init__(self, instance = None, **kwargs):
         '''
@@ -281,15 +283,14 @@ class ContentBlockForm(EditingForm):
 # Short Form for a Page
 class ShortPageForm(ModelForm):
     '''Form to used to edit inline a page'''
-    layout = FormLayout(Columns(('title','parent','inner_template','in_navigation'),
-                                ('link','url_pattern','cssinfo',Row('soft_root','requires_login')))
+    layout = FormLayout(Columns(('title','inner_template','in_navigation','requires_login'),
+                                ('link','url_pattern','cssinfo','soft_root'))
                         )
     
     class Meta:
         model = Page
         fields = ['link','title','inner_template','url_pattern','cssinfo',
-                  'in_navigation','requires_login','soft_root',
-                  'parent']
+                  'in_navigation','requires_login','soft_root']
 
 
 class NewChildForm(Form):

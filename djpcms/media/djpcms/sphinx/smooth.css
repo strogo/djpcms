@@ -1,7 +1,7 @@
 .documentation h2, .documentation h3, .documentation h4 {
 	margin-top:1.4em;
 }
-.documentation .section h1 {display: none;}
+/*.documentation .section h1 {display: none;}*/
 .documentation .section h2 {font-size: 150%;}
 .documentation .section h3 {
 	font-size: 120%;
@@ -26,24 +26,24 @@
 }
 /*
 ------------------------------- LISTS */
-.documentation .section ul {
+.documentation ul {
 	margin-left: 20px;
 }
-.documentation .section li,
-.documentation .section li.toctree-l1 {
+.documentation li,
+.documentation li.toctree-l1 {
 	list-style-type:disc;
 	margin-bottom: 10px;
 }
-.documentation .section li.toctree-l2 {
+.documentation li.toctree-l2 {
 	list-style-type:circle;
 	margin-bottom: 0;
 	margin-top: 3px;
 }
-.documentation .section li.toctree-l1 a {
+.documentation li.toctree-l1 a {
 	font-weight: bold;
 	font-size: 110%;
 }
-.documentation .section li.toctree-l2 a {
+.documentation li.toctree-l2 a {
 	font-weight: normal;
 	font-size: 100%;
 }

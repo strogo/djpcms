@@ -468,18 +468,25 @@ Reimplement for custom arguments.'''
             return False
         opts = self.opts
         return request.user.has_perm(opts.app_label + '.' + opts.get_add_permission())
+    
     def has_edit_permission(self, request = None, obj=None):
         if not request:
             return False
         opts = self.opts
-        return request.user.has_perm(opts.app_label + '.' + opts.get_change_permission())
-    def has_view_permission(self, request = None, obj=None):
-        return self.has_permission(request, obj)
+        return request.user.has_perm(opts.app_label + '.' + opts.get_change_permission(), obj)
+    
+    def has_view_permission(self, request = None, obj = None):
+        '''Return True if the page can be viewed, otherwise False'''
+        if not request:
+            return False
+        opts = self.opts
+        return request.user.has_perm(opts.app_label + '.view', obj)
+    
     def has_delete_permission(self, request = None, obj=None):
         if not request:
             return False
         opts = self.opts
-        return request.user.has_perm(opts.app_label + '.' + opts.get_delete_permission())
+        return request.user.has_perm(opts.app_label + '.' + opts.get_delete_permission(), obj)
     #-----------------------------------------------------------------------------------------------
     
     def basequery(self, request):

@@ -6,7 +6,9 @@ from django.utils.dateformat import DateFormat
 from django.db import models
 from django.utils import translation
 from django.utils import html
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group, Permission
+from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.utils.datastructures import SortedDict
 from django.contrib.contenttypes.models import ContentType
@@ -14,6 +16,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.template import Template
 
 from djpcms.conf import settings
+from djpcms.permissions import has_permission, get_view_permission
 from djpcms.fields import SlugCode
 from djpcms.plugins import get_wrapper, default_content_wrapper, get_plugin
 from djpcms.utils import lazyattr, function_module, force_unicode, mark_safe, htmltype
@@ -37,8 +40,7 @@ class TimeStamp(models.Model):
     
 
 class InnerTemplate(TimeStamp):
-    '''Page Inner template
-    '''
+    '''Page Inner template'''
     name     = models.CharField(max_length = 200)
     image    = models.ImageField(upload_to = upload_function, storage = site_image_storage(), null = True, blank = True)
     template = models.TextField(blank = True)
@@ -48,14 +50,12 @@ class InnerTemplate(TimeStamp):
         return u'%s' % self.name
     
     def render(self, c):
-        '''
-        Render the inner template given the content
-        @param param: c content dictionary or instance of Context
-        @return: html 
+        '''Render the inner template given the context ``c``.
         '''
         return Template(self.template).render(c)
         
     def numblocks(self):
+        '''Number of ``blocks`` within template.'''
         bs = self.blocks.split(',')
         return len(bs)
     
@@ -113,12 +113,16 @@ class Page(TimeStamp):
                                        null = True,
                                        blank = True,
                                        verbose_name=_("inner template"))
+    '''Page inner template is an instance of :class:`djpcms.models.InnerTemplate`. It contains information regrading the number of ``blocks`` in the page
+as well as the layout structure.'''
     
     template    = models.CharField(max_length=200,
                                    verbose_name = 'template file',
                                    null = True,
                                    blank = True,
                                    help_text=_('Optional. Templale file for the page.'))
+    '''Optional template file for rendering the page.
+If not specified the :setting:`DEFAULT_TEMPLATE_NAME` is used.'''
     
     in_navigation = models.PositiveIntegerField(default=1,
                                                 verbose_name = _("Position in navigation"),
@@ -219,8 +223,8 @@ If not specified we get the template of the :attr:`parent` page.'''
 
 
 class BlockContent(models.Model):
-    '''A block content object is responsible for mantaining
-    relationship between html plugins and their position in page
+    '''A block content object is responsible storing :class:`djpcms.plugins.DJPplugin`
+and for maintaining their position in a :class:`djpcms.models.Page`.
     '''
     page           = models.ForeignKey(Page,
                                        verbose_name=_("page"),
@@ -233,20 +237,29 @@ class BlockContent(models.Model):
                                                  blank=True,
                                                  editable=False,
                                                  default = 0)
-    '''Integer indicationg the position of content within the block.'''
+    '''Integer indicationg the position of content within the content ``block``.'''
     plugin_name    = models.CharField(blank = True,
                                       max_length = 100)
+    '''The unique :attr:`djpcms.plugins.DJPplugin.name` of plugin in the content ``block``.'''
     arguments      = models.TextField(blank = True)
+    ''':class:`djpcms.plugins.DJPplugin` arguments as JSON string.'''
     container_type = models.CharField(max_length = 30,
                                       blank = False,
                                       verbose_name=_('container'))
+    '''The unique :attr:`djpcms.plugins.DJPwrapper.name` of the plugin html-wrapper.'''
     title          = models.CharField(blank = True, max_length = 100)
+    '''Optional title'''
+    for_not_authenticated = models.BooleanField(default = False)
+    '''If ``True`` (default is ``False``) the block will be rendered **only** for non-authenticated users.'''
     
     objects = BlockContentManager()
     
     class Meta:
         unique_together = (('page','block','position'),)
         ordering  = ('page','block','position',)
+        permissions = (
+            ("view_blockcontent", "Can view block content"),
+        )
         
     def __unicode__(self):
         return '%s-%s-%s' % (self.page.id,self.block,self.position)
@@ -292,14 +305,13 @@ class BlockContent(models.Model):
         plugin  = plugin or self.plugin
         wrapper = wrapper or self.wrapper
         if plugin:
-            djp.media += plugin.media
-            html   = plugin(djp, self.arguments, wrapper = wrapper)
-            if html:
-                return wrapper(djp, self, html)
-            else:
-                return ''
-        else:
-            return u''
+            opts = self._meta
+            if has_permission(djp.request.user,get_view_permission(self), self):
+                djp.media += plugin.media
+                html   = plugin(djp, self.arguments, wrapper = wrapper)
+                if html:
+                    return wrapper(djp, self, html)
+        return u''
     
     def change_plugin_content(self, request):
         '''
@@ -393,3 +405,14 @@ def create_page(url_pattern, parent = None, user = None, title = None,
                     inner_template = parent.inner_template,
                     **kwargs)
         page.save()
+
+
+class ObjectPermission(models.Model):
+    '''Model for handling per-object permissions.'''
+    user = models.ForeignKey(User, verbose_name=_(u"User"), blank=True, null=True)
+    group = models.ForeignKey(Group, verbose_name=_(u"Group"), blank=True, null=True)
+    permission = models.ForeignKey(Permission, verbose_name=_(u"Permission"))
+
+    content_type = models.ForeignKey(ContentType, verbose_name=_(u"Content type"))
+    content_id = models.PositiveIntegerField(verbose_name=_(u"Content id"))
+    content = generic.GenericForeignKey(ct_field="content_type", fk_field="content_id")

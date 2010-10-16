@@ -11,6 +11,7 @@ from django.forms import Media, MediaDefiningClass
 
 
 from djpcms.conf import settings
+from djpcms.permissions import get_view_permission, has_permission
 from djpcms.contrib import messages
 from djpcms.utils.ajax import jservererror, jredirect
 from djpcms.utils.html import grid960, submit
@@ -261,8 +262,7 @@ which handle the response'''
             return grid960()
     
     def has_permission(self, request = None, obj = None):
-        '''
-        Hook for permissions
+        '''Hook for permissions
         '''
         return True
     
@@ -284,6 +284,14 @@ which handle the response'''
             css = page.cssinfo
             if css and css.body_class_name:
                 b = 'class="%s"' % css.body_class_name
+        return mark_safe(b)
+    
+    def contentbits(self, page):
+        b = u''
+        if page:
+            css = page.cssinfo
+            if css and css.container_class_name:
+                b = ' class="%s"' % css.container_class_name
         return mark_safe(b)
     
     def permissionDenied(self, djp):
@@ -343,7 +351,10 @@ class pageview(djpcmsview):
     def is_soft(self, djp):
         return self.page.soft_root
     
-    def has_permission(self, request = None, obj = None):
+    def has_permission(self, request, obj = None):
+        return has_permission(request.user,get_view_permission(self.page),self.page)
+        opts = self.page
+        #return request.user.has_perm(opts.app_label + '.' + opts.get_change_permission(), obj)
         if self.page.requires_login:
             if request:
                 return request.user.is_authenticated()

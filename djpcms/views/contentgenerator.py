@@ -7,22 +7,16 @@ from djpcms.utils import UnicodeObject
 
 
 class BlockContentGen(UnicodeObject):
-    '''
-    Block Content Generator.
-    This class is responsible for generating contents within a 'block'.
-    A page is associated with a given url and a page has a certain number
-    of blocks depending on the template chosen for the pages: anything between 1 and 10 is highly possible.
-    Within each block there may be one or more contents.
-    
-    The edit mode block elements are rendered using the EDIT_BLOCK_TEMPLATES templates (see at top of file)
+    '''Block Content Generator is responsible for generating contents within a ``block``.
+A page is associated with a given url and a page has a certain number
+of ``blocks`` depending on the template chosen for the pages: anything between 1 and 10 is highly possible.
+Within each ``block`` there may be one or more ``contents``.
+
+The edit mode block elements are rendered using the EDIT_BLOCK_TEMPLATES templates (see at top of file)
     '''
     def __init__(self, djp, b):
-        '''
-        Initialize
-        @param cl:      instance of djpcms.views.baseview.ResponseBase
-        @param b:       integer indicating the block number in the page
-        @param page:    instance of Page or AppPage
-        '''
+        '''Initialize generator: *djp* is an instance of :class:`djpcms.views.response.DjpResponse`
+and *b* is an integer indicating the ``block`` number in the page.'''
         self.djp     = djp
         self.page    = djp.page
         self.view    = djp.view

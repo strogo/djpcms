@@ -149,10 +149,10 @@
         "fields": {
             "gridsize": 12, 
             "created": "2009-12-06 09:07:06", 
-            "body_class_name": "writing", 
+            "body_class_name": "documentation", 
             "container_class_name": "", 
             "last_modified": "2009-12-06 09:07:06", 
-            "fixed": false
+            "fixed": true
         }
     }
 ]

@@ -7,13 +7,20 @@
 Database Models
 ================================
 
+
+At the heart of the Content Management System lays the :class:`djpcms.models.Page` and
+:class:`djpcms.models.BlockContent` database models. A ``page``, or better, the :attr:`djpcms.models.Page.inner_template`
+field is a container for one or several ``blocks``,
+and each ``block`` has one or several ``contents``.
+The number of ``blocks`` within a page is
+specified in by the :attr:`djpcms.models.InnerTemplate.numblocks` method.
+
+
 .. _topics-models-page:
+
 
 Page Model
 ================
-At the hart of the Content Management System lays the Page model.
-
-The content editing views is controlled by the setting :ref:`content-inline-editing`.
 
 .. autoclass:: djpcms.models.Page
    :members:
@@ -26,6 +33,13 @@ Block Content Model
 =============================
 
 .. autoclass:: djpcms.models.BlockContent
+   :members:
+   :member-order: bysource
+   
+Inner Template Model
+============================
+
+.. autoclass:: djpcms.models.InnerTemplate
    :members:
    :member-order: bysource
    
