@@ -55,8 +55,9 @@ class UserChangeForm(forms.ModelForm):
         fields = ['username','first_name','last_name','email']
 
 
-class PasswordForm(authforms.PasswordChangeForm):
+class PasswordChangeForm(authforms.PasswordChangeForm):
     
     def __init__(self, instance = None, *args, **kwargs):
-        super(PasswordForm,self).__init__(user = instance, *args, **kwargs)
+        self.instance = instance
+        super(PasswordChangeForm,self).__init__(user = instance, *args, **kwargs)
     

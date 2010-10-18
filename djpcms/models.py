@@ -413,6 +413,6 @@ class ObjectPermission(models.Model):
     group = models.ForeignKey(Group, verbose_name=_(u"Group"), blank=True, null=True)
     permission = models.ForeignKey(Permission, verbose_name=_(u"Permission"))
 
-    content_type = models.ForeignKey(ContentType, verbose_name=_(u"Content type"))
+    content_type = models.ForeignKey(ContentType, verbose_name=_(u"Content type"), related_name = 'objectpermissions')
     content_id = models.PositiveIntegerField(verbose_name=_(u"Content id"))
     content = generic.GenericForeignKey(ct_field="content_type", fk_field="content_id")

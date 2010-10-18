@@ -153,7 +153,7 @@ class DjpResponse(http.HttpResponse):
         request = self.request
         is_ajax = request.is_ajax()
         
-        # Last check for permissions
+        # Check for permissions
         if not view.has_permission(request, self.instance):
             return view.permissionDenied(self)
         

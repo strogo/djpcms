@@ -253,7 +253,7 @@ class ContentBlockForm(EditingForm):
     '''
     plugin_name     = PluginChoice(label = _('Plugin'),   choices = plugingenerator, required = False)
     container_type  = LazyChoiceField(label=_('Container'), choices = wrappergenerator)
-    view_permission = ModelMultipleChoiceField(queryset = Group.objects.all())
+    view_permission = ModelMultipleChoiceField(queryset = Group.objects.all(), required = False)
     
     class Meta:
         model = BlockContent

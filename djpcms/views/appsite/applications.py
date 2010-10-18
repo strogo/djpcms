@@ -298,7 +298,7 @@ It returns dictionary of url bits.
         '''
         return {'id': obj.id}
     
-    def get_object(self, *args, **kwargs):
+    def get_object(self, request, **kwargs):
         '''Retrive an instance of self.model from key-values *kwargs* forming the url.
 By default it get the 'id' and get the object::
 
@@ -308,7 +308,7 @@ By default it get the 'id' and get the object::
     except:
         return None
     
-Reimplement for custom arguments.'''
+Re-implement for custom arguments.'''
         try:
             id = int(kwargs.get('id',None))
             return self.model.objects.get(id = id)

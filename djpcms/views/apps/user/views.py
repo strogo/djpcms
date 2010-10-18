@@ -1,16 +1,14 @@
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.tokens import default_token_generator
 from django.contrib import messages
 from django import http
 
 from djpcms.views import appview
 from djpcms.utils.html import submit
 from djpcms.utils import form_kwargs
-from djpcms.utils.ajax import jredirect
+from djpcms.utils.ajax import jredirect 
 
-from forms import LoginForm
-
-
-__all__ = ['LogoutView','LoginView']
+from forms import LoginForm, PasswordChangeForm
 
 
 class LogoutView(appview.AppView):
@@ -119,3 +117,20 @@ class LoginView(appview.AppView):
         else:
             return 'username or password not provided'
 
+
+
+class ChangeView(appview.EditView):
+    token_generator = default_token_generator
+    
+    def get_form(self, djp, **kwargs):
+        form = self.appmodel.get_form(djp,
+                                      form = PasswordChangeForm,
+                                      forceform = True,
+                                      addinputs = False)
+        form.inputs.append(submit(name = 'change', value = 'Change'))
+        if djp.own_view():
+            form.inputs.append(submit(name = 'cancel', value = 'Cancel'))
+        return form
+    
+    def save(self, request, f):
+        return f.save()

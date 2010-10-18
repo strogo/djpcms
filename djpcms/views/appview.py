@@ -368,7 +368,7 @@ def saveform(self, djp, editing = False):
     f      = self.get_form(djp)
     if f.is_valid():
         try:
-            instance = self.save(f)
+            instance = self.save(request, f)
             msg = self.success_message(instance, 'changed' if editing else 'added')
             f.add_message(request, msg)
         except Exception, e:
@@ -428,7 +428,7 @@ class AddView(AppView):
     def get_form(self, djp, **kwargs):
         return self.appmodel.get_form(djp, form = self._form, **kwargs)
     
-    def save(self, f):
+    def save(self, request, f):
         return self.appmodel.object_from_form(f)
     
     def render(self, djp, **kwargs):
@@ -467,7 +467,7 @@ class ObjectView(AppView):
         if instance:
             urlargs.update(self.appmodel.objectbits(instance))
         else:
-            instance = self.appmodel.get_object(**urlargs)
+            instance = self.appmodel.get_object(djp.request, **urlargs)
         
         if not instance:
             raise http.Http404
@@ -550,7 +550,7 @@ class EditView(ObjectView):
         f = self.get_form(djp)
         return render_form(f,djp)
     
-    def save(self, f):
+    def save(self, request, f):
         return self.appmodel.object_from_form(f)
     
     def ajax__save(self, djp):

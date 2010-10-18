@@ -344,7 +344,7 @@ class ContentSite(appsite.ModelApplication):
             return djp.url
         
         
-    def get_object(self, pageid = 1, blocknumber = 1, position = 1):
+    def get_object(self, request, pageid = 1, blocknumber = 1, position = 1):
         '''
         Override superclass function.
         This function get the information needed for performing in-line editing.
