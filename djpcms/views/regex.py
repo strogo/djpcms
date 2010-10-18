@@ -31,6 +31,12 @@ class RegExUrl(object):
     def __len__(self):
         return len(self.url)
     
+    def __eq__(self, other):
+        if isinstance(other,self.__class__):
+            return self.url == other.url
+        else:
+            return False
+    
     def split(self):
         if self._split:
             return self.url.split('/')

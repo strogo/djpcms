@@ -200,7 +200,7 @@ class AppView(AppViewBase):
         super(AppView,self).__init__(isapp = isapp,
                                      splitregex = splitregex,
                                      **kwargs)
-    
+        
     def __unicode__(self):
         return u'%s: %s' % (self.name,self.regex)
     

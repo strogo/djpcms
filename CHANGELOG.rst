@@ -1,12 +1,24 @@
-Development
-=====================
+Version 0.8.3 (2010-Oct-18)
+=================================
+* Added :class:`djpcms.models.ObjectPermission` model for handling granular permissions at object level.
+  To use the new permissions add::
+  
+  		AUTHENTICATION_BACKENDS = (
+  		    'djpcms.permissions.Backend',
+		)
+		
+  in the ``settings`` file.
+  
+* Added :attr:`djpcms.models.BlockContent.requires_login` boolean field.
+  If set to ``True`` (default is ``False``) the content block will be displayed **only**
+  to authenticated users.
 * Added :attr:`djpcms.models.BlockContent.for_not_authenticated` boolean field.
   If set to ``True`` (default is ``False``) the content block will be displayed **only**
   to non authenticated users.
-* Refactored permissions for views and introduced the :class:`djpcms.permissions.Backend`.
 * Added ``yui-simple3.html`` template to ``templates/djpcms/yui`` directory.
-* :class:`djpcms.utils.uniform.FormLayout` injects its ``default_style`` to
-  :class:`djpcms.utils.uniform.UniFormElement` instances without a style class defined.
+* :class:`djpcms.utils.uniforms.FormLayout` injects its ``default_style`` to
+  :class:`djpcms.utils.uniforms.UniFormElement` instances without a style class defined.
+* **38 unit tests**.
 
 Version 0.8.2 (2010-Oct-10)
 ==============================

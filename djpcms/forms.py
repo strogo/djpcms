@@ -147,10 +147,12 @@ class PageForm(ModelForm):
             except KeyError:
                 raise forms.ValidationError('Application %s not available' % app)
             parent = self.get_parent()
+            # Parent page is available
             if parent:
                 if not application.parent:
-                    raise forms.ValidationError("Application %s is a root application. Don't specify a parent please." % application)
-                if application.parent.code != parent.application:
+                    parent = None
+                    self.data.pop('parent',None)
+                elif application.parent.code != parent.application:
                     raise forms.ValidationError("Page %s is not a parent of %s" % (parent,application))
             
             bit = data.get('url_pattern','')
@@ -303,12 +305,12 @@ class ContentBlockForm(EditingForm):
 class ShortPageForm(ModelForm):
     '''Form to used to edit inline a page'''
     layout = FormLayout(Columns(('title','inner_template','in_navigation','requires_login'),
-                                ('link','url_pattern','cssinfo','soft_root'))
+                                ('link','cssinfo','soft_root'))
                         )
     
     class Meta:
         model = Page
-        fields = ['link','title','inner_template','url_pattern','cssinfo',
+        fields = ['link','title','inner_template','cssinfo',
                   'in_navigation','requires_login','soft_root']
 
 

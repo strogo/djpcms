@@ -41,7 +41,7 @@ INSTALLED_APPS = (
     #'tagging',
     'socialauth',
     'openid_consumer',
-    #'south',
+    'south',
     'django.contrib.admin',
 )
 

@@ -421,6 +421,7 @@ class ObjectPermission(models.Model):
     objects = PermissionManager()
 
     def has_perm(self, user):
+        '''Check permission for user'''
         if self.user:
             return self.user == user
         else:

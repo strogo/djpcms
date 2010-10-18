@@ -80,9 +80,6 @@ Optional requirements:
  * django-tagging_ for tag management.
  * fabric_ and pip_ for the ``djpcms.contrib.jdep`` module.
  
-Kudos
-==========
-* The ``permissions`` module in libs has been adapted from http://bitbucket.org/diefenbach/django-permissions 
 
 
 __ http://pypi.python.org/pypi?:action=display&name=djpcms

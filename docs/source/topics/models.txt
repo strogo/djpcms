@@ -50,3 +50,11 @@ SiteContent Model
 .. autoclass:: djpcms.models.SiteContent
    :members:
    :member-order: bysource
+   
+Object Permission
+=========================
+
+.. autoclass:: djpcms.models.ObjectPermission
+   :members:
+   :member-order: bysource
+   

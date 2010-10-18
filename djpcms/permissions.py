@@ -30,7 +30,7 @@ def has_permission(user, permission_codename, obj=None):
         opts = obj._meta
         
         viewperm     = get_view_permission(obj) == permission_codename
-        changeperm   = opts.get_change_permission() == permission_codename
+        changeperm   = opts.app_label + '.' + opts.get_change_permission() == permission_codename
         
         # Do Page and BlockContent first
         if isinstance(obj,Page):
@@ -54,6 +54,7 @@ def has_permission(user, permission_codename, obj=None):
             for perm in perms:
                 if perm.has_perm(user):
                     return True
+            return False
         
         # Fall back to permission without object
         return has_permission(user, permission_codename)

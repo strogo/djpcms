@@ -341,7 +341,7 @@ class pageview(djpcmsview):
 
     def __unicode__(self):
         return self.page.url
-    
+        
     def get_url(self, djp, **urlargs):
         return self.page.url
     
