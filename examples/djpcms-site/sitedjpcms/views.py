@@ -44,10 +44,11 @@ class TwitterDone(AppView):
         request_token = request.session.get('request_token', None)
         verifier = request.GET.get('oauth_verifier', None)
         denied = request.GET.get('denied', None)
-    
+        
         # If we've been denied, put them back to the signin page
         # They probably meant to sign in with facebook >:D
         if denied:
+            messages.info(request, 'Could not login. Access denied.')
             return http.HttpResponseRedirect(settings.USER_ACCOUNT_HOME_URL)
 
         # If there is no request_token for session,
@@ -73,7 +74,8 @@ class TwitterDone(AppView):
     
             request.session['access_token'] = access_token.to_string()
             user = authenticate(twitter_access_token=access_token)
-        except:
+        except Exception, e:
+            messages.info(request, 'Could not login. %s' % e)
             user = None
       
         # if user is authenticated then login user

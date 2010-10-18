@@ -26,6 +26,10 @@ MIDDLEWARE_CLASSES = (
 
 AUTHENTICATION_BACKENDS = (
     'djpcms.permissions.Backend',
+    'socialauth.auth_backends.OpenIdBackend',
+    'socialauth.auth_backends.TwitterBackend',
+    'socialauth.auth_backends.FacebookBackend',
+    'socialauth.auth_backends.LinkedInBackend',
 )
 
 INSTALLED_APPS = (

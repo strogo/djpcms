@@ -21,14 +21,6 @@ __contact__  = "luca.sbardella@gmail.com"
 __homepage__ = "http://djpcms.com/"
 
 
-def install_libs():
-    import os
-    from utils import pathtool
-    this_dir = pathtool.parentdir(os.path.abspath(__file__))
-    atp = pathtool.AddToPath(this_dir)
-    atp.add(module = 'permissions', down = ('libs','django-permissions'))
-
-
 def runtests(verbosity = 1, interactive = True, failfast = False):
     '''Run tests::
     
@@ -52,6 +44,3 @@ def runtests(verbosity = 1, interactive = True, failfast = False):
                              interactive=interactive,
                              failfast=failfast)
     failures = test_runner.run_tests(('djpcms','jdep'))
-
-
-install_libs()

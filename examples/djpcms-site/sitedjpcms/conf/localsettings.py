@@ -84,12 +84,3 @@ FACEBOOK_EXTENDED_PERMISSIONS = (
     #'friend_work_history',
 )
 
-
-AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.ModelBackend',
-    'socialauth.auth_backends.OpenIdBackend',
-    'socialauth.auth_backends.TwitterBackend',
-    'socialauth.auth_backends.FacebookBackend',
-    'socialauth.auth_backends.LinkedInBackend',
-)
-
