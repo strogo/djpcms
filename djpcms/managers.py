@@ -1,6 +1,11 @@
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.sites.models import Site
+from django.contrib.auth.models import Permission
+from django.contrib.contenttypes.models import ContentType
+
+from djpcms.utils import force_unicode
+from djpcms.permissions import get_view_permission
 
 
 class ContentBlockError(Exception):
@@ -254,3 +259,47 @@ def CalculateUrl(self):
     except Exception, e:
         return None
     
+    
+class PermissionManager(models.Manager):
+    
+    def for_object(self, obj, code):
+        pe = self._get_permission(obj, code)
+        if not pe:
+            return None
+        return self.filter(content_id = obj.pk, permission = pe)
+        
+    def set_view_permission(self, obj, users = None, groups = None):
+        code = get_view_permission(obj)
+        pe = self._get_permission(obj, code, True)
+        self.filter(content_id = obj.pk, permission = pe).delete()
+        self._add_permission(pe, obj, users, groups)
+        
+    def add_view_permission(self, obj, users = None, groups = None):
+        '''Add a view permission to *groups* and/or *users* for object *obj*'''
+        code = get_view_permission(obj)
+        pe = self._get_permission(obj, code, True)
+        self._add_permission(pt,obj,users,groups)
+        
+    def _get_permission(self, obj, code, create = False):
+        ct = ContentType.objects.get_for_model(obj)
+        pe = Permission.objects.filter(codename = code, content_type = ct)
+        if pe:
+            pe = pe[0]
+        elif create:
+            pe = Permission(codename = code, content_type = ct, name = 'Can view %s' % force_unicode(obj._meta.verbose_name))
+            pe.save()
+        return pe
+        
+    def _add_permission(self,pe,obj,users,groups):
+        ct = pe.content_type
+        if groups:
+            for group in groups:
+                op = self.model(group = group, content_type = ct,
+                                content_id = obj.pk, permission = pe)
+                op.save()
+        if users:
+            for user in users:
+                op = self.model(user = user, content_type = ct,
+                                content_id = obj.pk, permission = pe)
+                op.save()
+        

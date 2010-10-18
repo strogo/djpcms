@@ -343,3 +343,8 @@ YOU CAN VERY EASILY REVERT TO A GENERIC STYLE OF UNI-FORM. BEST OF LUCK...
 	overflow: hidden;
 	margin-bottom: 10px;
 }
+
+.uniForm .inlineLabels.auto label,
+.uniForm .inlineLabels.auto .label {
+	width: auto;
+}

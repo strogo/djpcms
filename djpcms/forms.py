@@ -5,11 +5,11 @@ from django.contrib.sites.models import Site
 from django.utils.translation import ugettext_lazy as _
 
 from djpcms.conf import settings
-from djpcms.models import Page, BlockContent, SiteContent, create_page
+from djpcms.models import Page, BlockContent, SiteContent, ObjectPermission, create_page
 from djpcms.utils import lazyattr, smart_unicode
 from djpcms import siteapp_choices
 from djpcms.plugins import get_plugin, plugingenerator, wrappergenerator
-from djpcms.utils.uniforms import FormLayout, Fieldset, Columns, Row, Html, inlineLabels
+from djpcms.utils.uniforms import FormLayout, Fieldset, Columns, Row, Html, inlineLabels, inlineLabels3
 from djpcms.utils.html import ModelChoiceField, ModelMultipleChoiceField, submit
 from djpcms.utils.func import slugify
 
@@ -254,10 +254,12 @@ class ContentBlockForm(EditingForm):
     plugin_name     = PluginChoice(label = _('Plugin'),   choices = plugingenerator, required = False)
     container_type  = LazyChoiceField(label=_('Container'), choices = wrappergenerator)
     view_permission = ModelMultipleChoiceField(queryset = Group.objects.all(), required = False)
+    layout = FormLayout(Fieldset('plugin_name','container_type','title','view_permission'),
+                        Columns(('for_not_authenticated',),('requires_login',), css_class=inlineLabels3))
     
     class Meta:
         model = BlockContent
-        fields = ['plugin_name','container_type','title','for_not_authenticated']
+        fields = ['plugin_name','container_type','title','for_not_authenticated','requires_login']
         
     def __init__(self, instance = None, **kwargs):
         '''
@@ -271,13 +273,30 @@ class ContentBlockForm(EditingForm):
         
     def save(self, commit = True):
         pt = self.cleaned_data.pop('plugin_name')
+        pe = self.cleaned_data.pop('view_permission')
         instance = self.instance
         if pt:
             instance.plugin_name = pt.name
         else:
             instance.plugin_name = ''
-        return super(ContentBlockForm,self).save(commit = commit)
+        if pe:
+            instance.requires_login = True
+        cb = super(ContentBlockForm,self).save(commit = commit)
+        if cb.pk:
+            ObjectPermission.objects.set_view_permission(cb, groups = pe)
+        return cb
 
+    def clean_requires_login(self):
+        rl = self.cleaned_data['requires_login']
+        if rl and self.cleaned_data['for_not_authenticated']:
+            raise ValidationError("Select this or for not authenticated or neither. Cannot select both.")
+        return rl
+    
+    def clean_view_permission(self):
+        vp = self.cleaned_data['view_permission']
+        if vp and self.cleaned_data['for_not_authenticated']:
+            raise ValidationError("Select this or for not authenticated or neither. Cannot select both.")
+        return vp
 
 
 # Short Form for a Page

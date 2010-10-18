@@ -22,7 +22,7 @@ from djpcms.plugins import get_wrapper, default_content_wrapper, get_plugin
 from djpcms.utils import lazyattr, function_module, force_unicode, mark_safe, htmltype
 from djpcms.utils.func import PathList
 from djpcms.uploads import upload_function, site_image_storage
-from djpcms.managers import PageManager, BlockContentManager, SiteContentManager, CalculateUrl
+from djpcms.managers import PageManager, BlockContentManager, SiteContentManager, CalculateUrl, PermissionManager
 from djpcms.markup import markuplib
 
 protocol_re = re.compile('^\w+://')
@@ -251,7 +251,8 @@ and for maintaining their position in a :class:`djpcms.models.Page`.
     '''Optional title'''
     for_not_authenticated = models.BooleanField(default = False)
     '''If ``True`` (default is ``False``) the block will be rendered **only** for non-authenticated users.'''
-    
+    requires_login = models.BooleanField(default = False)
+    '''If ``True`` (default is ``False``) the block will be rendered **only** for authenticated users.'''
     objects = BlockContentManager()
     
     class Meta:
@@ -416,3 +417,11 @@ class ObjectPermission(models.Model):
     content_type = models.ForeignKey(ContentType, verbose_name=_(u"Content type"), related_name = 'objectpermissions')
     content_id = models.PositiveIntegerField(verbose_name=_(u"Content id"))
     content = generic.GenericForeignKey(ct_field="content_type", fk_field="content_id")
+    
+    objects = PermissionManager()
+
+    def has_perm(self, user):
+        if self.user:
+            return self.user == user
+        else:
+            return user.groups.filter(id = self.group.id).count() > 0

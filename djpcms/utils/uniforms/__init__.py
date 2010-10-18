@@ -18,6 +18,7 @@ from djpcms.utils.uniforms.uniformset import *
 
 inlineLabels   = 'inlineLabels'
 inlineLabels2  = 'inlineLabels fullwidth'
+inlineLabels3  = 'inlineLabels auto'
 blockLabels    = 'blockLabels'
 blockLabels2   = 'blockLabels2'
 inlineFormsets = 'blockLabels2'

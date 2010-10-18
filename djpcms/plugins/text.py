@@ -10,6 +10,7 @@ from djpcms.models import SiteContent
 from djpcms.plugins import DJPplugin
 from djpcms.utils.uniforms import FormLayout, Fieldset, blockLabels2, inlineLabels
 from djpcms.markup import markuplib
+from djpcms.permissions import has_permission, get_change_permission
 
 from djpcms.utils import uniforms
 
@@ -139,8 +140,7 @@ You can use several different markup languages or simply raw HTML.'''
             except Exception, e:
                 return None
             # Check for permissions
-            opts = obj._meta
-            if djp.request.user.has_perm(opts.app_label + '.' + opts.get_change_permission(), obj):
+            if has_permission(djp.request.user,get_change_permission(obj), obj):
                 return EditContentForm(**form_kwargs(request = djp.request,
                                                      instance = obj,
                                                      withrequest = True,

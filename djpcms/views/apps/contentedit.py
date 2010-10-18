@@ -138,7 +138,8 @@ class ChangeContentView(appview.EditView):
                 pform.layout = layout
                 uni.add(pform)
             else:
-                uni.add('<div id="%s"></div' % id)
+                # No plugin
+                uni.add('<div id="%s"></div>' % id)
             sub = str(submit(value = "edit", name = 'edit_content'))
             id = self.plugin_edit_id(instance)
             cl = '' if purl else ' class="djphide"'

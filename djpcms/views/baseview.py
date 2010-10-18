@@ -352,16 +352,7 @@ class pageview(djpcmsview):
         return self.page.soft_root
     
     def has_permission(self, request, obj = None):
-        return has_permission(request.user,get_view_permission(self.page),self.page)
-        opts = self.page
-        #return request.user.has_perm(opts.app_label + '.' + opts.get_change_permission(), obj)
-        if self.page.requires_login:
-            if request:
-                return request.user.is_authenticated()
-            else:
-                return False
-        else:
-            return True    
+        return has_permission(request.user,get_view_permission(self.page),self.page) 
 
 
 class wrapview(djpcmsview):

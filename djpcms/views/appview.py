@@ -18,6 +18,8 @@ from djpcms.utils.html import Paginator
 from djpcms.utils.func import force_number_insert
 from djpcms.utils.ajax import jremove, dialog, jredirect
 from djpcms.utils import form_kwargs, force_unicode, construct_search, isexact
+from djpcms.permissions import get_view_permission, has_permission
+from djpcms.models import Page
 
 from djpcms.views.regex import RegExUrl 
 from djpcms.views.cache import pagecache
@@ -148,7 +150,11 @@ class AppViewBase(djpcmsview):
         '''
         Delegate to appmodel
         '''
-        return self.appmodel.has_permission(request, obj)
+        page = self.get_page()
+        if has_permission(request.user,get_view_permission(page or Page),page):
+            return self.appmodel.has_permission(request, obj)
+        else:
+            return False
     
     def render(self, djp, **kwargs):
         '''

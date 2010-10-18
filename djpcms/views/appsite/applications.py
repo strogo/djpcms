@@ -20,6 +20,7 @@ from djpcms.utils.forms import add_hidden_field
 from djpcms.plugins import register_application
 from djpcms.utils.html import submit
 from djpcms.utils.uniforms import UniForm
+from djpcms.permissions import get_change_permission, has_permission
 from djpcms.views.baseview import editview
 from djpcms.views.appview import AppViewBase
 from djpcms.views.cache import pagecache
@@ -472,8 +473,7 @@ Re-implement for custom arguments.'''
     def has_edit_permission(self, request = None, obj=None):
         if not request:
             return False
-        opts = self.opts
-        return request.user.has_perm(opts.app_label + '.' + opts.get_change_permission(), obj)
+        return has_permission(request.user,get_change_permission(obj or self.model),obj)
     
     def has_view_permission(self, request = None, obj = None):
         '''Return True if the page can be viewed, otherwise False'''
