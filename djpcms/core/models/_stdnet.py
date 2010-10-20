@@ -1,8 +1,8 @@
 from stdnet.orm import DataMetaClass
 
-from base import ModelWrapper
+from base import ModelTypeWrapper
 
-class Model(ModelWrapper):
+class ModelType(ModelTypeWrapper):
     '''Wrapper for stdnet models.'''
     def setup(self):
         self.meta = self.model._meta

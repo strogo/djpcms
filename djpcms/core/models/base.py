@@ -25,7 +25,7 @@ def nicerepr(val):
         return val
         
 
-class ModelWrapper(object):
+class ModelTypeWrapper(object):
     
     def __init__(self, appmodel):
         self.test(appmodel.model)
@@ -37,7 +37,7 @@ class ModelWrapper(object):
         raise NotImplementedError
     
     def _label_for_field(self, name):
-        raise NotImplementedError
+        return name
         
     def appfuncname(self, name):
         return 'extrafunction__%s' % name
@@ -50,6 +50,7 @@ class ModelWrapper(object):
             return default
     
     def label_for_field(self, name):
+        '''Get the lable for field or attribute or function *name*.'''
         try:
             return self._label_for_field(name)
         except:

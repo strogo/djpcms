@@ -1,19 +1,20 @@
+from base import ModelTypeWrapper, nicerepr, _boolean_icon
 _models = {}
 
 try:
     from djpcms.core.models import _django
-    _models['django'] = _django.Model
+    _models['django'] = _django.ModelType
 except:
     pass
 
 try:
     from djpcms.core.models import _stdnet
-    _models['stdnet'] = _stdnet.Model
+    _models['stdnet'] = _stdnet.ModelType
 except:
     pass
 
 
-def add(name,wrapper):
+def register(name,wrapper):
     _models[name] = wrapper
 
 def getmodel(appmodel):

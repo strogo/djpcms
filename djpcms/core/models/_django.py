@@ -8,10 +8,10 @@ from django.utils.html import escape, conditional_escape
 from djpcms.permissions import has_permission
 from djpcms.utils import mark_safe, smart_unicode
 
-from base import ModelWrapper, _boolean_icon, EMPTY_VALUE
+from base import ModelTypeWrapper, _boolean_icon, EMPTY_VALUE
 
 
-class Model(ModelWrapper):
+class ModelType(ModelTypeWrapper):
     '''Wrapper for django models'''
     def setup(self):
         model_admin = site._registry.get(self.model,None)

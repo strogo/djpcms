@@ -1,5 +1,6 @@
 
-.. rubric:: Dynamic Content management System for Python and Javascript
+.. rubric:: Plugins-based content management System for
+    dynamic applications written in Python and Javascript
 
 --
 
@@ -11,25 +12,51 @@
 
 --
 
-Djpcms is a dynamic Content Management System which uses Python with django on the server side
-and Javascript with jQuery on the browser side. It is designed to handle dynamic applications which require
+Djpcms is a dynamic Content Management System which uses Python with django_ on the server side
+and Javascript with jQuery_ on the browser side. It is designed to handle dynamic applications which require
 high level of customization. Lots of AJAX enabled features including inline editing, autocomplete and
 ajax forms.
+
+It is based on django, but it works for other object relational mappers too!
 
 .. _intro-features:
 
 Features
 ===============================
 
- * Extendible using plugins.
- * Dynamic pages based on database models (not only django models).
+ * Dynamic pages based on database models, and not only django_ models!
+ * If you need more than django_ and stdnet_ models,
+   register your model type and off you go::
+ 
+ 	from djpcms.core.models import ModelTypeWrapper, register
+ 	
+ 	class MyModelType(ModelTypeWrapper):
+ 	
+ 	    def setup(self):
+ 	        '''Set up your model type for djpcms interaction'''
+ 	   
+ 	    def test(self, model):
+ 	        '''test if model is a type handled by this wrapper'''  
+ 	
+ 	register('mymodeltype',MyModelType)
+ 	
+ 	
+ * Extendible using plugins::
+ 
+ 	from djpcms.plugins import DJPplugin
+ 	
+ 	class MyPlugin(DJPplugin):
+ 	
+ 	    def render(self, djp, **kwargs):
+ 	        ...
+ 	        
  * Inline editing of plugins and pages.
- * Autocomplete for models when registered.
+ * Autocomplete for models when an sutocompleview is added to the model application.
  * Extendible AJAX decorators.
  * Tagging with django-tagging_ (optional).
  * Several battery included application classes.
  * Integration of any Django app which provides ``urls.py``.
- * Nice form layout with extendible uniforms.
+ * Nice form layout with extendible ``uniforms``.
  * Deployment tools using fabric_.
  * South_ support for database migration.
  * Sitemap design.
@@ -85,8 +112,10 @@ Optional requirements:
 __ http://pypi.python.org/pypi?:action=display&name=djpcms
 __ http://www.python.org/
 .. _django: http://www.djangoproject.com/
+.. _jQuery: http://jquery.com/
 .. _django-tagging: http://code.google.com/p/django-tagging/
 .. _PIL: http://www.pythonware.com/products/pil/
 .. _fabric: http://docs.fabfile.org/
 .. _pip: http://pip.openplans.org/
 .. _South: http://south.aeracode.org/
+.. _stdnet: http://code.google.com/p/python-stdnet/
