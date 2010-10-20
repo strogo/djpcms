@@ -85,18 +85,28 @@ def process_views(view,views,app):
 
 class ApplicationBase(object):
     '''Base class for djpcms applications.
-* *baseurl* the root part of the application views urls. Must be provided with trailing slashes (ex. "/docs/")
-* *application_site* instance of the application site manager.
-* *editavailable* ``True`` if inline editing is available.
-    '''
+    
+.. attribute:: baseurl
+
+    the root part of the application views urls. Must be provided with trailing slashes (ex. "/docs/")
+    
+.. attribute:: application_site
+
+    instance of :class:`djpcms.views.appsite.ApplicationSite`, the application site manager.
+    
+.. attribute:: editavailable
+
+    ``True`` if :ref:`inline editing <inline-editing>`
+    is available for the application.
+'''
     __metaclass__ = ApplicationMetaClass
     
     name             = None
     '''Application name. Default ``None``, calculated from class name.'''
     description      = None
     '''Application description. Default ``None``, calculated from name.'''
-    authenticated    = True
-    '''True if authentication is required. Default ``True``.'''
+    authenticated    = False
+    '''True if authentication is required. Default ``False``.'''
     has_api          = False
     '''Flag indicating if API is available. Default ``False``.'''
     inherit          = False
@@ -230,13 +240,11 @@ class ApplicationBase(object):
 
 
 class ModelApplication(ApplicationBase):
-    '''
-    Base class for Django Model Applications
-    This class implements the basic functionality for a general model
-    User should subclass this for full control on the model application.
-    Each one of the class attributes are optionals.
-    '''    
-    '''Form method'''
+    '''An :class:`ApplicationBase` class for applications
+based on a back-end database model.
+This class implements the basic functionality for a general model
+User should subclass this for full control on the model application.
+Each one of the class attributes are optionals.'''
     list_display     = None
     '''List of object's field to display. If available, the search view will display a sortable table
 of objects. Default is ``None``.'''
@@ -255,9 +263,13 @@ of objects. Default is ``None``.'''
     form_template    = None
     '''Optional template for form. Can be a callable with parameter ``djp``. Default ``None``.'''
     in_navigation    = True
-    '''True if application'views can go into site navigation. Default ``True``.'''
+    '''True if application'views can go into site navigation. Default ``True``.
+No reason to change this default unless you really don't want to see the views in the site navigation.'''
     search_fields    = None
-    '''List of model field's names which are searchable. Default ``None``.'''
+    '''List of model field's names which are searchable. Default ``None``.
+This attribute is used by :class:`djpcms.views.appview.SearchView` views
+and by the :ref:`auto-complete <autocomplete>`
+functionality when searching for model instances.'''
     
     _form_add        = 'add'
     _form_edit       = 'change'
@@ -272,9 +284,8 @@ of objects. Default is ``None``.'''
     
     def __init__(self, baseurl, application_site, editavailable, model = None):
         self.model            = model
-        self.opts             = model._meta
+        self.opts             = getattr(model,'_meta',None)
         super(ModelApplication,self).__init__(baseurl, application_site, editavailable)
-        #self.edits            = []
         
     def get_root_code(self):
         return self.root_application.code

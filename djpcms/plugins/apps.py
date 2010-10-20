@@ -15,7 +15,10 @@ def registered_models():
     ids = []
     for model,app in appsite.site._registry.items():
         if isinstance(app,appsite.ModelApplication) and not app.hidden:
-            ct = ContentType.objects.get_for_model(model)
+            try:
+                ct = ContentType.objects.get_for_model(model)
+            except:
+                continue
             ids.append(ct.id)
     return ContentType.objects.filter(pk__in = ids)
 

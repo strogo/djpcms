@@ -6,7 +6,7 @@
 Application Views
 ===================
 
-Application View Base Class
+Base Class
 ==============================
 
 .. autoclass:: djpcms.views.appview.AppViewBase
@@ -14,12 +14,61 @@ Application View Base Class
    :member-order: bysource
    
    
-Model Application View Base Class
+App View
 ============================================
 
 .. autoclass:: djpcms.views.appview.AppView
    :members:
    :member-order: bysource
+
+
+Search View
+======================
+
+.. autoclass:: djpcms.views.appview.SearchView
+   :members:
+   :member-order: bysource
+
+
+Add View
+======================
+
+.. autoclass:: djpcms.views.appview.AddView
+   :members:
+   :member-order: bysource
+
+
+Object View
+======================
+
+.. autoclass:: djpcms.views.appview.ObjectView
+   :members:
+   :member-order: bysource
+
+
+View View
+======================
+
+.. autoclass:: djpcms.views.appview.ViewView
+   :members:
+   :member-order: bysource
+
+
+Edit View
+======================
+
+.. autoclass:: djpcms.views.appview.EditView
+   :members:
+   :member-order: bysource
+
+
+Delete View
+======================
+
+.. autoclass:: djpcms.views.appview.DeleteView
+   :members:
+   :member-order: bysource
+
 
 Autocomplete View
 ======================

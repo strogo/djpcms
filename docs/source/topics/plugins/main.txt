@@ -1,0 +1,11 @@
+.. _plugins-main:
+
+===========================
+Plugin Class
+===========================
+
+.. autoclass:: djpcms.plugins.DJPplugin
+   :members:
+   :inherited-members:
+   :member-order: bysource
+

@@ -7,3 +7,12 @@ Design
 As an additional layer of control, djpcms comes with html wrappers.
 These elements are used to control the design of the web site
 by injecting user-defined css classes or wrapping the html into html containers.
+
+
+
+Plugin Wrapper Class
+===================================
+   
+.. autoclass:: djpcms.plugins.DJPwrapper
+   :members:
+   

@@ -1,7 +1,7 @@
 .. _utils-index:
 
 ============================
-Utilities
+Utilities And Internals
 ============================
 
 .. module:: djpcms.utils
@@ -12,3 +12,4 @@ Utilities
    uniform
    navigation
    internals
+   exceptions

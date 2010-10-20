@@ -36,15 +36,23 @@ class pageinfo(object):
 
 
 class AppViewBase(djpcmsview):
-    '''Base view class for application views.
+    '''A :class:`djpcms.views.baseview.djpcmsview` specialised class for application views in :ref:`djpcms applications <topics-applications-index>`.
     
-* ``name`` name of view.
-* ``parent`` instance of :class:`AppViewBase` or None.
-* ``isplugin`` if ``True`` the view can be rendered as :class:`djpcms.plugins.DJPplugin`.
+.. attribute:: name
+    
+    name of view.
+    
+.. attribute:: parent
 
-.. attribute: in_navigation
+    instance of :class:`AppViewBase` or None.
+    
+.. attribute:: isplugin
 
-    If ``False`` the view won't appear in Navigation.
+    if ``True`` the view can be rendered as :class:`djpcms.plugins.DJPplugin`. Default ``False``.
+
+.. attribute:: in_navigation
+
+    If ``0`` the view won't appear in :ref:`Navigation <topics-included-navigator>`.
 '''
     creation_counter = 0
     
@@ -191,7 +199,7 @@ class AppViewBase(djpcmsview):
     
     
 class AppView(AppViewBase):
-    '''Base class for model views of :class:`djpcms.views.appsite.ModelApplication`.
+    '''An :class:`AppViewBase` class for views in :class:`djpcms.views.appsite.ModelApplication`.
     '''
     def __init__(self,
                  isapp      = True,
@@ -226,10 +234,10 @@ class AppView(AppViewBase):
         return None
     
     def basequery(self, request, **kwargs):
-        '''
-        Base query for application
-        If this is the root view (no parents) it returns the default
-        basequery
+        '''Base query for application.
+If this is the root view (no parents) it returns
+:func:`djpcms.views.appsite.ModelApplication.basequery`, otherwise
+it returns the :func:`appquery` of the :func:`modelparent` view.
         '''
         if self.modelparent():
             return self.parent.appquery(request)
@@ -237,14 +245,8 @@ class AppView(AppViewBase):
             return self.appmodel.basequery(request)
     
     def appquery(self, request, *args, **kwargs):
-        '''
-        This function implements the application query.
-        By default return the input basequery (usually all items of a model)
-        @param request: HttpRequest
-        @param *args: Extra positional arguments coming from the database
-        @param *kwargs: Extra key-valued arguments coming from the database
-        @return: a queryset
-        '''
+        '''This function implements the application query.
+By default return the :func:`basequery` (usually all items of a model).'''
         return self.basequery(request)
     
     def get_prefix(self, djp):
@@ -264,9 +266,11 @@ class AppView(AppViewBase):
     
     
 class SearchView(AppView):
-    search_text = 'search_text'
-    '''Base class for searching objects in model. By default :attr:`in_navigation` is set to ``True``.
+    '''An :class:`AppView` class for searching objects in model. By default :attr:`AppViewBase.in_navigation` is set to ``True``.
     '''
+    search_text = 'search_text'
+    '''identifier for queries. Default ``search_text``.'''
+    
     def __init__(self, *args, **kwargs):
         in_navigation = kwargs.get('in_navigation',None)
         if in_navigation is None:
@@ -274,13 +278,10 @@ class SearchView(AppView):
         super(SearchView,self).__init__(*args,**kwargs)
     
     def appquery(self, request, *args, **kwargs):
-        '''
-        This function implements the application query.
-        By default return the input basequery (usually all items of a model)
-        @param request: HttpRequest
-        @param *args: Extra positional arguments coming from the database
-        @param *kwargs: Extra key-valued arguments coming from the database
-        @return: a queryset
+        '''This function implements the search query.
+The query is build using the search fields specifies in
+:attr:`djpcms.views.appsite.ModelApplication.search_fields`.
+It returns a queryset.
         '''
         qs = self.basequery(request)
         
@@ -305,12 +306,7 @@ class SearchView(AppView):
         return qs
     
     def render(self, djp, **kwargs):
-        '''
-        Perform the custom query over the model objects and return a paginated result
-        @param request: HttpRequest
-        @param prefix: prefix for forms
-        @param wrapper: html wrapper object
-        @see: djpcms.utils.html.pagination for pagination
+        '''Perform the custom query over the model objects and return a paginated result
         '''
         request  = djp.request
         appmodel = self.appmodel
@@ -411,9 +407,8 @@ def saveform(self, djp, editing = False):
         
 
 class AddView(AppView):
-    '''
-    Standard Add method
-    '''
+    '''An :class:`AppView` class which renders a form for adding instances
+and handles the saving as default ``POST`` response.'''
     def __init__(self, regex = 'add', parent = None,
                  name = 'add', isplugin = True, in_navigation = True, form = None,
                  **kwargs):
@@ -438,15 +433,13 @@ class AddView(AppView):
         return self.appmodel.object_from_form(f)
     
     def render(self, djp, **kwargs):
-        '''
-        Render the add view
+        '''Render the model add form.
         '''
         f = self.get_form(djp)
         return render_form(f,djp)
     
     def default_post(self, djp):
-        '''
-        Add new model instance
+        '''Add new model instance
         '''
         return saveform(self,djp)
     
@@ -457,10 +450,8 @@ class AddView(AppView):
         
 # Application views which requires an object
 class ObjectView(AppView):
-    '''
-    Application view for objects.
-    A view of this type has an embedded object available.
-    URL is generated by the object
+    '''An :class:`AppView` class view for objects.
+A view of this type has an embedded object available which is used to generate the full url.
     '''
     def __init__(self, *args, **kwargs):
         super(ObjectView,self).__init__(*args, **kwargs)
@@ -487,13 +478,9 @@ class ObjectView(AppView):
     
 
 class ViewView(ObjectView):
-    '''
-    Home page for an object
+    '''An :class:`ObjectView` class specialised for displaying an object.
     '''
     def __init__(self, regex = '(?P<id>\d+)', parent = None, name = 'view', **kwargs):
-        '''
-        By default the relative url is given by the databse id number
-        '''
         super(ViewView,self).__init__(regex = regex, parent = parent,
                                       name = name, **kwargs)
     
@@ -501,8 +488,7 @@ class ViewView(ObjectView):
         return str(djp.instance)
         
     def render(self, djp):
-        '''
-        Render the add view
+        '''Render the view object
         '''
         return self.appmodel.render_object(djp)
     
@@ -512,6 +498,8 @@ class ViewView(ObjectView):
     
 # Delete an object. POST method only. not GET method should modify databse
 class DeleteView(ObjectView):
+    '''An :class:`ObjectView` class specialised for deleting an object.
+    '''
     _methods      = ('post',) 
     
     def __init__(self, regex = 'delete', parent = 'view', name = 'delete',
@@ -537,8 +525,7 @@ class DeleteView(ObjectView):
 
 # Edit/Change an object
 class EditView(ObjectView):
-    '''
-    Edit view
+    '''An :class:`ObjectView` class specialised for editing an object.
     '''
     def __init__(self, regex = 'edit', parent = 'view', name = 'edit',  **kwargs):
         super(EditView,self).__init__(regex = regex, parent = parent, name = name, **kwargs)

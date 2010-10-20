@@ -1,0 +1,11 @@
+.. _plugins-others:
+
+=======================
+Other Included
+=======================
+
+Deploy Information
+----------------------
+
+.. autoclass:: djpcms.plugins.info.Deploy
+   :members:

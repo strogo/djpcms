@@ -1,0 +1,41 @@
+.. _plugins-index:
+
+.. module:: djpcms.plugins
+
+============================
+Plugins
+============================
+
+Plugins are the design principle of ``djpcms``, without them there would be no
+system, just a collection of python scripts!
+Plugins are components that add capabilities to ``djpcms``
+which, in turns, acts as a manager and placeholder for them.
+Adding your own is extremely simple as well as moving them around
+in a page.
+
+Plugins are classes which derive from :class:`djpcms.plugins.DJPplugin`,
+a straightforward python class. Plugins are not
+database models, they simply describe how content is displayed
+in a page and how users can interact with them. Thats it!
+
+
+.. toctree::
+   :maxdepth: 1
+   
+   main
+   defaults
+   others
+   extending
+
+
+.. admonition:: How do we tell djpcms to include our plugins?
+
+    Including plugins in your application is easy, simply add their dotted path to the :setting:`DJPCMS_PLUGINS` setting.
+
+.. hint::
+
+	Great no database required for plugins.
+	
+	How do we store them? :class:`djpcms.models.BlockContent`
+	
+	How do we add dynamic content? :class:`djpcms.views.appsite.ModelApplication`

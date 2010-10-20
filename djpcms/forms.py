@@ -304,9 +304,16 @@ class ContentBlockForm(EditingForm):
 # Short Form for a Page
 class ShortPageForm(ModelForm):
     '''Form to used to edit inline a page'''
+    view_permission = ModelMultipleChoiceField(queryset = Group.objects.all(), required = False)
     layout = FormLayout(Columns(('title','inner_template','in_navigation','requires_login'),
-                                ('link','cssinfo','soft_root'))
+                                ('link','cssinfo','soft_root','view_permission'))
                         )
+    def save(self, commit = True):
+        pe = self.cleaned_data.pop('view_permission')
+        page = super(ShortPageForm,self).save(commit)
+        if page.pk:
+            ObjectPermission.objects.set_view_permission(page, groups = pe)
+        return page
     
     class Meta:
         model = Page

@@ -1,0 +1,40 @@
+.. _plugins-defaults:
+
+========================
+Main Built-in
+========================
+
+Djpcms ships with some built-in plugins two of which are special since
+their behaviour depends on instances of :class:`djpcms.views.appview.AppViewBase`, the base
+class for application views.
+
+ThisPlugin
+--------------
+
+.. autoclass:: djpcms.plugins.ThisPlugin
+   :members:
+   
+ApplicationPlugin
+--------------------
+
+.. autoclass:: djpcms.plugins.ApplicationPlugin
+   :members:
+   
+
+.. _plugins-text:
+
+.. module:: djpcms.plugins
+
+Text Plugin
+--------------------
+
+.. autoclass:: djpcms.plugins.text.Text
+   :members:   
+
+
+Soft Navigation
+----------------------
+
+.. autoclass:: djpcms.plugins.defaults.SoftNavigation
+   :members:
+

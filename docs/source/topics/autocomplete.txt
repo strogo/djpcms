@@ -5,8 +5,10 @@
 Autocomplete
 ============================
 
-Djpcms comes with autocomplete__ functionalities out of the box. The autocomplete is associated with a
-database model and its registered :class:`djpcms.views.appsite.ModelApplication`.
+Djpcms comes with autocomplete__ functionalities out of the box.
+The auto-complete is associated with a
+database model and its registered
+:class:`djpcms.views.appsite.ModelApplication`.
 
 Lets say we have the following model (from vinoweb example)::
 
@@ -15,9 +17,10 @@ Lets say we have the following model (from vinoweb example)::
 	    extended = models.CharField(blank = True, max_length = 500)
     	
     	 
-There are four points to have autocomplete working for a model:
+The four points to follow to have auto-complete working for a given model:
 
-* Your model application must have a ``search_fields`` list.
+* Your model application must have a valid
+  :attr:`djpcms.views.appsite.ModelApplication.search_fields` list specified (by default this attribute is ``None``).
 * Your model application must have the :class:`djpcms.views.appview.AutocompleteView`::
 
 	from djpcms.views import appsite,appview

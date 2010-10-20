@@ -46,9 +46,9 @@ Contents
    
    topics/application/index
    topics/views/index
-   topics/plugins
-   topics/models
+   topics/plugins/index
    topics/design
+   topics/models
    topics/templates/index
    topics/javascript/index
    topics/settings

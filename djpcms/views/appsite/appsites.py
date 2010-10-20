@@ -39,11 +39,11 @@ class ApplicationSite(object):
         they'll be applied as options to the admin class.
 
         If a model is already registered, this will raise AlreadyRegistered.
-        """        
-        if isinstance(model, ModelBase):
-            model_or_iterable = [model]
-        else:
-            model_or_iterable = model
+        """
+        model_or_iterable = model
+        if model_or_iterable is not None:
+            if not hasattr(model,'__iter__'):
+                model_or_iterable = (model,)            
             
         if not application_class:
             if not model_or_iterable:

@@ -37,7 +37,6 @@ default::
 	{
 	'available': True,
 	'preurl': 'edit-content',
-	'permission': None,
 	'pagecontent': '/site-content/',
 	'width': 600,
 	'height': 400
@@ -47,9 +46,6 @@ Dictionary of information for `inline content editing`.
 
 * ``preurl`` is the prefix to add to a page url in editing mode.
 * ``pagecontent`` defines the base url for editing page contents. It must contain trailing slashes.
-* ``permission`` can be used to customise permissions for editing. If specified it must be a function
-  which takes two positional parameters: ``request`` and ``view``. The function return a boolean
-  indicating if inline-editing is available, or not, for the currenct page.
 * ``width`` and ``height`` are the size of the floating dialog used for editing plugin content.
 
 .. hint:: Check out the :ref:`inline editing <inline-editing>` documentation for more information.

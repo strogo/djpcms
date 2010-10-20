@@ -409,7 +409,9 @@ def create_page(url_pattern, parent = None, user = None, title = None,
 
 
 class ObjectPermission(models.Model):
-    '''Model for handling per-object permissions.'''
+    '''Model for handling per-object permissions.
+An object which has at least one of this model instances associated with, will
+have permissions handled by this model only.'''
     user = models.ForeignKey(User, verbose_name=_(u"User"), blank=True, null=True)
     group = models.ForeignKey(Group, verbose_name=_(u"Group"), blank=True, null=True)
     permission = models.ForeignKey(Permission, verbose_name=_(u"Permission"))

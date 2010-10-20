@@ -9,8 +9,10 @@ Model Application
 The Basics
 =========================
 
-Lets assume we have a model called `Project`, to setup an ``djpcms`` application we create a class derived from
-:ref:`modelapplication-class` ::
+Lets assume we have a model called ``Project``, to setup a
+:ref:`djpcms application <topics-applications-index>`
+based on a database model, we create a class derived from
+:class:`ModelApplication`::
 
 	from djpcms.views import appsite
 	
@@ -22,9 +24,19 @@ A dynamic application is registered to the site by invoking::
 	appsite.site.register('/project/', Project, ProjectApplication)
         
 
-This application is pretty useles since it has no ``views``. To add views we need to go to the
-``djpcms.views.appview`` module where we find the :class:`djpcms.views.appview.AppView` which is the
-base class of all model applications.
+This application is pretty useless since it has no 
+:class:`djpcms.views.appview.AppView` associated with it. Infact,
+such application will throw an :class:`djpcms.core.exceptions.ApplicationUrlException`
+because there are no views associated with it.
+Here is an ``app`` which can be used for something meaningful::
+
+	from djpcms.views import appsite, appview
+	
+	class ProjectApplication(appsite.ModelApplication):
+	    search = appview.SearchView()
+	    view   = appview.ViewView()
+		
+We can now search and view instances of ``Project``.
 
 
 .. _modelapplication-class:

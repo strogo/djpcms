@@ -1,3 +1,9 @@
+Development
+==========================
+* :class:`djpcms.views.appsite.ModelApplication` can handle non django database models.
+* More documentation.
+* **38 unit tests**.
+
 Version 0.8.3 (2010-Oct-18)
 =================================
 * Added :class:`djpcms.models.ObjectPermission` model for handling granular permissions at object level.

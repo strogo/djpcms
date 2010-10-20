@@ -105,7 +105,7 @@ class DJPwrapperMeta(DJPpluginMetaBase):
 
 
 class DJPwrapper(UnicodeObject):
-    '''Class responsible for wrapping :ref:`djpcms plugins <plugins-class>`.
+    '''Class responsible for wrapping :ref:`djpcms plugins <plugins-index>`.
     '''
     name          = None
     '''Unique name. If not provided the class name will be used. Default ``None``.'''
@@ -242,8 +242,9 @@ class EmptyPlugin(DJPplugin):
 
 class ThisPlugin(DJPplugin):
     '''Current view plugin. This plugin render the current view
-    The view must be a AppView instance
-    @see: sjpcms.views.appview
+only if it is an instance of :class:`djpcms.views.appview.AppViewBase`.
+For example if the current view is a :class:`djpcms.views.appview.SearchView`,
+the plugin will display the search view for that application.
     '''
     name        = 'this'
     description = 'Current View'
@@ -255,8 +256,12 @@ class ThisPlugin(DJPplugin):
     
     
 class ApplicationPlugin(DJPplugin):
-    '''Plugin formed by application views
-    '''
+    '''Plugin formed by :class:`djpcms.views.appview.AppViewBase` classes
+which have the :attr:`djpcms.views.appview.AppViewBase.isplugin` attribute
+set to ``True``.
+
+For example, lets say an application as a :class:`djpcms.views.appview.AddView` view
+which is registered to be a plugin, than it will be managed by this plugin.'''
     auto_register = False
     
     def __init__(self, app, name = None, description = None):
