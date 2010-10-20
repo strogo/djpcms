@@ -486,8 +486,7 @@ Re-implement for custom arguments.'''
     def has_edit_permission(self, request = None, obj=None):
         if not request:
             return False
-        return self.opts.has_edit_permission(request.user,obj)
-        return has_permission(request.user,self.opts.get_change_permission(),obj)
+        return self.opts.has_change_permission(request.user,obj)
     
     def has_view_permission(self, request = None, obj = None):
         '''Return True if the page can be viewed, otherwise False'''

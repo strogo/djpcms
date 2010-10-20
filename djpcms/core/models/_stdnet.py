@@ -31,7 +31,7 @@ class Model(ModelWrapper):
         if not isinstance(model,DataMetaClass):
             raise ValueError
         
-    def getrepr(self, name, instance):
+    def _getrepr(self, name, instance):
         attr = getattr(instance,name,None)
         if callable(attr):
             return attr()

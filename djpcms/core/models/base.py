@@ -1,5 +1,29 @@
-from djpcms.conf import settings
+from datetime import date, datetime
 
+from django.utils.dateformat import format as date_format, time_format
+
+from djpcms.conf import settings
+from djpcms.utils import mark_safe 
+
+BOOLEAN_MAPPING = {True: 'yes', False: 'no'}
+EMPTY_VALUE = settings.DJPCMS_EMPTY_VALUE
+
+
+def _boolean_icon(val):
+    v = BOOLEAN_MAPPING.get(val,'unknown')
+    return mark_safe(u'<span class="%s-bool" alt="%s" />' % (v,v))
+
+
+def nicerepr(val):
+    if isinstance(val,datetime):
+        return date_format(val,settings.DATETIME_FORMAT)
+    elif isinstance(val,date):
+        return date_format(val,settings.DATE_FORMAT)
+    elif isinstance(val,bool):
+        return _boolean_icon(val)
+    else:  
+        return val
+        
 
 class ModelWrapper(object):
     
@@ -18,7 +42,7 @@ class ModelWrapper(object):
     def appfuncname(self, name):
         return 'extrafunction__%s' % name
     
-    def get_value(self, instance, name, default = settings.DJPCMS_EMPTY_VALUE):
+    def get_value(self, instance, name, default = EMPTY_VALUE):
         func = getattr(self.appmodel,self.appfuncname(name),None)
         if func:
             return func(self.request, instance)
@@ -37,6 +61,9 @@ class ModelWrapper(object):
         
     def getrepr(self, name, instance):
         '''representation of field *name* for *instance*.'''
+        return nicerepr(self._getrepr(name,instance))
+    
+    def _getrepr(self, name, instance):
         raise NotImplementedError
     
     def url_for_result(self, request, instance):
@@ -45,15 +72,15 @@ class ModelWrapper(object):
         else:
             return None
         
-    def has_add_permission(self, request = None, obj=None):
-        return False
+    def has_add_permission(self, user, obj=None):
+        return user.is_superuser
     
-    def has_edit_permission(self, request = None, obj=None):
-        return False
+    def has_change_permission(self, user, obj=None):
+        return user.is_superuser
     
-    def has_view_permission(self, request = None, obj = None):
+    def has_view_permission(self, user, obj = None):
         return True
     
-    def has_delete_permission(self, request = None, obj=None):
-        return False
+    def has_delete_permission(self, user, obj=None):
+        return user.is_superuser
     
