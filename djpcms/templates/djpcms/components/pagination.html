@@ -3,7 +3,7 @@
 {{ form }}
 </div>{% endif %}{% if headers %}{% load tablesorter %}
 <div id="Pagination" class="jquery-pagination"></div>
-{% totable paginator.qs djp %}
+{% totable paginator.qs djp appmodel %}
 {% else %}{% ifnotequal paginator.pages 1 %}
 <div id="Pagination" class="jquery-pagination"></div>{% endifnotequal %}
 {% for item in items %}

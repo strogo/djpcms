@@ -10,6 +10,7 @@ MAX_SEARCH_DISPLAY              = 20
 CACHE_VIEW_OBJECTS              = True
 DJPCMS_IMAGE_UPLOAD_FUNCTION    = None
 SERVE_STATIC_FILES              = True
+DJPCMS_EMPTY_VALUE              = '(None)'
 
 #styling
 DJPCMS_STYLE                    = 'smooth'

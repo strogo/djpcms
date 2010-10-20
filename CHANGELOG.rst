@@ -1,6 +1,7 @@
 Development
 ==========================
-* :class:`djpcms.views.appsite.ModelApplication` can handle non django database models.
+* Added :mod:`djpcms.core.models` module for handling models from different libraries/frameworks.
+  :class:`djpcms.views.appsite.ModelApplication` can handle database models other than ``Django``.
 * More documentation.
 * **38 unit tests**.
 
@@ -199,3 +200,4 @@ Version 0.4 (2009-Dec-24)
 
 
 .. _South: http://south.aeracode.org/
+.. _stdnet: http://code.google.com/p/python-stdnet/

@@ -6,7 +6,6 @@ The main object handle several subviews used for searching, adding and manipulat
 from copy import deepcopy
 
 from django import http
-from django.utils.encoding import force_unicode
 from django.utils.datastructures import SortedDict
 from django.template import loader, Template, Context, RequestContext
 from django.conf.urls.defaults import url
@@ -14,16 +13,20 @@ from django import forms
 from django.forms.models import modelform_factory
 
 from djpcms.conf import settings
+from djpcms.template import loader
+from djpcms.core.models import getmodel
 from djpcms.core.exceptions import PermissionDenied, ApplicationUrlException
-from djpcms.utils import form_kwargs, UnicodeObject, slugify
+from djpcms.utils import form_kwargs, UnicodeObject, force_unicode, slugify
 from djpcms.utils.forms import add_hidden_field
 from djpcms.plugins import register_application
 from djpcms.utils.html import submit
 from djpcms.utils.uniforms import UniForm
-from djpcms.permissions import get_change_permission, has_permission
+from djpcms.permissions import has_permission
 from djpcms.views.baseview import editview
 from djpcms.views.appview import AppViewBase
 from djpcms.views.cache import pagecache
+
+render_to_string = loader.render_to_string
 
 
 class SearchForm(forms.Form):
@@ -283,8 +286,8 @@ functionality when searching for model instances.'''
     list_display_links = None
     
     def __init__(self, baseurl, application_site, editavailable, model = None):
-        self.model            = model
-        self.opts             = getattr(model,'_meta',None)
+        self.model  = model
+        self.opts   = getmodel(self)
         super(ModelApplication,self).__init__(baseurl, application_site, editavailable)
         
     def get_root_code(self):
@@ -478,26 +481,24 @@ Re-implement for custom arguments.'''
     def has_add_permission(self, request = None, obj=None):
         if not request:
             return False
-        opts = self.opts
-        return request.user.has_perm(opts.app_label + '.' + opts.get_add_permission())
+        return self.opts.has_add_permission(request.user,obj)
     
     def has_edit_permission(self, request = None, obj=None):
         if not request:
             return False
-        return has_permission(request.user,get_change_permission(obj or self.model),obj)
+        return self.opts.has_edit_permission(request.user,obj)
+        return has_permission(request.user,self.opts.get_change_permission(),obj)
     
     def has_view_permission(self, request = None, obj = None):
         '''Return True if the page can be viewed, otherwise False'''
         if not request:
             return False
-        opts = self.opts
-        return request.user.has_perm(opts.app_label + '.view', obj)
+        return self.opts.has_view_permission(request.user,obj)
     
     def has_delete_permission(self, request = None, obj=None):
         if not request:
             return False
-        opts = self.opts
-        return request.user.has_perm(opts.app_label + '.' + opts.get_delete_permission(), obj)
+        return self.opts.has_delete_permission(request.user,obj)
     #-----------------------------------------------------------------------------------------------
     
     def basequery(self, request):
@@ -531,15 +532,12 @@ This dictionary should be used to render an object within a template. It returns
         return self.application_site.for_model(obj.__class__)
     
     def paginate(self, request, data, prefix, wrapper):
-        '''Paginate data
-        @param request: HTTP request 
-        @param data: a queryset 
-        '''
+        '''Paginate data'''
+        object_content = self.object_content
         template_name = '%s/%s_search_item.html' % (self.opts.app_label,self.opts.module_name)
         pa = Paginator(data = data, request = request)
         for obj in pa.qs:
-            content = self.object_content(djp, obj)
-            yield loader.render_to_string(template_name, content)
+            yield render_to_string(template_name, object_content(djp, obj))
     
     def render_object(self, djp, wrapper = None):
         '''
@@ -580,12 +578,12 @@ This dictionary should be used to render an object within a template. It returns
     
     def get_object_view_template(self, obj, wrapper):
         '''Return the template file which render the object *obj*.
-        The search looks in
-         1 - components/<<model_name>>.html
-         2 - <<app_label>>/<<model_name>>.html
-         3 - djpcms/components/object.html (fall back)
-        '''
-        opts = obj._meta
+The search looks in::
+
+         [<<app_label>>/<<model_name>>.html,
+          "djpcms/components/object.html"]
+'''
+        opts = self.opts
         template_name = '%s.html' % opts.module_name
         return ['components/%s' % template_name,
                 '%s/%s' % (opts.app_label,template_name),
@@ -598,7 +596,7 @@ This dictionary should be used to render an object within a template. It returns
          2 - <<app_label>>/<<module_name>>_search_item.html
          3 - djpcms/components/object_search_item.html (fall back)
         '''
-        opts = obj._meta
+        opts = self.opts
         template_name = '%s_list_item.html' % opts.module_name
         return ['components/%s' % template_name,
                 '%s/%s' % (opts.app_label,template_name),

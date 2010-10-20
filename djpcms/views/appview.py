@@ -322,6 +322,7 @@ It returns a queryset.
                   'url': djp.url,
                   'model': self.model,
                   'css': appmodel.ajax,
+                  'appmodel': appmodel,
                   'headers': appmodel.list_display})
         if p.qs:
             c['items'] = self.appmodel.data_generator(djp, p.qs)
