@@ -5,7 +5,7 @@ from djpcms.forms import model_to_dict
 from djpcms.views.cache import pagecache
 from djpcms.views import appsite
 from djpcms.models import Page
-from djpcms.forms import PageForm
+from djpcms.forms.cms import PageForm
 
 
 class TestCase(test.TestCase):

@@ -1,5 +1,16 @@
+from django.contrib.auth.models import Group
+from django.contrib.sites.models import Site
+from django.utils.translation import ugettext_lazy as _
+
+from djpcms import siteapp_choices
+from djpcms.utils import smart_unicode
+from djpcms.models import Page, BlockContent, SiteContent, ObjectPermission, create_page
+from djpcms.utils.uniforms import FormLayout, Fieldset, Columns, Row, Html, inlineLabels, inlineLabels3
+from djpcms.plugins import get_plugin, plugingenerator, wrappergenerator
+from djpcms.utils.func import slugify
 
 import forms
+
 
 
 class SearchForm(forms.Form):
@@ -13,7 +24,7 @@ class SearchForm(forms.Form):
     
 
 # Form for a Page
-class PageForm(ModelForm):
+class PageForm(forms.ModelForm):
     '''
     Page form
     This specialized form takes care of all the possible permutation
@@ -24,10 +35,10 @@ class PageForm(ModelForm):
             b) an application page (application field must be available)
         2) 
     '''
-    site        = ModelChoiceField(queryset = Site.objects.all(), required = False)
-    application = LazyChoiceField(choices = siteapp_choices,
-                                  required = False,
-                                  label = _('application'))
+    site        = forms.ModelChoiceField(queryset = Site.objects.all(), required = False)
+    application = forms.LazyChoiceField(choices = siteapp_choices,
+                                        required = False,
+                                        label = _('application'))
     
     class Meta:
         model = Page
@@ -130,7 +141,7 @@ class PageForm(ModelForm):
         return super(PageForm,self).save(commit)
         
 
-class PluginChoice(LazyAjaxChoice):
+class PluginChoice(forms.LazyAjaxChoice):
     
     def __init__(self, *args, **kwargs):
         super(PluginChoice,self).__init__(*args, **kwargs)
@@ -146,8 +157,8 @@ class PluginChoice(LazyAjaxChoice):
         return value
     
     
-class EditingForm(ModelForm):
-    url  = CharField(widget=forms.HiddenInput, required = False)
+class EditingForm(forms.ModelForm):
+    url  = forms.CharField(widget=forms.HiddenInput, required = False)
     
     
 
@@ -157,9 +168,11 @@ class ContentBlockForm(EditingForm):
     This Model form is used to change the plug-in within
     for a given BlockContent instance.
     '''
-    plugin_name     = PluginChoice(label = _('Plugin'),   choices = plugingenerator, required = False)
-    container_type  = LazyChoiceField(label=_('Container'), choices = wrappergenerator)
-    view_permission = ModelMultipleChoiceField(queryset = Group.objects.all(), required = False)
+    plugin_name     = PluginChoice(label = _('Plugin'),
+                                   choices = plugingenerator,
+                                   required = False)
+    container_type  = forms.LazyChoiceField(label=_('Container'), choices = wrappergenerator)
+    view_permission = forms.ModelMultipleChoiceField(queryset = Group.objects.all(), required = False)
     layout = FormLayout(Fieldset('plugin_name','container_type','title','view_permission'),
                         Columns(('for_not_authenticated',),('requires_login',), css_class=inlineLabels3))
     
@@ -206,9 +219,10 @@ class ContentBlockForm(EditingForm):
 
 
 # Short Form for a Page
-class ShortPageForm(ModelForm):
+class ShortPageForm(forms.ModelForm):
     '''Form to used to edit inline a page'''
-    view_permission = ModelMultipleChoiceField(queryset = Group.objects.all(), required = False)
+    view_permission = forms.ModelMultipleChoiceField(queryset = Group.objects.all(), required = False)
+    
     layout = FormLayout(Columns(('title','inner_template','in_navigation','requires_login'),
                                 ('link','cssinfo','soft_root','view_permission'))
                         )
@@ -225,8 +239,9 @@ class ShortPageForm(ModelForm):
                   'in_navigation','requires_login','soft_root']
 
 
-class NewChildForm(Form):
-    child  = CharField(label = 'New child page url', required = True)
+class NewChildForm(forms.Form):
+    child  = forms.CharField(label = 'New child page url', required = True)
+    
     layout = FormLayout(Fieldset('child', css_class = inlineLabels))
     
     def __init__(self, *args, **kwargs):

@@ -1,27 +1,22 @@
 from django import forms
 from django.db import models
-from django.contrib.auth.models import Group
-from django.contrib.sites.models import Site
-from django.utils.translation import ugettext_lazy as _
 
 from djpcms.conf import settings
-from djpcms.models import Page, BlockContent, SiteContent, ObjectPermission, create_page
-from djpcms.utils import lazyattr, smart_unicode
-from djpcms import siteapp_choices
-from djpcms.plugins import get_plugin, plugingenerator, wrappergenerator
-from djpcms.utils.uniforms import FormLayout, Fieldset, Columns, Row, Html, inlineLabels, inlineLabels3
 from djpcms.utils.html import ModelChoiceField, ModelMultipleChoiceField, submit
-from djpcms.utils.func import slugify
 
 
+BaseForm = forms.BaseForm
 Form = forms.Form
+ModelForm = forms.ModelForm
 IntegerField = forms.IntegerField
 Textarea = forms.Textarea
+TextInput = forms.TextInput 
 ModelForm = forms.ModelForm
 BooleanField = forms.BooleanField
 CharField = forms.CharField
 ChoiceField = forms.ChoiceField
 FileField = forms.FileField
+HiddenInput = forms.HiddenInput
 ValidationError = forms.ValidationError
 model_to_dict = forms.model_to_dict
 

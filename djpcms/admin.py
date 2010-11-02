@@ -12,9 +12,10 @@ except:
 #from django.contrib.admin.util import display_for_field, label_for_field
 
 from djpcms import models
-from djpcms.forms import PageForm
+from djpcms.forms.cms import PageForm
 from djpcms.utils.ajax import simplelem
 from djpcms.views.cache import pagecache
+
 
 class SafeModelAdmin(admin.ModelAdmin):
     

@@ -5,6 +5,7 @@ from django.template import RequestContext
 from djpcms.core.exceptions import PermissionDenied
 from djpcms.conf import settings
 from djpcms import forms
+from djpcms.forms.cms import EditingForm
 from djpcms.utils import json, form_kwargs, mark_safe
 from djpcms.models import SiteContent
 from djpcms.plugins import DJPplugin
@@ -83,7 +84,7 @@ class ChangeTextContent(forms.Form):
         
 
 
-class EditContentForm(forms.EditingForm):
+class EditContentForm(EditingForm):
     markup       = forms.LazyChoiceField(choices = markuplib.choices,
                                          initial = markuplib.default,
                                          required = False)

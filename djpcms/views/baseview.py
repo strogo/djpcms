@@ -4,19 +4,17 @@ Base class for djpcms views.
 import copy
 
 from django import http
-from django.shortcuts import render_to_response
 from django.template import RequestContext, Context, loader
 from django.core.exceptions import PermissionDenied
 from django.forms import Media, MediaDefiningClass
 
 
 from djpcms.conf import settings
-from djpcms.permissions import get_view_permission, has_permission
+from djpcms.permissions import inline_editing, get_view_permission, has_permission
 from djpcms.contrib import messages
 from djpcms.utils.ajax import jservererror, jredirect
 from djpcms.utils.html import grid960, submit
-from djpcms.forms import ShortPageForm, NewChildForm
-from djpcms.permissions import inline_editing
+from djpcms.forms.cms import ShortPageForm, NewChildForm
 from djpcms.utils.uniforms import UniForm
 from djpcms.utils import UnicodeObject, urlbits, urlfrombits, function_module, \
                          htmltype, mark_safe, force_unicode

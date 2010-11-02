@@ -42,6 +42,8 @@ class StdModelFormMetaclass(type):
 
 
 class StdForm(forms.BaseForm):
+    __metaclass__ = StdModelFormMetaclass
+    
     id = forms.IntegerField(forms.CharField(widget=forms.HiddenInput, required = False))
     
     def __init__(self, *args, **kwargs):

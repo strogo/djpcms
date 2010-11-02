@@ -16,7 +16,7 @@ from djpcms.utils.func import isforminstance
 from djpcms.utils.ajax import jhtmls, jremove, dialog, jempty, jerror
 from djpcms.utils.html import submit, htmlcomp
 from djpcms.utils.uniforms import UniForm, FormLayout
-from djpcms.forms import ContentBlockForm
+from djpcms.forms.cms import ContentBlockForm
 from djpcms.plugins import get_plugin
 from djpcms.plugins.extrawrappers import CollapsedWrapper
 from djpcms.views import appsite, appview, handlers
