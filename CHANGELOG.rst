@@ -1,5 +1,6 @@
 Development
 ==========================
+* Added :mod:`djpcms.contrib.stdform` module, a light-weight form wrapper for stdnet_.
 * Added :mod:`djpcms.core.models` module for handling models from different libraries/frameworks.
   :class:`djpcms.views.appsite.ModelApplication` can handle database models other than ``Django``.
 * More documentation.
@@ -200,4 +201,4 @@ Version 0.4 (2009-Dec-24)
 
 
 .. _South: http://south.aeracode.org/
-.. _stdnet: http://code.google.com/p/python-stdnet/
+.. _stdnet: http://github.com/lsbardel/python-stdnet

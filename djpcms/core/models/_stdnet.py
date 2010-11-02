@@ -1,6 +1,7 @@
-from stdnet.orm import DataMetaClass
+from stdnet.orm import StdNetType
 
 from base import ModelTypeWrapper
+
 
 class ModelType(ModelTypeWrapper):
     '''Wrapper for stdnet models.'''
@@ -28,7 +29,7 @@ class ModelType(ModelTypeWrapper):
         return name
     
     def test(self, model):
-        if not isinstance(model,DataMetaClass):
+        if not isinstance(model,StdNetType):
             raise ValueError
         
     def _getrepr(self, name, instance):

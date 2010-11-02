@@ -255,8 +255,8 @@ of objects. Default is ``None``.'''
     '''Number of objects per page. Default is ``30``.'''
     filter_fields    = None
     '''List of model fields which can be used to filter'''
-    form             = forms.ModelForm
-    '''Form class to edit/add objects of the application model.'''
+    form             = None
+    '''Form class used to edit/add objects. Default ``None``.'''
     form_method      ='post'
     '''Form submit method, ``get`` or ``post``. Default ``post``.'''
     form_withrequest = False
@@ -367,10 +367,10 @@ Re-implement for custom arguments.'''
         request  = djp.request
         own_view = djp.own_view()
         
-        form = form or self.form
+        form = form or self.form or forms.ModelForm
         
         if isinstance(form,type):
-            if forceform:
+            if forceform or not hasattr(form,'_meta'):
                 mform = form
             else:
                 try:
