@@ -7,7 +7,7 @@ from djpcms.conf import settings
 from djpcms.plugins import DJPplugin
 from djpcms.utils.uniforms import UniForm, FormLayout, Fieldset
 from djpcms.utils.html import submit
-from djpcms.forms import SearchForm
+from djpcms.forms.cms import SearchForm
 from djpcms.views import appsite
 
 

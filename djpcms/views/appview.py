@@ -455,7 +455,11 @@ class ObjectView(AppView):
 A view of this type has an embedded object available which is used to generate the full url.
     '''
     def __init__(self, *args, **kwargs):
+        self._form = kwargs.pop('form',None)
         super(ObjectView,self).__init__(*args, **kwargs)
+        
+    def get_form(self, djp, **kwargs):
+        return self.appmodel.get_form(djp, form = self._form, **kwargs)
     
     def get_url(self, djp, instance = None, **urlargs):
         '''
@@ -536,9 +540,6 @@ class EditView(ObjectView):
     
     def title(self, page, instance = None, **urlargs):
         return 'Edit %s' % self.appmodel.title_object(instance)
-    
-    def get_form(self, djp, **kwargs):
-        return self.appmodel.get_form(djp, **kwargs)
     
     def render(self, djp):
         f = self.get_form(djp)

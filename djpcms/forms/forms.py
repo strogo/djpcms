@@ -1,4 +1,6 @@
 from django import forms
+from django.forms.forms import get_declared_fields
+from django.forms.widgets import media_property
 from django.db import models
 
 from djpcms.conf import settings
@@ -9,8 +11,9 @@ BaseForm = forms.BaseForm
 Form = forms.Form
 ModelForm = forms.ModelForm
 IntegerField = forms.IntegerField
+DateField = forms.DateField
 Textarea = forms.Textarea
-TextInput = forms.TextInput 
+TextInput = forms.TextInput
 ModelForm = forms.ModelForm
 BooleanField = forms.BooleanField
 CharField = forms.CharField

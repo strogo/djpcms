@@ -5,7 +5,7 @@ from django.utils.dateformat import format as date_format, time_format
 from djpcms.conf import settings
 from djpcms.utils import mark_safe 
 
-BOOLEAN_MAPPING = {True: ('check','yes'), False: ('ui-icon-close','no')}
+BOOLEAN_MAPPING = {True: ('ui-icon-check','yes'), False: ('ui-icon-close','no')}
 EMPTY_VALUE = settings.DJPCMS_EMPTY_VALUE
 
 
@@ -16,7 +16,11 @@ def _boolean_icon(val):
 
 def nicerepr(val):
     if isinstance(val,datetime):
-        return date_format(val,settings.DATETIME_FORMAT)
+        time = val.time()
+        if not time:
+            return date_format(val.date(),settings.DATE_FORMAT)
+        else:
+            return date_format(val,settings.DATETIME_FORMAT)
     elif isinstance(val,date):
         return date_format(val,settings.DATE_FORMAT)
     elif isinstance(val,bool):

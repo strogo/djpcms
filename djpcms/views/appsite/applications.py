@@ -373,11 +373,8 @@ Re-implement for custom arguments.'''
             if forceform or not hasattr(form,'_meta'):
                 mform = form
             else:
-                try:
-                    if form._meta.model == self.model:
-                        mform = form
-                except:
-                    mform = modelform_factory(self.model, form)
+                if form._meta.model == self.model:
+                    mform = form
                 else:
                     mform = modelform_factory(self.model, form)
         else:
@@ -393,8 +390,10 @@ Re-implement for custom arguments.'''
                                     prefix      = prefix,
                                     withdata    = withdata,
                                     withrequest = self.form_withrequest))
-        inputs = None
-        if addinputs:
+        inputs = getattr(f,'submits',None)
+        if inputs:
+            inputs = [submit(value = val, name = nam) for val,nam in inputs]
+        elif addinputs:
             inputs = self.submit(instance, own_view)
         
         template = self.form_template
