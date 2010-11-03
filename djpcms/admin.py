@@ -58,7 +58,7 @@ class PageAdmin(SafeModelAdmin):
     
     fieldsets = (
         (None, {
-            'fields': ('site', 'application', 'parent', 'title', 'url_pattern',
+            'fields': ('site', 'application_view', 'parent', 'title', 'url_pattern',
                        'link', 'user', 'inner_template', 'in_navigation', 'cssinfo')
         }),
         ('Authentication', {
@@ -119,6 +119,7 @@ class PageAdmin(SafeModelAdmin):
             return http.HttpResponse(js.dumps(), mimetype='application/javascript') 
         else:
             return super(PageAdmin,self).changelist_view(request, extra_context)
+        
 
 
 class ObjectPermissionAdmin(admin.ModelAdmin):

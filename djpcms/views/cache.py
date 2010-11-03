@@ -45,6 +45,7 @@ class PageCache(object):
         return self.applications_url
     
     def view_from_url(self, request, url):
+        '''Get a view object given a url'''
         page = self.get_from_url(url)
         if page:
             return self.view_from_page(request, page, False)
@@ -57,16 +58,11 @@ class PageCache(object):
         force = False
         if docache:
             force = self._set_if_not(self.urlkey(page.url),page)
-        if page.application:
-            if docache:
-                self._set_if_not(self.appkey(page.application),page,force)
+        if page.application_view:
             self.build_app_urls(request, False)
-            view = appsite.site.getapp(page.application)
+            view = appsite.site.getapp(page.application_view)
             if not view:
                 raise Http404
-            if page.url_pattern:
-                view = deepcopy(view)
-            view.set_page(page)
         else:
             view = pageview(page)
         return view
@@ -77,34 +73,48 @@ class PageCache(object):
         return page
         
     def get_from_url(self, url):
+        '''Get a page given a url'''
         key = self.urlkey(url)
-        page, created = self._get_and_cache(key, url = url)
-        if created and page.application:
-            key = self.appkey(page.application)
-            cache.set(key, page)
-        return page
-            
-    
-    def get_for_application(self, code):
-        key = self.appkey(code) 
-        page, created = self._get_and_cache(key, application = code)
-        if created and page.application:
-            key = self.urlkey(page.url)
-            cache.set(key, page)
-        return page
-    
-    def _get_and_cache(self, key, **kwargs):
         page = cache.get(key,None)
         if page:
-            return page, False
-        elif page is None:
+            return page
+        try:
+            page = Page.objects.sitepage(url = url)
+            cache.set(key, page)
+            return page
+        except:
+            return None
+    
+    def get_for_application(self, code):
+        '''Return an iterable of pages for a given application view code. Stre them into cache.'''
+        key = self.appkey(code)
+        pages, created = self._get_and_cache(key, application_view = code)
+        if pages and not hasattr(pages,'__iter__'):
+            pages = [pages]
+        #if created:
+        #    for page in pages:
+        #        if page.application_view:
+        #            key = self.urlkey(page.url)
+        #            cache.set(key, page)
+        return pages
+    
+    def _get_and_cache(self, key, **kwargs):
+        pages = cache.get(key,None)
+        if pages:
+            return pages, False
+        elif pages is None:
             try:
-                page = Page.objects.sitepage(**kwargs)
-                cache.set(key, page)
-                return page, True
+                pages = Page.objects.sitepage(**kwargs)
+                cache.set(key, pages)
+                return pages, True
             except:
-                cache.set(key, False)
-                return None,False
+                pages = Page.objects.sitepages(**kwargs)
+                if pages:
+                    cache.set(key, pages)
+                    return pages, True
+                else:
+                    cache.set(key, False)
+                    return None,False
         else:
             return None,False
         
@@ -129,8 +139,6 @@ class PageCache(object):
             for child in children:
                 cache.set(self.idkey(child.id),   child)
                 cache.set(self.urlkey(child.url), child)
-                if child.application:
-                    cache.set(self.appkey(child.application), child)
         return children
 
     def sitemap(self):
@@ -141,9 +149,9 @@ class PageCache(object):
             pages = Page.objects.sitepages(is_published = True, requires_login = False, insitemap = True)
             map = []
             for page in pages:
-                if page.application:
+                if page.application_view:
                     try:
-                        app = appsite.site.getapp(page.application)
+                        app = appsite.site.getapp(page.application_view)
                     except:
                         continue
                     if app.insitemap and app.has_permission():

@@ -41,10 +41,13 @@ class TestCase(test.TestCase):
         data.update(**kwargs)
         data.update({'url_pattern': bit,
                      'parent': None if not parent else parent.id})
-        if model and view:
-            appmodel = self.site.for_model(model)
-            view = appmodel.getview(view)
-            data['application'] = view.code
+        if view:
+            if model:
+                appmodel = self.site.for_model(model)
+                view = appmodel.getview(view)
+            else:
+                view = self.site.getapp(view)
+            data['application_view'] = view.code
         form = PageForm(data = data)
         if fail:
             self.assertFalse(form.is_valid())

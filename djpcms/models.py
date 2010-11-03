@@ -22,7 +22,7 @@ from djpcms.plugins import get_wrapper, default_content_wrapper, get_plugin
 from djpcms.utils import lazyattr, function_module, force_unicode, mark_safe, htmltype
 from djpcms.utils.func import PathList
 from djpcms.uploads import upload_function, site_image_storage
-from djpcms.managers import PageManager, BlockContentManager, SiteContentManager, CalculateUrl, PermissionManager
+from djpcms.managers import PageManager, BlockContentManager, SiteContentManager, PermissionManager
 from djpcms.markup import markuplib
 
 protocol_re = re.compile('^\w+://')
@@ -90,7 +90,7 @@ class Page(TimeStamp):
     '''The page model holds several information regarding pages in the sitemap.'''
     site        = models.ForeignKey(Site)
     '''Site to which the page belongs.'''
-    application = models.CharField(max_length = 200, blank = True)
+    application_view = models.CharField(max_length = 200, blank = True)
     '''Name of the :class:`djpcms.views.appview.AppViewBase` owner of the page. It can be empty, in which case the page is a ``flat`` page (not part of an application).'''
     redirect_to = models.ForeignKey('self',
                                     null  = True,
@@ -125,7 +125,7 @@ as well as the layout structure.'''
 If not specified the :setting:`DEFAULT_TEMPLATE_NAME` is used.'''
     
     in_navigation = models.PositiveIntegerField(default=1,
-                                                verbose_name = _("Position in navigation"),
+                                                verbose_name = _("Position"),
                                                 help_text = _("Position in navigation. If 0 it won't be in navigation. If bigger than 100 it will be a secondary navigation item."))
     '''Integer flag indicating positioning in the site navigation (see :class:`djpcms.utils.navigation.Navigator`). If set to ``0`` the page won't be displayed in the navigation.'''
     
@@ -167,7 +167,8 @@ If not specified the :setting:`DEFAULT_TEMPLATE_NAME` is used.'''
     # Denormalized level in the tree and url, for performance 
     level       = models.IntegerField(default = 0, editable = False)
     url         = models.CharField(editable = False, max_length = 1000)
-    
+    application = models.CharField(max_length = 200, blank = True)
+    '''Name of the :class:`djpcms.views.appsite.ApplicationBase` owner of the page. It can be empty, in which case the page is a ``flat`` page (not part of an application).'''
     user        = models.ForeignKey(User, null = True, blank = True)
 
     objects = PageManager()
@@ -180,9 +181,6 @@ If not specified the :setting:`DEFAULT_TEMPLATE_NAME` is used.'''
         return u'%s%s' % (self.site.domain,self.url)
     
     def save(self, **kwargs):
-        self.url = CalculateUrl(self)
-        if self.url is None:
-            return
         self.level = self.get_level()
         super(Page,self).save(**kwargs)
         
@@ -303,16 +301,22 @@ and for maintaining their position in a :class:`djpcms.models.Page`.
         Render the plugin.
         This function call the plugin render function
         '''
-        plugin  = plugin or self.plugin
-        wrapper = wrapper or self.wrapper
-        if plugin:
-            opts = self._meta
-            if has_permission(djp.request.user,get_view_permission(self), self):
-                djp.media += plugin.media
-                html   = plugin(djp, self.arguments, wrapper = wrapper)
-                if html:
-                    return wrapper(djp, self, html)
-        return u''
+        try:
+            plugin  = plugin or self.plugin
+            wrapper = wrapper or self.wrapper
+            if plugin:
+                opts = self._meta
+                if has_permission(djp.request.user,get_view_permission(self), self):
+                    djp.media += plugin.media
+                    html   = plugin(djp, self.arguments, wrapper = wrapper)
+                    if html:
+                        return wrapper(djp, self, html)
+            return u''
+        except Exception, e:
+            if djp.request.user.is_superuser:
+                return u'%s' % e
+            else:
+                return u''
     
     def change_plugin_content(self, request):
         '''

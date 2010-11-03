@@ -21,6 +21,73 @@ class SearchForm(forms.Form):
     search_text = forms.CharField(required = False,
                                   widget = forms.TextInput(attrs = {'class': 'sw_qbox autocomplete-off',
                                                               'title': 'Enter your search text'}))
+
+
+def CalculatePageUrl(data,page):
+    '''Calculate url for a page'''
+    application_view = data.get('application_view','')
+    url_pattern  = data.get('url_pattern','')
+    parent = data['parent']
+    site = data['site']
+    if application_view:
+        from djpcms.views import appsite
+        app = appsite.site.getapp(application_view)
+        if not app:
+            raise ValueError("Application view %s not available on site." % application_view)
+        data['application_view'] = app.code
+        page.application = app.appmodel.name
+        purl = app.urlbit.url
+        if app.isroot():
+            url  = app.baseurl
+            root = Page.objects.filter(site = site, level = 0)
+            if url == '/':
+                if root:
+                    root = root[0]
+                    if root != page:
+                        raise forms.ValidationError("Root page already available, cannot set application as root. Delete the flat root page first")
+                parent = None
+            else:
+                url  = url[1:-1]
+                urls = url.split('/')
+                if len(urls) > 1:
+                    parent_url = '/%s/' % '/'.join(urls[:-1])
+                    root    = Page.objects.filter(site = site, url = parent_url)
+                else:
+                    parent_url = '/'
+                    
+                if root:
+                    parent = root[0]
+                else:
+                    raise forms.ValidationError('Parent page "%s" not available, cannot set application %s' % (parent_url,application_view))
+        else:
+            if not parent:
+                pages = Page.objects.filter(application_view = app.parent.code,
+                                            site = site,
+                                            url_pattern = '')
+                if pages.count() == 1:
+                    parent = pages[0]
+                else:
+                    raise forms.ValidationError('Parent page not defined for %s' % app.code)
+            
+            bit = url_pattern
+            if bit and app.regex.names and parent.url_pattern != bit:
+                bits = bit.split('/')
+                kwargs = dict(zip(app.regex.names,bits))
+                purl = app.regex.get_url(**kwargs)
+            url = purl
+    else:
+        page.application = ''
+        url = url_pattern
+    
+    data['parent'] = parent
+    if parent:
+        url = '%s%s' % (parent.url,url)
+    if not url.endswith('/'):
+        url += '/'
+    if not url.startswith('/'):
+        url = '/%s' % url
+    return url
+    
     
 
 # Form for a Page
@@ -35,13 +102,14 @@ class PageForm(forms.ModelForm):
             b) an application page (application field must be available)
         2) 
     '''
-    site        = forms.ModelChoiceField(queryset = Site.objects.all(), required = False)
-    application = forms.LazyChoiceField(choices = siteapp_choices,
+    site             = forms.ModelChoiceField(queryset = Site.objects.all(), required = False)
+    application_view = forms.LazyChoiceField(choices = siteapp_choices,
                                         required = False,
-                                        label = _('application'))
+                                        label = _('application view'))
     
     class Meta:
         model = Page
+        exclude = ['application']
         
     def get_parent(self):
         pid = self.data.get('parent',None)
@@ -50,35 +118,35 @@ class PageForm(forms.ModelForm):
         else:
             return None
     
-    def clean_application(self):
+    def clean_application_view(self):
         '''If application type is specified, than it must be unique
         '''
         from djpcms.views import appsite
         data = self.data
-        app = data.get('application',None)
+        app = data.get('application_view',None)
         if app:
             try:
-                application = appsite.site.getapp(app)
+                application_view = appsite.site.getapp(app)
             except KeyError:
-                raise forms.ValidationError('Application %s not available' % app)
+                raise forms.ValidationError('Application view %s not available' % app)
             parent = self.get_parent()
             # Parent page is available
             if parent:
-                if not application.parent:
+                if not application_view.parent:
                     parent = None
                     self.data.pop('parent',None)
-                elif application.parent.code != parent.application:
-                    raise forms.ValidationError("Page %s is not a parent of %s" % (parent,application))
+                elif application_view.parent.code != parent.application_view:
+                    raise forms.ValidationError("Page %s is not a parent of %s" % (parent,application_view))
             
             bit = data.get('url_pattern','')
-            if not application.regex.names:
+            if not application_view.regex.names:
                 data['url_pattern'] = ''
                 bit = ''
-            elif parent and application.parent:
-                if parent.application == application.parent.code and parent.url_pattern:
+            elif parent and application_view.parent:
+                if parent.application_view == application_view.parent.code and parent.url_pattern:
                     bit = parent.url_pattern
                     data['url_pattern'] = bit
-            others = Page.objects.filter(application = application.code,
+            others = Page.objects.filter(application_view = application_view.code,
                                          site = self.clean_site(),
                                          url_pattern = bit)
             for other in others:
@@ -125,20 +193,22 @@ class PageForm(forms.ModelForm):
         value    = data.get('url_pattern',None)
         if value:
             value = slugify(smart_unicode(value))
-        if data.get('application',None):
+        if data.get('application_view',None):
             return value
         parent = self.get_parent()
         if parent:
             if not value:
-                raise forms.ValidationError('url_pattern or application must be provided if not root page')
+                raise forms.ValidationError('url_pattern or application view must be provided if not a root page')
             page = parent.children.filter(url_pattern = value)
             if page and page[0].id != self.instance.id:
                 raise forms.ValidationError("page %s already available" % page)
         return value
         
-        
-    def save(self, commit = True):
-        return super(PageForm,self).save(commit)
+    def clean(self):
+        cd = self.cleaned_data
+        self.instance.url = CalculatePageUrl(cd,self.instance)
+        return cd
+            
         
 
 class PluginChoice(forms.LazyAjaxChoice):

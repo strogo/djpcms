@@ -59,7 +59,7 @@ class TestPage(TestCase):
         page1 = context['page']
         self.assertEqual(page1,vp1)
         djp1 = context['djp']
-        self.assertNotEqual(djp.view,djp1.view)
+        self.assertEqual(djp.view,djp1.view)
         self.assertEqual(djp.view.code,djp1.view.code)
         
     def testObjectViewSpecialChild(self):

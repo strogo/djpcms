@@ -107,6 +107,11 @@ Optional requirements:
  * django-tagging_ for tag management.
  * fabric_ and pip_ for the ``djpcms.contrib.jdep`` module.
  
+ 
+Kudos
+===========
+* django_ for inspiration.
+ 
 
 
 __ http://pypi.python.org/pypi?:action=display&name=djpcms

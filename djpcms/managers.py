@@ -46,7 +46,7 @@ class PageManager(models.Manager):
             return self.get(site = site, **kwargs)
         except ObjectDoesNotExist:
             if kwargs.get('url',None) == '/':
-                page = self.model(site = site)
+                page = self.model(site = site, url = '/')
                 page.save()
                 return page
             else:
@@ -198,68 +198,7 @@ class SiteContentManager(models.Manager):
         self.__class__._cache = {}
 
 
-def CalculateUrl(self):
-    '''calculate url for page *self*'''
-    Page = self.__class__
-    try:
-        if self.application:
-            from djpcms.views import appsite
-            app = appsite.site.getapp(self.application)
-            if not app:
-                raise ValueError("Application %s not available on site." % self.application)
-            purl = app.urlbit.url
-            if app.isroot():
-                baseurl = app.baseurl
-                root    = Page.objects.filter(site = self.site, level = 0)
-                if baseurl == '/':
-                    if root:
-                        root = root[0]
-                        if root != self:
-                            raise ValueError("Root page already available, cannot set application as root. Delete the flat root page first")
-                    self.parent = None
-                else:
-                    urls = baseurl[1:-1].split('/')
-                    if len(urls) > 1:
-                        parent_url = '/%s/' % '/'.join(urls[:-1])
-                        root    = Page.objects.filter(site = self.site, url = parent_url)
-                    else:
-                        parent_url = '/'
-                        
-                    if root:
-                        self.parent = root[0]
-                    else:
-                        raise ValueError('Parent page "%s" not available, cannot set application %s' % (parent_url,baseurl))
-                return baseurl
-            else:
-                if not self.parent:
-                    pages = Page.objects.filter(application = app.parent.code,
-                                                site = self.site,
-                                                url_pattern = '')
-                    if pages.count() == 1:
-                        self.parent = pages[0]
-                    else:
-                        raise ValueError('Parent page not defined for %s' % app.code)
-                
-                bit = self.url_pattern
-                if bit and app.regex.names and self.parent.url_pattern != bit:
-                    bits = bit.split('/')
-                    kwargs = dict(zip(app.regex.names,bits))
-                    purl = app.regex.get_url(**kwargs)
-                url = purl
-        else:
-            url = self.url_pattern
-        
-        if self.parent:
-            url = '%s%s' % (self.parent.url,url)
-        if not url.endswith('/'):
-            url += '/'
-        if not url.startswith('/'):
-            url = '/%s' % url
-        return url
-    except Exception, e:
-        return None
-    
-    
+
 class PermissionManager(models.Manager):
     
     def for_object(self, obj, code):

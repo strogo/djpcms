@@ -27,8 +27,7 @@ from djpcms.views.contentgenerator import BlockContentGen
 # THE DJPCMS INTERFACE CLASS for handling views
 # the response method handle all the views in djpcms
 class djpcmsview(UnicodeObject):
-    '''Base class for handling django views.
-    No views should use this class directly.
+    '''Base class for handling ``urls`` requests.
     
     .. attribute:: _methods
 
@@ -48,10 +47,13 @@ Not used very often but here just in case.'''
     def get_media(self):
         return Media()
     
+    def names(self):
+        return None
+    
     def get_url(self, djp, **urlargs):
         return djp.request.path
     
-    def get_page(self):
+    def get_page(self, djp):
         '''The :class:`djpcms.models.Page` instances associated with this view.'''
         return None
     
@@ -66,9 +68,6 @@ Not used very often but here just in case.'''
         By default it returns :attr:`_methods`.
         '''
         return self.__class__._methods
-    
-    def specialkwargs(self, kwargs):
-        pass
     
     def get_template(self, page = None):
         '''Given a :class:`djpcms.models.Page` instance *page*, which may be ``None``,
@@ -104,6 +103,9 @@ If *page* is ``None`` it returns :setting:`DEFAULT_TEMPLATE_NAME`.'''
             return view(djp.request)
         else:
             return None
+    
+    def specialkwargs(self, page, kwargs):
+        return kwargs
     
     def render(self, djp, **kwargs):
         '''
@@ -259,10 +261,13 @@ which handle the response'''
         else:
             return grid960()
     
-    def has_permission(self, request = None, obj = None):
-        '''Hook for permissions
+    def has_permission(self, request = None, page = None, obj = None):
+        '''Check if view can be displayed.
         '''
-        return True
+        if request and page:
+            return has_permission(request.user,get_view_permission(page),page)
+        else:
+            return True
     
     def in_navigation(self, request, page):
         '''
@@ -298,13 +303,14 @@ which handle the response'''
     def defaultredirect(self, djp):
         return djp.url
     
-    def children(self, request, instance = None, **kwargs):
+    def children(self, djp, instance = None, **kwargs):
         '''Return children permitted views for self.
 It includes views not in navigation. In scanning for children we porposefully
 leave a possible object instance out of the key-values arguments.
 If we didn't do that, test_navigation.testMultiPageApplication would fail.'''
         views = []
-        page      = self.get_page()
+        page  = djp.page
+        request = djp.request
         if not page:
             return views
         
@@ -316,7 +322,7 @@ If we didn't do that, test_navigation.testMultiPageApplication would fail.'''
             except Exception, e:
                 continue
             if cview.has_permission(request):
-                djp = cview(request, **kwargs)
+                djp = cview(request, **cview.specialkwargs(child,kwargs))
                 if isinstance(djp,DjpResponse):
                     try:
                         djp.url
@@ -343,14 +349,11 @@ class pageview(djpcmsview):
     def get_url(self, djp, **urlargs):
         return self.page.url
     
-    def get_page(self):
+    def get_page(self, djp):
         return self.page
     
     def is_soft(self, djp):
         return self.page.soft_root
-    
-    def has_permission(self, request, obj = None):
-        return has_permission(request.user,get_view_permission(self.page),self.page) 
 
 
 class wrapview(djpcmsview):
@@ -373,8 +376,8 @@ class wrapview(djpcmsview):
     def __unicode__(self):
         return '%s: %s' % (self.prefix,self._view)
     
-    def get_page(self):
-        return self._view.get_page()
+    def get_page(self, djp):
+        return self._view.get_page(djp)
     
     def get_template(self, page):
         return self._view.get_template(page)
@@ -394,14 +397,14 @@ This view is never in navigation and it provides a hook for adding the edit page
     def in_navigation(self, request, page):
         return 0
     
-    def has_permission(self, request = None, obj = None):
-        if self._view.has_permission(request,obj):
-            return inline_editing(request, self._view.get_page(), obj)
+    def has_permission(self, request = None, page = None, obj = None):
+        if self._view.has_permission(request,page,obj):
+            return inline_editing(request, page, obj)
         else:
             return False  
     
     def extra_content(self, djp, c):
-        uni = UniForm(ShortPageForm(instance = self.get_page()), action = djp.url)
+        uni = UniForm(ShortPageForm(instance = djp.page), action = djp.url)
         uni.inputs.append(submit(value = "change", name = '_save'))
         c['page_form'] = uni.render()
         uni = UniForm(NewChildForm(), action = djp.url)

@@ -1,4 +1,5 @@
 from djpcms.tests.test_djpcms import *
+from djpcms.tests.test_baseapplication import *
 from djpcms.tests.app_views import *
 from djpcms.tests.archive_views import *
 from djpcms.tests.test_navigation import *

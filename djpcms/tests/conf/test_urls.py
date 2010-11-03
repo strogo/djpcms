@@ -16,6 +16,13 @@ class StrategyApplication(appsite.ModelApplication):
     add  = appview.AddView()
     view = appview.ViewView()
     edit = appview.EditView()
+    
+
+class RandomApplication(appsite.ApplicationBase):
+    '''A simple application without database model'''
+    name = 'random application'
+    home = appview.AppViewBase(isapp = True, in_navigation = True)
+
 
 class ContentArchiveApplication(archive.ArchiveApplication):
     '''
@@ -41,5 +48,6 @@ class DocTestApplication(DocApplication):
 appsite.site.register('/content/', ContentArchiveApplication, model = SiteContent)
 appsite.site.register('/strategies/', StrategyApplication, model = Strategy)
 appsite.site.register('/docs/', DocTestApplication)
+appsite.site.register('/apps/nodb/', RandomApplication)
 
 

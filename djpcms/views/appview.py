@@ -18,7 +18,6 @@ from djpcms.utils.html import Paginator
 from djpcms.utils.func import force_number_insert
 from djpcms.utils.ajax import jremove, dialog, jredirect
 from djpcms.utils import form_kwargs, force_unicode, construct_search, isexact
-from djpcms.permissions import get_view_permission, has_permission
 from djpcms.models import Page
 
 from djpcms.views.regex import RegExUrl 
@@ -46,6 +45,10 @@ class AppViewBase(djpcmsview):
 
     instance of :class:`AppViewBase` or None.
     
+.. attribute:: isapp
+
+    if ``True`` the view will be added to the application list and can have its own page object. Default ``False``.
+    
 .. attribute:: isplugin
 
     if ``True`` the view can be rendered as :class:`djpcms.plugins.DJPplugin`. Default ``False``.
@@ -53,8 +56,13 @@ class AppViewBase(djpcmsview):
 .. attribute:: in_navigation
 
     If ``0`` the view won't appear in :ref:`Navigation <topics-included-navigator>`.
+    
+.. attribute:: plugin_form
+
+    The :attr:`djpcms.plugins.DJPplugin.form` for this view. Default ``None``.
 '''
     creation_counter = 0
+    plugin_form = None
     
     def __init__(self,
                  name       = None,
@@ -67,7 +75,6 @@ class AppViewBase(djpcmsview):
                  in_navigation = False,
                  template_name = None,
                  description = None):
-        self.__page      = None
         self.name        = name
         self.description = description
         self.parent    = parent
@@ -88,9 +95,12 @@ class AppViewBase(djpcmsview):
         return self.appmodel.baseurl
     baseurl = property(__get_baseurl)
     
-    def get_url(self, request, **kwargs):
+    def get_url(self, djp, **kwargs):
         purl = self.regex.get_url(**kwargs)
         return '%s%s' % (self.baseurl,purl)
+    
+    def names(self):
+        return self.regex.names
     
     def get_media(self):
         return self.appmodel.media
@@ -133,36 +143,55 @@ class AppViewBase(djpcmsview):
     def get_form(self, djp, **kwargs):
         return None
         
-    def set_page(self, page):
-        self.__page = page
-        
     def is_soft(self, djp):
         page = pagecache.get_for_application(self.code)
         return False if not page else page.soft_root
         
-    def get_page(self):
-        if self.__page:
-            return self.__page
-        else:
-            try:
-                page = pagecache.get_for_application(self.code)
-                if not page:
-                    raise PageNotFound 
-                self.__page = page
-                return self.__page
-            except:
-                if self.parent:
-                    return self.parent.get_page()
+    def get_page(self, djp):
+        pages = pagecache.get_for_application(self.code)
+        if pages:
+            if len(pages) == 1:
+                return pages[0]
+            else:
+                request = djp.request
+                kwargs = djp.kwargs.copy()
+                kwargs.pop('instance',None)
+                page   = pages.filter(url_pattern = '')
+                if page:
+                    page = page[0]
+                    try:
+                        url  = self.get_url(djp, **kwargs)
+                        for p in pages:
+                            if p.url == url:
+                                page = p
+                                break
+                    except:
+                        pass
+                    return page
+        if self.parent:
+            return self.parent.get_page(djp)
+        
+    def specialkwargs(self, page, kwargs):
+        if page:
+            names = self.regex.names
+            if names:
+                kwargs = kwargs.copy()
+                if page.url_pattern:
+                    bits = page.url_pattern.split('/')
+                    kwargs.update(dict(izip(self.regex.names,bits)))
+                else:
+                    for name in names:
+                        kwargs.pop(name,None)
+        return kwargs
     
-    def has_permission(self, request = None, obj = None):
-        '''
-        Delegate to appmodel
-        '''
-        page = self.get_page()
-        if has_permission(request.user,get_view_permission(page or Page),page):
-            return self.appmodel.has_permission(request, obj)
+    def has_permission(self, request = None, page = None, obj = None):
+        if super(AppViewBase,self).has_permission(request, page, obj):
+            return self._has_permission(request, obj)
         else:
             return False
+        
+    def _has_permission(self, request, obj):
+        return self.appmodel.has_permission(request, obj)
     
     def render(self, djp, **kwargs):
         '''
@@ -187,12 +216,6 @@ class AppViewBase(djpcmsview):
             self.regex = self.parent.regex + self.urlbit
         else:
             self.regex = self.urlbit
-            
-    def specialkwargs(self, kwargs):
-        page = self.get_page()
-        if page and page.url_pattern and self.regex.names:
-            bits = page.url_pattern.split('/')
-            kwargs.update(dict(izip(self.regex.names,bits)))
             
     def __deepcopy__(self, memo):
         return copy(self)  
@@ -424,7 +447,7 @@ and handles the saving as default ``POST`` response.'''
                                      **kwargs)
         self._form = form
     
-    def has_permission(self, request = None, obj = None):
+    def _has_permission(self, request, obj):
         return self.appmodel.has_add_permission(request, obj)
     
     def get_form(self, djp, **kwargs):
@@ -461,21 +484,17 @@ A view of this type has an embedded object available which is used to generate t
     def get_form(self, djp, **kwargs):
         return self.appmodel.get_form(djp, form = self._form, **kwargs)
     
-    def get_url(self, djp, instance = None, **urlargs):
-        '''
-        get object application url
-        If instance not defined it return None
-        '''
+    def get_url(self, djp, instance = None, **kwargs):
         if instance:
-            urlargs.update(self.appmodel.objectbits(instance))
+            kwargs.update(self.appmodel.objectbits(instance))
         else:
-            instance = self.appmodel.get_object(djp.request, **urlargs)
+            instance = self.appmodel.get_object(djp.request, **kwargs)
         
         if not instance:
             raise http.Http404
         
         djp.instance = instance
-        return super(ObjectView,self).get_url(djp, **urlargs)
+        return super(ObjectView,self).get_url(djp, **kwargs)
     
     
     def title(self, page, instance = None, **urlargs):
@@ -513,7 +532,7 @@ class DeleteView(ObjectView):
                                         name = name, isapp = isapp,
                                         **kwargs)
         
-    def has_permission(self, request = None, obj = None):
+    def _has_permission(self, request, obj):
         return self.appmodel.has_delete_permission(request, obj)
     
     def default_post(self, djp):
@@ -535,7 +554,7 @@ class EditView(ObjectView):
     def __init__(self, regex = 'edit', parent = 'view', name = 'edit',  **kwargs):
         super(EditView,self).__init__(regex = regex, parent = parent, name = name, **kwargs)
     
-    def has_permission(self, request = None, obj = None):
+    def _has_permission(self, request, obj):
         return self.appmodel.has_edit_permission(request, obj)
     
     def title(self, page, instance = None, **urlargs):

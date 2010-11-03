@@ -180,7 +180,7 @@ class ApplicationBase(object):
         Retrive the parent view
         '''
         if not app.parent:
-            page = app.get_page()
+            page = app.get_page(djp)
             if page:
                 page = page.parent
                 if page:

@@ -267,6 +267,7 @@ which is registered to be a plugin, than it will be managed by this plugin.'''
     def __init__(self, app, name = None, description = None):
         global _plugin_dictionary
         self.app  = app
+        self.form = app.plugin_form
         if not name:
             name = '%s-%s' % (app.appmodel.name,app.name)
         if not description:
@@ -274,6 +275,7 @@ which is registered to be a plugin, than it will be managed by this plugin.'''
         self.name = name
         self.description = nicename(description)
         _plugin_dictionary[self.name] = self
+        
     
     def render(self, djp, wrapper, prefix, **kwargs):
         app  = self.app
@@ -287,7 +289,7 @@ which is registered to be a plugin, than it will be managed by this plugin.'''
                 t_djp = djp
             djp.wrapper = wrapper
             djp.prefix  = prefix
-            html = self.app.render(t_djp)
+            html = self.app.render(t_djp, **kwargs)
             if djp is not t_djp:
                 djp.media += t_djp.media
             return html

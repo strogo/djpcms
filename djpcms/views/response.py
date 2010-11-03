@@ -39,7 +39,6 @@ class DjpResponse(http.HttpResponse):
         self.prefix     = None
         self._errors    = None
         self.media      = view.get_media()
-        view.specialkwargs(self.kwargs)
         self._plugincss = {}
     
     def __repr__(self):
@@ -96,7 +95,7 @@ class DjpResponse(http.HttpResponse):
     def _get_page(self):
         '''Get the page object
         '''
-        return self.view.get_page()
+        return self.view.get_page(self)
     page = property(_get_page)
     
     @lazyattr
@@ -123,7 +122,7 @@ class DjpResponse(http.HttpResponse):
     @lazyattr
     def get_children(self):
         self.instance
-        return self.view.children(self.request, **self.kwargs) or []
+        return self.view.children(self, **self.kwargs) or []
     children = property(get_children)
     
     def _get_instance(self):
@@ -154,7 +153,7 @@ class DjpResponse(http.HttpResponse):
         is_ajax = request.is_ajax()
         
         # Check for permissions
-        if not view.has_permission(request, self.instance):
+        if not view.has_permission(request, self.page, self.instance):
             return view.permissionDenied(self)
         
         method  = request.method.lower()

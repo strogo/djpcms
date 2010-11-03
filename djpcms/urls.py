@@ -33,7 +33,8 @@ if admin:
     try:
         admin_url_prefix = settings.ADMIN_URL_PREFIX
         #site_urls  = url(r'^{0}(.*)'.format(admin_url_prefix[1:]),    admin.site.root),
-        site_urls.append(url(r'^%s(.*)' % admin_url_prefix[1:],    admin.site.root))
+        #site_urls.append(url(r'^%s(.*)' % admin_url_prefix[1:],    admin.site.root))
+        site_urls.append((r'^%s' % admin_url_prefix[1:],    include(admin.site.urls)))
     except:
         pass
         

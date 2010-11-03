@@ -122,6 +122,7 @@ class TestRootApplicationNavigation(TestCase):
         self.assertEqual(sitenav[1].url,'/2/')
         self.assertEqual(sitenav[2].url,'/1/')
         
+        # Loop over the 4 objects
         for i in range(1,5):
             context = self.get('/%s/' % i)
             sitenav = list(context["sitenav"])

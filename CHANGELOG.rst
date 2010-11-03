@@ -1,10 +1,12 @@
 Development
 ==========================
-* Added :mod:`djpcms.contrib.stdform` module, a light-weight form wrapper for stdnet_.
+* Added :attr:`djpcms.models.Page.application_view` field.
+* Page url calculation moved into form validation.
+* Added :attr:`djpcms.views.appview.AppViewBase.plugin_form` attribute used to specify the :attr:`djpcms.plugins.DJPplugin.form` for an application view.
 * Added :mod:`djpcms.core.models` module for handling models from different libraries/frameworks.
   :class:`djpcms.views.appsite.ModelApplication` can handle database models other than ``Django``.
 * More documentation.
-* **38 unit tests**.
+* **40 unit tests**.
 
 Version 0.8.3 (2010-Oct-18)
 =================================

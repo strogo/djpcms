@@ -21,7 +21,7 @@ def djpcmsHandler(request, url):
     
     # First we check for static pages
     view = pagecache.view_from_url(request, url)
-    if view:
+    if view and not view.names():
         return view, (), {}
     else:
         # page not found, it must be a page with arguments
