@@ -47,7 +47,7 @@ class InnerTemplateAdmin(SafeModelAdmin):
 
 
 class PageAdmin(SafeModelAdmin):
-    list_display        = ('url','level','url_pattern','application',
+    list_display        = ('url','level','url_pattern','application','application_view',
                            'in_navigation','link','user','redirect_to',
                            'requires_login','inner_template','cssinfo',
                            'is_published','get_template')

@@ -50,6 +50,7 @@ def CalculatePageUrl(data,page):
                 url  = url[1:-1]
                 urls = url.split('/')
                 if len(urls) > 1:
+                    url     = urls[-1]
                     parent_url = '/%s/' % '/'.join(urls[:-1])
                     root    = Page.objects.filter(site = site, url = parent_url)
                 else:
