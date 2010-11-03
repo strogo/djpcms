@@ -66,7 +66,7 @@ Features
 
 Installing
 ================================
-You can download the latest archive from pypi__, uncompress and::
+You can download the latest archive from pypi_, uncompress and::
 
 	python setup.py install
 	
@@ -92,9 +92,10 @@ Otherwise, once installed::
 	import djpcms
 	djpcms.runtests()
 
+
 Dependencies
 ========================
-It requires Python__ 2.5 or above. It is not yet compatible with Python 3 series.
+It requires Python_ 2.6 or above. It is not yet compatible with Python 3 series.
 Currently it depends on django_, however in the long run, this dependency will be
 removed so that it can be used with other web-frameworks as well.
 
@@ -104,12 +105,13 @@ removed so that it can be used with other web-frameworks as well.
 
 Optional requirements:
 
- * django-tagging_ for tag management.
- * fabric_ and pip_ for the ``djpcms.contrib.jdep`` module.
+* django-tagging_ for tag management.
+* fabric_ and pip_ for the ``djpcms.contrib.jdep`` module.
 
 
-__ http://pypi.python.org/pypi?:action=display&name=djpcms
-__ http://www.python.org/
+
+.. _pypi: http://pypi.python.org/pypi?:action=display&name=djpcms
+.. _Python: http://www.python.org/
 .. _django: http://www.djangoproject.com/
 .. _jQuery: http://jquery.com/
 .. _django-tagging: http://code.google.com/p/django-tagging/
