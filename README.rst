@@ -24,7 +24,7 @@ It is based on django, but it works for other object relational mappers too!
 Features
 ===============================
 
- * Dynamic pages based on database models, and not only django_ models!
+ * Dynamic pages based on database models, not only django_ models!
  * If you need more than django_ and stdnet_ models,
    register your model type and off you go::
  
@@ -106,12 +106,6 @@ Optional requirements:
 
  * django-tagging_ for tag management.
  * fabric_ and pip_ for the ``djpcms.contrib.jdep`` module.
- 
- 
-Kudos
-===========
-* django_ for inspiration.
- 
 
 
 __ http://pypi.python.org/pypi?:action=display&name=djpcms
