@@ -98,9 +98,6 @@ class ChangeContentView(appview.EditView):
     def plugin_edit_id(self, instance):
         return '%s-edid' % instance.pluginid()
     
-    def has_permission(self, request = None, obj = None):
-        return self.appmodel.has_edit_permission(request, obj)
-    
     def render(self, djp, url = None):
         uni = self.get_form(djp, url = url)
         djp.media += uni.media

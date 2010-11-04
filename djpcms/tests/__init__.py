@@ -8,4 +8,5 @@ from djpcms.tests.doc_views import *
 from djpcms.tests.uniforms import *
 from djpcms.tests.test_plugins import *
 from djpcms.tests.test_page import *
+from djpcms.tests.test_response import *
 from autocomplete import *

@@ -64,6 +64,7 @@ class PageCache(object):
             if not view:
                 raise Http404
         else:
+            # Flat pages get created each time
             view = pageview(page)
         return view
     

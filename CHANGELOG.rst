@@ -1,12 +1,13 @@
 Development
 ==========================
+* Added :func:`djpcms.views.response.DjpResponse.has_own_page` function to check if a response has its own page object (rather than the ancestor one).
 * Added :attr:`djpcms.models.Page.application_view` field.
 * Page url calculation moved into form validation.
 * Added :attr:`djpcms.views.appview.AppViewBase.plugin_form` attribute used to specify the :attr:`djpcms.plugins.DJPplugin.form` for an application view.
 * Added :mod:`djpcms.core.models` module for handling models from different libraries/frameworks.
   :class:`djpcms.views.appsite.ModelApplication` can handle database models other than ``Django``.
 * More documentation.
-* **40 unit tests**.
+* **42 unit tests**.
 
 Version 0.8.3 (2010-Oct-18)
 =================================

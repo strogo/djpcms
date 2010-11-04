@@ -176,17 +176,17 @@ class ApplicationBase(object):
         return True
     
     def parentresponse(self, djp, app):
+        '''Retrieve the parent :class:`djpcms.views.response.DjpResponse` instance
         '''
-        Retrive the parent view
-        '''
-        if not app.parent:
+        parent_view = app.parent
+        if not parent_view:
             page = app.get_page(djp)
             if page:
                 page = page.parent
                 if page:
-                    app.parent = pagecache.view_from_page(djp.request, page)
-        if app.parent:
-            return app.parent(djp.request, **djp.kwargs)
+                    parent_view = pagecache.view_from_page(djp.request, page)
+        if parent_view:
+            return parent_view(djp.request, **djp.kwargs)
     
     def _makename(self):
         cls = self.__class__

@@ -153,7 +153,7 @@ Hooks:
             context['htmldoc'] = htmltype.get()
             
         if page:
-            if not self.editurl:
+            if not self.editurl and djp.has_own_page():
                 context['edit_content_url'] = inline_editing(request,page,djp.instance)
             
         if page and page.inner_template:
@@ -423,7 +423,7 @@ This view is never in navigation and it provides a hook for adding the edit page
             else:
                 return self.handle_response(djp)
         else:
-            f = ShortPageForm(instance = self.get_page(), data = request.POST)
+            f = ShortPageForm(instance = djp.page, data = request.POST)
             if f.is_valid():
                 page = f.save()
                 messages.info(request, 'Page %s updated' % page)

@@ -136,6 +136,19 @@ class DjpResponse(http.HttpResponse):
         self.kwargs['instance'] = instance
     instance = property(fget = _get_instance, fset = _set_instance)
     
+    def has_own_page(self):
+        '''Return ``True`` if the response has its own :class:djpcms.models.Page` object.
+        '''
+        page = self.page
+        if page:
+            appv = getattr(self.view,'code',None)
+            if appv:
+                return page.application_view == appv
+            else:
+                return page.url == self.url
+        return False
+            
+    
     def robots(self):
         '''
         Robots
@@ -152,7 +165,7 @@ class DjpResponse(http.HttpResponse):
         request = self.request
         is_ajax = request.is_ajax()
         
-        # Check for permissions
+        # Check for page view permissions
         if not view.has_permission(request, self.page, self.instance):
             return view.permissionDenied(self)
         

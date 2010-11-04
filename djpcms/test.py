@@ -15,19 +15,25 @@ class TestCase(test.TestCase):
         self.pagecache = pagecache
         self.Page = Page
         self.site = appsite.site
-        self.clear()
+        p = self.clear()
         self.superuser = User.objects.create_superuser('testuser', 'test@testuser.com', 'testuser')
         self.user = User.objects.create_user('simpleuser', 'simple@testuser.com', 'simpleuser')
+        self.assertEqual(p.url,'/')
+        if not hasattr(self,'fixtures'):
+            self.assertEqual(Page.objects.all().count(),1)
         
     def clear(self):
         self.pagecache.clear()
         return self.get()['page']
         
-    def get(self, url = '/', status = 200):
+    def get(self, url = '/', status = 200, response = False):
         '''Quick function for getting some content'''
-        response = self.client.get(url)
-        self.assertEqual(response.status_code,status)
-        return response.context
+        resp = self.client.get(url)
+        self.assertEqual(resp.status_code,status)
+        if response:
+            return resp
+        else:
+            return resp.context
     
     def post(self, url = '/', data = {}, status = 200):
         '''Quick function for posting some content'''
