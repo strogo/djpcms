@@ -418,10 +418,13 @@ class UniForm(UniFormBase):
     
     def _formerrors(self, jerr, form):
         for name,errs in form.errors.items():
+            errs = str(errs)
             field_instance = form.fields.get(name,None)
             if field_instance:
                 bound_field = BoundField(form, field_instance, name)
-                jerr.add('#%s-errors' % bound_field.auto_id,str(errs),alldocument = False)
+                jerr.add('#%s-errors' % bound_field.auto_id,errs,alldocument = False)
+            else:
+                jerr.add('.form-messages', errs, alldocument = False)
         
     def json_errors(self, withmessage = True):
         '''Serialize form errors for AJAX-JSON interaction.

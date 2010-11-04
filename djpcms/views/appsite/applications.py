@@ -361,7 +361,8 @@ Re-implement for custom arguments.'''
                  form = None,
                  addinputs = True,
                  withdata = True,
-                 forceform = False):
+                 forceform = False,
+                 form_withrequest = None):
         '''Build a form to add, edit or customize an application model object:
         
 * *djp*: instance of djpcms.views.DjpRequestWrap.
@@ -372,6 +373,7 @@ Re-implement for custom arguments.'''
         instance = djp.instance
         request  = djp.request
         own_view = djp.own_view()
+        form_withrequest = form_withrequest if form_withrequest is not None else self.form_withrequest
         
         form = form or self.form or forms.ModelForm
         
@@ -395,7 +397,7 @@ Re-implement for custom arguments.'''
                                     instance    = instance,
                                     prefix      = prefix,
                                     withdata    = withdata,
-                                    withrequest = self.form_withrequest))
+                                    withrequest = form_withrequest))
         inputs = getattr(f,'submits',None)
         if inputs:
             inputs = [submit(value = val, name = nam) for val,nam in inputs]

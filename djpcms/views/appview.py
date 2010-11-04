@@ -74,7 +74,9 @@ class AppViewBase(djpcmsview):
                  isplugin   = False,
                  in_navigation = False,
                  template_name = None,
-                 description = None):
+                 description = None,
+                 form        = None,
+                 form_withrequest = None):
         self.name        = name
         self.description = description
         self.parent    = parent
@@ -88,6 +90,8 @@ class AppViewBase(djpcmsview):
         self.func      = None
         self.code      = None
         self.editurl   = None
+        self._form     = form
+        self._form_withrequest = form_withrequest
         self.creation_counter = AppViewBase.creation_counter
         AppViewBase.creation_counter += 1
         
@@ -359,6 +363,7 @@ def render_form(form, djp):
     djp.media += form.media
     return form.render()
     
+    
 def success_message(self, instance, mch):
     dt = datetime.now()
     c = {'name': force_unicode(instance._meta.verbose_name),
@@ -369,17 +374,18 @@ def success_message(self, instance, mch):
     
     
 def saveform(self, djp, editing = False):
-    '''Save model instance'''
+    '''Comprehensive save method for model instances'''
     view       = djp.view
     request    = djp.request
     is_ajax    = request.is_ajax()
     djp.prefix = self.get_prefix(djp)
-    cont       = request.POST.has_key("_save_and_continue")
+    POST       = request.POST
+    cont       = POST.has_key("_save_and_continue")
     url        = djp.url
-    curr       = request.POST.get("_current_url",None)
-    next       = request.POST.get("next",None)
+    curr       = POST.get("_current_url",None)
+    next       = POST.get("next",None)
     
-    if request.POST.has_key("_cancel"):
+    if POST.has_key("_cancel"):
         redirect_url = next
         if not redirect_url:
             if djp.instance:
@@ -428,9 +434,6 @@ def saveform(self, djp, editing = False):
     else:
         if is_ajax:
             return f.json_errors()
-        #TODO: it would be nice to do this but we cannot pass the errors
-        #elif next:
-        #    return http.HttpResponseRedirect(next)
         else:
             return self.handle_response(djp)
         
@@ -439,24 +442,23 @@ class AddView(AppView):
     '''An :class:`AppView` class which renders a form for adding instances
 and handles the saving as default ``POST`` response.'''
     def __init__(self, regex = 'add', parent = None,
-                 name = 'add', isplugin = True, in_navigation = True, form = None,
-                 **kwargs):
-        '''
-        Set some default values for add application
-        '''
+                 name = 'add', isplugin = True,
+                 in_navigation = True, **kwargs):
         super(AddView,self).__init__(regex  = regex,
                                      parent = parent,
                                      name   = name,
                                      isplugin = isplugin,
                                      in_navigation = in_navigation,
                                      **kwargs)
-        self._form = form
     
     def _has_permission(self, request, obj):
         return self.appmodel.has_add_permission(request, obj)
     
     def get_form(self, djp, **kwargs):
-        return self.appmodel.get_form(djp, form = self._form, **kwargs)
+        return self.appmodel.get_form(djp,
+                                      form = self._form,
+                                      form_withrequest = self._form_withrequest,
+                                      **kwargs)
     
     def save(self, request, f):
         return self.appmodel.object_from_form(f)
@@ -480,13 +482,11 @@ class ObjectView(AppView):
     '''An :class:`AppView` class view for model instances.
 A view of this type has an embedded object available which is used to generate the full url.'''
     object_view = True
-    
-    def __init__(self, *args, **kwargs):
-        self._form = kwargs.pop('form',None)
-        super(ObjectView,self).__init__(*args, **kwargs)
-        
+            
     def get_form(self, djp, **kwargs):
-        return self.appmodel.get_form(djp, form = self._form, **kwargs)
+        return self.appmodel.get_form(djp, form = self._form,
+                                      form_withrequest = self._form_withrequest,
+                                      **kwargs)
     
     def get_url(self, djp, instance = None, **kwargs):
         if instance:
