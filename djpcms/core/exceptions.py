@@ -5,6 +5,12 @@ class DjpcmsException(Exception):
     '''Base class for ``djpcms`` related exceptions.'''
     pass
 
+
+class ModelException(DjpcmsException):
+    '''A :class:`DjpcmsException` raised when a Model is not recognised.'''
+    pass
+
+
 class UsernameAlreadyAvailable(Exception):
     pass
 

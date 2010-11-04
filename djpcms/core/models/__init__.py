@@ -1,3 +1,4 @@
+from djpcms.core.exceptions import ModelException 
 from base import ModelTypeWrapper, nicerepr, _boolean_icon
 _models = {}
 
@@ -24,4 +25,4 @@ def getmodel(appmodel):
             return wrapper(appmodel)
         except:
             continue
-    return None 
+    raise ModelException('Model not recognised')

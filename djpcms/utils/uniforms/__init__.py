@@ -404,6 +404,13 @@ class UniForm(UniFormBase):
                 messages.info(request,msg)
         return self
             
+    def force_message(self, request):
+        if self.is_ajax:
+            for msg in self._messages:
+                messages.info(request,msg)
+            for msg in self._errors:
+                messages.error(request,msg)
+            
     def json_message(self):
         msg = self._make_messages('messagelist',self._messages)
         err = self._make_messages('errorlist',self._errors)
@@ -488,9 +495,9 @@ class UniForm(UniFormBase):
     
     def _make_messages(self, cname, mlist):
         if mlist:
-            return '<ul class="%s"><li>%s</li></ul>' % (cname,'</li><li>'.join(mlist))
+            return mark_safe('<ul class="%s"><li>%s</li></ul>' % (cname,'</li><li>'.join(mlist)))
         else:
-            return ''
+            return u''
             
     def htmldata(self):
         data = {}

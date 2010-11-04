@@ -1,5 +1,6 @@
 Development
 ==========================
+* Refactoring of :func:`djpcms.views.baseview.get_page` function.
 * Added :func:`djpcms.views.response.DjpResponse.has_own_page` function to check if a response has its own page object (rather than the ancestor one).
 * Added :attr:`djpcms.models.Page.application_view` field.
 * Page url calculation moved into form validation.

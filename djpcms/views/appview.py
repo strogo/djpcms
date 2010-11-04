@@ -376,6 +376,7 @@ def saveform(self, djp, editing = False):
     djp.prefix = self.get_prefix(djp)
     cont       = request.POST.has_key("_save_and_continue")
     url        = djp.url
+    curr       = request.POST.get("_current_url",None)
     next       = request.POST.get("next",None)
     
     if request.POST.has_key("_cancel"):
@@ -413,10 +414,14 @@ def saveform(self, djp, editing = False):
                 redirect_url = view.appmodel.editurl(request,instance)
         else:
             redirect_url = next
-            if not next:
+            if not redirect_url:
                 redirect_url = view.appmodel.viewurl(request,instance) or view.appmodel.baseurl
+            if redirect_url == curr and is_ajax:
+                return f.json_message()
             
+        # We are Redirecting
         if is_ajax:
+            f.force_message(request)
             return jredirect(url = redirect_url)                
         else:
             return http.HttpResponseRedirect(redirect_url)
@@ -471,12 +476,11 @@ and handles the saving as default ``POST`` response.'''
         return success_message(self,instance, mch)
     
         
-        
-# Application views which requires an object
 class ObjectView(AppView):
-    '''An :class:`AppView` class view for objects.
-A view of this type has an embedded object available which is used to generate the full url.
-    '''
+    '''An :class:`AppView` class view for model instances.
+A view of this type has an embedded object available which is used to generate the full url.'''
+    object_view = True
+    
     def __init__(self, *args, **kwargs):
         self._form = kwargs.pop('form',None)
         super(ObjectView,self).__init__(*args, **kwargs)
@@ -524,12 +528,12 @@ class ViewView(ObjectView):
 class DeleteView(ObjectView):
     '''An :class:`ObjectView` class specialised for deleting an object.
     '''
-    _methods      = ('post',) 
+    _methods      = ('post',)
     
-    def __init__(self, regex = 'delete', parent = 'view', name = 'delete',
-                 isapp = False, **kwargs):
-        super(DeleteView,self).__init__(regex = regex, parent = parent,
-                                        name = name, isapp = isapp,
+    def __init__(self, regex = 'delete', parent = 'view', isapp = False, **kwargs):
+        super(DeleteView,self).__init__(regex = regex,
+                                        parent = parent,
+                                        isapp = isapp,
                                         **kwargs)
         
     def _has_permission(self, request, obj):

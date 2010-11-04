@@ -3,7 +3,8 @@ from datetime import date, datetime
 from django.utils.dateformat import format as date_format, time_format
 
 from djpcms.conf import settings
-from djpcms.utils import mark_safe 
+from djpcms.utils import mark_safe
+from djpcms.template import loader 
 
 BOOLEAN_MAPPING = {True: ('ui-icon-check','yes'), False: ('ui-icon-close','no')}
 EMPTY_VALUE = settings.DJPCMS_EMPTY_VALUE
@@ -32,6 +33,9 @@ def nicerepr(val):
 class ModelTypeWrapper(object):
     
     def __init__(self, appmodel):
+        self.list_display = appmodel.list_display
+        self.object_display = appmodel.object_display or self.list_display
+        self.list_display_links = appmodel.list_display_links or []
         self.test(appmodel.model)
         self.appmodel = appmodel
         self.model = appmodel.model
@@ -89,3 +93,16 @@ class ModelTypeWrapper(object):
     def has_delete_permission(self, user, obj=None):
         return user.is_superuser
     
+    def totable(self, obj):
+        label_for_field = self.label_for_field
+        getrepr = self.getrepr
+        def data():
+            for field in self.object_display:
+                name = label_for_field(field)
+                yield {'name':name,'value':getrepr(name,obj)}
+        return loader.render_to_string(['%s/%s_table.html' % (self.app_label,self.module_name),
+                                        'djpcms/components/object_definition.html'],
+                                        {'data':data(),
+                                         'item':obj})
+            
+        

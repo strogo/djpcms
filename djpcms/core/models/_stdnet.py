@@ -10,8 +10,6 @@ class ModelType(ModelTypeWrapper):
         appmodel = self.appmodel
         self.module_name = self.meta.name
         self.app_label   = self.meta.app_label
-        self.list_display = appmodel.list_display
-        self.list_display_links = appmodel.list_display_links or []
         
     def get_view_permission(self):
         return '%s_view' % self.meta.basekey()

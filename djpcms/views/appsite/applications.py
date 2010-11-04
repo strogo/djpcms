@@ -16,14 +16,14 @@ from djpcms.conf import settings
 from djpcms.template import loader
 from djpcms.core.models import getmodel
 from djpcms.core.exceptions import PermissionDenied, ApplicationUrlException
-from djpcms.utils import form_kwargs, UnicodeObject, force_unicode, slugify
+from djpcms.utils import form_kwargs, UnicodeObject, force_unicode, slugify, mark_safe
 from djpcms.utils.forms import add_hidden_field
 from djpcms.plugins import register_application
 from djpcms.utils.html import submit
 from djpcms.utils.uniforms import UniForm
 from djpcms.permissions import has_permission
 from djpcms.views.baseview import editview
-from djpcms.views.appview import AppViewBase
+from djpcms.views.appview import AppViewBase, ViewView
 from djpcms.views.cache import pagecache
 
 render_to_string = loader.render_to_string
@@ -251,6 +251,9 @@ Each one of the class attributes are optionals.'''
     list_display     = None
     '''List of object's field to display. If available, the search view will display a sortable table
 of objects. Default is ``None``.'''
+    object_display   = None
+    '''Same as :attr:`list_display` attribute at object level. The field list is used to display
+the object definition. If not available, :attr:`list_display` is used. Default ``None``.'''
     list_per_page    = 30
     '''Number of objects per page. Default is ``30``.'''
     filter_fields    = None
@@ -279,7 +282,7 @@ functionality when searching for model instances.'''
     _form_save       = 'done'
     _form_continue   = 'save & continue'
     #
-    search_form      = SearchForm
+    #search_form      = SearchForm
     # If set to True, base class views will be available
     #
     #
@@ -334,12 +337,15 @@ Re-implement for custom arguments.'''
         if request.method == 'GET':
             params = dict(request.GET.items())
             next   = params.get('next',None)
+            _current_url = request.path
             if not next and not own_view:
-                next = request.path
+                next = _current_url
             if next:
                 mform = add_hidden_field(mform,'next')
-                initial = initial or {}
-                initial['next'] = next
+            mform = add_hidden_field(mform,'_current_url')
+            initial = initial or {}
+            initial['next'] = next
+            initial['_current_url'] = _current_url
         return initial
     
     def get_extra_forms(self):
@@ -356,12 +362,12 @@ Re-implement for custom arguments.'''
                  addinputs = True,
                  withdata = True,
                  forceform = False):
-        '''Build a form to add or edit an application model object:
+        '''Build a form to add, edit or customize an application model object:
         
- * *djp*: instance of djpcms.views.DjpRequestWrap.
- * *initial*: If not none, a dictionary of initial values for model fields.
- * *prefix*: prefix to use in the form.
- * *wrapper*: instance of djpcms.plugins.wrapper.ContentWrapperHandler with information on layout.
+* *djp*: instance of djpcms.views.DjpRequestWrap.
+* *initial*: If not none, a dictionary of initial values for model fields.
+* *prefix*: prefix to use in the form.
+* *wrapper*: instance of djpcms.plugins.wrapper.ContentWrapperHandler with information on layout.
 '''
         instance = djp.instance
         request  = djp.request
@@ -514,12 +520,38 @@ This dictionary should be used to render an object within a template. It returns
         editurl = self.editurl(request, obj)
         if editurl:
             editurl = '%s?next=%s' % (editurl,djp.url)
-        return {'item':      obj,
-                'djp':       djp,
-                'user':      request.user,
-                'editurl':   editurl,
-                'deleteurl': self.deleteurl(request, obj),
-                'viewurl':   self.viewurl(request, obj)}
+        content = {'item':      obj,
+                   'djp':       djp,
+                   'user':      request.user}
+        content.update(self.object_links(djp,obj))
+        return content
+    
+    def object_links(self, djp, obj):
+        '''Create object links'''
+        css     = djp.css
+        next    = djp.url
+        request = djp.request
+        post    = ('post',)
+        posts   = []
+        gets    = []
+        content = {'geturls':gets,'posturls':posts}
+        for view in self.views.itervalues():
+            if not view.object_view:
+                continue
+            djpv = view(request, instance = obj)
+            if view.has_permission(request, djpv.page, obj):
+                url = djpv.url
+                name = view.name
+                if not isinstance(view,ViewView):
+                    url   = '%s?next=%s' % (url,next)
+                    title = '%s %s' % (name,obj)
+                    if view.methods(request) == post:
+                        posts.append(mark_safe('<a class="%s %s" href="%s" title="%s">%s</a>' % 
+                                               (css.ajax,css.nicebutton,url,title,name)))
+                    else:
+                        gets.append(mark_safe('<a href="%s" title="%s">%s</a>' % (url,title,name)))
+                content['%surl' % name] = url
+        return content
     
     def app_for_object(self, obj):
         try:

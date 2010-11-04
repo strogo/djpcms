@@ -42,6 +42,8 @@ Not used very often but here just in case.'''
     '''The parent view of ``self``. An instance of :class:`djpcmsview` or ``None``'''
     purl          = None
     
+    object_view = False
+    
     _methods      = ('get','post')
 
     def get_media(self):

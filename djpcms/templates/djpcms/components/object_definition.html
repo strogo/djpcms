@@ -1,0 +1,4 @@
+{# Model object table template, Used by djpcms.core.models.ModelTypeWrapper.totable #}
+<div class="object-definition">{% for row in data %}
+<dl><dt>{{ row.name }}</dt><dd>{{ row.value }}</dd></dl>{% endfor %}
+</div>

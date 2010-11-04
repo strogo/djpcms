@@ -441,3 +441,20 @@ a.deletable {
 .djphide {
 	display: none;
 }
+
+.object-definition dl {
+	overflow: hidden;
+	margin: 5px 0 0; 
+}
+.object-definition dl:first-child {
+	margin-top:0;
+}
+.object-definition dl dt {
+	opacity: 0.6;
+	float: left;
+	width: 30%;
+	margin: 0;
+}
+.object-definition dl dd {
+	margin: 0;
+}
