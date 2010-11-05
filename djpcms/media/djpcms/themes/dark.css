@@ -1,6 +1,6 @@
-@
 .djpcms-block-element.edit-page {
-	background: #9E9E9E;
+	background: #000;
+	border: 2px solid #9E9E9E;
 	color: #fff;
 }
 .djpcms-block-element.edit-page .uniForm .formHint {

@@ -1,7 +1,7 @@
-{% if navigator.classes %}
+{% if navigator.count %}{% if navigator.classes %}
 <ul class="{{ navigator.classes }}">{% else %}<ul>{% endif %}{% for navitem in navigator %}
  <li{% if navitem.liclass %} class="{{ navitem.liclass }}"{% endif %}>
   <a href="{{ navitem.url }}">{{ navitem.name }}</a>
   {{ navitem.render }}
  </li>{% endfor %}
-</ul>
+</ul>{% endif %}

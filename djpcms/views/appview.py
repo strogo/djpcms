@@ -484,7 +484,7 @@ A view of this type has an embedded object available which is used to generate t
         return super(ObjectView,self).get_url(djp, **kwargs)
     
     
-    def title(self, page, instance = None, **urlargs):
+    def title(self, page, instance = None, **kwargs):
         return self.appmodel.title_object(instance)
     
 
@@ -543,7 +543,7 @@ class EditView(ObjectView):
     def _has_permission(self, request, obj):
         return self.appmodel.has_edit_permission(request, obj)
     
-    def title(self, page, instance = None, **urlargs):
+    def title(self, page, instance = None, **kwargs):
         return 'Edit %s' % self.appmodel.title_object(instance)
     
     def render(self, djp):

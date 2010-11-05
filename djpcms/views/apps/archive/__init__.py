@@ -65,7 +65,7 @@ class ArchiveApplication(ModelApplication):
             dt      = getattr(obj,self.date_code)
             ddate   = dt.date()
             if self.split_days and (not date or date != ddate):
-                urlargs = copy.copy(djp.urlargs)
+                urlargs = djp.kwargs.copy()
                 urlargs.pop('year',None)
                 urlargs.pop('month',None)
                 urlargs.pop('day',None)

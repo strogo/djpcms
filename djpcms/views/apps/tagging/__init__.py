@@ -63,7 +63,7 @@ class TagArchiveView(archive.ArchiveView):
         return urlargs.get('tag1','')
     
     def linkname(self, djp):
-        urlargs = djp.urlargs
+        urlargs = djp.kwargs
         return urlargs.get('tag1',None)
         
     def appquery(self, request, year = None, month = None, day = None, **tags):

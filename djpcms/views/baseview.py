@@ -324,14 +324,14 @@ If we didn't do that, test_navigation.testMultiPageApplication would fail.'''
             except Exception, e:
                 continue
             if cview.has_permission(request):
-                djp = cview(request, **cview.specialkwargs(child,kwargs))
-                if isinstance(djp,DjpResponse):
+                cdjp = cview(request, **cview.specialkwargs(child,kwargs))
+                if isinstance(cdjp,DjpResponse):
                     try:
-                        djp.url
+                        cdjp.url
                     except:
                         pass
                     else:
-                        views.append(djp)
+                        views.append(cdjp)
         return views
     
     def redirect(self, url):
@@ -351,7 +351,7 @@ class pageview(djpcmsview):
     def get_url(self, djp, **urlargs):
         return self.page.url
     
-    def get_page(self, djp):
+    def get_page(self, djp, **kwargs):
         return self.page
     
     def is_soft(self, djp):
