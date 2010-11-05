@@ -51,7 +51,7 @@ Features
  	        ...
  	        
  * Inline editing of plugins and pages.
- * Autocomplete for models when an sutocompleview is added to the model application.
+ * Autocomplete for models when the autocomplete view is added to the model application.
  * Extendible AJAX decorators.
  * Tagging with django-tagging_ (optional).
  * Several battery included application classes.

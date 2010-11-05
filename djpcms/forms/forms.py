@@ -8,7 +8,6 @@ from djpcms.utils.html import ModelChoiceField, ModelMultipleChoiceField, submit
 
 
 BaseForm = forms.BaseForm
-Form = forms.Form
 ModelForm = forms.ModelForm
 IntegerField = forms.IntegerField
 DateField = forms.DateField
@@ -22,6 +21,14 @@ FileField = forms.FileField
 HiddenInput = forms.HiddenInput
 ValidationError = forms.ValidationError
 model_to_dict = forms.model_to_dict
+
+
+class Form(forms.Form):
+    '''A slight modification on django Form'''
+    def __init__(self, *args, **kwargs):
+        kwargs.pop('instance',None)
+        self.request = kwargs.pop('request',None)
+        super(Form,self).__init__(*args, **kwargs)
 
 
 class LazyChoiceField(ChoiceField):

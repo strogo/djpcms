@@ -88,8 +88,7 @@ class ChangeContentView(appview.EditView):
         regex = '(?P<pageid>\d+)/(?P<blocknumber>\d+)/(?P<position>\d+)'
         super(ChangeContentView,self).__init__(regex = regex,
                                                parent = None,
-                                               isapp = False,
-                                               name = 'edit_content_block')
+                                               isapp = False)
         
     def plugin_form_id(self, instance):
         return '%s-options' % instance.pluginid()
@@ -257,8 +256,7 @@ class EditPluginView(appview.EditView):
     def __init__(self, regex = 'plugin', parent = 'edit'):
         super(EditPluginView,self).__init__(regex = regex,
                                             parent = parent,
-                                            isapp = False,
-                                            name = 'edit_plugin')
+                                            isapp = False)
     
     def get_form(self, djp, withdata = True, initial = None, **kwargs):
         instance = djp.instance

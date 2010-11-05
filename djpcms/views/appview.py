@@ -65,7 +65,6 @@ class AppViewBase(djpcmsview):
     plugin_form = None
     
     def __init__(self,
-                 name       = None,
                  parent     = None,
                  regex      = None,
                  splitregex = False,
@@ -77,7 +76,7 @@ class AppViewBase(djpcmsview):
                  description = None,
                  form        = None,
                  form_withrequest = None):
-        self.name        = name
+        self.name        = None
         self.description = description
         self.parent    = parent
         self.isapp     = isapp
@@ -228,10 +227,7 @@ class AppViewBase(djpcmsview):
 class AppView(AppViewBase):
     '''An :class:`AppViewBase` class for views in :class:`djpcms.views.appsite.ModelApplication`.
     '''
-    def __init__(self,
-                 isapp      = True,
-                 splitregex = True,
-                 **kwargs):
+    def __init__(self, isapp = True, splitregex = True, **kwargs):
         super(AppView,self).__init__(isapp = isapp,
                                      splitregex = splitregex,
                                      **kwargs)
@@ -289,11 +285,8 @@ class SearchView(AppView):
     search_text = 'search_text'
     '''identifier for queries. Default ``search_text``.'''
     
-    def __init__(self, *args, **kwargs):
-        in_navigation = kwargs.get('in_navigation',None)
-        if in_navigation is None:
-            kwargs['in_navigation'] = True
-        super(SearchView,self).__init__(*args,**kwargs)
+    def __init__(self, in_navigation = True, **kwargs):
+        super(SearchView,self).__init__(in_navigation=in_navigation,**kwargs)
     
     def appquery(self, request, *args, **kwargs):
         '''This function implements the search query.
@@ -434,12 +427,9 @@ def saveform(self, djp, editing = False):
 class AddView(AppView):
     '''An :class:`AppView` class which renders a form for adding instances
 and handles the saving as default ``POST`` response.'''
-    def __init__(self, regex = 'add', parent = None,
-                 name = 'add', isplugin = True,
+    def __init__(self, regex = 'add', isplugin = True,
                  in_navigation = True, **kwargs):
         super(AddView,self).__init__(regex  = regex,
-                                     parent = parent,
-                                     name   = name,
                                      isplugin = isplugin,
                                      in_navigation = in_navigation,
                                      **kwargs)
@@ -501,9 +491,8 @@ A view of this type has an embedded object available which is used to generate t
 class ViewView(ObjectView):
     '''An :class:`ObjectView` class specialised for displaying an object.
     '''
-    def __init__(self, regex = '(?P<id>\d+)', parent = None, name = 'view', **kwargs):
-        super(ViewView,self).__init__(regex = regex, parent = parent,
-                                      name = name, **kwargs)
+    def __init__(self, regex = '(?P<id>\d+)', **kwargs):
+        super(ViewView,self).__init__(regex = regex, **kwargs)
     
     def linkname(self, djp):
         return str(djp.instance)
@@ -548,8 +537,8 @@ class DeleteView(ObjectView):
 class EditView(ObjectView):
     '''An :class:`ObjectView` class specialised for editing an object.
     '''
-    def __init__(self, regex = 'edit', parent = 'view', name = 'edit',  **kwargs):
-        super(EditView,self).__init__(regex = regex, parent = parent, name = name, **kwargs)
+    def __init__(self, regex = 'edit', parent = 'view', **kwargs):
+        super(EditView,self).__init__(regex = regex, parent = parent, **kwargs)
     
     def _has_permission(self, request, obj):
         return self.appmodel.has_edit_permission(request, obj)
@@ -623,9 +612,9 @@ and if your model has an AutocompleteView installed, it will work out of the box
 '''
     _methods = ('get',)
     
-    def __init__(self, regex = 'autocomplete', name = 'autocomplete', display = 'name', **kwargs):
+    def __init__(self, regex = 'autocomplete', display = 'name', **kwargs):
         self.display = display
-        super(AutocompleteView,self).__init__(regex = regex, name = name, **kwargs)
+        super(AutocompleteView,self).__init__(regex = regex, **kwargs)
         
     def processurlbits(self, appmodel):
         super(AutocompleteView,self).processurlbits(appmodel)
