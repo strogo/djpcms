@@ -71,7 +71,7 @@ class AppViewBase(djpcmsview):
                  insitemap  = True,
                  isapp      = False,
                  isplugin   = False,
-                 in_navigation = False,
+                 in_navigation = 0,
                  template_name = None,
                  description = None,
                  form        = None,
