@@ -247,9 +247,8 @@ class ChangeContentView(appview.EditView):
         
 
 class EditPluginView(appview.EditView):
-    '''
-    View class for editing the content of a plugin.
-    The url is given by the ContentBlocks models
+    '''View class for editing the content of a plugin. Not all plugins have an editing view.
+The url is given by the ContentBlocks models
     '''
     _methods = ('post',)
     
