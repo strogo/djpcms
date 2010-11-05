@@ -29,14 +29,6 @@ from djpcms.views.cache import pagecache
 render_to_string = loader.render_to_string
 
 
-class SearchForm(forms.Form):
-    '''
-    A simple search box
-    '''
-    search = forms.CharField(max_length=300, required = False,
-                             widget = forms.TextInput(attrs={'class':'search-box'}))
-
-
 def get_declared_application_views(bases, attrs):
     """Create a list of Application views instances from the passed in 'attrs', plus any
 similar fields on the base classes (in 'bases')."""
@@ -116,6 +108,24 @@ class ApplicationBase(object):
     '''Flag indicating if application views are inherited from base class. Default ``False``.'''
     hidden           = False
     '''If ``True`` the application is only used internally. Default ``False``.'''
+    form             = None
+    '''A form class used in the application. Default ``None``.'''
+    form_method      ='post'
+    '''Form submit method, ``get`` or ``post``. Default ``post``.'''
+    form_withrequest = False
+    '''If set to True, the request instance is passed to the form constructor. Default is ``False``.'''
+    form_ajax        = True
+    '''If True the form submits are performed using ajax. Default ``True``.'''
+    form_template    = None
+    '''Optional template for form. Can be a callable with parameter ``djp``. Default ``None``.'''
+    in_navigation    = True
+    '''True if application'views can go into site navigation. Default ``True``.
+No reason to change this default unless you really don't want to see the views in the site navigation.'''
+
+    _form_add        = 'add'
+    _form_edit       = 'change'
+    _form_save       = 'done'
+    _form_continue   = 'save & continue'
     
     def __init__(self, baseurl, application_site, editavailable):
         self.application_site = application_site
@@ -239,100 +249,8 @@ class ApplicationBase(object):
                 self.application_site.choices.append((view.code,name))
             if view.isplugin:
                 register_application(view)
-                
-
-
-class ModelApplication(ApplicationBase):
-    '''An :class:`ApplicationBase` class for applications
-based on a back-end database model.
-This class implements the basic functionality for a general model
-User should subclass this for full control on the model application.
-Each one of the class attributes are optionals.'''
-    list_display     = None
-    '''List of object's field to display. If available, the search view will display a sortable table
-of objects. Default is ``None``.'''
-    object_display   = None
-    '''Same as :attr:`list_display` attribute at object level. The field list is used to display
-the object definition. If not available, :attr:`list_display` is used. Default ``None``.'''
-    list_per_page    = 30
-    '''Number of objects per page. Default is ``30``.'''
-    filter_fields    = None
-    '''List of model fields which can be used to filter'''
-    form             = None
-    '''Form class used to edit/add objects. Default ``None``.'''
-    form_method      ='post'
-    '''Form submit method, ``get`` or ``post``. Default ``post``.'''
-    form_withrequest = False
-    '''If set to True, the request instance is passed to the form constructor. Default is ``False``.'''
-    form_ajax        = True
-    '''If True the form submits are performed using ajax. Default ``True``.'''
-    form_template    = None
-    '''Optional template for form. Can be a callable with parameter ``djp``. Default ``None``.'''
-    in_navigation    = True
-    '''True if application'views can go into site navigation. Default ``True``.
-No reason to change this default unless you really don't want to see the views in the site navigation.'''
-    search_fields    = None
-    '''List of model field's names which are searchable. Default ``None``.
-This attribute is used by :class:`djpcms.views.appview.SearchView` views
-and by the :ref:`auto-complete <autocomplete>`
-functionality when searching for model instances.'''
     
-    _form_add        = 'add'
-    _form_edit       = 'change'
-    _form_save       = 'done'
-    _form_continue   = 'save & continue'
-    #
-    #search_form      = SearchForm
-    # If set to True, base class views will be available
-    #
-    #
-    list_display_links = None
-    
-    def __init__(self, baseurl, application_site, editavailable, model = None):
-        self.model  = model
-        self.opts   = getmodel(self)
-        super(ModelApplication,self).__init__(baseurl, application_site, editavailable)
         
-    def get_root_code(self):
-        return self.root_application.code
-    
-    def modelsearch(self):
-        return self.model
-    
-    def get_search_fields(self):
-        if self.search_fields:
-            return self.search_fields
-        else:
-            from django.contrib.admin import site
-            admin = site._registry.get(self.modelsearch(),None)
-            if admin:
-                return admin.search_fields
-        
-    def objectbits(self, obj):
-        '''Get arguments from model instance used to construct url. By default it is the object id.
-* *obj*: instance of self.model
-
-It returns dictionary of url bits. 
-        '''
-        return {'id': obj.id}
-    
-    def get_object(self, request, **kwargs):
-        '''Retrive an instance of self.model from key-values *kwargs* forming the url.
-By default it get the 'id' and get the object::
-
-    try:
-        id = int(kwargs.get('id',None))
-        return self.model.objects.get(id = id)
-    except:
-        return None
-    
-Re-implement for custom arguments.'''
-        try:
-            id = int(kwargs.get('id',None))
-            return self.model.objects.get(id = id)
-        except:
-            return None
-    
     def update_initial(self, request, mform, initial = None, own_view = True):
         if request.method == 'GET':
             params = dict(request.GET.items())
@@ -348,11 +266,6 @@ Re-implement for custom arguments.'''
             initial['_current_url'] = _current_url
         return initial
     
-    def get_extra_forms(self):
-        return None
-    
-    #  FORMS FOR EDITING AND SEARCHING
-    #---------------------------------------------------------------------------------
     def get_form(self,
                  djp,
                  initial = None,
@@ -389,8 +302,6 @@ Re-implement for custom arguments.'''
             mform = form(request = request, instance = instance)
         
         initial = self.update_initial(request, mform, initial, own_view = own_view)
-        
-        wrapper  = djp.wrapper
                 
         f     = mform(**form_kwargs(request     = request,
                                     initial     = initial,
@@ -417,7 +328,8 @@ Re-implement for custom arguments.'''
         if self.form_ajax:
             wrap.addClass(self.ajax.ajax)
         wrap.is_ajax = request.is_ajax()
-        wrap.addClass(str(self.model._meta).replace('.','-'))
+        if hasattr(self,'model'):
+            wrap.addClass(str(self.model._meta).replace('.','-'))
         return wrap
         
     def submit(self, instance, own_view = False):
@@ -432,7 +344,76 @@ Re-implement for custom arguments.'''
         if own_view:
             sb.append(submit(value = 'cancel', name = '_cancel'))
         return sb
+
+
+class ModelApplication(ApplicationBase):
+    '''An :class:`ApplicationBase` class for applications
+based on a back-end database model.
+This class implements the basic functionality for a general model
+User should subclass this for full control on the model application.
+
+.. attribute:: model
+
+    The model class which own the application
     
+.. attribute:: opts
+
+    Instance of :class:`djpcms.core.models.ModelTypeWrapper`. Created from :attr:`model`
+'''
+    list_display     = None
+    '''List of object's field to display. If available, the search view will display a sortable table
+of objects. Default is ``None``.'''
+    object_display   = None
+    '''Same as :attr:`list_display` attribute at object level. The field list is used to display
+the object definition. If not available, :attr:`list_display` is used. Default ``None``.'''
+    list_per_page    = 30
+    '''Number of objects per page. Default is ``30``.'''
+    filter_fields    = None
+    '''List of model fields which can be used to filter'''
+    search_fields    = None
+    '''List of model field's names which are searchable. Default ``None``.
+This attribute is used by :class:`djpcms.views.appview.SearchView` views
+and by the :ref:`auto-complete <autocomplete>`
+functionality when searching for model instances.'''
+    #
+    list_display_links = None
+    
+    def __init__(self, baseurl, application_site, editavailable, model = None):
+        self.model  = model
+        self.opts   = getmodel(self)
+        super(ModelApplication,self).__init__(baseurl, application_site, editavailable)
+        
+    def get_root_code(self):
+        return self.root_application.code
+    
+    def modelsearch(self):
+        return self.model
+        
+    def objectbits(self, obj):
+        '''Get arguments from model instance used to construct url. By default it is the object id.
+* *obj*: instance of self.model
+
+It returns dictionary of url bits which are used to uniquely identify a model instance. 
+        '''
+        return {'id': obj.id}
+    
+    def get_object(self, request, **kwargs):
+        '''Retrive an instance of self.model from key-values *kwargs* forming the url.
+By default it get the 'id' and get the object::
+
+    try:
+        id = int(kwargs.get('id',None))
+        return self.model.objects.get(id = id)
+    except:
+        return None
+    
+Re-implement for custom arguments.'''
+        try:
+            id = int(kwargs.get('id',None))
+            return self.model.objects.get(id = id)
+        except:
+            return None
+        
     def object_from_form(self, form):
         '''Save form and return an instance pof self.model'''
         return form.save()

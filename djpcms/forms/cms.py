@@ -105,8 +105,8 @@ class PageForm(forms.ModelForm):
     '''
     site             = forms.ModelChoiceField(queryset = Site.objects.all(), required = False)
     application_view = forms.LazyChoiceField(choices = siteapp_choices,
-                                        required = False,
-                                        label = _('application view'))
+                                             required = False,
+                                             label = _('application view'))
     
     class Meta:
         model = Page

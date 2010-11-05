@@ -276,20 +276,11 @@ it returns the :func:`appquery` of the :func:`modelparent` view.
 By default return the :func:`basequery` (usually all items of a model).'''
         return self.basequery(request)
     
-    def get_prefix(self, djp):
-        return None
-        data = dict(djp.request.POST.items())
-        for k,v in data.items():
-            sv = str(v)
-            if sv and k.endswith('-prefix'):
-                return sv
-    
     def permissionDenied(self, djp):
         return self.appmodel.permissionDenied(djp)
     
     def sitemapchildren(self):
         return [] 
-    
     
     
 class SearchView(AppView):
@@ -312,7 +303,7 @@ It returns a queryset.
         '''
         qs = self.basequery(request)
         
-        slist = self.appmodel.get_search_fields()
+        slist = self.appmodel.opts.search_fields
         if request.method == 'GET':
             data = dict(request.GET.items())
         else:
@@ -374,11 +365,10 @@ def success_message(self, instance, mch):
     
     
 def saveform(self, djp, editing = False):
-    '''Comprehensive save method for model instances'''
+    '''Comprehensive save method for forms'''
     view       = djp.view
     request    = djp.request
     is_ajax    = request.is_ajax()
-    djp.prefix = self.get_prefix(djp)
     POST       = request.POST
     cont       = POST.has_key("_save_and_continue")
     url        = djp.url
@@ -421,7 +411,10 @@ def saveform(self, djp, editing = False):
         else:
             redirect_url = next
             if not redirect_url:
-                redirect_url = view.appmodel.viewurl(request,instance) or view.appmodel.baseurl
+                if instance:
+                    redirect_url = view.appmodel.viewurl(request,instance) or view.appmodel.baseurl
+                else:
+                    redirect_url = view.appmodel.baseurl
             if redirect_url == curr and is_ajax:
                 return f.json_message()
             

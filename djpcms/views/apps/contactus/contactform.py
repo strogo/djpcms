@@ -10,10 +10,7 @@ from django.core.mail import send_mail
 from django.template import loader, RequestContext
 from django.contrib.sites.models import Site
 
-from djpcms.utils import form_kwargs
-from djpcms.utils.html import submit
-from djpcms.plugins import DJPplugin
-from djpcms.utils.uniforms import UniForm
+from djpcms.utils.uniforms import Fieldset, FormLayout, blockLabels2
 
 
 class ContactForm(forms.Form):
@@ -129,22 +126,28 @@ class ContactForm(forms.Form):
     pass silently, unless explicitly silenced").
    
     """
+    fail_silently=False
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request',None)
         if self.request is None:
             raise TypeError("Keyword argument 'request' must be supplied")
         super(ContactForm, self).__init__(*args, **kwargs)
    
-    name  = forms.CharField(max_length=100, label=u'Your name')
-    email = forms.EmailField(max_length=200, label=u'Your email address')
-    subj  = forms.CharField(max_length=100, required = False, label=u'Subject')
-    body  = forms.CharField(widget=forms.Textarea(), label=u'Your message')
+    name  = forms.CharField(max_length=100, label=u'Name')
+    email = forms.EmailField(max_length=200, label=u'E-mail')
+    #subj  = forms.CharField(max_length=100, required = False, label=u'Subject')
+    body  = forms.CharField(widget=forms.Textarea(), label=u'Message')
    
     from_email = settings.DEFAULT_FROM_EMAIL
    
     recipient_list = [mail_tuple[1] for mail_tuple in settings.MANAGERS]
 
     _context = None
+    
+    submits = (('Send message','contact'),)
+    
+    layout = FormLayout(Fieldset('name','email'),
+                        Fieldset('body',css_class = blockLabels2))
     
     template_name = ['bits/contact_form_message.txt',
                      'djpcms/bits/contact_form_message.txt']
@@ -189,12 +192,10 @@ class ContactForm(forms.Form):
             message_dict[message_part] = callable(attr) and attr() or attr
         return message_dict
    
-    def save(self, fail_silently=False, **kwargs):
+    def save(self, **kwargs):
+        """Builds and sends the email message.
         """
-        Builds and sends the email message.
-       
-        """
-        send_mail(fail_silently=fail_silently, **self.get_message_dict())
+        send_mail(fail_silently=self.fail_silently, **self.get_message_dict())
 
 
 
@@ -222,38 +223,5 @@ class AkismetContactForm(ContactForm):
                     raise forms.ValidationError(u"Akismet thinks this message is spam")
         return self.cleaned_data['body']
 
-    
-    
-class ContactFormPlugin(DJPplugin):
-    name = 'contact-form'
-    description = "Contact Form"
-    
-    def contactform(self, djp, wrapper = None, prefix = None):
-        '''
-        Information about deployment
-        '''
-        f     = ContactForm(**form_kwargs(request     = djp.request,
-                                          prefix      = prefix,
-                                          withrequest = True))
-        uni = UniForm(f,
-                      action   = self.url,
-                      inputs   = [submit(value = 'Submit', name = 'contact')])
-        uni.addClass(sjp.css.ajax)
-        return uni
-        
 
-    def render(self, djp, wrapper, prefix, **kwargs):
-        '''
-        Information about deployment
-        '''
-        cf = self.contactform(djp, wrapper, prefix)
-        return cf.render()
-    
-    def response(self, request, *bits):
-        cf = self.contactform(request)
-        if cf.is_valid():
-            cf.save()
-            return cf.messagepost("Your message has been sent. Thank you!")
-        else:
-            return cf.jerrors
 

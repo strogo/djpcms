@@ -36,6 +36,7 @@ class ModelTypeWrapper(object):
         self.list_display = appmodel.list_display
         self.object_display = appmodel.object_display or self.list_display
         self.list_display_links = appmodel.list_display_links or []
+        self.search_fields = appmodel.search_fields or []
         self.test(appmodel.model)
         self.appmodel = appmodel
         self.model = appmodel.model

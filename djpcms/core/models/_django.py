@@ -22,6 +22,7 @@ class ModelType(ModelTypeWrapper):
         appmodel = self.appmodel
         list_display = appmodel.list_display
         list_display_links = appmodel.list_display_links
+        search_fields = appmodel.search_fields
         if list_display is None:
             if model_admin:
                 list_display = model_admin.list_display
@@ -32,8 +33,14 @@ class ModelType(ModelTypeWrapper):
                 list_display_links = model_admin.list_display_links
             else:
                 list_display_links = []
+        if search_fields is None:
+            if model_admin:
+                search_fields = model_admin.search_fields
+            else:
+                search_fields = []
         self.list_display = list_display
         self.list_display_links = list_display_links
+        self.search_fields = search_fields
     
     def has_add_permission(self, user, obj=None):
         return has_permission(user, self.get_add_permission(), obj)

@@ -22,6 +22,7 @@ inlineLabels3  = 'inlineLabels auto'
 blockLabels    = 'blockLabels'
 blockLabels2   = 'blockLabels2'
 inlineFormsets = 'blockLabels2'
+default_style  = inlineLabels
 
 default_csrf = 'django.middleware.csrf.CsrfMiddleware' in settings.MIDDLEWARE_CLASSES
 
@@ -106,9 +107,10 @@ class FormLayout(object):
 
 '''
     def __init__(self, *fields, **kwargs):
+        global default_style
         self.id = kwargs.get('id',None)
         self.template = kwargs.get('template',None)
-        self.default_style = kwargs.get('default_style',inlineLabels)
+        self.default_style = kwargs.get('default_style',default_style)
         self._allfields = []
         self.inlines    = []
         self.add(*fields)
