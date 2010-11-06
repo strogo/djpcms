@@ -333,7 +333,7 @@ It returns a queryset.
                   'djp': djp,
                   'url': djp.url,
                   'model': self.model,
-                  'css': appmodel.css,
+                  'css': djp.css,
                   'appmodel': appmodel,
                   'headers': appmodel.list_display})
         if p.qs:
