@@ -48,9 +48,11 @@ def add_extra_fields(form, name, field):
     fields = form.base_fields
     if name not in fields:
         fields[name] = field
-    fields = form._meta.fields
-    if fields and name not in fields:
-        fields.append(name)
+    meta = getattr(form,'_meta',None)
+    if meta:
+        fields = meta.fields
+        if fields and name not in fields:
+            fields.append(name)
     return form
 
 

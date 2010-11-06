@@ -57,18 +57,7 @@ class LoginView(appview.AppView):
         if djp.request.user.is_authenticated():
             return ''
         else:
-            f = self.get_form(djp)
-            return f.render()
-    
-    def _get_form(self, request, instance):
-        return LoginForm
-    
-    def get_form(self, djp):
-        form = self.appmodel.get_form(djp, form = self._get_form, addinputs = False)
-        form.inputs.append(submit(name = 'login_user', value = 'Sign in'))
-        if djp.own_view():
-            form.inputs.append(submit(name = 'cancel', value = 'Cancel'))
-        return form
+            return self.get_form(djp, **kwargs).render()
         
     def get_form_url(self, request):
         url = self.page.get_absolute_url()

@@ -144,7 +144,9 @@ class AppViewBase(djpcmsview):
         return self.appmodel.root_application is self
     
     def get_form(self, djp, **kwargs):
-        return None
+        return self.appmodel.get_form(djp, self._form,
+                                      form_withrequest = self._form_withrequest,
+                                      **kwargs)
         
     def is_soft(self, djp):
         page = djp.page
@@ -356,17 +358,11 @@ and handles the saving as default ``POST`` response.'''
     def _has_permission(self, request, obj):
         return self.appmodel.has_add_permission(request, obj)
     
-    def get_form(self, djp, **kwargs):
-        return self.appmodel.get_form(djp,
-                                      self._form,
-                                      form_withrequest = self._form_withrequest,
-                                      **kwargs)
-    
     def save(self, request, f):
         return self.appmodel.object_from_form(f)
     
     def render(self, djp, **kwargs):
-        return self.get_form(djp).render(djp)
+        return self.get_form(djp, **kwargs).render(djp)
     
     def default_post(self, djp):
         return saveform(djp)
@@ -376,12 +372,6 @@ class ObjectView(AppView):
     '''An :class:`AppView` class view for model instances.
 A view of this type has an embedded object available which is used to generate the full url.'''
     object_view = True
-            
-    def get_form(self, djp, **kwargs):
-        return self.appmodel.get_form(djp,
-                                      self._form,
-                                      form_withrequest = self._form_withrequest,
-                                      **kwargs)
     
     def get_url(self, djp, instance = None, **kwargs):
         if instance:
@@ -458,8 +448,8 @@ class EditView(ObjectView):
     def title(self, page, instance = None, **kwargs):
         return 'Edit %s' % self.appmodel.title_object(instance)
     
-    def render(self, djp):
-        return self.get_form(djp).render(djp)
+    def render(self, djp, **kwargs):
+        return self.get_form(djp, **kwargs).render(djp)
     
     def save(self, request, f):
         return self.appmodel.object_from_form(f)

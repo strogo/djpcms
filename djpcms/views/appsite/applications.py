@@ -272,7 +272,7 @@ No reason to change this default unless you really don't want to see the views i
         
         if isinstance(form_class,type):
             if forceform or not hasattr(form_class,'_meta'):
-                mform = form
+                mform = form_class
             else:
                 if form_class._meta.model == model:
                     mform = form_class

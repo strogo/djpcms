@@ -12,6 +12,8 @@ class LoginForm(forms.Form):
     password   = forms.CharField(min_length=1,max_length=20,widget=forms.PasswordInput)
     next       = forms.CharField(widget=forms.HiddenInput, required = False)
 
+    submits = (('Sign in','login_user'),)
+    
 
 class RegisterForm(forms.Form):
     username = forms.CharField(min_length=5,
