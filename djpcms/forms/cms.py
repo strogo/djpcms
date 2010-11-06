@@ -345,7 +345,7 @@ class NewChildForm(forms.ModelForm):
         return cd
     
     def save(self, commit = True):
-        return self.pgae_form.save()
+        return self.page_form.save()
 
 def ferrors(errdict):
     for el in errdict.itervalues():
