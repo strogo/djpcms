@@ -395,23 +395,6 @@ class AdditionalPageData(models.Model):
         verbose_name_plural = 'Additional page data'
 
 
-def create_page(url_pattern, parent = None, user = None, title = None,
-                link = None, **kwargs):
-    page = Page.objects.filter(parent = parent, url_pattern = url_pattern, user = user)
-    if page:
-        return page[0]
-    else:
-        page = Page(parent = parent,
-                    site = parent.site,
-                    user = user,
-                    title = title or url_pattern,
-                    link = link or url_pattern,
-                    url_pattern = url_pattern,
-                    inner_template = parent.inner_template,
-                    **kwargs)
-        page.save()
-
-
 class ObjectPermission(models.Model):
     '''Model for handling per-object permissions.
 An object which has at least one of this model instances associated with, will

@@ -334,7 +334,7 @@ class UniForm(UniFormBase):
         self.inputs          = inputs or []
         self.tag             = tag
         self._messages       = []
-        self._errors         = []
+        self._errors         = ''
         self.is_ajax         = is_ajax
         self.error_message   = error_message if error_message is not None else self.default_error_msg
         self.template        = template or self.default_template
@@ -373,12 +373,19 @@ class UniForm(UniFormBase):
     media = property(__get_media)
         
     def is_valid(self):
+        valid = True
         for form in self.forms:
             form = form[1]
             if isinstance(form,BaseForm):
                 if not form.is_valid():
-                    return False
-        return all_valid(self.formsets)
+                    all = form._errors.get('__all__')
+                    if all:
+                        if not self._errors:
+                            self._errors = all
+                        else:
+                            self._errors.extend(all)
+                    valid = False
+        return valid and all_valid(self.formsets)
     
     def save(self, commit = True):
         instance = None
@@ -417,7 +424,7 @@ class UniForm(UniFormBase):
         msg = self._make_messages('messagelist',self._messages)
         err = self._make_messages('errorlist',self._errors)
         return jhtmls(identifier = '.form-messages', html = msg+err, alldocument = False)
-    
+        
     def _formerrors(self, jerr, form):
         for name,errs in form.errors.items():
             errs = str(errs)
@@ -451,7 +458,7 @@ class UniForm(UniFormBase):
             cd.update(form[1].cleaned_data)
         return cd
 
-    def render(self):
+    def render(self, djp = None, validate = False):
         '''Render the uniform by rendering individual forms, inline forms and inputs.'''
         fdict = {}
         forms = []
@@ -462,8 +469,13 @@ class UniForm(UniFormBase):
             html = layout.render(form, inputs)
             forms.append(html)
             fdict['html%s' % num] = html
+        if djp:
+            djp.media += self.media
+        if validate:
+            self.is_valid()
         return loader.render_to_string(self.template,
                                        {'uniform': self,
+                                        'errors': self._errors,
                                         'forms': forms,
                                         'fdict': fdict,
                                         'inputs': inputs,

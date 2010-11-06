@@ -8,16 +8,16 @@ from django.db.models import Q
 from django.db.models.query import QuerySet
 from django.core.exceptions import ObjectDoesNotExist
 from django.template import loader, RequestContext
-from django.utils.dateformat import format
 from django.utils.text import smart_split
 from django.contrib import messages
 from django.utils.translation import ugettext as _
 
 from djpcms.conf import settings
+from djpcms.forms import saveform
 from djpcms.utils.html import Paginator
 from djpcms.utils.func import force_number_insert
 from djpcms.utils.ajax import jremove, dialog, jredirect
-from djpcms.utils import form_kwargs, force_unicode, construct_search, isexact
+from djpcms.utils import force_unicode, construct_search, isexact
 from djpcms.models import Page
 
 from djpcms.views.regex import RegExUrl 
@@ -147,7 +147,7 @@ class AppViewBase(djpcmsview):
         return None
         
     def is_soft(self, djp):
-        page = pagecache.get_for_application(self.code)
+        page = djp.page
         return False if not page else page.soft_root
         
     def get_page(self, djp):
@@ -340,89 +340,8 @@ It returns a queryset.
             
         return loader.render_to_string(['components/pagination.html',
                                         'djpcms/components/pagination.html'],
-                                        c)
-    
-    
-def render_form(form, djp):
-    djp.media += form.media
-    return form.render()
-    
-    
-def success_message(self, instance, mch):
-    dt = datetime.now()
-    c = {'name': force_unicode(instance._meta.verbose_name),
-         'obj': instance,
-         'dt': format(dt,settings.DATETIME_FORMAT),
-         'mch': mch}
-    return _('The %(name)s "%(obj)s" was succesfully %(mch)s %(dt)s') % c
-    
-    
-def saveform(self, djp, editing = False):
-    '''Comprehensive save method for forms'''
-    view       = djp.view
-    request    = djp.request
-    is_ajax    = request.is_ajax()
-    POST       = request.POST
-    cont       = POST.has_key("_save_and_continue")
-    url        = djp.url
-    curr       = POST.get("_current_url",None)
-    next       = POST.get("next",None)
-    
-    if POST.has_key("_cancel"):
-        redirect_url = next
-        if not redirect_url:
-            if djp.instance:
-                redirect_url = view.appmodel.viewurl(request,djp.instance)
-            if not redirect_url:
-                redirect_url = view.appmodel.searchurl(request) or '/'
+                                        c)    
 
-        if is_ajax:
-            return jredirect(url = redirect_url)                
-        else:
-            return http.HttpResponseRedirect(redirect_url)
-    
-    f      = self.get_form(djp)
-    if f.is_valid():
-        try:
-            instance = self.save(request, f)
-            msg = self.success_message(instance, 'changed' if editing else 'added')
-            f.add_message(request, msg)
-        except Exception, e:
-            f.add_message(request,e,error=True)
-            if is_ajax:
-                return f.json_errors()
-            elif next:
-                return http.HttpResponseRedirect(next)
-            else:
-                return self.handle_response(djp)
-        
-        if cont:
-            if is_ajax:
-                return f.json_message()
-            else:
-                redirect_url = view.appmodel.editurl(request,instance)
-        else:
-            redirect_url = next
-            if not redirect_url:
-                if instance:
-                    redirect_url = view.appmodel.viewurl(request,instance) or view.appmodel.baseurl
-                else:
-                    redirect_url = view.appmodel.baseurl
-            if redirect_url == curr and is_ajax:
-                return f.json_message()
-            
-        # We are Redirecting
-        if is_ajax:
-            f.force_message(request)
-            return jredirect(url = redirect_url)                
-        else:
-            return http.HttpResponseRedirect(redirect_url)
-    else:
-        if is_ajax:
-            return f.json_errors()
-        else:
-            return self.handle_response(djp)
-        
 
 class AddView(AppView):
     '''An :class:`AppView` class which renders a form for adding instances
@@ -439,7 +358,7 @@ and handles the saving as default ``POST`` response.'''
     
     def get_form(self, djp, **kwargs):
         return self.appmodel.get_form(djp,
-                                      form = self._form,
+                                      self._form,
                                       form_withrequest = self._form_withrequest,
                                       **kwargs)
     
@@ -447,27 +366,20 @@ and handles the saving as default ``POST`` response.'''
         return self.appmodel.object_from_form(f)
     
     def render(self, djp, **kwargs):
-        '''Render the model add form.
-        '''
-        f = self.get_form(djp)
-        return render_form(f,djp)
+        return self.get_form(djp).render(djp)
     
     def default_post(self, djp):
-        '''Add new model instance
-        '''
-        return saveform(self,djp)
-    
-    def success_message(self, instance, mch):
-        return success_message(self,instance, mch)
-    
-        
+        return saveform(djp)
+
+            
 class ObjectView(AppView):
     '''An :class:`AppView` class view for model instances.
 A view of this type has an embedded object available which is used to generate the full url.'''
     object_view = True
             
     def get_form(self, djp, **kwargs):
-        return self.appmodel.get_form(djp, form = self._form,
+        return self.appmodel.get_form(djp,
+                                      self._form,
                                       form_withrequest = self._form_withrequest,
                                       **kwargs)
     
@@ -547,8 +459,7 @@ class EditView(ObjectView):
         return 'Edit %s' % self.appmodel.title_object(instance)
     
     def render(self, djp):
-        f = self.get_form(djp)
-        return render_form(f,djp)
+        return self.get_form(djp).render(djp)
     
     def save(self, request, f):
         return self.appmodel.object_from_form(f)
@@ -566,14 +477,10 @@ class EditView(ObjectView):
         return self.default_post(djp,False)
     
     def default_post(self, djp):
-        return saveform(self,djp,True)
+        return saveform(djp,True)
 
     def defaultredirect(self, djp):
         return self.appmodel.viewurl(djp.request, djp.instance) or djp.url
-    
-    def success_message(self, instance, mch):
-        return success_message(self,instance,mch)
-
 
     
 class AutocompleteView(SearchView):

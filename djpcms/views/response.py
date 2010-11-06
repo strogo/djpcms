@@ -70,7 +70,7 @@ class DjpResponse(http.HttpResponse):
         return self.url == self.request.path
     
     def get_linkname(self):
-        return self.view.linkname(self)
+        return self.view.linkname(self) or self.url
     linkname = property(get_linkname)
         
     def get_title(self):

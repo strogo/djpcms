@@ -16,8 +16,8 @@ from djpcms.conf import settings
 from djpcms.template import loader
 from djpcms.core.models import getmodel
 from djpcms.core.exceptions import PermissionDenied, ApplicationUrlException
-from djpcms.utils import form_kwargs, UnicodeObject, force_unicode, slugify, mark_safe
-from djpcms.utils.forms import add_hidden_field
+from djpcms.utils import UnicodeObject, force_unicode, slugify, mark_safe
+from djpcms.forms import get_form
 from djpcms.plugins import register_application
 from djpcms.utils.html import submit
 from djpcms.utils.uniforms import UniForm
@@ -250,87 +250,44 @@ No reason to change this default unless you really don't want to see the views i
             if view.isplugin:
                 register_application(view)
     
-        
-    def update_initial(self, request, mform, initial = None, own_view = True):
-        if request.method == 'GET':
-            params = dict(request.GET.items())
-            next   = params.get('next',None)
-            _current_url = request.path
-            if not next and not own_view:
-                next = _current_url
-            if next:
-                mform = add_hidden_field(mform,'next')
-            mform = add_hidden_field(mform,'_current_url')
-            initial = initial or {}
-            initial['next'] = next
-            initial['_current_url'] = _current_url
-        return initial
-    
-    def get_form(self,
-                 djp,
-                 initial = None,
-                 prefix = None,
-                 wrapped = True,
-                 form = None,
+    def get_form(self, djp, form_class,
                  addinputs = True,
-                 withdata = True,
+                 form_withrequest = None,
+                 form_ajax = None,
                  forceform = False,
-                 form_withrequest = None):
-        '''Build a form to add, edit or customize an application model object:
-        
-* *djp*: instance of djpcms.views.DjpRequestWrap.
-* *initial*: If not none, a dictionary of initial values for model fields.
-* *prefix*: prefix to use in the form.
-* *wrapper*: instance of djpcms.plugins.wrapper.ContentWrapperHandler with information on layout.
-'''
-        instance = djp.instance
-        request  = djp.request
-        own_view = djp.own_view()
-        form_withrequest = form_withrequest if form_withrequest is not None else self.form_withrequest
-        
-        form = form or self.form or forms.ModelForm
-        
-        if isinstance(form,type):
-            if forceform or not hasattr(form,'_meta'):
-                mform = form
-            else:
-                if form._meta.model == self.model:
-                    mform = form
-                else:
-                    mform = modelform_factory(self.model, form)
-        else:
-            mform = form(request = request, instance = instance)
-        
-        initial = self.update_initial(request, mform, initial, own_view = own_view)
-                
-        f     = mform(**form_kwargs(request     = request,
-                                    initial     = initial,
-                                    instance    = instance,
-                                    prefix      = prefix,
-                                    withdata    = withdata,
-                                    withrequest = form_withrequest))
-        inputs = getattr(f,'submits',None)
-        if inputs:
-            inputs = [submit(value = val, name = nam) for val,nam in inputs]
-        elif addinputs:
-            inputs = self.submit(instance, own_view)
-        
+                 instance  = None,
+                 **kwargs):
+        '''Build a form'''
         template = self.form_template
         if callable(template):
             template = template(djp)
-            
-        wrap = UniForm(f,
-                       request  = request,
-                       instance = instance,
-                       action   = djp.url,
-                       inputs   = inputs,
-                       template = template)
-        if self.form_ajax:
-            wrap.addClass(self.ajax.ajax)
-        wrap.is_ajax = request.is_ajax()
-        if hasattr(self,'model'):
-            wrap.addClass(str(self.model._meta).replace('.','-'))
-        return wrap
+        
+        instance = instance or djp.instance
+        model    = kwargs.pop('model',None) or getattr(self,'model',None)
+        request  = djp.request
+        form_withrequest = form_withrequest if form_withrequest is not None else self.form_withrequest
+        form_ajax = form_ajax if form_ajax is not None else self.form_ajax
+        
+        form_class = form_class or self.form or forms.ModelForm
+        
+        if isinstance(form_class,type):
+            if forceform or not hasattr(form_class,'_meta'):
+                mform = form
+            else:
+                if form_class._meta.model == model:
+                    mform = form_class
+                else:
+                    mform = modelform_factory(model, form_class)
+        
+        return get_form(djp,
+                        mform,
+                        instance = instance,
+                        addinputs= self.submit if addinputs else None,
+                        model=model,
+                        form_ajax=form_ajax,
+                        form_withrequest=form_withrequest,
+                        template=template,
+                        **kwargs)
         
     def submit(self, instance, own_view = False):
         '''Generate the submits elements to be added to the model form.

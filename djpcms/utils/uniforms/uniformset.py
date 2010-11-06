@@ -1,7 +1,8 @@
 from django.forms.forms import BoundField
 from django.forms import formsets
 
-from djpcms.utils import form_kwargs, force_unicode, mark_safe
+from djpcms.utils import force_unicode, mark_safe
+from djpcms.forms import form_kwargs
 
 __all__ = ['ModelFormInlineHelper',
            'BoundField']

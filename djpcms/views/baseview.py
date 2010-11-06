@@ -14,10 +14,11 @@ from djpcms.permissions import inline_editing, get_view_permission, has_permissi
 from djpcms.contrib import messages
 from djpcms.utils.ajax import jservererror, jredirect
 from djpcms.utils.html import grid960, submit
+from djpcms.forms import saveform, get_form
 from djpcms.forms.cms import ShortPageForm, NewChildForm
 from djpcms.utils.uniforms import UniForm
-from djpcms.utils import UnicodeObject, urlbits, urlfrombits, function_module, \
-                         htmltype, mark_safe, force_unicode
+from djpcms.utils import UnicodeObject, urlbits, urlfrombits, function_module
+from djpcms.utils import htmltype, mark_safe, force_unicode
 
 from djpcms.views.cache import pagecache
 from djpcms.views.response import DjpResponse
@@ -403,36 +404,29 @@ This view is never in navigation and it provides a hook for adding the edit page
         if self._view.has_permission(request,page,obj):
             return inline_editing(request, page, obj)
         else:
-            return False  
-    
+            return False
+        
     def extra_content(self, djp, c):
-        uni = UniForm(ShortPageForm(instance = djp.page), action = djp.url)
-        uni.inputs.append(submit(value = "change", name = '_save'))
-        c['page_form'] = uni.render()
-        uni = UniForm(NewChildForm(), action = djp.url)
-        uni.inputs.append(submit(value = "create", name = '_child'))
-        c['new_child_form'] = uni.render()
+        page = djp.page
+        request = djp.request        
+        c['page_form'] = get_form(djp, ShortPageForm, instance = page, withinputs=True).render(djp,validate=True)
+        c['new_child_form'] = get_form(djp, NewChildForm, instance = page, withinputs=True).render(djp,validate=True)
         c['page_url'] = self.page_url(djp.request)
 
-    def default_post(self, djp):
+    def get_form(self, djp):
         request = djp.request
+        page    = djp.page
         data = dict(request.POST.items())
         if data.get('_child',None) == 'create':
-            f = NewChildForm(data = request.POST, response = djp)
-            if f.is_valid():
-                page = f.save()
-                messages.info(request, 'Page %s created' % page)
-            else:
-                return self.handle_response(djp)
+            return get_form(djp, NewChildForm, instance = djp.page)
         else:
-            f = ShortPageForm(instance = djp.page, data = request.POST)
-            if f.is_valid():
-                page = f.save()
-                messages.info(request, 'Page %s updated' % page)
-            else:
-                return self.handle_response(djp)
-        pagecache.clear(request)
-        return self.redirect(djp.url)
+            return get_form(djp, ShortPageForm, instance = djp.page)
+        
+    def save(self, request, f):
+        return f.save()
+    
+    def default_post(self, djp):
+        return saveform(djp)
     
     def page_url(self, request):
         return urlfrombits(urlbits(request.path)[1:])

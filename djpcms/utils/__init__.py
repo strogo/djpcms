@@ -131,25 +131,6 @@ class requestwrap(UnicodeObject):
             return attr
 
 
-def form_kwargs(request,
-                instance = None, withrequest = False,
-                withdata = True, method = 'POST', **kwargs):
-    '''Quick form arguments aggregator.
-Usage::
-
-    form = MyForm(**form_kwargs(request))
-
-'''
-    if request and withdata and request.method == method:
-        kwargs['data'] = request.POST
-        kwargs['files'] = request.FILES
-    if withrequest:
-        kwargs['request'] = request
-    if instance:
-        kwargs['instance'] = instance
-    return kwargs
-
-
 def slugify(value, rtx = '-'):
     import re
     import unicodedata

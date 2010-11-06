@@ -11,7 +11,7 @@ from django.template import RequestContext, loader
 from djpcms.conf import settings
 from djpcms.core.exceptions import PermissionDenied
 from djpcms.models import BlockContent
-from djpcms.utils import form_kwargs, mark_safe
+from djpcms.utils import mark_safe
 from djpcms.utils.func import isforminstance
 from djpcms.utils.ajax import jhtmls, jremove, dialog, jempty, jerror
 from djpcms.utils.html import submit, htmlcomp
@@ -98,9 +98,7 @@ class ChangeContentView(appview.EditView):
         return '%s-edid' % instance.pluginid()
     
     def render(self, djp, url = None):
-        uni = self.get_form(djp, url = url)
-        djp.media += uni.media
-        return uni.render()
+        return self.get_form(djp, url = url).render(djp)
     
     def get_preview(self, request, instance, url, wrapped = True, plugin = None):
         try:
@@ -171,7 +169,7 @@ class ChangeContentView(appview.EditView):
             new_plugin = form.cleaned_data.get('plugin_name',None)
             pform,purl = self.get_plugin_form(djp, new_plugin, withdata = False)
             if pform:
-                html = UniForm(pform,tag=False).render()
+                html = UniForm(pform,tag=False).render(djp)
             else:
                 html = u''
             data = jhtmls(identifier = '#%s' % self.plugin_form_id(djp.instance), html = html)
@@ -278,7 +276,7 @@ The url is given by the ContentBlocks models
                           action = djp.url).addClass(self.ajax.ajax).addClass('editing')
             if is_ajax:
                 d = dialog(hd = unicode(f.instance),
-                           bd = uni.render(),
+                           bd = uni.render(djp),
                            modal  = True,
                            width  = settings.CONTENT_INLINE_EDITING.get('width','auto'),
                            height = settings.CONTENT_INLINE_EDITING.get('height','auto'))

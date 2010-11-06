@@ -47,10 +47,10 @@ class Navigator(lazycounter):
     '''
     def __init__(self, *args, **kwargs):
         self.soft    = self.kwargs.pop('soft',False)
-        self.name    = self.kwargs.pop('name','')
         self.url     = self.kwargs.pop('url','')
+        self.name    = self.kwargs.pop('name','')
         self.levels  = self.kwargs.pop('levels',1)
-        self.mylevel = self.kwargs.pop('mylevel',1)
+        self.mylevel = self.kwargs.pop('mylevel',0)
         self.liclass = self.kwargs.pop('liclass',None)
         
     def make_item(self, djp, classes):
@@ -58,8 +58,9 @@ class Navigator(lazycounter):
                          levels = self.levels,
                          mylevel = self.mylevel+1,
                          liclass = classes,
-                         url = djp.url,
+                         url  = djp.url,
                          name = djp.linkname,
+                         soft = self.soft,
                          **self.kwargs)
     
     def buildselects(self, djp, urlselects):

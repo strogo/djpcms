@@ -1,6 +1,6 @@
 {% if uniform.tag %}<form {{ uniform.flatattr }}>{% if uniform.use_csrf_protection %}
 {% csrf_token %}{% endif %}
-<div class="form-messages ctrlHolder"></div>{% endif %}{% block form-body %}{% for form in forms %}
+<div class="form-messages ctrlHolder">{{ errors }}</div>{% endif %}{% block form-body %}{% for form in forms %}
 {{ form }}{% endfor %}
 {{ inlines }}
 {{ inputs }}{% endblock %}

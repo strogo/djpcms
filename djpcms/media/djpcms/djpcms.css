@@ -19,6 +19,7 @@ div.edit-block {
 }
 div.flat-element,
 div.flat-pannel {
+	overflow:hidden;
 	padding: 10px;
 }
 

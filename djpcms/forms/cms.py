@@ -4,7 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from djpcms import siteapp_choices
 from djpcms.utils import smart_unicode
-from djpcms.models import Page, BlockContent, SiteContent, ObjectPermission, create_page
+from djpcms.models import Page, BlockContent, SiteContent, ObjectPermission
 from djpcms.utils.uniforms import FormLayout, Fieldset, Columns, Row, Html, inlineLabels, inlineLabels3
 from djpcms.plugins import get_plugin, plugingenerator, wrappergenerator
 from djpcms.utils.func import slugify
@@ -207,9 +207,15 @@ class PageForm(forms.ModelForm):
         
     def clean(self):
         cd = self.cleaned_data
-        self.instance.url = CalculatePageUrl(cd,self.instance)
+        site = cd['site']
+        url = CalculatePageUrl(cd,self.instance)
+        pages = Page.objects.filter(url = url, site = site)
+        if pages:
+            page = pages[0]
+            if self.instance is not page:
+                raise forms.ValidationError('Page with url %s already in stitemap for site %s.' % (url,site))
+        self.instance.url = url
         return cd
-            
         
 
 class PluginChoice(forms.LazyAjaxChoice):
@@ -289,7 +295,7 @@ class ContentBlockForm(EditingForm):
         return vp
 
 
-# Short Form for a Page
+# Short Form for a Page. Used only for editing an existing page
 class ShortPageForm(forms.ModelForm):
     '''Form to used to edit inline a page'''
     view_permission = forms.ModelMultipleChoiceField(queryset = Group.objects.all(), required = False)
@@ -308,29 +314,65 @@ class ShortPageForm(forms.ModelForm):
         model = Page
         fields = ['link','title','inner_template','cssinfo',
                   'in_navigation','requires_login','soft_root']
+        
+    submits = (('change', '_save'),)
 
 
-class NewChildForm(forms.Form):
-    child  = forms.CharField(label = 'New child page url', required = True)
+class NewChildForm(forms.ModelForm):
+    url_pattern = forms.CharField(label = 'New child page url', required = True)
     
-    layout = FormLayout(Fieldset('child', css_class = inlineLabels))
+    layout = FormLayout(Fieldset('url_pattern', css_class = inlineLabels))
     
-    def __init__(self, *args, **kwargs):
-        self.response = kwargs.pop('response',None)
-        super(NewChildForm,self).__init__(*args, **kwargs)
+    submits = (('create', '_child'),)
     
-    def clean_child(self):
-        name = self.cleaned_data.get('child',None)
-        if name and self.response:
-            child = self.response.page.children.filter(url_pattern = name)
-            if child:
-                raise Form.ValidationError('child page %s already available' % name)
+    class Meta:
+        model = Page
+        fields = ['soft_root','in_navigation','requires_login','inner_template']
+    
+    def clean_url_pattern(self):
+        parent = self.instance
+        if not parent.id:
+            raise forms.ValidationError('Parent page not available')
+        name = self.cleaned_data.get('url_pattern',None)
+        child = parent.children.filter(url_pattern = name)
+        if child:
+            raise forms.ValidationError('child page %s already available' % name)
         return name
     
-    def save(self):
-        djp    = self.response
-        parent = djp.page
-        url    = self.cleaned_data['child']
-        return create_page(url, parent = parent, user = parent.user)
+    def clean(self):
+        cd = self.cleaned_data
+        self.page_form = create_page(parent = self.instance, commit = False, **cd)
+        return cd
+    
+    def save(self, commit = True):
+        return self.pgae_form.save()
+
+def ferrors(errdict):
+    for el in errdict.itervalues():
+        for e in el:
+            yield e
 
 
+def create_page(parent = None, user = None, inner_template = None, commit = True, **kwargs):
+    '''Shortcut function for creating pages'''
+    form = PageForm()
+    data = forms.model_to_dict(form.instance, form._meta.fields, form._meta.exclude)
+    data.update(**kwargs)
+    if parent:
+        if not user:
+            user = parent.user
+        if not inner_template:
+            inner_template = parent.inner_template
+        parent = parent.id
+    if inner_template:
+        inner_template = inner_template.id
+    data.update({'parent':parent,'user':user, 'inner_template': inner_template})
+    f = PageForm(data = data)
+    if f.is_valid():
+        if commit:
+            return f.save(commit = commit)
+        else:
+            return f
+    else:
+        err = ' '.join(ferrors(f._errors))
+        raise forms.ValidationError(err)

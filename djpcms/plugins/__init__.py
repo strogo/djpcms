@@ -5,7 +5,8 @@ import copy
 from django import http, forms
 from django.utils.text import capfirst
 
-from djpcms.utils import UnicodeObject, force_unicode, json, form_kwargs, mark_safe
+from djpcms.forms import form_kwargs
+from djpcms.utils import UnicodeObject, force_unicode, json, mark_safe
 from djpcms.utils.formjson import form2json
 from djpcms.utils.deco import response_wrap
 
@@ -224,7 +225,8 @@ Usually, there is no need to override this function. If your plugin needs input 
             return self.form(**form_kwargs(request = djp.request,
                                            initial = initial,
                                            withrequest = self.form_withrequest,
-                                           withdata = withdata))
+                                           withdata = withdata,
+                                           own_view = djp.own_view()))
             
     #def response(self, request, *bits):
     #    raise http.Http404
