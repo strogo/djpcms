@@ -45,6 +45,10 @@ class AppViewBase(djpcmsview):
 
     instance of :class:`AppViewBase` or None.
     
+.. attribute:: _form
+
+    Form class associated with view. Default ``None``.
+    
 .. attribute:: isapp
 
     if ``True`` the view will be added to the application list and can have its own page object. Default ``False``.
@@ -76,7 +80,8 @@ class AppViewBase(djpcmsview):
                  template_name = None,
                  description = None,
                  form        = None,
-                 form_withrequest = None):
+                 form_withrequest = None,
+                 form_ajax   = None):
         self.name        = None
         self.description = description
         self.parent    = parent
@@ -92,6 +97,7 @@ class AppViewBase(djpcmsview):
         self.editurl   = None
         self._form     = form if form else self.__class__._form
         self._form_withrequest = form_withrequest
+        self._form_ajax  = form_ajax
         self.creation_counter = AppViewBase.creation_counter
         AppViewBase.creation_counter += 1
         
@@ -130,15 +136,6 @@ class AppViewBase(djpcmsview):
     def title(self, page, **kwargs):
         title = None if not page else page.title
         return title or self.appmodel.name
-        
-    def __get_ajax_response(self, djp):
-        # Obsolete
-        if self.ajax_views:
-            data = djp.request.POST or djp.request.GET
-            ajax_key = data.get(settings.HTML_CLASSES.post_view_key, None)
-            if ajax_key:
-                return self.ajax_views.get(ajax_key,None)
-        return None
     
     def isroot(self):
         '''True if this application view represents the root view of the application.'''
@@ -147,6 +144,7 @@ class AppViewBase(djpcmsview):
     def get_form(self, djp, **kwargs):
         return self.appmodel.get_form(djp, self._form,
                                       form_withrequest = self._form_withrequest,
+                                      form_ajax = self._form_ajax,
                                       **kwargs)
         
     def is_soft(self, djp):
@@ -217,7 +215,7 @@ class AppViewBase(djpcmsview):
         '''Process url bits and store information for navigation and urls
         '''
         self.appmodel = appmodel
-        self.ajax     = appmodel.ajax
+        self.css      = appmodel.ajax
         if self.parent:
             self.regex = self.parent.regex + self.urlbit
         else:
@@ -335,7 +333,7 @@ It returns a queryset.
                   'djp': djp,
                   'url': djp.url,
                   'model': self.model,
-                  'css': appmodel.ajax,
+                  'css': appmodel.css,
                   'appmodel': appmodel,
                   'headers': appmodel.list_display})
         if p.qs:
