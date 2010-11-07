@@ -1,0 +1,16 @@
+{% extends "djpcms/yui/yui-gc.html" %}{% block right-column %}
+  <div class="report-dashboard">
+  {{ inputs }}
+  {{ html }}
+  </div>
+   <div class="separator"></div>
+  {{ related_items }}
+  <div class="separator"></div>
+  {{ metadata }}
+  <div class="separator"></div>
+  {{ help }}
+  <div class="separator"></div>
+  {{ attachments }}{% endblock %}{% block left-column %}
+  <div class="report-edit">
+  {{ body }}
+  </div>{% endblock %}

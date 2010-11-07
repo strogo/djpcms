@@ -1,0 +1,41 @@
+<div class="yui-gd report-form">
+ <div class="yui-u first">{% if html.next %}
+ {{ html.next.field }}{% endif %}{% block dash-board %}
+  <div class="report-dashboard">
+   <div class="{{ css.formmessages }}"></div>
+   <table>
+    <tbody>
+     {{ html.visibility.as_tablerow1 }}
+     <tr class="{{ css.field_separator }}"></tr>
+     {{ html.allow_comments.as_tablerow1 }}
+     <tr class="{{ css.field_separator }}"></tr>
+     {#{{ html.authors.as_tablerow1 }}#}
+     {{ html.markup.as_tablerow1 }}
+     <tr class="{{ css.field_separator }}"></tr>
+     {{ html.tags.as_tablerow1 }}
+     <tr class="{{ css.field_separator }}"></tr>
+     {{ html.parent.as_tablerow1 }}
+     <tr class="{{ css.field_separator }}"></tr>
+     <tr>
+      <td>{% for sb in html.submits %}
+      {{ sb }}{% endfor %}
+      </td>
+     </tr>
+    </tbody>
+   </table>
+  </div>{% endblock %}
+ </div>
+ <div class="yui-u">
+  <div class="report-edit">
+   <table>
+    <tbody>
+     {{ html.name.as_tablerow1 }}
+     <tr class="{{ css.field_separator }}"></tr>
+     {{ html.description.as_tablerow1 }}
+     <tr class="{{ css.field_separator }}"></tr>
+     {{ html.body.as_tablerow1 }}
+    </tbody>
+   </table>
+  </div>
+ </div>
+</div>

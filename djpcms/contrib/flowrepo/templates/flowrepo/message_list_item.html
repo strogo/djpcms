@@ -1,0 +1,8 @@
+{% extends "flowrepo/flowitem_list_item.html" %}
+{% block flowclass %} message{% endblock %}
+{% block title-wrap %}{% endblock %}{% block info %}{% endblock %}
+{% block description %}{{ item.object_str|safe }}{% endblock %}
+{% block timeline %}
+<a href="{{ item.url }}" target="_blank">{{ item.relativestamp }}</a>
+{% endblock %}
+{% block body %}{% endblock %}

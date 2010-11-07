@@ -1,0 +1,4 @@
+{% extends "flowrepo/flowitem_list_item.html" %}
+{% block body %}{% endblock %}
+{% block description %}{{ item.description|truncatewords_html:40|safe }}{% endblock %}
+{% block flowclass %} report{% endblock %}

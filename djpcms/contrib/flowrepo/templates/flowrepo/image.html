@@ -1,0 +1,7 @@
+{% extends "flowrepo/flowitem.html" %}
+{% block flowclass %} image{% endblock %}
+{% block description %}
+<a href="{{ item.url }}" title="{{ item.name }}"><img src="{{ item.url }}" alt="{{ item.name }}"/></a>
+{% endblock %}
+{% block inner-body %}
+{{ item.description|safe }}{% endblock %}

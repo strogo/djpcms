@@ -1,0 +1,7 @@
+<div class="webaccount">
+{{ item.name }} &mdash; <a href="{{ item.url }}" title="{{ item.name }}" target="_blank">{{ item.url }}</a>
+{% if editurl %} &mdash; <a href="{{ editurl }}" title="edit">edit</a>{% endif %}{% if tagurls %}
+<div class="tags">{% for tag in tagurls %}
+<a href="{{ tag.url }}" title="tag {{ tag.name }}">{{ tag.name }}</a>{% endfor %}
+</div>{% endif %}
+</div>

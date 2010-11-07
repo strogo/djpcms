@@ -1,0 +1,4 @@
+{% if tolink %}
+<h2>Link with</h2>{% for account in tolink %}
+<a class="link-button-{{ account.name }}" href="{{ account.url }}?next={{ url }}">{{ account.name }}</a>
+{% endfor %}{% endif %}

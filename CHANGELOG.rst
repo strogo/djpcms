@@ -1,3 +1,8 @@
+Development
+=======================
+* Moved ``flowrepo`` to contrib.
+
+
 Version 0.8.4 (2010-Nov-07)
 =============================
 * Added :mod:`djpcms.views.apps.contactus` module which implements a "Contact Us" application. Nice and simple.

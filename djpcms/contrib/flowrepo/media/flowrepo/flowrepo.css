@@ -1,0 +1,181 @@
+/* FLOWITEM MAIN
+---------------------------------------------------------------------------*/
+
+.flowitem.list {
+    margin-bottom: 20px;
+}
+
+.flowitem.report .body h1 {font-size: 200%; margin-bottom: 0.4em;}
+.flowitem.report .body h2 {font-size: 160%; margin-bottom: 0.4em;}
+.flowitem.report .body h3 {font-size: 130%; margin-bottom: 0.4em;}
+.flowitem.report .body h4 {font-size: 110%; margin-bottom: 0.4em;}
+
+.flowitem.report .body table th {
+	font-weight: bold;
+	background: #D4D4D4;
+}
+.flowitem.report .body table td,
+.flowitem.report .body table th {
+	padding: 2px 6px 2px 3px;
+	border-bottom: solid 1px #D4D4D4;
+	border-right: solid 1px #D4D4D4;
+}
+.flowitem.report .body table {
+	margin-left: auto;
+	margin-right: auto;
+	border-top: solid 1px #D4D4D4;
+	border-left: solid 1px #D4D4D4;
+	margin-bottom: 20px;
+}
+hr {
+	color: #D4D4D4;
+}
+
+/* EDITING WRITING
+---------------------------------------------------------------------------*/
+.flowitem.entry {
+	margin-bottom:2em;
+}
+.flowitem h1.title {
+	font-size: 140%;
+	margin:0;
+	margin-bottom:5px;
+}
+.flowitem .info,
+.flowitem .tags {
+	opacity: 0.7;
+	margin-bottom: 5px;
+}
+.flowitem .extended p {
+	margin: 0;
+}
+.flowitem .intro {
+	width: 90%;
+	margin: 0 auto;
+}
+.flowitem.list .intro {
+    margin: 0;
+    width: 100%;
+}
+.flowitem .intro h1 {
+	margin-bottom: 10px;
+}
+.flowitem .authors {
+	margin-bottom: 10px;
+}
+
+/*	REPORT VIEW
+----------------------------------------------------*/
+.flowitem.report .intro {
+	margin-bottom: 1.2em;
+}
+.flowitem.list.report .intro h1.title {
+	margin-bottom: 0.1em;
+}
+.flowitem.report .intro h1.title {
+	font-size: 180%;
+	line-height: 1.2em;
+	margin-bottom: 0.5em;
+}
+.flowrepo.entry {
+	margin-bottom: 20px;
+}
+.flowitem.report .body p,
+.flowitem.report .body ul {
+	margin-bottom: 0.9em;
+}
+.flowitem.report .body ul li {
+	margin-bottom: 0.5em;
+}
+.flowitem.report .body ul,
+.flowitem.report .body ul li {
+	list-style-position:outside;
+	list-style-type: disc;
+}
+.flowitem.report .body ul {
+	margin-left: 1.5em;
+}
+
+/* IMAGES
+---------------------------------------------------*/
+.flowitem .image img.thumbnail {
+    width: 32px;
+    height: 32px;
+}
+
+/* Report Form
+---------------------------------------------------*/
+form.flowrepo-report {
+	background: rgb(245,245,245);
+	color: rgb(80,80,80);
+}
+form.flowrepo-report textarea {width: 100%;}
+form.flowrepo-report .separator {height: 10px; width: 100%;}
+.report-form div.report-dashboard,
+.report-form div.separator {
+	margin-bottom: 10px;
+}
+.report-form .report-dashboard {
+	background: #fff;
+	border: 1px solid #DFDFDF;
+    padding: 2%;
+}
+.report-dashboard select {
+	width: 96%;
+}
+form.flowrepo-report .report-edit input,
+form.flowrepo-report .report-edit textarea {
+	width: 97%;
+	padding: 5px;
+}
+form.flowrepo-report .report-edit textarea {
+    font-family:Monaco,"Courier New","DejaVu Sans Mono","Bitstream Vera Sans Mono",monospace;
+    font-size: 110%;
+}
+form.flowrepo-report #id_title {
+    font-size: 180%;
+}
+form.flowrepo-report #id_abstract {
+    height: 50px;
+}
+form.flowrepo-report #id_body {
+    height: 700px;
+}
+
+/* Code and Pygments
+-------------------------------------------------------------*/
+pre {
+    margin:1em 0;
+    overflow:auto;
+    padding:0.5em;
+}
+.flowitem pre {
+    background: rgb(245,245,245);
+}
+.flowitem pre .k,
+.flowitem pre .kn {
+    color: #004D99;
+}
+.flowitem pre .s {
+    color: #52A329;
+}
+.flowitem pre .nf {
+    color: #000000;
+    font-weight: bold;
+}
+.flowitem pre .mi {
+    color: #CC0000;
+}
+
+/* Twitter box */
+textarea.twitter-box-editor {
+	height: 50px;
+	-moz-border-radius: 5px;
+	padding: 8px;
+}
+
+textarea.twitter-box-editor {
+	height: 50px;
+	-moz-border-radius: 5px;
+	padding: 8px;
+}

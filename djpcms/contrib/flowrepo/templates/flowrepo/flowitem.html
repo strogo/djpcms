@@ -1,0 +1,21 @@
+<div class="flowitem{% block extraclass %}{% endblock %}{% block flowclass %}{% endblock %}">{% block pre-title %}{% endblock %}
+  <div class="intro">{% block title-wrap %}
+    <h1 class="title">{% block title %}{% if viewurl %}
+      <a href="{{ viewurl }}">{{ item.name }}</a>{% else %}
+      {{ item.name }}{% endif %}{% endblock %}
+    </h1>{% endblock %}
+    <div class="extended">
+      {% block description %}{{ item.description|safe }}{% endblock %}
+    </div>
+    <div class="timeline">{% block timeline %}
+    {% block authors %}{{ authors }}{% endblock %}
+    {{ item.relativestamp }}
+    {% if editurl %} &mdash; <a href="{{ editurl }}">edit</a>{% endif %}{% endblock %}
+    </div>{% if tagurls %}
+    <div class="tags">{% for tag in tagurls %}
+      <a href="{{ tag.url }}" title="tag {{ tag.name }}">{{ tag.name }}</a>{% endfor %}
+    </div>{% endif %}
+  </div>{% block body %}
+  <div class="body">{% block inner-body %}{{ item.object_str|safe }}{% endblock %}
+  </div>{% endblock %}
+</div>

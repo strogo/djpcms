@@ -1,0 +1,6 @@
+{% extends "flowrepo/flowitem_list_item.html" %}
+{% block flowclass %} bookmark{% endblock %}
+{% block title-wrap %}{% endblock %}{% block body %}{% endblock %}
+{% block description %}
+<a href="{{ item.url }}" title="{{ item.name }}" target="_blank">{{ item.name }}</a>{% if item.object_str %}
+&mdash; {{ item.object_str|safe }}{% endif %}{% endblock %}

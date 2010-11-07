@@ -1,0 +1,5 @@
+{% if images %}
+<div class="image-cycle type-{{ type }} speed-{{ speed }} timeout-{{ timeout }}" style="width:{{ width }}px; height:{{ height }}px">{% for image in images %}
+  <img src="{{ image.url }}" alt="{{ image.image.name }}"/>{% endfor %}
+</div>
+{% endif %}
