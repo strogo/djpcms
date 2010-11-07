@@ -279,6 +279,12 @@ YOU CAN VERY EASILY REVERT TO A GENERIC STYLE OF UNI-FORM. BEST OF LUCK...
 
 /* ------------------------------------------------------------------------------ */
 
+.uniForm .nolabel textarea,
+.uniForm .nolabel select,
+.uniForm .nolabel .selectInput {width: 98%;}
+.uniForm .nolabel .ctrlHolder {padding: 0;}
+.grid_6 .uniForm .nolabel textarea {width: 420px;}
+
     /* .blockLabels (default style, will be applied even if you don't class the parent element) */
     .uniForm .blockLabels2 .ctrlHolder{}
       

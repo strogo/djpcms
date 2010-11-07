@@ -1,8 +1,11 @@
 from django.forms.util import ErrorList
-from django import forms
 from django.contrib.auth import forms as authforms
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.auth import authenticate, login
+
+
+from djpcms import forms
 
 
 class LoginForm(forms.Form):
@@ -13,6 +16,33 @@ class LoginForm(forms.Form):
     next       = forms.CharField(widget=forms.HiddenInput, required = False)
 
     submits = (('Sign in','login_user'),)
+    
+    def clean(self):
+        '''process login
+        '''
+        data = self.cleaned_data
+        request = self.request
+        msg  = ''
+        username = data.get('username',None)
+        password = data.get('password',None)
+        if username and password:
+            user = authenticate(username = username, password = password)
+            if user is not None:
+                if user.is_active:
+                    login(request, user)
+                    try:
+                        request.session.delete_test_cookie()
+                    except:
+                        pass
+                    data['user'] = user
+                    return data
+                else:
+                    msg = '%s is not active' % username
+            else:
+                msg = 'username or password not recognized'
+        else:
+            return data
+        raise forms.ValidationError(msg)
     
 
 class RegisterForm(forms.Form):

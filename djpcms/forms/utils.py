@@ -6,6 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from djpcms.utils.html import submit
 from djpcms.utils import force_unicode
+from djpcms.utils.ajax import jredirect
 
 
 
@@ -158,7 +159,6 @@ def saveform(djp, editing = False):
     url        = djp.url
     curr       = POST.get("_current_url",None)
     next       = POST.get("next",None)
-    djp.with_data = {'url':djp.url}
     
     if POST.has_key("_cancel"):
         redirect_url = next

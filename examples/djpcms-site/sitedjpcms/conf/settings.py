@@ -38,15 +38,18 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.messages',
+    'django.contrib.admin',
+    #
+    # third parties
+    'socialauth',
+    'openid_consumer',
+    'south',
+    'debug_toolbar',
     #
     'djpcms',
     'djpcms.contrib.jdep',
     #'flowrepo',
     #'tagging',
-    'socialauth',
-    'openid_consumer',
-    'south',
-    'django.contrib.admin',
 )
 
 
@@ -64,8 +67,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
             "socialauth.context_processors.facebook_api_key",
             "django.contrib.auth.context_processors.auth",
             "django.core.context_processors.debug",
-            "django.core.context_processors.i18n",
-            "django.core.context_processors.media",
             "django.contrib.messages.context_processors.messages",
             "djpcms.core.context_processors.djpcms"
             )

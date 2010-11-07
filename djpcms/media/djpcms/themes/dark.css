@@ -33,3 +33,8 @@ div.flat-pannel {
 a.deletable {
 	background: url("../img/buttons.gif") no-repeat scroll -24px 0 transparent
 }
+
+.uniForm textarea:focus {
+	-moz-box-shadow:0 1px #FFFFFF;
+	border-color: rbga(82, 168, 236, 0.75) !important;
+}

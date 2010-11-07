@@ -1,4 +1,4 @@
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import logout
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib import messages
 from django import http
@@ -7,6 +7,7 @@ from djpcms.views import appview
 from djpcms.utils.html import submit
 from djpcms.utils.ajax import jredirect 
 
+from djpcms.forms import saveform
 from forms import LoginForm, PasswordChangeForm
 
 
@@ -31,13 +32,15 @@ class LogoutView(appview.AppView):
 
 
 class LoginView(appview.AppView):
+    '''A Battery included Login view.
     '''
-    A Battery included Login view.
-    This object can be used to login users
-    '''
-    def __init__(self, regex = 'login', parent = None, insitemap = False, **kwargs):
+    def __init__(self, regex = 'login', parent = None, insitemap = False, isplugin = True,
+                 form = LoginForm, form_withrequest = True, **kwargs):
         super(LoginView,self).__init__(regex = regex, parent = parent,
-                                      insitemap = insitemap, **kwargs)
+                                      insitemap = insitemap,
+                                      isplugin = isplugin,
+                                      form = form, form_withrequest = form_withrequest,
+                                      **kwargs)
         
     def title(self, page, **kwargs):
         if page:
@@ -46,10 +49,6 @@ class LoginView(appview.AppView):
             return 'Sign in'
     
     def preget(self, djp):
-        '''
-        Check if user is already logged-in.
-        Normally this should not append.
-        '''
         if djp.request.user.is_authenticated():
             return http.HttpResponseRedirect('/')
         
@@ -58,53 +57,15 @@ class LoginView(appview.AppView):
             return ''
         else:
             return self.get_form(djp, **kwargs).render()
-        
-    def get_form_url(self, request):
-        url = self.page.get_absolute_url()
-        if r.method == 'GET':
-            next = request.GET.get("next", None)
-            if next != None:
-                url = '%s?next=%s' % (url,next)
-        return url
     
     def default_post(self, djp):
-        '''
-        Try to log in
-        '''
-        request = djp.request
-        is_ajax = request.is_ajax()
-        f = self.get_form(djp)
-        if f.is_valid():
-            error = self.process_login_data(djp.request,f.cleaned_data)
-            if not error:
-                return djp.redirect(f.cleaned_data.get('next','/'))
-            else:
-                f.add_message(request,error,error=True)
-        return f.json_errors(False)
-        
-    def process_login_data(self, request, data):
-        '''
-        process login
-        '''
-        username = data.get('username',None)
-        password = data.get('password',None)
-        if username and password:
-            user = authenticate(username = username, password = password)
-            if user is not None:
-                if user.is_active:
-                    r = request
-                    login(r, user)
-                    try:
-                        r.session.delete_test_cookie()
-                    except:
-                        pass
-                else:
-                    return '%s is not active' % username
-            else:
-                return 'username or password not recognized'
-        else:
-            return 'username or password not provided'
-
+        return saveform(djp)
+    
+    def save(self, request, f):
+        return f.cleaned_data['user']
+    
+    def success_message(self, instance, mch):
+        return ''
 
 
 class ChangeView(appview.EditView):

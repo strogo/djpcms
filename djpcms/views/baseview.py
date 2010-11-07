@@ -63,8 +63,8 @@ Not used very often but here just in case.'''
     def is_soft(self, djp):
         return not self.parentresponse(djp)
     
-    def __call__(self, request, *args, **kwargs):
-        return DjpResponse(request, self, *args, **kwargs)
+    def __call__(self, request, **kwargs):
+        return DjpResponse(request, self, **kwargs)
     
     def methods(self, request):
         '''Allowed request methods for this view.

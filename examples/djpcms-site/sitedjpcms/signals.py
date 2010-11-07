@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.db.models import signals
 
 from djpcms.conf import settings
-from djpcms.models import Page, create_page
+from djpcms.forms.cms import Page, create_page
 
 
 def create_user_page(sender, instance, **kwargs):

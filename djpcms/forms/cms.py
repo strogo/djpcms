@@ -212,7 +212,7 @@ class PageForm(forms.ModelForm):
         pages = Page.objects.filter(url = url, site = site)
         if pages:
             page = pages[0]
-            if self.instance is not page:
+            if self.instance != page:
                 raise forms.ValidationError('Page with url %s already in stitemap for site %s.' % (url,site))
         self.instance.url = url
         return cd
@@ -376,3 +376,4 @@ def create_page(parent = None, user = None, inner_template = None, commit = True
     else:
         err = ' '.join(ferrors(f._errors))
         raise forms.ValidationError(err)
+    

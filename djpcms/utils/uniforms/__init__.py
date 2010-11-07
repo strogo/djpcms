@@ -22,6 +22,7 @@ inlineLabels3  = 'inlineLabels auto'
 blockLabels    = 'blockLabels'
 blockLabels2   = 'blockLabels2'
 inlineFormsets = 'blockLabels2'
+nolabel        = 'nolabel'
 default_style  = inlineLabels
 
 default_csrf = 'django.middleware.csrf.CsrfMiddleware' in settings.MIDDLEWARE_CLASSES
@@ -33,9 +34,9 @@ _required_tag = mark_safe('')
 def_renderer = lambda x: x
 
 
-def render_field(field, form, layout):
+def render_field(field, form, layout, css_class):
     if isinstance(field, str):
-        return render_form_field(field, form, layout)
+        return render_form_field(field, form, layout, css_class)
     else:
         return field.render(form, layout)
     
@@ -45,14 +46,16 @@ def get_rendered_fields(form):
     return rf
 
 
-def render_form_field(field, form, layout):
+def render_form_field(field, form, layout, css_class):
     try:
         field_instance = form.fields[field]
     except KeyError:
         raise Exception("Could not resolve form field '%s'." % field)
     bound_field = BoundField(form, field_instance, field)
+    label = None if css_class == nolabel else bound_field.label 
     html = loader.render_to_string("djpcms/uniforms/field.html",
                                    {'field': bound_field,
+                                    'label': label,
                                     'required': _required_tag})
     rendered_fields = get_rendered_fields(form)
     if not field in rendered_fields:
@@ -219,7 +222,7 @@ class Fieldset(UniFormElement):
             html = u'<fieldset>'
         html += self.legend_html
         for field in self.fields:
-            html += render_field(field, form, layout)
+            html += render_field(field, form, layout, self.css)
         html += u'</fieldset>'
         return mark_safe(html)
 
@@ -237,7 +240,7 @@ class Row(UniFormElement):
         css = self._css(layout)
         output = u'%s<div class="%s">' % (self.legend_html,css)
         for field in self.fields:
-            output += render_field(field, form, layout)
+            output += render_field(field, form, layout, self.css)
         output += u'</div>'
         return u''.join(output)
 
@@ -261,7 +264,7 @@ class Columns(UniFormElement):
         for i,column in enumerate(self.columns):
             output = u'<div class="%s">' % css
             for field in column:
-                output += render_field(field, form, layout)
+                output += render_field(field, form, layout, self.css)
             output += u'</div>'
             content['content%s' % i] = mark_safe(output)
         return loader.render_to_string(self.template, content)
@@ -386,7 +389,7 @@ class UniForm(UniFormBase):
                             self._errors.extend(all)
                     valid = False
         return valid and all_valid(self.formsets)
-    
+                    
     def save(self, commit = True):
         instance = None
         for form in self.forms:
@@ -403,14 +406,15 @@ class UniForm(UniFormBase):
     
     def add_message(self, request, msg, error = False):
         msg = str(msg)
-        if error:
-            self._errors.append(msg)
-            if not self.is_ajax:
-                messages.error(request,msg)
-        else:
-            self._messages.append(msg)
-            if not self.is_ajax:
-                messages.info(request,msg)
+        if msg:
+            if error:
+                self._errors.append(msg)
+                if not self.is_ajax:
+                    messages.error(request,msg)
+            else:
+                self._messages.append(msg)
+                if not self.is_ajax:
+                    messages.info(request,msg)
         return self
             
     def force_message(self, request):
@@ -432,8 +436,6 @@ class UniForm(UniFormBase):
             if field_instance:
                 bound_field = BoundField(form, field_instance, name)
                 jerr.add('#%s-errors' % bound_field.auto_id,errs,alldocument = False)
-            else:
-                jerr.add('.form-messages', errs, alldocument = False)
         
     def json_errors(self, withmessage = True):
         '''Serialize form errors for AJAX-JSON interaction.
@@ -446,8 +448,6 @@ class UniForm(UniFormBase):
         for formset in self.formsets:
             for form in formset.forms:
                 self._formerrors(jerr, form)
-        #if jerr and self.error_message and withmessage:
-        #    self.add_message(self.error_message,error=True)
         jerr.update(self.json_message())
         return jerr
     

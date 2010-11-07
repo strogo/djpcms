@@ -9,7 +9,7 @@ class UserApplication(appsite.ModelApplication):
     form     = PasswordChangeForm
     
     home    = appview.AppView()
-    login   = LoginView(isplugin = True, parent = 'home', form = LoginForm)
+    login   = LoginView(parent = 'home')
     logout  = LogoutView(parent = 'home')
     change  = ChangeView(regex = 'change', isplugin = True, parent = 'home')
     

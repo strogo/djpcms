@@ -19,6 +19,9 @@ CharField = forms.CharField
 ChoiceField = forms.ChoiceField
 FileField = forms.FileField
 HiddenInput = forms.HiddenInput
+RegexField = forms.RegexField
+EmailField = forms.EmailField
+PasswordInput = forms.PasswordInput
 ValidationError = forms.ValidationError
 model_to_dict = forms.model_to_dict
 

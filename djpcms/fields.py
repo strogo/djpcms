@@ -2,9 +2,10 @@
 A custom Model Field for djpcms.
 """
 import copy
+import json
 
 from django.conf import settings
-from django.db.models.fields import CharField
+from django.db.models.fields import CharField, TextField
 from django import forms
 
 from djpcms.utils.func import slugify
@@ -42,8 +43,25 @@ class SlugCode(CharField):
         return value
 
 
+class JSONField(TextField):
+    
+    def to_python(self, value):
+        if isinstance(value, basestring):
+            value = json.loads(value)
+        return value
+ 
+    def get_prep_value(self, value):
+        if value is None:
+            return
+        return json.dumps(value)
+ 
+    def value_to_string(self, obj):
+        value = self._get_val_from_obj(obj)
+        return self.get_prep_value(value)
+
 try:
     from south.modelsinspector import add_introspection_rules
     add_introspection_rules([], ["^djpcms\.fields\.SlugCode"])
+    add_introspection_rules([], ["^djpcms\.fields\.JSONField"])
 except:
     pass

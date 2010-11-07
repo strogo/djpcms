@@ -8,7 +8,7 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'sqlite3',
+        'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(basedir,'sitedjpcms.sqlite'),
     }
 }

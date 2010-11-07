@@ -1,13 +1,13 @@
 {% if field.is_hidden %}
     {{ field }}
 {% else %}{% load uni_form_field %}
-<div class="ctrlHolder{% if field.error %} error{% endif %}">
+<div class="ctrlHolder{% if field.error %} error{% endif %}{% if field.field.required %} {{ required }}{% endif %}">
 	<div id="{{ field.auto_id }}-errors">
        {{ field.errors }}
     </div>{% if field|is_checkbox %}
-       {{ field|with_class }}{% endif %}{% if field.label %}
+       {{ field|with_class }}{% endif %}{% if label %}
     <label for="{{ field.auto_id }}">
-      {{ field.label }}{% if field.field.required %}{{ required }}{% endif %}
+      {{ label }}
     </label>{% endif %}{% if not field|is_checkbox %}
       {{ field|with_class }}{% endif %}{% if field.help_text %}
     <p id="hint_{{ field.auto_id }}" class="formHint">{{ field.help_text|safe }}</p>{% endif %}
