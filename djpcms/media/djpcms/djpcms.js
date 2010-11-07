@@ -168,6 +168,9 @@
 					else if(b.type == 'show') {
 						el.show();
 					}
+					else if(b.type == 'value') {
+						el.val(b.html);
+					}
 					else {
 						if(b.type == 'append') {
 							el.html(el.html() + nel);

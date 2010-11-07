@@ -5,7 +5,7 @@ import copy
 import json
 
 from django.conf import settings
-from django.db.models.fields import CharField, TextField
+from django.db import models
 from django import forms
 
 from djpcms.utils.func import slugify
@@ -16,7 +16,7 @@ def get_ajax():
 
 
 
-class SlugCode(CharField):
+class SlugCode(models.CharField):
     
     def __init__(self, rtxchar='-', lower=False, upper = False, **kwargs):
         '''
@@ -43,11 +43,14 @@ class SlugCode(CharField):
         return value
 
 
-class JSONField(TextField):
-    
+class JSONField(models.TextField):
+    __metaclass__ = models.SubfieldBase
     def to_python(self, value):
         if isinstance(value, basestring):
-            value = json.loads(value)
+            if not value:
+                value = {}
+            else:
+                value = json.loads(value)
         return value
  
     def get_prep_value(self, value):

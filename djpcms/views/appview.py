@@ -68,6 +68,7 @@ class AppViewBase(djpcmsview):
     creation_counter = 0
     plugin_form = None
     _form       = None
+    _form_ajax  = None
     
     def __init__(self,
                  parent     = None,
@@ -95,9 +96,9 @@ class AppViewBase(djpcmsview):
         self.func      = None
         self.code      = None
         self.editurl   = None
-        self._form     = form if form else self.__class__._form
+        self._form     = form if form else self._form
         self._form_withrequest = form_withrequest
-        self._form_ajax  = form_ajax
+        self._form_ajax  = form_ajax if form_ajax is not None else self._form_ajax
         self.creation_counter = AppViewBase.creation_counter
         AppViewBase.creation_counter += 1
         
