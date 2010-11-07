@@ -1,4 +1,4 @@
-Version 0.8.4 (2010-Nov-05)
+Version 0.8.4 (2010-Nov-07)
 =============================
 * Added :mod:`djpcms.views.apps.contactus` module which implements a "Contact Us" application. Nice and simple.
 * Refactoring of :func:`djpcms.views.baseview.get_page` function.
