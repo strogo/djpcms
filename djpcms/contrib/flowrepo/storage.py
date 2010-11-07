@@ -6,7 +6,7 @@ def uploader(obj, name):
     '''
     Upload object
     '''
-    from flowrepo import settings 
+    from djpcms.contrib.flowrepo import settings 
     if settings.FLOWREPO_UPLOAD_FUNCTION:
         bits = settings.FLOWREPO_UPLOAD_FUNCTION.split('.')
         module = __import__('.'.join(bits[:-1]),globals(),locals(),[''])

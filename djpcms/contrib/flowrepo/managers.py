@@ -13,7 +13,7 @@ from django.utils.dates import MONTHS_3
 from django.utils.encoding import force_unicode
 from django.db.models import signals
 
-from flowrepo.settings import FLOWREPO_DIGIT_MONTH, FLOWREPO_UPLOAD_FUNCTION
+from djpcms.contrib.flowrepo.settings import FLOWREPO_DIGIT_MONTH, FLOWREPO_UPLOAD_FUNCTION
 
 source_interactive = 'INTERACTIVE'
 

@@ -12,9 +12,9 @@ from djpcms.views import appview, appsite
 from djpcms.utils.html import htmlwrap, Paginator
 from djpcms.views.apps.tagging import ArchiveTaggedApplication
 
-from flowrepo.models import FlowRelated, FlowItem, Report, Message, Category, Image, Attachment
-from flowrepo.cms.forms import *
-from flowrepo.cms.twitter import TwitterPostView
+from djpcms.contrib.flowrepo.models import FlowRelated, FlowItem, Report, Message, Category, Image, Attachment
+from djpcms.contrib.flowrepo.cms.forms import *
+from djpcms.contrib.flowrepo.cms.twitter import TwitterPostView
 
 
 class FlowMainView(appview.SearchView):

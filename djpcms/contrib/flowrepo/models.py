@@ -13,12 +13,12 @@ from django.contrib.auth.models import User, Group, AnonymousUser
 from tagging.fields import TagField
 
 from djpcms.fields import JSONField
-from flowrepo import markups
-from flowrepo.managers import FlowManager, SlugManager, RepoManager 
-from flowrepo.managers import slugify, source_interactive
-from flowrepo.storage import uploader, storage_manager
-from flowrepo.utils import encrypt, decrypt, nicetimedelta
-from flowrepo import settings
+from djpcms.contrib.flowrepo import markups
+from djpcms.contrib.flowrepo.managers import FlowManager, SlugManager, RepoManager 
+from djpcms.contrib.flowrepo.managers import slugify, source_interactive
+from djpcms.contrib.flowrepo.storage import uploader, storage_manager
+from djpcms.contrib.flowrepo.utils import encrypt, decrypt, nicetimedelta
+from djpcms.contrib.flowrepo import settings
 
 report_type = (
         (1, 'blog'),

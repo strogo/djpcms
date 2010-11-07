@@ -1,7 +1,7 @@
 from django.contrib import admin
 
-from flowrepo.models import *
-from flowrepo import forms
+from djpcms.contrib.flowrepo.models import *
+from djpcms.contrib.flowrepo import forms
 
 class ImageInline(admin.TabularInline):
     model = GalleryImage

@@ -1,8 +1,8 @@
 from django.contrib.auth.models import User
 
-from flowrepo import markups
-from flowrepo.models import FlowItem, Attachment, Image
-from flowrepo.forms import WebAccountForm, UploadForm, FlowForm, ReportForm
+from djpcms.contrib.flowrepo import markups
+from djpcms.contrib.flowrepo.models import FlowItem, Attachment, Image
+from djpcms.contrib.flowrepo.forms import WebAccountForm, UploadForm, FlowForm, ReportForm
 
 from djpcms import forms
 from djpcms.utils.uniforms import FormLayout, Fieldset, Html, inlineLabels, blockLabels2

@@ -1,6 +1,6 @@
 from django.template import Library
 
-from flowrepo.models import Gallery
+from djpcms.contrib.flowrepo.models import Gallery
 
 register = Library()
 

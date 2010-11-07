@@ -7,8 +7,9 @@ from djpcms.plugins import DJPplugin
 from djpcms.utils.html import htmlwrap, Paginator
 from djpcms.views import appsite
 
-from flowrepo.models import FlowItem
-from flowrepo.forms import FlowItemSelector, ChangeImage, ChangeCategory
+from djpcms.contrib.flowrepo.models import FlowItem
+from djpcms.contrib.flowrepo.cms.views import LinkedAccountLoginView
+from djpcms.contrib.flowrepo.forms import FlowItemSelector, ChangeImage, ChangeCategory
 
 
 
@@ -214,7 +215,6 @@ class LinkedAccounts(DJPplugin):
         return loader.render_to_string('flowrepo/linked_accounts_plugin.html', c)
     
     def get_account_to_link(self, djp, accounts):
-        from flowrepo.cms.views import LinkedAccountLoginView
         userapp = appsite.site.for_model(User)
         if not userapp:
             yield StopIteration

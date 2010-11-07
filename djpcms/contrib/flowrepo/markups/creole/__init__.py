@@ -2,7 +2,7 @@ import creole
 import creole2html
 import macros
 
-from flowrepo import settings
+from djpcms.contrib.flowrepo import settings
 
 # Try to import pygments. If available, use it to render code
 try:

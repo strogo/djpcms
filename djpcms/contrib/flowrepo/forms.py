@@ -6,7 +6,7 @@ import django.utils.simplejson as json
 
 from tagging.forms import TagField
 
-from flowrepo import models
+from djpcms.contrib.flowrepo import models
 
 
 

@@ -6,9 +6,9 @@ from djpcms.utils.uniforms import FormLayout, Fieldset, nolabel
 from djpcms.views import appview
 from djpcms.utils.ajax import jerror, jhtmls
 
-from flowrepo import settings
-from flowrepo.models import LinkedAccount
-from flowrepo.cms.views import LinkedAccountLoginView
+from djpcms.contrib.flowrepo import settings
+from djpcms.contrib.flowrepo.models import LinkedAccount
+from djpcms.contrib.flowrepo.cms.views import LinkedAccountLoginView
 
 import tweepy
 
