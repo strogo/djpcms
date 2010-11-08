@@ -82,7 +82,8 @@ class AppViewBase(djpcmsview):
                  description = None,
                  form        = None,
                  form_withrequest = None,
-                 form_ajax   = None):
+                 form_ajax   = None,
+                 success_message = None):
         self.name        = None
         self.description = description
         self.parent    = parent
@@ -96,6 +97,8 @@ class AppViewBase(djpcmsview):
         self.func      = None
         self.code      = None
         self.editurl   = None
+        if success_message:
+            self.success_message = success_message
         self._form     = form if form else self._form
         self._form_withrequest = form_withrequest
         self._form_ajax  = form_ajax if form_ajax is not None else self._form_ajax

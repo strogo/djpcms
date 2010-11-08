@@ -399,7 +399,7 @@ class UniForm(UniFormBase):
         if instance is not None and commit:
             for formset in self.formsets:
                 formset.save(instance)
-        if instance and instance.id:
+        if instance and getattr(instance,'id',None):
             return instance.__class__.objects.get(id = instance.id)
         else:
             return instance
