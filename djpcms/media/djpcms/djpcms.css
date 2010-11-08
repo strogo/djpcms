@@ -135,35 +135,6 @@ ul.menu li.selected ul li.selected a {background: rgb(245,245,245);}
 	height: 98%;
 }
 
-
-/* uniForm classe
--------------------------------------------------------------*/
-
-form tr {
-	margin-bottom: 5px;
-}
-form .onecolumn input[type="text"] {
-	width: 98%;
-	padding: 2px 2px;
-}
-form .onecolumn textarea {
-	padding: 2px 2px;
-	width: 98%;
-	height: 40px;
-}
-form .field-separator {
-	height: 0.3em;
-}
-form .errorlist {
-	margin: 0;
-}
-.aligned label {
-    display: block;
-    padding: 3px 10px 0 0;
-    float: left;
-    width: 8em;
-}
-
 /* GENERAL CLASSES FOR Tags 
 -------------------------------------------------------------*/
 .center-element {
@@ -466,6 +437,12 @@ a.deletable {
 }
 .object-definition dl dd {
 	margin: 0;
+}
+.object-definition.w40 dl dt {
+	width: 40%;
+}
+.object-definition.w50 dl dt {
+	width: 50%;
 }
 
 /* Tablesorter

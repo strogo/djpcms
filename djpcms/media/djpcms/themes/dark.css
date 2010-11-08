@@ -38,3 +38,7 @@ a.deletable {
 	-moz-box-shadow:0 1px #FFFFFF;
 	border-color: rbga(82, 168, 236, 0.75) !important;
 }
+
+a.nice-button:link {
+	color: #333;
+}
