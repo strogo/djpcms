@@ -14,7 +14,6 @@
 {% include "djpcms/bits/reset.html" %}{% endblock %}{% block extrastyle %}
 <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/djpcms.css"/>
 <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/uni-form.css"/>
-<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/nav.css"/>
 <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/jquery-autocomplete/jquery.autocomplete.css"/>{% if media %}{% for css in media.render_css %}
 {{ css|safe }}{% endfor %}{% endif %}{% endblock %}
 <style type="text/css">{% block body-extra-style %}{% endblock %}
@@ -41,7 +40,7 @@
 <script type="text/javascript" src="{{ MEDIA_URL }}djpcms/jquery-autocomplete/jquery.autocomplete.min.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}djpcms/jquery.pagination.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}djpcms/form.js"></script>
-<script type="text/javascript" src="{{ MEDIA_URL }}djpcms/tablesorter/jquery.tablesorter.min.js"></script>{% endblock %}{% block decorator-scripts %}
+<script type="text/javascript" src="{{ MEDIA_URL }}djpcms/tablesorter/jquery.tablesorter.js"></script>{% endblock %}{% block decorator-scripts %}
 <script type="text/javascript" src="{{ MEDIA_URL }}djpcms/djpcms.js"></script>{% endblock %}{% if media %}
 {{ media|cleanjs }}{% endif %}{% block body-scripts %}
 <script type="text/javascript">

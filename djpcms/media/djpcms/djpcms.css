@@ -243,14 +243,19 @@ div.djpcms-comment.djpcms-html-box .bd {
 	width: 200px;
 }
 
-
 /* PAGINATION
 ---------------------------------------------------------------------------*/
 .jquery-pagination {
 	overflow: hidden;
-	font-size: 80%;
 	margin-bottom: 10px;
-	height: 40px;
+}
+
+.jquery-pagination .navigator {
+	float: left;
+	font-size: 80%;
+}
+.jquery-pagination .information {
+	float: right;
 }
         
 .jquery-pagination a {
@@ -443,6 +448,9 @@ a.deletable {
 	display: none;
 }
 
+.object-definition {
+	margin-bottom: 10px;
+}
 .object-definition dl {
 	overflow: hidden;
 	margin: 5px 0 0; 
@@ -458,4 +466,10 @@ a.deletable {
 }
 .object-definition dl dd {
 	margin: 0;
+}
+
+/* Tablesorter
+------------------------------------------------------------*/
+table.tablesorter td .ui-button-text-only .ui-button-text {
+	padding: 0.1em 0.5em;
 }

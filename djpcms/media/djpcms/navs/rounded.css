@@ -1,0 +1,173 @@
+/*
+---------------------------------------------- Navigation Colors */
+.nav-container {
+	background: transparent;
+}
+ul.main-nav {
+	background: #666 !important;
+	-webkit-box-shadow: 0 1px 3px rgba(0,0,0, .4);
+	-moz-box-shadow: 0 1px 3px rgba(0,0,0, .4);
+}
+ul.main-nav li {
+	background: transparent !important;
+}
+/* main level link */
+ul.main-nav li a {
+	color: #e7e5e5;
+	border-top: solid 1px #666;
+	text-shadow: 0 2px 2px rgba(0,0,0, 0.7);
+}
+/*
+ul.main-nav a:hover {
+	background: #000;
+	color: #fff;
+}*/
+/* main level link hover */
+ul.main-nav li.selected a, ul.main-nav li:hover > a {
+	background: #DCDCDC;
+	color: #444;
+	border-top: solid 1px #f8f8f8;
+	-webkit-box-shadow: 0 1px 1px rgba(0,0,0, .2);
+	-moz-box-shadow: 0 1px 1px rgba(0,0,0, .2);
+	box-shadow: 0 1px 1px rgba(0,0,0, .2);
+	text-shadow: 0 1px 0 rgba(255,255,255, 1);
+}
+ul.main-nav li:hover > a {
+	background: #D4D4D4;
+}
+/* sub levels link hover */
+ul.main-nav ul li:hover a, ul.main-nav li:hover li a {
+	background: none;
+	color: #666;
+	text-shadow: 0 1px 1px rgba(0,0,0, .1);
+}
+ul.main-nav ul a:hover {
+	background: #BCBABA !important;
+	color: #333 !important;
+	text-shadow: 0 1px 1px rgba(0,0,0, .3);
+}
+/* level 2 list */
+ul.main-nav ul {
+	background: #ddd;
+	border: solid 1px #b4b4b4;
+	-webkit-box-shadow: 0 1px 3px rgba(0,0,0, .3);
+	-moz-box-shadow: 0 1px 3px rgba(0,0,0, .7);
+	box-shadow: 0 1px 3px rgba(0,0,0, .3);
+}
+/*
+ul.main-nav ul a {
+	text-shadow: 0 1px 0 #fff;
+}
+*/
+
+/*
+---------------------------------------------------- Layout */
+ul.main-nav {
+	margin: 0;
+	padding: 3px 6px 0;
+	line-height: 100%;
+	border-radius: 1em;
+	-webkit-border-radius: 1em;
+	-moz-border-radius: 1em;
+}
+ul.main-nav li {
+	margin: 0 5px;
+	padding: 0 0 4px;
+	float: left;
+	position: relative;
+	list-style: none;
+}
+ul.main-nav li.secondary {
+	float: right;
+}
+
+/* main level link */
+ul.main-nav a {
+	font-weight: bold;
+	text-decoration: none;
+	display: block;
+	padding:  8px 20px;
+	margin: 0;
+	-webkit-border-radius: 0.6em;
+	-moz-border-radius: 0.6em;
+}
+
+/* sub levels link hover */
+ul.main-nav ul li:hover a, ul.main-nav li:hover li a {
+	background: none;
+	border: none;
+	-webkit-box-shadow: none;
+	-moz-box-shadow: none;
+}
+ul.main-nav ul a:hover {
+	-webkit-border-radius: 0;
+	-moz-border-radius: 0;
+}
+
+/* dropdown */
+ul.main-nav li:hover > ul {
+	display: block;
+}
+
+/* level 2 list */
+ul.main-nav ul {
+	display: none;
+	margin: 0;
+	padding: 0;
+	width: 185px;
+	position: absolute;
+	top: 30px;
+	left: 0;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+}
+ul.main-nav ul li {
+	float: none;
+	margin: 0;
+	padding: 0;
+}
+
+ul.main-nav ul a {
+	font-weight: normal;
+}
+
+/* level 3+ list */
+ul.main-nav ul ul {
+	left: 185px;
+	top: 0px;
+}
+
+/* rounded corners of first and last link */
+ul.main-nav ul li:first-child > a {
+	-webkit-border-top-left-radius: 0.3em;
+	-moz-border-radius-topleft: 0.3em;
+	-webkit-border-top-right-radius: 0.3em;
+	-moz-border-radius-topright: 0.3em;
+}
+ul.main-nav ul li:last-child > a {
+	-webkit-border-top-left-radius: 0.3em;
+	-moz-border-radius-topleft: 0.3em;
+	-webkit-border-top-right-radius: 0.3em;
+	-moz-border-radius-topright: 0.3em;
+}
+
+/* clearfix */
+ul.main-nav:after {
+	content: ".";
+	display: block;
+	clear: both;
+	visibility: hidden;
+	line-height: 0;
+	height: 0;
+}
+ul.main-nav {
+	display: inline-block;
+} 
+html[xmlns] ul.main-nav {
+	display: block;
+}
+ 
+* html ul.main-nav {
+	height: 1%;
+}

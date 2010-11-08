@@ -190,6 +190,7 @@ class DjpResponse(http.HttpResponse):
         to the `render_to_response` shortcut.
  
         """
+        css = self.css
         context  = RequestContext(self.request)
         d = context.push()
         if more_context:
@@ -198,7 +199,9 @@ class DjpResponse(http.HttpResponse):
         style = apply_styling(self.request)
         if style:
             media.add_css(style)
-        sitenav = Navigator(self, classes = 'nav main', levels = settings.SITE_NAVIGATION_LEVELS)
+        sitenav = Navigator(self,
+                            classes = css.main_nav,
+                            levels = settings.SITE_NAVIGATION_LEVELS)
         d.update({'djp':        self,
                   'media':      media,
                   'page':       self.page,

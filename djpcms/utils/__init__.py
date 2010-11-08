@@ -1,9 +1,13 @@
 from django.utils.encoding import smart_str, force_unicode, smart_unicode
 from django.utils.safestring import mark_safe
+from uuid import uuid4
 from anyjson import json
 
 
 json_dump_safe = lambda data: mark_safe(force_unicode(json.dumps(data)))
+
+def gen_unique_id():
+    return str(uuid4())
 
 
 def construct_search(field_name):

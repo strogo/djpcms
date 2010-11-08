@@ -1,6 +1,6 @@
 Development
 =======================
-* Moved ``flowrepo`` to contrib.
+* Added :mod:`djpcms.contrib.flowrepo` module.
 
 
 Version 0.8.4 (2010-Nov-07)

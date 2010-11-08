@@ -121,6 +121,8 @@ class ApplicationBase(object):
     in_navigation    = True
     '''True if application'views can go into site navigation. Default ``True``.
 No reason to change this default unless you really don't want to see the views in the site navigation.'''
+    list_per_page    = 30
+    '''Number of objects per page. Default is ``30``.'''
 
     _form_add        = 'add'
     _form_edit       = 'change'
@@ -323,8 +325,6 @@ of objects. Default is ``None``.'''
     object_display   = None
     '''Same as :attr:`list_display` attribute at object level. The field list is used to display
 the object definition. If not available, :attr:`list_display` is used. Default ``None``.'''
-    list_per_page    = 30
-    '''Number of objects per page. Default is ``30``.'''
     filter_fields    = None
     '''List of model fields which can be used to filter'''
     search_fields    = None

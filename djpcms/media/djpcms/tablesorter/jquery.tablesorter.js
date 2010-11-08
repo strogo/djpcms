@@ -95,6 +95,7 @@
 				cssHeader: "header",
 				cssAsc: "headerSortUp",
 				cssDesc: "headerSortDown",
+				cssDesc: "headerSortDown",
 				sortInitialOrder: "asc",
 				sortMultiSortKey: "shiftKey",
 				sortForce: null,

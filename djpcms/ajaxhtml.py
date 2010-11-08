@@ -23,6 +23,7 @@ class ajaxhtml(object):
         d['secondary_in_list']        = 'secondary'
         d['link_selected']            = 'selected'
         d['nicebutton']               = 'nice-button'
+        d['main_nav']                 = 'main-nav'      # Main navigation class
         
         return obj
     

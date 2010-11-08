@@ -23,19 +23,22 @@ class ChangeList(object):
         return 'extrafunction__%s' % name            
 
 
-def table(queryset_or_list, djp, model = None):
+def table(headers, queryset_or_list, djp, model = None):
     if not model:
         try:
             model = queryset_or_list.model
         except AttributeError:
             pass
-    if model:
+    try:
+        cl = model.opts
         return queryset_table(queryset_or_list, djp, model)
-    
+    except:
+        return {'labels':headers,
+                'items':queryset_or_list}
     
 def queryset_table(queryset, djp, appmodel):
     request = djp.request
-    cl      = appmodel.opts
+    cl = appmodel.opts
     if not cl.appmodel or not cl.list_display:
         return ''
     labels = []
@@ -63,6 +66,4 @@ def queryset_table(queryset, djp, appmodel):
             display.append(var)
     return {'labels':labels,
             'items':items}
-
-
 
