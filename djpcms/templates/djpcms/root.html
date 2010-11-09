@@ -20,7 +20,7 @@
 </style>{% endcompress %}
 <!-- END OF STYLING -->
 {% compress_if_you_can js %}
-<script type="text/javascript" src="{{ MEDIA_URL }}djpcms/modernizr-1.1.min.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}djpcms/modernizr-1.6.min.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}djpcms/jquery-1.4.2.min.js"></script>
 {% block extra-head %}{% endblock %}{% endcompress %}
 </head>
@@ -36,6 +36,7 @@
 <!-- END OF BODY CONTAINER -->
 
 <!-- START OF END-BODY SCRIPTS -->{% compress_if_you_can js %}{% block end-page-scripts %}
+<script type="text/javascript" src="{{ MEDIA_URL }}djpcms/jquery-metadata.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}djpcms/jquery-ui-1.8.4.min.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}djpcms/jquery-autocomplete/jquery.autocomplete.min.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}djpcms/jquery.pagination.js"></script>

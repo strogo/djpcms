@@ -1,7 +1,7 @@
 from django.utils.encoding import smart_str, force_unicode, smart_unicode
 from django.utils.safestring import mark_safe
 from uuid import uuid4
-from anyjson import json
+from anyjson import json, JSONDateDecimalEncoder, date_decimal_hook
 
 
 json_dump_safe = lambda data: mark_safe(force_unicode(json.dumps(data)))
@@ -143,3 +143,4 @@ and converts spaces to hyphens *rtx* character'''
     value = unicodedata.normalize('NFKD', unicode(value)).encode('ascii', 'ignore')
     value = unicode(re.sub('[^\w\s-]', '', value).strip())
     return mark_safe(re.sub('[-\s]+', rtx, value))
+

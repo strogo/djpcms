@@ -3,11 +3,10 @@ from django.contrib.sites.models import Site
 from django.utils.translation import ugettext_lazy as _
 
 from djpcms import siteapp_choices
-from djpcms.utils import smart_unicode
+from djpcms.utils import smart_unicode, slugify
 from djpcms.models import Page, BlockContent, SiteContent, ObjectPermission
 from djpcms.utils.uniforms import FormLayout, Fieldset, Columns, Row, Html, inlineLabels, inlineLabels3
 from djpcms.plugins import get_plugin, plugingenerator, wrappergenerator
-from djpcms.utils.func import slugify
 
 import forms
 

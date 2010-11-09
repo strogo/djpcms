@@ -1,14 +1,11 @@
 /*
  * File:         djpcms.js
- * Version:      0.4
  * Description:  djpcms Javascript Site Manager
  * Author:       Luca Sbardella
  * Language:     Javascript
  * License:      new BSD licence
- * repository:	 http://code.google.com/p/djpcms/
- * Organization: Dynamic Quant Limited
  * Contact:      luca.sbardella@gmail.com
- * @requires:	 jQuery, jQueryUI
+ * @requires:	 jQuery
  * 
  * Copyright (c) 2009, Luca Sbardella
  * New BSD License 
@@ -594,7 +591,6 @@
 			});
 		}
 	});
-	
 		
 })(jQuery);
 

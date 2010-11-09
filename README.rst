@@ -109,6 +109,15 @@ Optional requirements:
 * fabric_ and pip_ for the ``djpcms.contrib.jdep`` module.
 
 
+Kudos
+=====================
+Djpcms includes several open-source libraries and plugins developed by other authors:
+
+* jQuery_ the building block of the browser side of djpcms.
+  Thanks to the jQuery and jQuery-UI teams!
+  The latest jquery and jquery-ui minified files are shipped the library. 
+* jQuery tablesorter_ plugin. Thanks to Christian Bach.
+* Modernizr_, a small JavaScript library that detects the availability of native implementations for next-generation web technologies.
 
 .. _pypi: http://pypi.python.org/pypi?:action=display&name=djpcms
 .. _Python: http://www.python.org/
@@ -120,3 +129,6 @@ Optional requirements:
 .. _pip: http://pip.openplans.org/
 .. _South: http://south.aeracode.org/
 .. _stdnet: http://code.google.com/p/python-stdnet/
+.. _tablesorter: http://tablesorter.com/
+.. _Modernizr: http://www.modernizr.com/
+
