@@ -1,6 +1,6 @@
-Development
-=======================
-* Added :mod:`djpcms.contrib.flowrepo` module.
+Version 0.8.5 - Development
+=======================================
+* Added :mod:`djpcms.contrib.flowrepo` module. Still experimental, not ready for production.
 
 
 Version 0.8.4 (2010-Nov-07)

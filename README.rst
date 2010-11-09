@@ -115,7 +115,7 @@ Djpcms includes several open-source libraries and plugins developed by other aut
 
 * jQuery_ the building block of the browser side of djpcms.
   Thanks to the jQuery and jQuery-UI teams!
-  The latest jquery and jquery-ui minified files are shipped the library. 
+  The latest jquery and jquery-ui minified files are shipped with the library. 
 * jQuery tablesorter_ plugin. Thanks to Christian Bach.
 * Modernizr_, a small JavaScript library that detects the availability of native implementations for next-generation web technologies.
 

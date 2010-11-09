@@ -10,8 +10,10 @@ from djpcms.utils.html import ModelChoiceField, ModelMultipleChoiceField, submit
 BaseForm = forms.BaseForm
 ModelForm = forms.ModelForm
 IntegerField = forms.IntegerField
+FloatField = forms.FloatField
 DateField = forms.DateField
-Textarea = forms.Textarea
+Select    = forms.Select
+Textarea  = forms.Textarea
 TextInput = forms.TextInput
 ModelForm = forms.ModelForm
 BooleanField = forms.BooleanField
