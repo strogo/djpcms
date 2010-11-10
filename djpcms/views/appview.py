@@ -330,7 +330,7 @@ It returns a queryset.
             urlargs = djp.kwargs
             urlargs.update(kwargs)
             djp = self(request, **urlargs)
-        query = self.appquery(request, *djp.args, **djp.kwargs)
+        query = self.appquery(request, **djp.kwargs)
         p  = Paginator(request, query, per_page = appmodel.list_per_page)
         c  = copy(djp.kwargs)
         c.update({'paginator': p,

@@ -27,19 +27,14 @@ class DjpResponse(http.HttpResponse):
         
             url associated with response. Note this url is not always the same as request.path.
     '''
-    def __init__(self, request, view, *args, **kwargs):
+    def __init__(self, request, view, wrapper = None, prefix = None, **kwargs):
         super(DjpResponse,self).__init__()
-        self._container = None
         self.request    = request
         self.view       = view
         self.css        = settings.HTML_CLASSES
-        self.args       = args
         self.kwargs     = kwargs
-        self.wrapper    = None
-        self.prefix     = None
-        self._errors    = None
-        self.media      = view.get_media()
-        self._plugincss = {}
+        self.wrapper    = wrapper
+        self.prefix     = prefix
     
     def __repr__(self):
         return self.url
@@ -52,13 +47,6 @@ class DjpResponse(http.HttpResponse):
         djp.prefix  = prefix
         djp.wrapper = wrapper
         return djp
-    
-    def adderror(self, msg):
-        err = self._errors
-        if not err:
-            err = []
-        err.append(msg)
-        self._errors = err
     
     def is_ajax(self):
         return self.request.is_ajax()
@@ -87,6 +75,18 @@ class DjpResponse(http.HttpResponse):
         h = self._headers['content-type']
         h[1] = ct
         
+    def __get_media(self):
+        '''Get the page object
+        '''
+        media = getattr(self,'_media',None)
+        if not media:
+            media = self.view.get_media()
+            setattr(self,'_media',media)
+        return media
+    def __set_media(self, other):
+        setattr(self,'_media',other)
+    media = property(__get_media,__set_media)
+    
     @lazyattr
     def in_navigation(self):
         return self.view.in_navigation(self.request, self.page)
@@ -126,12 +126,14 @@ class DjpResponse(http.HttpResponse):
     children = property(get_children)
     
     def _get_instance(self):
-        instance = self.kwargs.get('instance',None)
-        if not instance:
-            self.url
-            return self.kwargs.get('instance',None)
-        else:
-            return instance
+        if self.view.object_view:
+            instance = self.kwargs.get('instance',None)
+            if not instance:
+                self.url
+                return self.kwargs.get('instance',None)
+            else:
+                return instance
+            
     def _set_instance(self, instance):
         self.kwargs['instance'] = instance
     instance = property(fget = _get_instance, fset = _set_instance)
@@ -163,12 +165,12 @@ class DjpResponse(http.HttpResponse):
         '''
         view    = self.view
         request = self.request
-        is_ajax = request.is_ajax()
-        
+        page    = None
+        if not request.is_ajax():
+            page = self.page
         # Check for page view permissions
-        if not view.has_permission(request, self.page, self.instance):
+        if not view.has_permission(request, page, self.instance):
             return view.permissionDenied(self)
-        
         method  = request.method.lower()
         methods = view.methods(request)
         if method not in (method.lower() for method in methods):

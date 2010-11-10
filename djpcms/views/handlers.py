@@ -20,17 +20,17 @@ def djpcmsHandler(request, url):
         return url, (), {}
     
     # First we check for static pages
-    view = pagecache.view_from_url(request, url)
-    if view and not view.names():
-        return view, (), {}
-    else:
-        # page not found, it must be a page with arguments
-        resolver = urlresolvers.RegexURLResolver(r'^/', pagecache.build_app_urls(request))
-        try:
-            apphandler, args, kwargs = resolver.resolve(url)
-            return apphandler(request, *args, **kwargs) 
-        except Exception, e:
-            raise Http404
+    if not request.is_ajax():
+        view = pagecache.view_from_url(request, url)
+        if view and not view.names():
+            return view, (), {}
+
+    resolver = urlresolvers.RegexURLResolver(r'^/', pagecache.build_app_urls(request))
+    try:
+        apphandler, args, kwargs = resolver.resolve(url)
+        return apphandler(request, *args, **kwargs) 
+    except Exception, e:
+        raise Http404
 
 def response(request, url):
     view, args, kwargs = djpcmsHandler(request, url)
