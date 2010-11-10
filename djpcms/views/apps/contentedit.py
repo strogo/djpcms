@@ -273,7 +273,7 @@ The url is given by the ContentBlocks models
         if f:
             uni = UniForm(f,
                           request  = djp.request,
-                          action = djp.url).addClass(self.ajax.ajax).addClass('editing')
+                          action = djp.url).addClass(djp.css.ajax).addClass('editing')
             if is_ajax:
                 d = dialog(hd = unicode(f.instance),
                            bd = uni.render(djp),
