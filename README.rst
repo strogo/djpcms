@@ -105,7 +105,6 @@ removed so that it can be used with other web-frameworks as well.
 
 Optional requirements:
 
-* django-tagging_ for tag management.
 * fabric_ and pip_ for the ``djpcms.contrib.jdep`` module.
 
 
@@ -113,8 +112,8 @@ Kudos
 =====================
 Djpcms includes several open-source libraries and plugins developed by other authors:
 
-* jQuery_ the building block of the browser side of djpcms.
-  Thanks to the jQuery and jQuery-UI teams!
+* jQuery_ the building block of the browser side of djpcms. Thanks to the jQuery and jQuery-UI teams!
+* django-tagging_ for tag management. Shipped with the library in the ``libs`` module but a library in its own.
   The latest jquery and jquery-ui minified files are shipped with the library. 
 * jQuery tablesorter_ plugin. Thanks to Christian Bach.
 * Modernizr_, a small JavaScript library that detects the availability of native implementations for next-generation web technologies.

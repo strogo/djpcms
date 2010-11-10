@@ -21,15 +21,18 @@ __contact__  = "luca.sbardella@gmail.com"
 __homepage__ = "http://djpcms.com/"
 
 
+import os
+import sys
+parent = lambda x : os.path.split(x)[0]
+this_dir = parent(os.path.abspath(__file__))
+libs = []
+
+
 def runtests(verbosity = 1, interactive = True, failfast = False):
     '''Run tests::
     
     import djpcms
     djpcms.runtests()'''
-    import os
-    import sys
-    parent = lambda x : os.path.split(x)[0]
-    this_dir = parent(os.path.abspath(__file__))
     path_dir = parent(this_dir)
     if path_dir not in sys.path:
         sys.path.insert(0,path_dir)
@@ -44,3 +47,22 @@ def runtests(verbosity = 1, interactive = True, failfast = False):
                              interactive=interactive,
                              failfast=failfast)
     failures = test_runner.run_tests(('djpcms','jdep'))
+
+
+def install_lib(basepath, dirname, module_name):
+    try:
+        __import__(module_name)
+    except ImportError:
+        dir = os.path.join(basepath,dirname)
+        sys.path.insert(0,dir)
+        module = __import__(module_name)
+        libs.append(module)
+    
+    
+def install_libs():
+    libs = os.path.join(this_dir,'libs')
+    install_lib(libs, 'django-tagging', 'tagging')
+    
+    
+install_libs()
+
