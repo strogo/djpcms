@@ -1,0 +1,109 @@
+/*
+-----------------------------------------------
+Navigation
+----------------------------------------------- */
+
+/* Dimensions
+------------------------------------------------*/
+ul.main-nav ul li a {
+ 	width:12em;
+  	line-height:2em;
+  	height:2em;
+  	text-align:left;
+}
+/* level 3+ list */
+ul.main-nav ul ul {
+	position:relative !important;
+	left: 12em;
+	top: 0;
+}
+ul.main-nav,
+ul.main-nav li,
+ul.main-nav li a {
+	height:2.5em;
+	line-height:2.5em;
+	border:0;
+}
+ul.main-nav li ul {top:2.5em;}
+ul.main-nav li ul li,
+ul.main-nav li ul li a {
+	line-height:2em;
+	height:2em;
+}
+ 
+/* navigation (horizontal subnavigation)
+----------------------------------------------- */
+ul.main-nav,
+ul.main-nav * { margin:0;padding:0;border:0;}
+ul.main-nav li:hover > ul {
+	display: block;
+}
+ul.main-nav ul {
+	display: none;
+}
+ul.main-nav li {
+    cursor:pointer;
+    float:left;
+    text-align:center;
+    list-style-type:none;
+    font-weight:normal;
+}
+ul.main-nav li ul {
+	cursor:default;
+	position:absolute;
+	width:100%;
+	max-width:100%;
+	height:auto;
+}
+ul.main-nav li ul li {
+	padding:0;
+	border:none;
+	width:auto;
+	max-width:none;
+}
+ul.main-nav li a {
+	text-decoration:none;
+	display:block;
+	float:left;
+	padding:0 1em;
+}
+ul.main-nav li ul li a {
+	cursor:pointer !important;
+	white-space:nowrap;
+	font-weight:normal;
+	/*background-position:0 50% !important;*/
+}
+/*
+ul.main-nav li:hover ul {left:0;z-index:10} 
+ul.main-nav li.current a {cursor:default; font-weight:bold;}
+ul.main-nav li.current ul {left:0;z-index:5}
+ul.main-nav li.current ul li a {font-weight:normal;}*/
+
+/* navigation (vertical subnavigation)
+----------------------------------------------- */
+ul.main-nav li {
+  	position:relative;
+  	top:0;
+  	left:0;
+}
+/* secondary list
+----------------------------------------------- */
+ul.main-nav li.secondary {
+	float:right;
+	background:transparent !important;
+}
+ul.main-nav li.secondary span.status {
+	float:left;
+	padding:0 1em;
+	line-height:2.77em;
+	height:2.77em;
+	font-size:0.9em;
+}
+ul.main-nav li.secondary span.status a {
+	float:none;
+	display:inline;
+	padding:0;
+	height:auto;
+	line-height:auto;
+	background:transparent;
+}

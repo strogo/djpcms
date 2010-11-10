@@ -66,7 +66,6 @@ DJPCMS_STYLE = 'smooth'
 TEMPLATE_CONTEXT_PROCESSORS = (
             "socialauth.context_processors.facebook_api_key",
             "django.contrib.auth.context_processors.auth",
-            "django.core.context_processors.debug",
             "django.contrib.messages.context_processors.messages",
             "djpcms.core.context_processors.djpcms"
             )

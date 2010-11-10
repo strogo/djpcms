@@ -4,15 +4,12 @@ from contactform import ContactForm
 
 
 class ContactView(appview.AppViewBase):
-    
-    def get_form(self, djp):
-        return self.appmodel.get_form(djp)
         
     def render(self, djp, **kwargs):
-        return self.get_form(djp).render()
+        return self.get_form(djp).render(djp)
     
     def default_post(self, djp):
-        return appview.saveform(self, djp)
+        return appview.saveform(djp)
     
     def save(self, request, f):
         return f.save()

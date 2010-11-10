@@ -141,6 +141,7 @@ No reason to change this default unless you really don't want to see the views i
         self.name             = self._makename()
         self.description      = self._makedescription()
         self.views            = deepcopy(self.base_views)
+        self.object_views     = []
         self._create_views()
         urls = []
         for app in self.views.values():
@@ -223,6 +224,8 @@ No reason to change this default unless you really don't want to see the views i
         
         # Find the root view
         for name,view in self.views.items():
+            if view.object_view:
+                self.object_views.append(view)
             view.name = name
             view.code = u'%s-%s' % (self.name,view.name)
             if not view.parent:
@@ -475,9 +478,7 @@ This dictionary should be used to render an object within a template. It returns
         posts   = []
         gets    = []
         content = {'geturls':gets,'posturls':posts}
-        for view in self.views.itervalues():
-            if not view.object_view:
-                continue
+        for view in self.object_views:
             djpv = view(request, instance = obj)
             if view.has_permission(request, djpv.page, obj):
                 url = djpv.url
@@ -543,8 +544,7 @@ This dictionary should be used to render an object within a template. It returns
         app     = self
         for obj in data:
             content = app.object_content(djp, obj)
-            yield loader.render_to_string(template_name    = self.get_item_template(obj, wrapper),
-                                          context_instance = RequestContext(request, content))
+            yield loader.render_to_string(self.get_item_template(obj, wrapper), content)
     
     def get_object_view_template(self, obj, wrapper):
         '''Return the template file which render the object *obj*.
@@ -568,9 +568,8 @@ The search looks in::
         '''
         opts = self.opts
         template_name = '%s_list_item.html' % opts.module_name
-        return ['components/%s' % template_name,
-                '%s/%s' % (opts.app_label,template_name),
-                'djpcms/components/object_list_item.html']
+        return ['%s/%s' % (opts.app_label,template_name),
+                'djpcms/object_list_item.html']
     
     def permissionDenied(self, djp):
         raise PermissionDenied
