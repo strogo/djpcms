@@ -1,7 +1,8 @@
 Version 0.8.5 - Development
 =======================================
 * Added :mod:`djpcms.contrib.flowrepo` module. Still experimental, not ready for production.
-
+* Added django-tagging_ to ``libs`` module. A fall back when not avaialble in the PYTHONPATH.
+* **42 unit tests**.
 
 Version 0.8.4 (2010-Nov-07)
 =============================
