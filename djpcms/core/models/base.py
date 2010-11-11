@@ -6,13 +6,14 @@ from djpcms.conf import settings
 from djpcms.utils import mark_safe
 from djpcms.template import loader 
 
-BOOLEAN_MAPPING = {True: ('ui-icon-check','yes'), False: ('ui-icon-close','no')}
+BOOLEAN_MAPPING = {True: {'icon':'ui-icon-check','name':'yes'},
+                   False: {'icon':'ui-icon-close','name':'no'}}
 EMPTY_VALUE = settings.DJPCMS_EMPTY_VALUE
 
 
 def _boolean_icon(val):
     v = BOOLEAN_MAPPING.get(val,'unknown')
-    return mark_safe(u'<span class="ui-icon %s" alt="%s" />' % v)
+    return mark_safe(u'<span class="ui-icon %(icon)s" title="%(name)s">%(name)s</span>' % v)
 
 
 def nicerepr(val):

@@ -121,6 +121,7 @@ ul.main-nav ul {
 	-webkit-border-radius: 10px;
 	-moz-border-radius: 10px;
 	border-radius: 10px;
+	z-index:9999;
 }
 ul.main-nav ul li {
 	float: none;
