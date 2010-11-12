@@ -34,7 +34,7 @@ def nicerepr(val):
 class ModelTypeWrapper(object):
     
     def __init__(self, appmodel):
-        self.list_display = appmodel.list_display
+        self.list_display = appmodel.list_display or []
         self.object_display = appmodel.object_display or self.list_display
         self.list_display_links = appmodel.list_display_links or []
         self.search_fields = appmodel.search_fields or []
@@ -95,16 +95,23 @@ class ModelTypeWrapper(object):
     def has_delete_permission(self, user, obj=None):
         return user.is_superuser
     
+    def get_object_id(self, obj):
+        return '%s-%s' % (self.module_name,obj.id)
+    
     def totable(self, obj):
+        '''Render an object as definition list.'''
         label_for_field = self.label_for_field
         getrepr = self.getrepr
         def data():
             for field in self.object_display:
                 name = label_for_field(field)
                 yield {'name':name,'value':getrepr(name,obj)}
+        content = {'module_name':self.module_name,
+                   'id':self.get_object_id(obj),
+                   'data':data(),
+                   'item':obj}
         return loader.render_to_string(['%s/%s_table.html' % (self.app_label,self.module_name),
                                         'djpcms/components/object_definition.html'],
-                                        {'data':data(),
-                                         'item':obj})
+                                        content)
             
         

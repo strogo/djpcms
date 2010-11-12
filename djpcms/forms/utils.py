@@ -2,12 +2,15 @@ from datetime import datetime
 
 from django import http
 from django.utils.dateformat import format
+from djpcms.contrib import messages
 from django.utils.translation import ugettext_lazy as _
 
 from djpcms.utils.html import submit
 from djpcms.utils import force_unicode
-from djpcms.utils.ajax import jredirect
+from djpcms.utils.ajax import jredirect, jremove
 
+
+get_next = lambda request, name = "next" : request.POST.get(name,request.GET.get(name,None))
 
 
 def form_kwargs(request,
@@ -155,10 +158,11 @@ def saveform(djp, editing = False):
     request    = djp.request
     is_ajax    = request.is_ajax()
     POST       = request.POST
+    GET        = request.GET
     cont       = POST.has_key("_save_and_continue")
     url        = djp.url
-    curr       = POST.get("_current_url",None)
-    next       = POST.get("next",None)
+    curr       = get_next(djp.request,"_current_url")
+    next       = get_next(djp.request)
     
     if POST.has_key("_cancel"):
         redirect_url = next
@@ -221,3 +225,29 @@ def saveform(djp, editing = False):
         else:
             return view.handle_response(djp)
         
+
+def deleteinstance(djp):
+    '''Delete an instance from database'''
+    instance = djp.instance
+    view    = djp.view
+    request = djp.request
+    curr    = get_next(request,"_current_url")
+    next    = get_next(request)
+    bid     = view.appmodel.remove_object(instance)
+    msg     = 'Successfully deleted %s' % bid
+    if request.is_ajax():
+        if next:
+            if next != curr:
+                messages.info(request,msg)
+                return jredirect(next)
+            else:
+                return 
+        else: 
+            if bid:
+                return jremove('#%s' % bid)
+            else:
+                pass
+    else:
+        messages.info(request,msg)
+        next = next or djp.url
+        return http.HttpResponseRedirect(next)

@@ -1,5 +1,8 @@
 Version 0.8.5 - Development
 =======================================
+* Added ``object_links`` function and ``exclude_object_links``
+  attribute in :class:`djpcms.views.appsite.ModelApplication`.
+* Ajax delete views display a confirmation dialog box.
 * Added :mod:`djpcms.contrib.flowrepo` module. Still experimental, not ready for production.
 * Added django-tagging_ to ``libs`` module. A fall back when not avaialble in the PYTHONPATH.
 * **42 unit tests**.

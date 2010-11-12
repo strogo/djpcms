@@ -335,6 +335,8 @@ the object definition. If not available, :attr:`list_display` is used. Default `
 This attribute is used by :class:`djpcms.views.appview.SearchView` views
 and by the :ref:`auto-complete <autocomplete>`
 functionality when searching for model instances.'''
+    exclude_object_links = []
+    '''Object view names to exclude from object links. Default ``[]``.'''
     #
     list_display_links = None
     
@@ -456,6 +458,11 @@ Re-implement for custom arguments.'''
         '''
         return self.model.objects.all()
     
+    def object_id(self, djp):
+        obj = djp.instance
+        if obj:
+            return self.opts.get_object_id(obj)
+        
     def object_content(self, djp, obj):
         '''Utility function for getting content out of an instance of a model.
 This dictionary should be used to render an object within a template. It returns a dictionary.'''
@@ -470,27 +477,33 @@ This dictionary should be used to render an object within a template. It returns
         return content
     
     def object_links(self, djp, obj):
-        '''Create object links'''
+        '''Create permitted object links'''
         css     = djp.css
         next    = djp.url
         request = djp.request
         post    = ('post',)
         posts   = []
         gets    = []
-        content = {'geturls':gets,'posturls':posts}
+        exclude = self.exclude_object_links
+        content = {'geturls':gets,
+                   'posturls':posts,
+                   'module_name':self.opts.module_name}
         for view in self.object_views:
             djpv = view(request, instance = obj)
             if view.has_permission(request, djpv.page, obj):
                 url = djpv.url
                 name = view.name
+                if name in exclude:
+                    continue
                 if not isinstance(view,ViewView):
-                    url   = '%s?next=%s' % (url,next)
-                    title = '%s %s' % (name,obj)
+                    url   = '%s?next=%s' % (url,view.nextviewurl(djp))
+                    title = ' title="%s %s"' % (name,obj)
                     if view.methods(request) == post:
-                        posts.append(mark_safe('<a class="%s %s" href="%s" title="%s">%s</a>' % 
-                                               (css.ajax,css.nicebutton,url,title,name)))
+                        cl = ' class="%s %s"' % (css.ajax,css.nicebutton)
                     else:
-                        gets.append(mark_safe('<a href="%s" title="%s">%s</a>' % (url,title,name)))
+                        cl = ' class="%s"' % css.nicebutton
+                    posts.append(mark_safe('<a href="%s"%s%s name="%s">%s</a>' % 
+                                            (url,cl,title,name,name)))
                 content['%surl' % name] = url
         return content
     
@@ -519,8 +532,7 @@ This dictionary should be used to render an object within a template. It returns
         request  = djp.request
         template_name = self.get_object_view_template(obj, wrapper or djp.wrapper)
         content = self.object_content(djp, obj)
-        return loader.render_to_string(template_name    = template_name,
-                                       context_instance = Context(content))
+        return loader.render_to_string(template_name, content)
         
     def title_object(self, obj):
         '''
@@ -555,8 +567,7 @@ The search looks in::
 '''
         opts = self.opts
         template_name = '%s.html' % opts.module_name
-        return ['components/%s' % template_name,
-                '%s/%s' % (opts.app_label,template_name),
+        return ['%s/%s' % (opts.app_label,template_name),
                 'djpcms/components/object.html']
             
     def get_item_template(self, obj, wrapper):

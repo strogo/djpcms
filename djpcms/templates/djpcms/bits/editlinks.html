@@ -1,4 +1,4 @@
-<ul class="edit-links">{% if editurl %}
-<li><a class="edit" href="{{ editurl }}" title="Edit {{ item }}">edit</a></li>{% endif %}{% if deleteurl %}
-<li><a class="delete" href="{{ editurl }}" title="Delete {{ item }}">delete</a></li>{% endif %}
+<ul class="{{ module_name }} edit-links {{ layout }}">{% for link in geturls %}
+<li>{{ link }}</li>{% endfor %}{% for link in posturls %}
+<li>{{ link }}</li>{% endfor %}
 </ul>

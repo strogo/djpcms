@@ -9,21 +9,15 @@ from django.db.models.query import QuerySet
 from django.core.exceptions import ObjectDoesNotExist
 from django.template import loader, RequestContext
 from django.utils.text import smart_split
-from django.contrib import messages
 from django.utils.translation import ugettext as _
 
 from djpcms.conf import settings
-from djpcms.forms import saveform
+from djpcms.forms import saveform, deleteinstance
 from djpcms.utils.html import Paginator
-from djpcms.utils.func import force_number_insert
-from djpcms.utils.ajax import jremove, dialog, jredirect
 from djpcms.utils import force_unicode, construct_search, isexact
-from djpcms.models import Page
-
 from djpcms.views.regex import RegExUrl 
 from djpcms.views.cache import pagecache
 from djpcms.views.baseview import djpcmsview
-from djpcms.core.exceptions import PageNotFound
 from djpcms.utils.html import autocomplete
 
 
@@ -283,6 +277,25 @@ By default return the :func:`basequery` (usually all items of a model).'''
     def sitemapchildren(self):
         return [] 
     
+    def render_query(self, djp, query, appmodel = None):
+        '''Render a queryset'''
+        appmodel = appmodel or self.appmodel
+        p  = Paginator(djp.request, query, per_page = appmodel.list_per_page)
+        c  = copy(djp.kwargs)
+        c.update({'paginator': p,
+                  'djp': djp,
+                  'url': djp.url,
+                  'model': appmodel.model,
+                  'css': djp.css,
+                  'appmodel': appmodel,
+                  'headers': appmodel.list_display})
+        if p.qs:
+            c['items'] = appmodel.data_generator(djp, p.qs)
+            
+        return loader.render_to_string(['components/pagination.html',
+                                        'djpcms/components/pagination.html'],
+                                        c)  
+    
     
 class SearchView(AppView):
     '''An :class:`AppView` class for searching objects in model. By default :attr:`AppViewBase.in_navigation` is set to ``True``.
@@ -325,27 +338,12 @@ It returns a queryset.
         '''Perform the custom query over the model objects and return a paginated result
         '''
         request  = djp.request
-        appmodel = self.appmodel
         if kwargs:
             urlargs = djp.kwargs
             urlargs.update(kwargs)
             djp = self(request, **urlargs)
-        query = self.appquery(request, **djp.kwargs)
-        p  = Paginator(request, query, per_page = appmodel.list_per_page)
-        c  = copy(djp.kwargs)
-        c.update({'paginator': p,
-                  'djp': djp,
-                  'url': djp.url,
-                  'model': self.model,
-                  'css': djp.css,
-                  'appmodel': appmodel,
-                  'headers': appmodel.list_display})
-        if p.qs:
-            c['items'] = self.appmodel.data_generator(djp, p.qs)
-            
-        return loader.render_to_string(['components/pagination.html',
-                                        'djpcms/components/pagination.html'],
-                                        c)    
+        query = self.appquery(djp.request, **djp.kwargs)
+        return self.render_query(djp, query)  
 
 
 class AddView(AppView):
@@ -426,16 +424,18 @@ class DeleteView(ObjectView):
     def _has_permission(self, request, obj):
         return self.appmodel.has_delete_permission(request, obj)
     
+    def remove_object(self, instance):
+        return self.appmodel.remove_object(instance)
+    
     def default_post(self, djp):
-        instance = djp.instance
-        try:
-            bid = self.appmodel.remove_object(instance)
-            if bid:
-                return jremove('#%s' % bid)
-            else:
-                pass
-        except Exception, e:
-            raise ValueError('Could not remove %s: %s' % (instance,e))
+        return deleteinstance(djp)
+    
+    def nextviewurl(self, djp):
+        view = djp.view
+        if view.object_view and getattr(view,'model',None) == self.model:
+            return self.appmodel.root_application(djp).url
+        else: 
+            return djp.url
       
 
 # Edit/Change an object

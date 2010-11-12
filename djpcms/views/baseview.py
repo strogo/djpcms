@@ -42,8 +42,9 @@ Not used very often but here just in case.'''
     parent        = None
     '''The parent view of ``self``. An instance of :class:`djpcmsview` or ``None``'''
     purl          = None
-    
+
     object_view = False
+    '''Flag indicationg if the view class is used to render or manipulate model instances. Default ``False``.'''
     
     _methods      = ('get','post')
 
@@ -339,6 +340,10 @@ If we didn't do that, test_navigation.testMultiPageApplication would fail.'''
         '''Shortcut function for redirecting to *url*.'''
         return http.HttpResponseRedirect(url)
 
+    def nextviewurl(self, djp):
+        '''Calculate the best possible url for a possible next view.
+By default it is ``djp.url``'''
+        return djp.url
 
 class pageview(djpcmsview):
     

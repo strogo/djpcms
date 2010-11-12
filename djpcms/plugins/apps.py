@@ -136,30 +136,24 @@ class ModelFilter(DJPplugin):
         return f.render()
     
     
+
+class ObjectInstanceLinks(forms.Form):
+    layout = forms.ChoiceField(choices = (('horizontal','horizontal'),('vertical','vertical')))
+    
+    
 class EditObject(DJPplugin):
     name = 'edit-object'
-    description = 'edit/delete object links'
-    
-    def render(self, djp, wrapper, prefix, **kwargs):
-        instance = djp.instance
-        if not instance:
+    description = 'Object Instance Links'
+    form = ObjectInstanceLinks
+    def render(self, djp, wrapper, prefix, layout = 'horizontal', **kwargs):
+        try:
+            links = djp.view.appmodel.object_links(djp,djp.instance)
+            links['layout'] = layout
+            return loader.render_to_string(['bits/editlinks.html',
+                                            'djpcms/bits/editlinks.html'],
+                                            links)
+        except:
             return u''
-        else:
-            c = {}
-            view = djp.view
-            editurl = view.appmodel.editurl(djp.request, instance)
-            if editurl:
-                c['editurl'] = editurl
-            deleteurl = view.appmodel.deleteurl(djp.request, instance)
-            if deleteurl:
-                c['deleteurl'] = deleteurl
-            if c:
-                c['item'] = instance
-                return loader.render_to_string(['bits/editlinks.html',
-                                                'djpcms/bits/editlinks.html'],
-                                                c)
-            else:
-                return u''
             
 
 class LatestItems(DJPplugin):

@@ -158,7 +158,7 @@
 				if(!el.length & b.alldocument) {
 					el = $(b.identifier);
 				}
-				if(el) {
+				if(el.length) {
 					if(b.type == 'hide') {
 						el.hide();
 					}
@@ -170,7 +170,10 @@
 					}
 					else {
 						if(b.type == 'append') {
-							el.html(el.html() + nel);
+							el.html(el.html() + b.html);
+						}
+						else if(b.type == 'replacewith') {
+							el.replaceWith(b.html);
 						}
 						else {
 							el.html(b.html);
@@ -270,13 +273,35 @@
 		description: "add ajax functionality to links, buttons and selects",
 		decorate: function($this,config) {
 			var ajaxclass = config.ajaxclass ? config.ajaxclass : 'ajax';
+			
+			function sendrequest(elem,name) {
+				var url = elem.attr('href');
+				if(url) {
+					var p = $.djpcms.postparam(name);
+					$.post(url,$.param(p),$.djpcms.jsonCallBack,"json");
+				}
+			}
 			function deco(event,elem) {
 				event.preventDefault();
 				var a = $(elem);
-				var url = a.attr('href');
-				var p = $.djpcms.postparam(a.attr('name'));
-				if(url) {
-					$.post(url,$.param(p),$.djpcms.jsonCallBack,"json");
+				var name = a.attr('name');
+				if(name == 'delete') {
+					var el = $('<div></div>').html('Please confirm delete.');
+					el.dialog({modal: true,
+							   draggable: false,
+							   resizable: false,
+							   buttons: {
+								   Ok : function() {
+									   $( this ).dialog( "close" );
+									   sendrequest(a,name);
+								   },
+								   Cancel: function() {
+									   $(this).dialog( "close" );
+								   }
+						}});
+				}
+				else {
+					sendrequest(a,name);
 				}
 			}
 			$('a.'+ajaxclass,$this).click(function(event) {deco(event,this);});

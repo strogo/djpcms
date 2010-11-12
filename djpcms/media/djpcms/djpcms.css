@@ -445,6 +445,17 @@ a.deletable {
 	width: 50%;
 }
 
+ul.edit-links.horizontal li {
+	display: inline;
+	margin-right: 5px;
+}
+ul.edit-links.vertical li {
+	display: block;
+	margin-bottom: 5px;
+}
+ul.edit-links.vertical a {
+	width: 80px;
+}
 /* Tablesorter
 ------------------------------------------------------------*/
 table.tablesorter td .ui-button-text-only .ui-button-text {
