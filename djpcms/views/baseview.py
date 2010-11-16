@@ -325,7 +325,7 @@ If we didn't do that, test_navigation.testMultiPageApplication would fail.'''
                 cview = pagecache.view_from_page(request, child)
             except Exception, e:
                 continue
-            if cview.has_permission(request):
+            if cview.has_permission(request, child, instance):
                 cdjp = cview(request, **cview.specialkwargs(child,kwargs))
                 if isinstance(cdjp,DjpResponse):
                     try:
