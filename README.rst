@@ -53,7 +53,7 @@ Features
  * Inline editing of plugins and pages.
  * Autocomplete for models when the autocomplete view is added to the model application.
  * Extendible AJAX decorators.
- * Tagging with django-tagging_ (optional).
+ * Tagging with django-tagging_, included in distribution.
  * Several battery included application classes.
  * Integration of any Django app which provides ``urls.py``.
  * Nice form layout with extendible ``uniforms``.
