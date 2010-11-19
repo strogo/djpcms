@@ -5,7 +5,7 @@ provider_handles = {}
 
 
 class SocialProvider(object):
-    
+    '''Social provider base class'''    
     def __init__(self):
         self.name = self.__class__.__name__.lower()
         from djpcms.conf import settings
@@ -57,3 +57,16 @@ class SocialProvider(object):
         else:
             home = '%s%s' % (settings.USER_ACCOUNT_HOME_URL,user.username)
             return http.HttpResponseRedirect(home)
+        
+    def client(self, **kwargs):
+        raise NotImplentedError
+    
+        
+def client(user, provider):
+    if not isinstance(user,User):
+        user = User.objects.get(username = user)
+    p = user.linked_accounts.get(provider = provider)
+    handler = provider_handles[p.provider]
+    return handler.client(**p.data)
+    
+    

@@ -4,6 +4,7 @@ import httplib2
 from gdata.auth import OAuthToken, GenerateOAuthRequestTokenUrl, OAuthTokenFromHttpBody
 from gdata.auth import OAuthInputParams, GenerateOAuthAuthorizationUrl, GenerateClientLoginAuthToken
 from gdata.auth import GenerateOAuthAccessTokenUrl
+from atom.token_store import TokenStore
 
 from django import http
 from djpcms.contrib import messages
@@ -42,5 +43,15 @@ class Google(SocialProvider):
             return OAuthTokenFromHttpBody(content)
         else:
             return None
+        
+        
+    def client(self, key = None, secret = None, **kwargs):
+        tks = {}
+        ot  = OAuthToken(key, secret, self.scopes)
+        for scope in self.scopes:
+            tks[scope] = ot
+        store = TokenStore(tks)
+        pass
+    
 
 Google()
