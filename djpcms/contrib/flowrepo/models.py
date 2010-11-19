@@ -12,7 +12,6 @@ from django.contrib.auth.models import User, Group, AnonymousUser
 
 from tagging.fields import TagField
 
-from djpcms.fields import JSONField
 from djpcms.contrib.flowrepo import markups
 from djpcms.contrib.flowrepo.managers import FlowManager, SlugManager, RepoManager 
 from djpcms.contrib.flowrepo.managers import slugify, source_interactive
@@ -417,11 +416,6 @@ class WebAccount(models.Model):
     data   = property(__get_data,__set_data)
     
     
-class LinkedAccount(models.Model):
-    user     = models.ForeignKey(User, related_name = 'linked_accounts')
-    provider = models.CharField(blank = False, max_length = 100)
-    data     = JSONField()
-
 
 FlowItem.objects.registerModel(Report,add = 'write')
 FlowItem.objects.registerModel(Bookmark)

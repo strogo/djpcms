@@ -41,9 +41,6 @@ class WebAccountAdmin(admin.ModelAdmin):
     list_display = ('name','url','tags','user','e_data')
     search_fields = ('name', 'tags')
     
-    
-class LinkedAccountAdmin(admin.ModelAdmin):    
-    list_display = ('user','provider')
 
 ##################################################### REGISTERING
 admin.site.register(FlowItem,    ItemAdmin)
@@ -57,5 +54,4 @@ admin.site.register(Gallery,     GalleryAdmin)
 admin.site.register(FlowRelated, list_display = ('item','related'))
 admin.site.register(ContentLink, list_display = ('url','identifier'))
 admin.site.register(WebAccount,  WebAccountAdmin)
-admin.site.register(LinkedAccount, LinkedAccountAdmin)
 admin.site.register(CategoryType)

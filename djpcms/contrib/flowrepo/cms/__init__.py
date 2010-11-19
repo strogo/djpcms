@@ -14,7 +14,6 @@ from djpcms.views.apps.tagging import ArchiveTaggedApplication
 
 from djpcms.contrib.flowrepo.models import FlowRelated, FlowItem, Report, Message, Category, Image, Attachment
 from djpcms.contrib.flowrepo.cms.forms import *
-from djpcms.contrib.flowrepo.cms.twitter import TwitterPostView
 
 
 class FlowMainView(appview.SearchView):
@@ -85,12 +84,6 @@ class FlowItemApplication(ArchiveTaggedApplication):
     search           = appview.SearchView(regex = 'search', parent = 'main', in_navigation = 0)
     autocomplete     = appview.AutocompleteView(display = 'name', parent = 'main')
     upload_file      = appview.AddView(regex = 'upload', form = NiceUloaderForm, parent = 'main')
-    twitter_post     = TwitterPostView(regex = 'post-twitter-message',
-                                       parent = 'main',
-                                       isapp = False,
-                                       isplugin = True,
-                                       form_withrequest = True,
-                                       form_ajax = True)
     applications     = ContentView(regex = '(?P<content>[-\w]+)', parent = 'main')
     add              = FlowAddView(parent = 'applications')
     view             = appview.ViewView(regex = slug_regex, parent = 'applications')

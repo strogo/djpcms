@@ -8,7 +8,6 @@ from djpcms.utils.html import htmlwrap, Paginator
 from djpcms.views import appsite
 
 from djpcms.contrib.flowrepo.models import FlowItem
-from djpcms.contrib.flowrepo.cms.views import LinkedAccountLoginView
 from djpcms.contrib.flowrepo.forms import FlowItemSelector, ChangeImage, ChangeCategory
 
 
@@ -199,28 +198,4 @@ class AddLinkedItems(DJPplugin):
                                         'flowrepo/report_draft_list.html'],
                                         {'items': self.paginator(djp,qs)})
 
-
-class LinkedAccounts(DJPplugin):
-    name = 'linked-accounts'
-    description = 'Linked accounts'
-    
-    def render(self, djp, wrapper, prefix, **kwargs):
-        user = djp.request.user
-        if not user.is_authenticated() or not user.is_active:
-            return u''
-        accounts = user.linked_accounts.all()
-        c = {'accounts':accounts,
-             'url': djp.request.path,
-             'tolink':list(self.get_account_to_link(djp, accounts))}
-        return loader.render_to_string('flowrepo/linked_accounts_plugin.html', c)
-    
-    def get_account_to_link(self, djp, accounts):
-        userapp = appsite.site.for_model(User)
-        if not userapp:
-            yield StopIteration
-        for view in userapp.views.itervalues():
-            if isinstance(view,LinkedAccountLoginView):
-                if not accounts.filter(provider = view.provider):
-                    vdjp = view(djp)
-                    yield {'name':view.provider, 'url':vdjp.url}
             
