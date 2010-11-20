@@ -1,6 +1,6 @@
 Version 0.8.6 - Development
 =======================================
-* Added :mod:``djpcms.contrib.social`` application.
+* Added :mod:``djpcms.contrib.social`` application with ``AOuth``.
 
 Version 0.8.5 (2010-Nov-16)
 =======================================

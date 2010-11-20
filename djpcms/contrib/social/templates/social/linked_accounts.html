@@ -1,3 +1,7 @@
+{% if linked %}
+<h2>Linked Accounts</h2>{% for account in linked %}
+{{ account.name }}
+{% endfor %}{% endif %}
 {% if tolink %}
 <h2>Link with</h2>{% for account in tolink %}
 <a class="link-button-{{ account.name }}" href="{{ account.url }}?next={{ url }}">{{ account.name }}</a>

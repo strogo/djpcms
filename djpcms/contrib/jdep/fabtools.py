@@ -1,5 +1,6 @@
 from __future__ import with_statement
 
+import os
 from fabric.api import env, run, put, local, sudo
 
 import utils
@@ -34,18 +35,15 @@ with the name of the project.'''
 
 
 def upload(release = True):
-    "Upload the site to the server"
+    "Upload the ``project`` directory into the server"
     import time
     import os
     if release and not env.path.startswith('/'):
         result = run('pwd').split(' ')[0]
         env.path = os.path.join(result,env.path)
         
-    env.release = time.strftime('%Y%m%d-%H%M%S')
-    env.release_path = '%(path)s/%(release)s' % env
-    env.project_path = os.path.join(env.release_path,env.project)
-    env.logdir  = os.path.join(env.release_path,'logs')
-    env.confdir = os.path.join(env.release_path,'conf')
+    release_name = time.strftime('%Y%m%d-%H%M%S')    
+    utils.get_directories(release_name, release)
     env.tarfile = archive(release)
     # put tar package
     if release:
@@ -98,14 +96,22 @@ def deploy(release = True):
         return server.result
     
     
+def serverconfig():
+    '''Create server configuration files on local directory'''
+    from static import server_types
+    server = server_types[env.server_type]
+    utils.get_directories(release = False)
+    server.config_files(env, dir = '.')
+    
 def info():
     '''Information regarding installation parameters'''
-    server = utils.server_types[env.server_type]
-    print('site module:        %(project)s' % env)
-    print('site domain:        %(domain_name)s' % env)
-    print('location on server: %(path)s' % env)
-    print('server type:        %s' % server)
-    server.info()
+    from static import server_types
+    utils.get_directories(release = False)
+    data = env.copy()
+    server = server_types[env.server_type]
+    server.info(data)
+    for k in sorted(data):
+        print('%20s: %s' % (k,data[k]))
     
     
 def host_type():

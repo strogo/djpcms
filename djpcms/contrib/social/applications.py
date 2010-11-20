@@ -7,8 +7,13 @@ from djpcms.template import loader
 from djpcms.views.apps.user import UserApplication
 
 import djpcms.contrib.social.providers
-from djpcms.contrib.social import provider_handles
+from djpcms.views.decorators import deleteview
+from djpcms.contrib.social import provider_handles, client
 from djpcms.contrib.social.models import LinkedAccount
+
+
+def getprovider(djp):
+    return provider_handles.get(djp.kwargs.get('provider',None),None)       
 
 
 class SocialView(appview.AppView):
@@ -29,10 +34,13 @@ class SocialView(appview.AppView):
     def render_all(self, djp):
         user = djp.request.user
         accounts = user.linked_accounts.all()
+        linked = []
         tolink = []
         providers = provider_handles.copy()
+        
         for account in accounts:
-            pass
+            providers.pop(account.provider,None)
+            linked.append({'name':account.provider})
         
         loginview = self.appmodel.getview('social_login')
         if loginview:
@@ -42,6 +50,7 @@ class SocialView(appview.AppView):
                     
         c = {'accounts':accounts,
              'url': djp.request.path,
+             'linked': linked,
              'tolink':tolink}
         return loader.render_to_string('social/linked_accounts.html', c)
     
@@ -127,19 +136,28 @@ class SocialLoginDoneView(SocialView):
             raise http.Http404
     
 
-class SocialActionView(SocialView):
+
+class SocialActionView(appview.AppView):
     pass
+
+
+def deletesocial(djp):
+    c = client(djp.request.user,getprovider(djp))
+    c.delete()
+        
+
 
 
 class SocialUserApplication(UserApplication):
     inherit = True
-    social_home  = SocialView(regex = '(?P<provider>[-\.\w]+)', parent = 'home', isplugin = True)
-    social_login = SocialLoginView(regex = 'login', parent = 'social_home')
-    social_done  = SocialLoginDoneView(regex = 'done', parent = 'social_login')
-    twitter_post = SocialActionView(regex = '(?P<action>[-\.\w]+)',
-                                    parent = 'social_home',
-                                    isapp = False,
-                                    isplugin = True,
-                                    form_withrequest = True,
-                                    form_ajax = True)
+    social_home   = SocialView(regex = '(?P<provider>[-\.\w]+)', parent = 'home', isplugin = True)
+    social_login  = SocialLoginView(regex = 'login', parent = 'social_home')
+    social_done   = SocialLoginDoneView(regex = 'done', parent = 'social_login')
+    social_delete = deleteview(deletesocial, parent = 'social_home')
+    social_action = SocialActionView(regex = '(?P<action>[-\.\w]+)',
+                                     parent = 'social_home',
+                                     isapp = False,
+                                     isplugin = True,
+                                     form_withrequest = True,
+                                     form_ajax = True)
     

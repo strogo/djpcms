@@ -4,6 +4,20 @@ from django.contrib import messages
 provider_handles = {}
 
 
+class SocialClient(object):
+    
+    def __init__(self, handler, instance):
+        self.handler = handler
+        self.instance = instance
+        
+    def __get_user(self):
+        return self.instance.user
+    user = property(__get_user)
+    
+    def delete(self):
+        self.instance.delete()
+
+
 class SocialProvider(object):
     '''Social provider base class'''    
     def __init__(self):
@@ -65,8 +79,8 @@ class SocialProvider(object):
 def client(user, provider):
     if not isinstance(user,User):
         user = User.objects.get(username = user)
-    p = user.linked_accounts.get(provider = provider)
+    p = user.linked_accounts.get(provider = str(provider))
     handler = provider_handles[p.provider]
-    return handler.client(**p.data)
+    return SocialClient(handler,p)
     
     

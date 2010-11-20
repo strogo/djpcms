@@ -23,10 +23,10 @@ recursive-include djpcms/tests/templates *
 recursive-include djpcms/media *
 recursive-include djpcms/tests/media *
 recursive-include djpcms/fixtures *
-recursive-include djpcms/contrib/admin/templates *
-recursive-include djpcms/contrib/admin/media *
 recursive-include djpcms/contrib/compressor/templates *
 recursive-include djpcms/contrib/jdep/templates *
+recursive-include djpcms/contrib/flowrepo/templates *
+recursive-include djpcms/contrib/social/templates *
 recursive-include examples *.py
 recursive-include examples/djpcms-site/sitedjpcms/templates *
 recursive-include examples/djpcms-site/sitedjpcms/media *

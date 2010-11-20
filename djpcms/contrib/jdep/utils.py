@@ -2,7 +2,7 @@ import os
 
 from fabric.api import env, run, put, local, sudo
 
-from djpcms.contrib.jdep.static import application_map, vrun
+from djpcms.contrib.jdep.static import vrun
 
 after_deploy_hook = []
 
@@ -10,10 +10,11 @@ after_deploy_hook = []
 defaults = {'server_type':        'nginx-apache-mod_wsgi',
             'server_user':        'www-data',
             'server_group':       'www-data',
+            'secure':             False,
             'domain_name':        None,
             'threads':            15,
-            'nginx_port':         80,
-            'apache_port':        90,
+            'server_port':        None,
+            'redirect_port':      90,
             'path':               None,
             'project_name':       None,
             'with_site_packages': False,
@@ -23,7 +24,9 @@ defaults = {'server_type':        'nginx-apache-mod_wsgi',
             'redirects':          []}
 
 
-def project(module, domain_name, deploy_root_dir = 'deployment', setting_name = None, **kwargs):
+def project(module, domain_name, deploy_root_dir = None,
+            setting_module = None, redirects = None,
+            **kwargs):
     '''Setup django project for deployment using fabric.
 
 * *module* is the name of the module containing the site. It must be on the same directory as the fabfile used to upload.
@@ -32,11 +35,20 @@ def project(module, domain_name, deploy_root_dir = 'deployment', setting_name = 
 * *deploy_root_dir* optional root directory where file will be installed (Default is "deployment").'''
     env.project = module
     env.domain_name = domain_name
-    env.path = os.path.join(deploy_root_dir,module)
-    env.setting_module = '%s.%s' % (module,setting_name or 'settings')
+    if deploy_root_dir:
+        env.path = os.path.join(deploy_root_dir,module)
+    else:
+        env.path = ''
+    if redirects:
+        env.redirects = redirects
+    env.setting_module = '%s.%s' % (module,setting_module or 'settings')
     os.environ['DJANGO_SETTINGS_MODULE'] = env.setting_module
     env.update(kwargs)
-
+    if not env.server_port:
+        if env.secure:
+            env.server_port = 443
+        else:
+            env.server_port = 80
 
 
 def prompt(text, default=''):
@@ -65,6 +77,26 @@ def makedir(path):
         path = os.path.join(path,dir)
         run('mkdir %s' % path)
 
+
+def get_directories(release_name = None, release = True):
+    if not env.path.startswith('/'):
+        if release:
+            result = run('pwd').split(' ')[0]
+            env.path = os.path.join(result,env.path)
+        else:
+            result = local('pwd').split(' ')[0]
+            env.path = os.path.split(result)[0]
+        
+    if release_name:
+        env.release = release_name
+        env.release_path = '%(path)s/%(release)s' % env
+    else:
+        env.release = ''
+        env.release_path = env.path
+        
+    env.project_path = os.path.join(env.release_path,env.project)
+    env.logdir  = os.path.join(env.release_path,'logs')
+    env.confdir = os.path.join(env.release_path,'conf')
 
 def create_deploy():
     '''Create deploy object'''

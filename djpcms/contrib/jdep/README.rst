@@ -3,7 +3,11 @@ Django module for managing deployment of applications using fabric_, virtualenv_
 
 Currently the only server configuration available is nginx_ + apache with mod_wsgi_.
 
-**It works on linux servers, no idea about windows.**
+**It works on linux servers**
+
+
+.. contents::
+    :local:
 
 
 Requirements
@@ -35,19 +39,53 @@ The directory structure of your site, which we call ``greatsite`` looks like thi
 The ``fabfile.py`` is needed by fabric_ and should, at least, contain::
 
     from djpcms.contrib.jdep.fabtool import *
-    utils.project('greatsite','greatsite.com')
+    utils.project('greatsite','greatsite.com', **kwargs)
         
-The ``requirement.txt`` is needed by pip_ to install your site required pacakges.
+where ``kwargs`` is a dictionary containing the deployment :ref:`parameters <parameters>`.
+The ``requirement.txt`` is needed by pip_ to install your site required packages.
 
 Then run::
 
 	fab --list
 	
-and you will have a list of possible commands. Type::
+and you will have a list of possible commands.
+
+
+deploy
+--------------
+This is command does deployment of your site into the production server. Just type::
 
 	fab -H your.host.com deploy
 	
-to deploy your site.
+
+info
+---------------
+Display all :ref:`parameters <parameters>` used for deployment::
+
+	fab info
+
+serverconfig
+-----------------
+Create server configuration files on local directory as specified by the ```server_type`` parameter::
+
+	fab serverconfig
+
+This is useful for testing/development purposes when running your site locally. 
+
+.. _parameters:
+
+Parameters
+========================
+* ``deploy_root_dir`` The deployment root directory. Default ``None``.
+* ``redirects`` List of urls which will be redirected to your site home page. Default ``[]``.
+* ``redirect_port`` port number to redirect requests handled by ``djpcms``. Default ``90``.
+* ``secure`` boolean indicating if connection is over ``https``. Default ``False``.
+* ``server_port`` server port. Default ``80`` i ``secure`` is ``False`` else ``443``.
+* ``server_type`` string indicating the server configuration. Available
+	* ``nginx-twisted`` for twisted web behind bginx.
+	* ``nginx-apache-mod_wsgi`` for apache mod_wsgi behind nginx.
+ Default: ``nginx-apache-mod_wsgi``.
+* ``setting_module`` the django settings module name. Default ``settings``.
 
 After deploy hook
 ========================
