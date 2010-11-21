@@ -21,10 +21,11 @@ defaults = {'server_type':        'nginx-apache-mod_wsgi',
             'server_admin':       None,
             'username':           None,
             'password':           None,
+            'certificates':       'certificates',
             'redirects':          []}
 
 
-def project(module, domain_name, deploy_root_dir = None,
+def project(module, domain_name, deploy_root_dir = 'deployment',
             setting_module = None, redirects = None,
             **kwargs):
     '''Setup django project for deployment using fabric.
@@ -79,13 +80,17 @@ def makedir(path):
 
 
 def get_directories(release_name = None, release = True):
+    '''Build directories names'''
     if not env.path.startswith('/'):
         if release:
             result = run('pwd').split(' ')[0]
             env.path = os.path.join(result,env.path)
         else:
             result = local('pwd').split(' ')[0]
-            env.path = os.path.split(result)[0]
+            base, pd = os.path.split(result)
+            if not release_name:
+                release_name = pd
+            env.path = base
         
     if release_name:
         env.release = release_name
@@ -95,6 +100,7 @@ def get_directories(release_name = None, release = True):
         env.release_path = env.path
         
     env.project_path = os.path.join(env.release_path,env.project)
+    env.certificate_path = os.path.join(env.release_path,env.certificates)
     env.logdir  = os.path.join(env.release_path,'logs')
     env.confdir = os.path.join(env.release_path,'conf')
 

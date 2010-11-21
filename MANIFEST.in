@@ -13,7 +13,6 @@ include examples/djpcms-site/README.rst
 include examples/djpcms-site/requirements.txt
 include examples/vinoweb/README.rst
 include examples/vinoweb/requirements.txt
-include examples/djpcmstest/djpcmstest.sqlite
 include djpcms/contrib/jdep/README.rst
 include djpcms/contrib/jdep/tests/requirements.txt
 recursive-include docs/source/_ext *

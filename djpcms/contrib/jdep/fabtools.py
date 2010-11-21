@@ -99,6 +99,7 @@ def deploy(release = True):
 def serverconfig():
     '''Create server configuration files on local directory'''
     from static import server_types
+    env.path = ''
     server = server_types[env.server_type]
     utils.get_directories(release = False)
     server.config_files(env, dir = '.')

@@ -1,9 +1,0 @@
-.. _admin:
-
-.. module:: djpcms.contrib.admin
-
-==============================
-Admin
-==============================
-
-**EXPERIMANTAL. NOT FOR PRODUCTION**

@@ -8,6 +8,6 @@ def run():
 	env['python_path'] = os.path.split(django.__path__[0])[0]
 	from djpcms.contrib.jdep.static import server_types
 	server = server_types[env['server_type']]
-	server.config_files(env,{{ release }})
+	server.config_files(env, release = {{ release }})
 
 run()

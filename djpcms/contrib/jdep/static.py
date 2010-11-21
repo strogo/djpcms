@@ -104,7 +104,7 @@ class ServerInstaller(object):
             # very problematic to debug this statement. Need a better way.
             exec(self.env.server_script)
     
-    def config_files(self, environ, release = True):
+    def config_files(self, environ, dir = None, release = True):
         pass
     
     def __get_env(self):
@@ -123,38 +123,42 @@ class ServerInstaller(object):
     
 
 class NginxBase(ServerInstaller):
+    nginx  = 'nginx.conf'
     
-    def config_files(self, environ, release = True):
-        rs = [environ.domain_name] + environ.redirects
+    def config_files(self, environ, dir = None, release = True):
+        rs = [environ['domain_name']] + environ['redirects']
         v  = []
         for r in rs:
             v.append(r.replace('.','\.'))
-        environ.nginx_redirects = '|'.join(v)
+        environ['nginx_redirects'] = '|'.join(v)
+        environ['apps']  = application_map().values()
+        if dir is None:
+            dir = None if not release else environ['confdir']
+        environ['nginx']  = config_file(self.nginx,environ=environ,dir=dir)
+        if not release:
+            from __builtin__ import globals
+            g = globals()
+            g['script_result'] = environ
 
 
-class nginx_apache_wsgi(ServerInstaller):
+class nginx_apache_wsgi(NginxBase):
     '''Nginx + Apache mod_wsgi server'''
-    nginx  = 'nginx.conf'
     apache = 'apache_mod_wsgi.conf'
     django = 'django.wsgi'
      
     def __str__(self):
         return 'nginx + apache (mod_wsgi)'
     
-    def config_files(self, environ, release = True):
-        super(nginx_apache_wsgi,self).config_files(environ,release)
-        # Create the config files. Function called from remote server
-        environ['apps']  = application_map().values()
-        dir = None if not release else environ['confdir']
-        wsgi = None if not release else environ['release_path']
-        environ['nginx']  = config_file(self.nginx,environ=environ,dir=dir)
+    def config_files(self, environ, dir = None, release = True):
+        super(nginx_apache_wsgi,self).config_files(environ,dir,release)
+        if dir is None:
+            dir = None if not release else environ['confdir']
+            wsgi = None if not release else environ['release_path']
+        else:
+            wsgi = dir
         environ['wsgi']   = config_file(self.django,environ=environ,dir=wsgi)
         environ['apache'] = config_file(self.apache,environ=environ,dir=dir)
-        if not release:
-            from __builtin__ import globals
-            g = globals()
-            g['script_result'] = environ
-        
+
     def install(self, release = True):
         from fabric.api import env, sudo
         self.config(release)
@@ -194,7 +198,6 @@ class nginx_apache_wsgi(ServerInstaller):
 
 class nginx_twisted(NginxBase):
     '''Twisted behind nginx server'''
-    nginx  = 'nginx.conf'
     
     def __str__(self):
         return 'Twisted behind nginx'
@@ -202,17 +205,6 @@ class nginx_twisted(NginxBase):
     def info(self, data):
         data['twisted port'] = self.env['redirect_port']
         
-    def config_files(self, environ, dir = None, release = True):
-        super(nginx_twisted,self).config_files(environ,release)
-        # Create the config files. Function called from remote server
-        environ['apps']  = application_map().values()
-        if dir is None:
-            dir = None if not release else environ['confdir']
-        environ['nginx']  = config_file(self.nginx,environ=environ,dir=dir)
-        if not release:
-            from __builtin__ import globals
-            g = globals()
-            g['script_result'] = environ
     
     
         

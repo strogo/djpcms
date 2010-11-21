@@ -53,7 +53,7 @@ if fabric_available:
             if path not in sys.path:
                 sys.path.insert(0,path)
             env.host_string = 'localhost'
-            utils.project('testjdep','testjdep.com', apache_port = 103)
+            utils.project('testjdep','testjdep.com', redirect_port = 103)
         
         def testPath(self):
             upload(False)
@@ -84,7 +84,7 @@ if fabric_available:
             nginx = result['nginx']
             self.assertTrue('server_name  %s' % env.domain_name in nginx)
             self.assertTrue('access_log   %s' % env.logdir in nginx)
-            self.assertTrue('listen       %s' % env.nginx_port in nginx)
+            self.assertTrue('listen       %s' % env.server_port in nginx)
             self.assertTrue('proxy_pass http://127.0.0.1:103/;' in nginx)
             
         def testApache(self):

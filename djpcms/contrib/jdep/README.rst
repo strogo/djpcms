@@ -32,6 +32,7 @@ The directory structure of your site, which we call ``greatsite`` looks like thi
 
 	greatsite-project/
 	  greatsite/
+	  certificates/
 	  __init__.py
 	  requirements.txt
 	  fabfile.py
@@ -43,6 +44,7 @@ The ``fabfile.py`` is needed by fabric_ and should, at least, contain::
         
 where ``kwargs`` is a dictionary containing the deployment :ref:`parameters <parameters>`.
 The ``requirement.txt`` is needed by pip_ to install your site required packages.
+The ``certificates`` directory is optional and can be used to upload ``SSL`` certificate and ``key``.
 
 Then run::
 
@@ -76,7 +78,10 @@ This is useful for testing/development purposes when running your site locally.
 
 Parameters
 ========================
-* ``deploy_root_dir`` The deployment root directory. Default ``None``.
+* ``deploy_root_dir`` The deployment root directory. Default ``deployment``.
+  This directory will be created, if it does not exist, on the home directory of the user installing on the remote machine.
+  In other words if the user is ``siteuser``, the deployment root directory will be ``/home/siteuser/deployment`` if
+  the home directory of ``siteuser`` is ``/home/siteuser/``.
 * ``redirects`` List of urls which will be redirected to your site home page. Default ``[]``.
 * ``redirect_port`` port number to redirect requests handled by ``djpcms``. Default ``90``.
 * ``secure`` boolean indicating if connection is over ``https``. Default ``False``.
