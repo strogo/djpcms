@@ -100,7 +100,7 @@ def get_directories(release_name = None, release = True):
         env.release_path = env.path
         
     env.project_path = os.path.join(env.release_path,env.project)
-    env.certificate_path = os.path.join(env.release_path,env.certificates)
+    env.certificate_path = os.path.join(env.project_path,env.certificates)
     env.logdir  = os.path.join(env.release_path,'logs')
     env.confdir = os.path.join(env.release_path,'conf')
 

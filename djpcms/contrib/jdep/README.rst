@@ -24,15 +24,16 @@ On the server side
 * virtualenv_
 * pip_
 
- 
+
+.. _usage:
+
 Usage
 ==================
 An example on how to use the package is in the ``examples\djpcms-site`` directory.
-The directory structure of your site, which we call ``greatsite`` looks like this::
+The directory structure of your site, which we call ``website`` looks like this::
 
-	greatsite-project/
-	  greatsite/
-	  certificates/
+	project-directory/
+	  website/
 	  __init__.py
 	  requirements.txt
 	  fabfile.py
@@ -40,11 +41,11 @@ The directory structure of your site, which we call ``greatsite`` looks like thi
 The ``fabfile.py`` is needed by fabric_ and should, at least, contain::
 
     from djpcms.contrib.jdep.fabtool import *
-    utils.project('greatsite','greatsite.com', **kwargs)
-        
-where ``kwargs`` is a dictionary containing the deployment :ref:`parameters <parameters>`.
+    utils.project('website','your.domain.com', **kwargs)
+       
+The first parameter is the name of your site directory, the second your domain name, while 
+``kwargs`` is a dictionary containing the deployment :ref:`parameters <parameters>`.
 The ``requirement.txt`` is needed by pip_ to install your site required packages.
-The ``certificates`` directory is optional and can be used to upload ``SSL`` certificate and ``key``.
 
 Then run::
 
@@ -78,19 +79,22 @@ This is useful for testing/development purposes when running your site locally.
 
 Parameters
 ========================
-* ``deploy_root_dir`` The deployment root directory. Default ``deployment``.
+* **certificates** optional string indicating a directory within the ``website`` directory discussed in :ref:`usage <usage>` which
+  contains the certificate (``server.crt``) and key (``server.key``) files used to serve the site as ``ssl``.
+  Only used if ``secure`` is set to ``True``. Default ``certificates``.
+* **deploy_root_dir** The deployment root directory. Default ``deployment``.
   This directory will be created, if it does not exist, on the home directory of the user installing on the remote machine.
   In other words if the user is ``siteuser``, the deployment root directory will be ``/home/siteuser/deployment`` if
   the home directory of ``siteuser`` is ``/home/siteuser/``.
-* ``redirects`` List of urls which will be redirected to your site home page. Default ``[]``.
-* ``redirect_port`` port number to redirect requests handled by ``djpcms``. Default ``90``.
-* ``secure`` boolean indicating if connection is over ``https``. Default ``False``.
-* ``server_port`` server port. Default ``80`` i ``secure`` is ``False`` else ``443``.
-* ``server_type`` string indicating the server configuration. Available
+* **redirects** List of urls which will be redirected to your site home page. Default ``[]``.
+* **redirect_port** port number to redirect requests handled by ``djpcms``. Default ``90``.
+* **secure** boolean indicating if connection is over ``https``. Default ``False``.
+* **server_port** server port. Default ``80`` i ``secure`` is ``False`` else ``443``.
+* **server_type** string indicating the server configuration. Available
 	* ``nginx-twisted`` for twisted web behind bginx.
 	* ``nginx-apache-mod_wsgi`` for apache mod_wsgi behind nginx.
  Default: ``nginx-apache-mod_wsgi``.
-* ``setting_module`` the django settings module name. Default ``settings``.
+* **setting_module** the django settings module name. Default ``settings``.
 
 After deploy hook
 ========================
