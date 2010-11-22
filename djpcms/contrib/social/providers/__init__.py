@@ -4,5 +4,6 @@ def safeimport(name):
     except ImportError:
         pass
 
-safeimport('twitter')
+safeimport('flickr')
 safeimport('google')
+safeimport('twitter')
