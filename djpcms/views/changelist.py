@@ -32,9 +32,10 @@ def table(headers, queryset_or_list, djp, model = None):
     try:
         cl = model.opts
         return queryset_table(queryset_or_list, djp, model)
-    except:
+    except Exception, e:
         return {'labels':headers,
                 'items':queryset_or_list}
+        
     
 def queryset_table(queryset, djp, appmodel):
     request = djp.request
@@ -47,8 +48,9 @@ def queryset_table(queryset, djp, appmodel):
         labels.append(cl.label_for_field(name))
     for result in queryset:
         first = True
+        id    = ('%s-%s') % (cl.module_name,result.id)
         display = []
-        items.append(display)
+        items.append({'id':id,'display':display})
         for field_name in cl.list_display:
             result_repr = cl.getrepr(field_name, result)
             if force_unicode(result_repr) == '':

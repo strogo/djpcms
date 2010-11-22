@@ -450,7 +450,7 @@ Re-implement for custom arguments.'''
         return self.opts.has_delete_permission(request.user,obj)
     #-----------------------------------------------------------------------------------------------
     
-    def basequery(self, request):
+    def basequery(self, djp, **kwargs):
         '''
         Starting queryset for searching objects in model.
         This can be re-implemented by subclasses.

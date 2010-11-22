@@ -25,8 +25,12 @@ class ArchiveView(SearchView):
             c['day'] = int(day)
         return c
     
-    def appquery(self, request, year = None, month = None, day = None, **kwargs):
-        qs       = super(ArchiveView,self).appquery(request, **kwargs)
+    def appquery(self, djp, **kwargs):
+        qs       = super(ArchiveView,self).appquery(djp, **kwargs)
+        kwargs   = djp.kwargs
+        year     = kwargs.get('year',None)
+        month    = kwargs.get('month',None)
+        day      = kwargs.get('day',None)
         dt       = self._date_code()
         dateargs = {}
         if year:
@@ -61,7 +65,6 @@ class MonthArchiveView(ArchiveView):
         m = self.appmodel.get_month_number(urlargs.get('month',None))
         return force_unicode(MONTHS[m])
                                           
-    
     
 class YearArchiveView(ArchiveView):
     def __init__(self, *args, **kwargs):

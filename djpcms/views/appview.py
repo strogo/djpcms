@@ -255,21 +255,10 @@ class AppView(AppViewBase):
                 return p
         return None
     
-    def basequery(self, request, **kwargs):
-        '''Base query for application.
-If this is the root view (no parents) it returns
-:func:`djpcms.views.appsite.ModelApplication.basequery`, otherwise
-it returns the :func:`appquery` of the :func:`modelparent` view.
-        '''
-        if self.modelparent():
-            return self.parent.appquery(request)
-        else:
-            return self.appmodel.basequery(request)
-    
-    def appquery(self, request, *args, **kwargs):
-        '''This function implements the application query.
-By default return the :func:`basequery` (usually all items of a model).'''
-        return self.basequery(request)
+    def appquery(self, djp, **kwargs):
+        '''This function implements the query to the database, based on url entries.
+By default it calls the :func:`djpcms.views.appsite.ModelApplication.basequery` function.'''
+        return self.appmodel.basequery(djp, **kwargs)
     
     def permissionDenied(self, djp):
         return self.appmodel.permissionDenied(djp)
@@ -306,14 +295,14 @@ class SearchView(AppView):
     def __init__(self, in_navigation = True, **kwargs):
         super(SearchView,self).__init__(in_navigation=in_navigation,**kwargs)
     
-    def appquery(self, request, *args, **kwargs):
+    def appquery(self, djp, **kwargs):
         '''This function implements the search query.
 The query is build using the search fields specifies in
 :attr:`djpcms.views.appsite.ModelApplication.search_fields`.
 It returns a queryset.
         '''
-        qs = self.basequery(request)
-        
+        qs = super(SearchView,self).appquery(djp, **kwargs)
+        request = djp.request
         slist = self.appmodel.opts.search_fields
         if request.method == 'GET':
             data = dict(request.GET.items())
@@ -337,12 +326,7 @@ It returns a queryset.
     def render(self, djp, **kwargs):
         '''Perform the custom query over the model objects and return a paginated result
         '''
-        request  = djp.request
-        if kwargs:
-            urlargs = djp.kwargs
-            urlargs.update(kwargs)
-            djp = self(request, **urlargs)
-        query = self.appquery(djp.request, **djp.kwargs)
+        query = self.appquery(djp, **kwargs)
         return self.render_query(djp, query)  
 
 
@@ -452,7 +436,7 @@ class EditView(ObjectView):
         return 'Edit %s' % self.appmodel.title_object(instance)
     
     def render(self, djp, **kwargs):
-        return self.get_form(djp, **kwargs).render(djp)
+        return self.get_form(djp).render(djp)
     
     def save(self, request, f):
         return self.appmodel.object_from_form(f)

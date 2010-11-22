@@ -1,13 +1,8 @@
 {% load djpmodutils %}
 {% if form %}<div class="search-form">
 {{ form }}
-</div>{% endif %}{% if headers %}{% load tablesorter %}
+</div>{% endif %}{% ifnotequal paginator.pages 1 %}
 <div id="{% if id %}{{ id }}{% else %}Pagination{% endif %}" class="jquery-pagination"></div>
-{% totable headers paginator.qs djp appmodel %}
-{% else %}{% ifnotequal paginator.pages 1 %}
-<div id="{% if id %}{{ id }}{% else %}Pagination{% endif %}" class="jquery-pagination"></div>{% endifnotequal %}
-{% for item in items %}
-{{ item }}{% endfor %}{% endif %}
 <script>
 $(document).ready(function(){
     // Create pagination element with options from form
@@ -27,4 +22,8 @@ $(document).ready(function(){
     };
     $("#{% if id %}{{ id }}{% else %}Pagination{% endif %}").pagination({{ paginator.total }}, optInit);
 });
-</script>
+</script>{% endifnotequal %}
+{% if headers %}{% load tablesorter %}
+{% totable headers paginator.qs djp appmodel %}
+{% else %}{% for item in items %}
+{{ item }}{% endfor %}{% endif %}

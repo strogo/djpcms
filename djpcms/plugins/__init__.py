@@ -286,14 +286,19 @@ which is registered to be a plugin, than it will be managed by this plugin.'''
         request = djp.request
         if app.has_permission(request):
             if djp.view != app:
-                args = copy.copy(djp.kwargs)
+                try:
+                    djp.url
+                except:
+                    pass
+                args = djp.kwargs.copy()
                 args.update(kwargs)
                 t_djp = self.app(djp.request, **args)
             else:
+                args = kwargs
                 t_djp = djp
             djp.wrapper = wrapper
             djp.prefix  = prefix
-            html = self.app.render(t_djp, **kwargs)
+            html = self.app.render(t_djp, **args)
             if djp is not t_djp:
                 djp.media += t_djp.media
             return html

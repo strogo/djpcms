@@ -50,12 +50,12 @@ class ModelTypeWrapper(object):
         return name
         
     def appfuncname(self, name):
-        return 'extrafunction__%s' % name
+        return 'objectfunction__%s' % name
     
     def get_value(self, instance, name, default = EMPTY_VALUE):
         func = getattr(self.appmodel,self.appfuncname(name),None)
         if func:
-            return func(self.request, instance)
+            return func(instance)
         else:
             return default
     
