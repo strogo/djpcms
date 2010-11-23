@@ -31,10 +31,6 @@ class pageinfo(object):
 class AppViewBase(djpcmsview):
     '''A :class:`djpcms.views.baseview.djpcmsview` specialised class for application views in :ref:`djpcms applications <topics-applications-index>`.
     
-.. attribute:: name
-    
-    name of view.
-    
 .. attribute:: parent
 
     instance of :class:`AppViewBase` or None.
@@ -71,6 +67,8 @@ class AppViewBase(djpcmsview):
                  insitemap  = True,
                  isapp      = False,
                  isplugin   = False,
+                 methods       = None,
+                 plugin_form   = None,
                  in_navigation = 0,
                  template_name = None,
                  description = None,
@@ -91,11 +89,14 @@ class AppViewBase(djpcmsview):
         self.func      = None
         self.code      = None
         self.editurl   = None
+        if methods:
+            self._methods = methods
         if success_message:
             self.success_message = success_message
         self._form     = form if form else self._form
         self._form_withrequest = form_withrequest
         self._form_ajax  = form_ajax if form_ajax is not None else self._form_ajax
+        self.plugin_form = plugin_form or self.plugin_form
         self.creation_counter = AppViewBase.creation_counter
         AppViewBase.creation_counter += 1
         

@@ -1,5 +1,6 @@
 import datetime
 import re
+import logging
 
 from django.http import Http404
 from django.utils.dateformat import DateFormat
@@ -19,7 +20,7 @@ from djpcms.conf import settings
 from djpcms.permissions import has_permission, get_view_permission
 from djpcms.fields import SlugCode
 from djpcms.plugins import get_wrapper, default_content_wrapper, get_plugin
-from djpcms.utils import lazyattr, function_module, force_unicode, mark_safe, htmltype
+from djpcms.utils import lazyattr, function_module, force_unicode, mark_safe, htmltype, escape
 from djpcms.utils.func import PathList
 from djpcms.uploads import upload_function, site_image_storage
 from djpcms.managers import PageManager, BlockContentManager, SiteContentManager, PermissionManager
@@ -221,6 +222,7 @@ If not specified we get the template of the :attr:`parent` page.'''
 
 
 class BlockContent(models.Model):
+    logger         = logging.getLogger('BlockContent')
     '''A block content object is responsible storing :class:`djpcms.plugins.DJPplugin`
 and for maintaining their position in a :class:`djpcms.models.Page`.
     '''
@@ -313,8 +315,9 @@ and for maintaining their position in a :class:`djpcms.models.Page`.
                         return wrapper(djp, self, html)
             return u''
         except Exception, e:
+            self.logger.error('page %s - block %s -- %s' % (self.page,self,e))
             if djp.request.user.is_superuser:
-                return u'%s' % e
+                return escape(u'%s' % e)
             else:
                 return u''
     

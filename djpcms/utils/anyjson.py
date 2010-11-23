@@ -1,10 +1,7 @@
 import time
 from datetime import datetime, date
 from decimal import Decimal
-try:
-    import json
-except:
-    import simplejson as json
+import json
     
 
 def totimestamp(dte):
@@ -23,7 +20,7 @@ class JSONDateDecimalEncoder(json.JSONEncoder):
             return {'__datetime__':totimestamp(obj)}
         elif isinstance(obj, date):
             return {'__date__':totimestamp(obj)}
-        elif isinstance(o, Decimal):
+        elif isinstance(obj, Decimal):
             return {'__decimal__':str(obj)}
         else:
             raise ValueError("%r is not JSON serializable" % (obj,))

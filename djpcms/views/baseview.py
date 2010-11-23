@@ -42,7 +42,9 @@ Not used very often but here just in case.'''
     parent        = None
     '''The parent view of ``self``. An instance of :class:`djpcmsview` or ``None``'''
     purl          = None
-
+    
+    name          = 'flat'
+    '''Name of view. Default ``"flat"``.'''
     object_view = False
     '''Flag indicationg if the view class is used to render or manipulate model instances. Default ``False``.'''
     

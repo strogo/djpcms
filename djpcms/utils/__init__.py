@@ -1,5 +1,6 @@
 from django.utils.encoding import smart_str, force_unicode, smart_unicode
 from django.utils.safestring import mark_safe
+from django.utils.html import escape
 from uuid import uuid4
 from anyjson import json, JSONDateDecimalEncoder, date_decimal_hook
 

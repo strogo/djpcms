@@ -6,8 +6,10 @@
 View handlers
 =================
 
-djpcms handles views using objects rather than functions.
-Each view is an instance of a class derived from :class:`djpcms.views.baseview.djpcmsview`.
+As soon as a client request a url, the primary job of ``djpcms`` is to find and invoke
+a ``view handler``. These view handlers are instances of
+:class:`djpcms.views.baseview.djpcmsview` the ``djpcms`` view base class.
+
 
 Contents
 =====================
