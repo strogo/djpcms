@@ -22,7 +22,7 @@ INSTALLED_APPS  = ['django.contrib.auth',
 ADMIN_MEDIA_PREFIX = '/media/admin/'
 MEDIA_ROOT = os.path.join(BASE, 'tests', 'media')
 
-ROOT_URLCONF           = 'djpcms.tests.conf.urls'
+ROOT_URLCONF           = 'urls'
 APPLICATION_URL_MODULE = 'djpcms.tests.conf.test_urls'
 
 TEMPLATE_CONTEXT_PROCESSORS = (
