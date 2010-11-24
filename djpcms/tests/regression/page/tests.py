@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from djpcms.test import TestCase
 from djpcms.conf import settings
 
-from testmodel.models import Strategy
+from regression.page.models import Strategy
 
 
 class TestPage(TestCase):

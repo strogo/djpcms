@@ -2,7 +2,7 @@ from django import forms
 from django.forms.models import BaseModelFormSet
 
 from djpcms.utils import uniforms
-from djpcms.tests.testmodel.models import Strategy, StrategyTrade
+from regression.uniforms.models import Strategy, StrategyTrade
 
 
 class TradeForm(forms.ModelForm):

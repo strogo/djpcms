@@ -28,7 +28,7 @@ this_dir = parent(os.path.abspath(__file__))
 libs = []
 
 
-def runtests(verbosity = 1, interactive = True, failfast = False):
+def runtests(tags = None, verbosity = 0, interactive = True, failfast = False):
     '''Run tests::
     
     import djpcms
@@ -36,17 +36,8 @@ def runtests(verbosity = 1, interactive = True, failfast = False):
     path_dir = parent(this_dir)
     if path_dir not in sys.path:
         sys.path.insert(0,path_dir)
-        
-    from djpcms import testsettings
-    from django.core.management import setup_environ
-    setup_environ(testsettings)
-    from django.conf import settings
-    from django.test.utils import get_runner
-    TestRunner = get_runner(settings)
-    test_runner = TestRunner(verbosity=verbosity,
-                             interactive=interactive,
-                             failfast=failfast)
-    failures = test_runner.run_tests(('djpcms','jdep'))
+    from djpcms.tests.runtests import run
+    run(tags, verbosity, interactive, failfast)
 
 
 def install_lib(basepath, dirname, module_name):

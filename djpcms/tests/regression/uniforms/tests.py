@@ -1,8 +1,8 @@
-from django import forms
 from django.test import TestCase
 
+from djpcms import forms
 from djpcms.utils import uniforms
-from djpcms.tests.testmodel.forms import StrategyForm
+from regression.uniforms.forms import StrategyForm
 
 
 class TestForm(forms.Form):
