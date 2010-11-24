@@ -3,7 +3,7 @@ from datetime import date, datetime
 from django.utils.dateformat import format as date_format, time_format
 
 from djpcms.conf import settings
-from djpcms.utils import mark_safe
+from djpcms.utils import mark_safe, significant_format
 from djpcms.template import loader 
 
 BOOLEAN_MAPPING = {True: {'icon':'ui-icon-check','name':'yes'},
@@ -27,8 +27,11 @@ def nicerepr(val):
         return date_format(val,settings.DATE_FORMAT)
     elif isinstance(val,bool):
         return _boolean_icon(val)
-    else:  
-        return val
+    else:
+        try:
+            return significant_format(val)
+        except:
+            return val
         
 
 class ModelTypeWrapper(object):

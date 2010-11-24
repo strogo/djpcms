@@ -1,7 +1,7 @@
 from django.utils.html import escape, conditional_escape
 
 from djpcms.template import loader
-from djpcms.core.models import getmodel
+from djpcms.core.models import getmodel, nicerepr
 from djpcms.utils import force_unicode, smart_str, mark_safe, smart_unicode
 from djpcms.views import appsite
 
@@ -23,6 +23,11 @@ class ChangeList(object):
         return 'extrafunction__%s' % name            
 
 
+def nice_items(items):
+    for item in items:
+        yield nicerepr(item)
+
+
 def table(headers, queryset_or_list, djp, model = None):
     if not model:
         try:
@@ -34,7 +39,7 @@ def table(headers, queryset_or_list, djp, model = None):
         return queryset_table(queryset_or_list, djp, model)
     except Exception, e:
         return {'labels':headers,
-                'items':queryset_or_list}
+                'items':(nice_items(items) for items in queryset_or_list)}
         
     
 def queryset_table(queryset, djp, appmodel):

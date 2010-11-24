@@ -5,7 +5,7 @@ from djpcms.core.models import nicerepr
 register = template.Library()
 
 @register.inclusion_tag('djpcms/tablesorter.html')
-def totable(headers, queryset, djp, appmodel):
+def totable(headers, queryset, djp = None, appmodel = None):
     return table(headers, queryset, djp, appmodel)
 
 @register.filter
