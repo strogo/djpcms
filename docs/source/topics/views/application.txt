@@ -6,80 +6,8 @@
 Application Views
 ===================
 
-Base Class
-==============================
-
 .. autoclass:: djpcms.views.appview.AppViewBase
    :members:
    :member-order: bysource
    
    
-App View
-============================================
-
-.. autoclass:: djpcms.views.appview.AppView
-   :members:
-   :member-order: bysource
-
-
-Search View
-======================
-
-.. autoclass:: djpcms.views.appview.SearchView
-   :members:
-   :member-order: bysource
-
-
-Add View
-======================
-
-.. autoclass:: djpcms.views.appview.AddView
-   :members:
-   :member-order: bysource
-
-
-Object View
-======================
-
-.. autoclass:: djpcms.views.appview.ObjectView
-   :members:
-   :member-order: bysource
-
-
-View View
-======================
-
-.. autoclass:: djpcms.views.appview.ViewView
-   :members:
-   :member-order: bysource
-
-
-Edit View
-======================
-
-.. autoclass:: djpcms.views.appview.EditView
-   :members:
-   :member-order: bysource
-
-
-Delete View
-======================
-
-.. autoclass:: djpcms.views.appview.DeleteView
-   :members:
-   :member-order: bysource
-
-
-Autocomplete View
-======================
-
-.. autoclass:: djpcms.views.appview.AutocompleteView
-   :members:
-   :member-order: bysource
-   
-.. admonition:: Rember the four points to have autocomplete out of the box:
-
-	* When using the model in Forms, import from ``djpcms.forms`` and not ``django.forms``.
-    * Your model application must have a ``search_fields`` list
-    * Your model application must have the :class:`djpcms.views.appview.AutocompleteView`.
-    * Register your application as usual.

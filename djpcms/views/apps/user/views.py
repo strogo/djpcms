@@ -52,34 +52,17 @@ class LoginView(appview.AppView):
         if djp.request.user.is_authenticated():
             return http.HttpResponseRedirect('/')
         
-    def render(self, djp, **kwargs):
+    def render(self, djp):
         if djp.request.user.is_authenticated():
             return ''
         else:
-            return self.get_form(djp, **kwargs).render()
+            return self.get_form(djp).render(djp)
     
     def default_post(self, djp):
-        return saveform(djp)
+        return saveform(djp, force_redirect = True)
     
     def save(self, request, f):
         return f.cleaned_data['user']
     
     def success_message(self, instance, mch):
         return ''
-
-
-class ChangeView(appview.EditView):
-    token_generator = default_token_generator
-    
-    def get_form(self, djp, **kwargs):
-        form = self.appmodel.get_form(djp,
-                                      form = PasswordChangeForm,
-                                      forceform = True,
-                                      addinputs = False)
-        form.inputs.append(submit(name = 'change', value = 'Change'))
-        if djp.own_view():
-            form.inputs.append(submit(name = 'cancel', value = 'Cancel'))
-        return form
-    
-    def save(self, request, f):
-        return f.save()

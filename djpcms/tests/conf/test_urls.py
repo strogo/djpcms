@@ -10,6 +10,7 @@ from djpcms.tests.testmodel.forms import Strategy, StrategyForm
 
 
 class StrategyApplication(appsite.ModelApplication):
+    '''Simple search/add/view/edit views application'''
     name = 'strategy'
     form = StrategyForm
     search = appview.SearchView()

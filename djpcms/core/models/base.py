@@ -16,7 +16,7 @@ def _boolean_icon(val):
     return mark_safe(u'<span class="ui-icon %(icon)s" title="%(name)s">%(name)s</span>' % v)
 
 
-def nicerepr(val):
+def nicerepr(val, nd = 3):
     if isinstance(val,datetime):
         time = val.time()
         if not time:
@@ -29,7 +29,7 @@ def nicerepr(val):
         return _boolean_icon(val)
     else:
         try:
-            return significant_format(val)
+            return significant_format(val, n = nd)
         except:
             return val
         
@@ -73,9 +73,9 @@ class ModelTypeWrapper(object):
                     return name
             raise AttributeError("Attribute %s not available" % name)
         
-    def getrepr(self, name, instance):
+    def getrepr(self, name, instance, nd = 3):
         '''representation of field *name* for *instance*.'''
-        return nicerepr(self._getrepr(name,instance))
+        return nicerepr(self._getrepr(name,instance),nd)
     
     def _getrepr(self, name, instance):
         raise NotImplementedError

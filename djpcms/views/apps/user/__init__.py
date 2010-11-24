@@ -2,16 +2,20 @@ from djpcms.conf import settings
 from djpcms.views import appsite, appview
 from djpcms.views.apps.user.views import *
 
+permission = lambda self, request, obj: False if not request else request.user.is_authenticated()
+
 class UserApplication(appsite.ModelApplication):
     name     = 'account'
     userpage = False
     baseurl  = settings.USER_ACCOUNT_HOME_URL
     form     = PasswordChangeForm
     
-    home    = appview.AppView()
-    login   = LoginView(parent = 'home')
-    logout  = LogoutView(parent = 'home')
-    change  = ChangeView(regex = 'change', isplugin = True, parent = 'home')
+    home   = appview.AppView()
+    login  = LoginView(parent = 'home')
+    logout = LogoutView(parent = 'home')
+    change = appview.EditView(regex = 'change',
+                              isplugin = True,
+                              parent = 'home')
     
     def objectbits(self, obj):
         if self.userpage:
@@ -28,3 +32,7 @@ class UserApplication(appsite.ModelApplication):
                 return None
         else:
             return request.user
+        
+    def has_edit_permission(self, request = None, obj=None):
+        return permission(self,request,obj)
+    

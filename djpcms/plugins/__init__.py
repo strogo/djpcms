@@ -280,30 +280,22 @@ which is registered to be a plugin, than it will be managed by this plugin.'''
         self.description = nicename(description)
         _plugin_dictionary[self.name] = self
         
-    
     def render(self, djp, wrapper, prefix, **kwargs):
         app  = self.app
         request = djp.request
+        html = u''
         if app.has_permission(request):
             if djp.view != app:
-                try:
-                    djp.url
-                except:
-                    pass
-                args = djp.kwargs.copy()
-                args.update(kwargs)
-                t_djp = self.app(djp.request, **args)
+                t_djp = self.app(djp.request, **kwargs)
             else:
-                args = kwargs
                 t_djp = djp
-            djp.wrapper = wrapper
-            djp.prefix  = prefix
-            html = self.app.render(t_djp, **args)
-            if djp is not t_djp:
+            t_djp.wrapper = wrapper
+            t_djp.prefix  = prefix
+            html = self.app.render(t_djp)
+            # Add media. It must be after having called render!!
+            if djp != t_djp:
                 djp.media += t_djp.media
-            return html
-        else:
-            return ''
+        return html
     
 
 class SimpleWrap(DJPwrapper):

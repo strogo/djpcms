@@ -26,6 +26,11 @@ class DjpResponse(http.HttpResponse):
         .. attribute: url
         
             url associated with response. Note this url is not always the same as request.path.
+        
+        .. attribute: media
+        
+            Object carrying information about the media to be added to the HTML page.
+            It is filled during rendering of all plugins and views.
     '''
     def __init__(self, request, view, wrapper = None, prefix = None, **kwargs):
         super(DjpResponse,self).__init__()
@@ -76,8 +81,6 @@ class DjpResponse(http.HttpResponse):
         h[1] = ct
         
     def __get_media(self):
-        '''Get the page object
-        '''
         media = getattr(self,'_media',None)
         if not media:
             media = self.view.get_media()

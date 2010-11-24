@@ -32,6 +32,7 @@ def djpcmsHandler(request, url):
     except Exception, e:
         raise Http404
 
+
 def response(request, url):
     view, args, kwargs = djpcmsHandler(request, url)
     if isinstance(view,HttpResponseRedirect):
@@ -40,14 +41,17 @@ def response(request, url):
     
 
 def Handler(request, url):
+    '''Entry points for requests'''
     view, args, kwargs = djpcmsHandler(request, url)
     if isinstance(view,HttpResponseRedirect):
         return view
-    view = view(request, **kwargs)
-    if isinstance(view,DjpResponse):
-        return view.response()
+    djp = view(request, **kwargs)
+    if isinstance(djp,DjpResponse):
+        setattr(request,'instance',djp.instance)
+        return djp.response()
     else:
-        return view
+        setattr(request,'instance',None)
+        return djp
 
 
 def editHandler(request, url):

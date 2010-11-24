@@ -23,12 +23,12 @@ class ChangeList(object):
         return 'extrafunction__%s' % name            
 
 
-def nice_items(items):
+def nice_items(items,nd):
     for item in items:
-        yield nicerepr(item)
+        yield nicerepr(item,nd)
 
 
-def table(headers, queryset_or_list, djp, model = None):
+def table(headers, queryset_or_list, djp, model = None, nd = 3):
     if not model:
         try:
             model = queryset_or_list.model
@@ -36,13 +36,13 @@ def table(headers, queryset_or_list, djp, model = None):
             pass
     try:
         cl = model.opts
-        return queryset_table(queryset_or_list, djp, model)
+        return queryset_table(queryset_or_list, djp, model, nd)
     except Exception, e:
         return {'labels':headers,
-                'items':(nice_items(items) for items in queryset_or_list)}
+                'items':(nice_items(items,nd) for items in queryset_or_list)}
         
     
-def queryset_table(queryset, djp, appmodel):
+def queryset_table(queryset, djp, appmodel, nd):
     request = djp.request
     cl = appmodel.opts
     if not cl.appmodel or not cl.list_display:
@@ -57,7 +57,7 @@ def queryset_table(queryset, djp, appmodel):
         display = []
         items.append({'id':id,'display':display})
         for field_name in cl.list_display:
-            result_repr = cl.getrepr(field_name, result)
+            result_repr = cl.getrepr(field_name, result, nd)
             if force_unicode(result_repr) == '':
                 result_repr = mark_safe('&nbsp;')
             if (first and not cl.list_display_links) or field_name in cl.list_display_links:

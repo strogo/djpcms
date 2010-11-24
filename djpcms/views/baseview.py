@@ -128,11 +128,11 @@ If *page* is ``None`` it returns :setting:`DEFAULT_TEMPLATE_NAME`.'''
         pass
     
     def handle_response(self, djp):
-        '''Handle the RESPONSE.This function SHOULD NOT be overwritten.
+        '''Handle the response. This function SHOULD NOT be overwritten.
 Several functions can be overwritten for tweaking the results.
 If that is not enough, maybe more hooks should be put in place.
 Hooks:
-* 'preget':     for pre-processing and redirect
+* 'preget':     for pre-processing and redirects
 * 'render':     for creating content when there is no inner_template
 * *extra_response*: for more.'''
         re = self.preget(djp)
@@ -185,9 +185,11 @@ Hooks:
         return None
     
     def get_response(self, djp):
+        '''Get response handler.'''
         return self.handle_response(djp)
     
     def default_post(self, djp):
+        '''Default post response handler.'''
         raise NotImplementedError('Default Post view not implemented')
     
     def post_response(self, djp):

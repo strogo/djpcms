@@ -371,6 +371,9 @@
 			$('.autocomplete-off',$this).each(function() {
 				$(this).attr('autocomplete','off');
 			});
+			$('input:password',$this).each(function() {
+				$(this).val('').attr('autocomplete','off');
+			});
 		}
 	});
 	

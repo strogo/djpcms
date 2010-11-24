@@ -28,8 +28,57 @@ class pageinfo(object):
         self.last_modified = last_modified
 
 
+def selfmethod(self, f):
+    def _(*args, **kwargs):
+        return f(self, *args, **kwargs)
+    _.__name__ = f.__name__
+    return _
+
+
 class AppViewBase(djpcmsview):
-    '''A :class:`djpcms.views.baseview.djpcmsview` specialised class for application views in :ref:`djpcms applications <topics-applications-index>`.
+    '''This is a specialised view class derived from :class:`djpcms.views.baseview.djpcmsview`
+and used for handling views which belongs to
+:ref:`djpcms applications <topics-applications-index>`.
+
+They are specified as class attributes of
+:class:`djpcms.views.appsite.ApplicationBase` and therefore initialised
+at start up.
+All parameters are optionals and usually a small subset of them needs to be used.
+
+:keyword parent: Parent application name. If not supplied, ``djpcms`` will calculate it
+                 during validation of applications at startup. It is used to
+                 assign a value to the :attr:`parent` attribute. Default ``None``.
+:keyword regex: Regular expression for view-specific url.
+                This is the url which the view add to its parent url. Default ``None``.
+:keyword isapp: If ``True`` the view will be treated as an application view and therefore added to the list
+                of applications which can be associated with a :class:`djpcms.models.Page` object.
+                Its value is assigned to the :attr:`isapp` attribute. Default ``False``.
+:keyword isplugin: If ``True`` the view can be rendered as :class:`djpcms.plugins.ApplicationPlugin`.
+                  Its value is assigned to the :attr:`isplugin` attribute. Default ``False``.
+:keyword form: Form class or ``None``. If supplied it will be assigned to the :attr:`_form` attribute.
+               It is a form which can be used for interaction. Default ``None``.
+:keyword methods: Tuple used to specify the response method allowed ('get', 'post', put') ro ``None``.
+                  If specified it replaces the :attr:`_methods` attribute.
+                  Default ``None``.
+:keyword renderer: A two parameters functions which can be used to replace the
+                   default :meth:`render` method. Default ``None``.
+:keyword permission: A three parameters function which can be used to
+                     replace the default :meth:`_has_permission` method.
+                     Default ``None``. The function
+                     return a boolean and takes the form::
+                     
+                         def permission(self, request, obj):
+                             ...
+                         
+                     where ``self`` is an instance of the view, ``request`` is the HTTP request instance and
+                     ``obj`` is an instance of model or ``None``.
+Usage::
+
+    from djpcms.views import appview, appsite
+    
+    class MyApplication(appsite.ApplicationBase):
+        home = appview.AppViewBase(renderer = lambda s, djp : 'Hello world')
+        test = appview.AppViewBase(regex = 'testview', renderer = lambda s, djp : 'Another view')
     
 .. attribute:: parent
 
@@ -45,7 +94,7 @@ class AppViewBase(djpcmsview):
     
 .. attribute:: isplugin
 
-    if ``True`` the view can be rendered as :class:`djpcms.plugins.DJPplugin`. Default ``False``.
+    if ``True`` the view can be rendered as :class:`djpcms.plugins.ApplicationPlugin`. Default ``False``.
 
 .. attribute:: in_navigation
 
@@ -61,20 +110,22 @@ class AppViewBase(djpcmsview):
     _form_ajax  = None
     
     def __init__(self,
-                 parent     = None,
-                 regex      = None,
-                 splitregex = False,
-                 insitemap  = True,
-                 isapp      = False,
-                 isplugin   = False,
+                 parent        = None,
+                 regex         = None,
+                 splitregex    = False,
+                 insitemap     = True,
+                 isapp         = False,
+                 isplugin      = False,
                  methods       = None,
                  plugin_form   = None,
+                 renderer      = None,
+                 permission    = None,
                  in_navigation = 0,
                  template_name = None,
-                 description = None,
-                 form        = None,
+                 description   = None,
+                 form          = None,
                  form_withrequest = None,
-                 form_ajax   = None,
+                 form_ajax     = None,
                  success_message = None):
         self.name        = None
         self.description = description
@@ -89,6 +140,10 @@ class AppViewBase(djpcmsview):
         self.func      = None
         self.code      = None
         self.editurl   = None
+        if renderer:
+            self.render = selfmethod(self, renderer)
+        if permission:
+            self._has_permission = selfmethod(self, permission)
         if methods:
             self._methods = methods
         if success_message:
@@ -141,7 +196,8 @@ class AppViewBase(djpcmsview):
         return self.appmodel.root_application is self
     
     def get_form(self, djp, **kwargs):
-        return self.appmodel.get_form(djp, self._form,
+        return self.appmodel.get_form(djp,
+                                      self._form,
                                       form_withrequest = self._form_withrequest,
                                       form_ajax = self._form_ajax,
                                       **kwargs)
@@ -196,12 +252,11 @@ class AppViewBase(djpcmsview):
     def _has_permission(self, request, obj):
         return self.appmodel.has_permission(request, obj)
     
-    def render(self, djp, **kwargs):
-        '''
-        Render the application child.
-        This method is reimplemented by subclasses.
-        By default it renders the search application
-        '''
+    def render(self, djp):
+        '''Render the view. This method is reimplemented by subclasses or
+replaced during initialization.
+
+:keyword djp: instance of :class:`djpcms.views.response.DjpResponse`.'''
         pass
     
     def parentresponse(self, djp):
@@ -256,10 +311,10 @@ class AppView(AppViewBase):
                 return p
         return None
     
-    def appquery(self, djp, **kwargs):
+    def appquery(self, djp):
         '''This function implements the query to the database, based on url entries.
 By default it calls the :func:`djpcms.views.appsite.ModelApplication.basequery` function.'''
-        return self.appmodel.basequery(djp, **kwargs)
+        return self.appmodel.basequery(djp)
     
     def permissionDenied(self, djp):
         return self.appmodel.permissionDenied(djp)
@@ -296,13 +351,13 @@ class SearchView(AppView):
     def __init__(self, in_navigation = True, **kwargs):
         super(SearchView,self).__init__(in_navigation=in_navigation,**kwargs)
     
-    def appquery(self, djp, **kwargs):
+    def appquery(self, djp):
         '''This function implements the search query.
 The query is build using the search fields specifies in
 :attr:`djpcms.views.appsite.ModelApplication.search_fields`.
 It returns a queryset.
         '''
-        qs = super(SearchView,self).appquery(djp, **kwargs)
+        qs = super(SearchView,self).appquery(djp)
         request = djp.request
         slist = self.appmodel.opts.search_fields
         if request.method == 'GET':
@@ -324,10 +379,10 @@ It returns a queryset.
                 qs         = qs & other_qs    
         return qs
     
-    def render(self, djp, **kwargs):
+    def render(self, djp):
         '''Perform the custom query over the model objects and return a paginated result
         '''
-        query = self.appquery(djp, **kwargs)
+        query = self.appquery(djp)
         return self.render_query(djp, query)  
 
 
@@ -347,8 +402,8 @@ and handles the saving as default ``POST`` response.'''
     def save(self, request, f):
         return self.appmodel.object_from_form(f)
     
-    def render(self, djp, **kwargs):
-        return self.get_form(djp, **kwargs).render(djp)
+    def render(self, djp):
+        return self.get_form(djp).render(djp)
     
     def default_post(self, djp):
         return saveform(djp)
@@ -436,7 +491,7 @@ class EditView(ObjectView):
     def title(self, page, instance = None, **kwargs):
         return 'Edit %s' % self.appmodel.title_object(instance)
     
-    def render(self, djp, **kwargs):
+    def render(self, djp):
         return self.get_form(djp).render(djp)
     
     def save(self, request, f):

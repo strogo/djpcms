@@ -152,7 +152,7 @@ def get_form(djp,
     return wrap
 
     
-def saveform(djp, editing = False):
+def saveform(djp, editing = False, force_redirect = False):
     '''Comprehensive save method for forms'''
     view       = djp.view
     request    = djp.request
@@ -161,8 +161,10 @@ def saveform(djp, editing = False):
     GET        = request.GET
     cont       = POST.has_key("_save_and_continue")
     url        = djp.url
-    curr       = get_next(djp.request,"_current_url")
+    curr       = request.environ.get('HTTP_REFERER')
     next       = get_next(djp.request)
+    if next:
+        next = request.build_absolute_uri(next)
     
     if POST.has_key("_cancel"):
         redirect_url = next
@@ -204,8 +206,11 @@ def saveform(djp, editing = False):
                         redirect_url = view.appmodel.viewurl(request,instance) or view.appmodel.baseurl
                     else:
                         redirect_url = view.appmodel.baseurl
-            if redirect_url and redirect_url == curr and is_ajax:
-                return f.json_message()
+            if not force_redirect:
+                if redirect_url and redirect_url == curr and is_ajax:
+                    return f.json_message()
+            else:
+                redirect_url = redirect_url or '/'
             
         # We are Redirecting
         if redirect_url:

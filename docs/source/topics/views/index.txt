@@ -14,10 +14,11 @@ a ``view handler``. These view handlers are instances of
 Contents
 =====================
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    
    flat
    application
+   model
    urls
    
 
