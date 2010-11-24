@@ -1,6 +1,5 @@
 import os
 import logging
-import copy
 
 from django import http, forms
 from django.utils.text import capfirst
@@ -281,12 +280,15 @@ which is registered to be a plugin, than it will be managed by this plugin.'''
         _plugin_dictionary[self.name] = self
         
     def render(self, djp, wrapper, prefix, **kwargs):
+        #kwargs may be an input from a possible plugin form
         app  = self.app
         request = djp.request
         html = u''
         if app.has_permission(request):
             if djp.view != app:
-                t_djp = self.app(djp.request, **kwargs)
+                args = djp.kwargs.copy()
+                args.update(kwargs)
+                t_djp = self.app(djp.request, **args)
             else:
                 t_djp = djp
             t_djp.wrapper = wrapper
