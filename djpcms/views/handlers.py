@@ -12,6 +12,7 @@ def djpcmsHandler(request, url):
     '''
     Fetch a static view or an application view
     '''
+    appsite.load()
     from django.core import urlresolvers
     
     #url = clean_url('/{0}'.format(url))    Python 3.1

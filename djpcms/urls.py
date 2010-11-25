@@ -4,7 +4,6 @@ from django.conf.urls.defaults import url, include
 
 import djpcms
 from djpcms.conf import settings
-from djpcms.views import appsite
 from djpcms.sitemap import DjpUrl, get_site_maps
 from djpcms.utils.importlib import import_module, import_modules
 
@@ -13,7 +12,7 @@ if not settings.DEBUG:
     handler500 = 'djpcms.views.specials.http500view'
 
 
-site_urls = DjpUrl()        
+site_urls = DjpUrl()
 
 
 #######################################################################################
@@ -101,8 +100,6 @@ if settings.CONTENT_INLINE_EDITING['available']:
 
 
 
-# Load site apps and plugins
-appsite.load()
 import_modules(settings.DJPCMS_PLUGINS)
 import_modules(settings.DJPCMS_WRAPPERS)
 

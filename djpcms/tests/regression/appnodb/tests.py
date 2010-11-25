@@ -1,8 +1,21 @@
+import random
+
 from djpcms.test import TestCase
+from djpcms.views import appsite, appview
+
+
+def randomnumber(self, djp):
+    return "New random number: {0}".format(random.uniform(0,1))
+
+class RandomApplication(appsite.ApplicationBase):
+    home = appview.AppViewBase(isapp = True, in_navigation = True, renderer = randomnumber)
+    
+appurls = RandomApplication('/apps/nodb/', name = 'random application'),
 
 
 class TestBaseApplication(TestCase):
-    '''Test an application without a database model'''
+    '''Test an application without a database model.'''
+    appurls = 'regression.appnodb.tests'
     
     def testPage(self):
         self.makepage(bit = 'apps')
@@ -29,4 +42,9 @@ class TestBaseApplication(TestCase):
         sitenav = list(sitenav[0])
         self.assertEqual(len(sitenav),1)
         self.assertEqual(sitenav[0].url,'/apps/nodb/')
+        
+    def testContent(self):
+        resp = self.get('/apps/nodb/', response = True)
+        self.assertTrue("New random number: " in resp.content)
+        
     

@@ -15,18 +15,23 @@ class TestCase(test.TestCase):
     
     def _pre_setup(self):
         super(TestCase,self)._pre_setup()
-        self._appurlconf_setup()
         self.pagecache = pagecache
         self.pagecache.clear()
         self.Page = Page
         self.site = appsite.site
         
-    def _appurlconf_setup(self):
+    def _urlconf_setup(self):
         appurls = getattr(self,'appurls',None)
         if appurls:
             self._old_appurl = settings.APPLICATION_URL_MODULE
             settings.APPLICATION_URL_MODULE = appurls
-            clear_url_caches()
+        clear_url_caches()
+            
+    def _urlconf_teardown(self):
+        if hasattr(self,'_old_appurl'):
+            settings.APPLICATION_URL_MODULE = self._old_appurl
+        appsite.site.clear()
+        super(TestCase,self)._urlconf_teardown()
         
     def setUp(self):
         p = self.clear()

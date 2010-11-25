@@ -1,14 +1,7 @@
 from django.contrib.auth.models import User
 
-from django.test import TestCase
-from django.conf import settings
-
-
-class TestPlugin(TestCase):
-    
-    def testSimplePlugin(self):
-        pass
-    
+from djpcms.test import TestCase
+from djpcms.conf import settings
     
     
 class TestStyling(TestCase):
@@ -29,7 +22,6 @@ class TestStyling(TestCase):
 class TestNoStyle(TestCase):
     
     def setUp(self):
-        from djpcms.conf import settings
         self.style = settings.DJPCMS_STYLE
         settings.DJPCMS_STYLE = None
         
@@ -49,8 +41,7 @@ class TestNoStyle(TestCase):
 class TestCustomStyle(TestCase):
     
     def setUp(self):
-        from djpcms.conf import settings
-        settings.DJPCMS_STYLING_FUNCTION = 'djpcms.tests.conf.other.test_styling_function'
+        settings.DJPCMS_STYLING_FUNCTION = 'regression.style.other.test_styling_function'
         User.objects.create_user('pinco', 'pinco@pinco.com', 'pinco')
         
     def testCusomStyle(self):

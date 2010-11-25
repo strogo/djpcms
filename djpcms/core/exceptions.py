@@ -6,6 +6,11 @@ class DjpcmsException(Exception):
     pass
 
 
+class AlreadyRegistered(DjpcmsException):
+    '''A :class:`DjpcmsException` raised when trying to register the same application twice.'''
+    pass
+
+
 class ModelException(DjpcmsException):
     '''A :class:`DjpcmsException` raised when a Model is not recognised.'''
     pass

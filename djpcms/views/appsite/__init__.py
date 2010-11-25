@@ -9,10 +9,13 @@ def load():
     '''Load dynamic applications and create urls
     '''
     from djpcms.conf import settings
-    import djpcms.views.apps.contentedit
-    if settings.APPLICATION_URL_MODULE:
-        app_module = import_module(settings.APPLICATION_URL_MODULE)
-        
+    if not site.isloaded:
+        if settings.APPLICATION_URL_MODULE:
+            app_module = import_module(settings.APPLICATION_URL_MODULE)
+            appurls = app_module.appurls
+        else:
+            appurls = ()
+        site.load(*appurls)
 
 
 class ChangeForm(forms.ModelForm):

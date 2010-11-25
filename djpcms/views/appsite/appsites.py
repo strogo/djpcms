@@ -1,7 +1,10 @@
+from djpcms.conf import settings
+
 from django.db.models.base import ModelBase
 from django import http
 from django.utils.datastructures import SortedDict
 
+from djpcms.core.exceptions import DjpcmsException, AlreadyRegistered
 from djpcms.views.appsite.applications import ApplicationBase, ModelApplication
 from djpcms import siteapp_choices
 
@@ -13,60 +16,47 @@ class ApplicationSite(object):
     registered django applications.
     '''
     def __init__(self):
-        from djpcms.conf import settings
         self.editavailable = settings.CONTENT_INLINE_EDITING.get('available',False)
         self._registry     = {}
         self._nameregistry = SortedDict()
         self.choices       = siteapp_choices
+        self.isloaded      = False
+        
+    def load_initial(self):
+        baseurl = settings.CONTENT_INLINE_EDITING.get('pagecontent', '/content/')
+        from djpcms.views.apps.contentedit import ContentSite, BlockContent
+        self.register(ContentSite(baseurl, BlockContent, editavailable = False))
         
     def count(self):
         return len(self._registry)
         
-    def register(self,
-                 baseurl,
-                 application_class = None,
-                 model = None,
-                 editavailable = True,
-                 **options):
-        """
-        Registers an application to a baseurl.
-
-        The model(s) should be Model classes, not instances.
-
-        If an admin class isn't given, it will use ModelApplication (the default
-        admin options). If keyword arguments are given -- e.g., list_display --
-        they'll be applied as options to the admin class.
-
-        If a model is already registered, this will raise AlreadyRegistered.
-        """
-        model_or_iterable = model
-        if model_or_iterable is not None:
-            if not hasattr(model,'__iter__'):
-                model_or_iterable = (model,)            
-            
-        if not application_class:
-            if not model_or_iterable:
-                application_class = ApplicationBase
-            else:
-                application_class = ModelApplication 
+    def load(self, *applications):
+        """Registers an instance of :class:`djpcms.views.appsite.ApplicationBase`
+to the site. If a model is already registered, this will raise AlreadyRegistered."""
+        if self.isloaded:
+            return
+        self.load_initial()
+        for application in applications:
+            self.register(application)
+        self.isloaded = True
         
-        editavailable = self.editavailable and editavailable
-        if model_or_iterable:
-            for model in model_or_iterable:
-                # Instantiate the admin class to save in the registry
-                #if model in self._registry:
-                #    raise ValueError('Model %s already registered as application' % model)
-                app = application_class(baseurl, self, editavailable, model)
-                #if app.name in self._nameregistry:
-                #    raise ValueError('Model %s already registered as application' % model)
-                self._registry[model] = app
-                self._nameregistry[app.name] = app
+    def register(self, application):
+        if not isinstance(application,ApplicationBase):
+            raise DjpcmsException('Cannot register application. Is is not a valid one.')
+        
+        if application.name in self._nameregistry:
+            raise AlreadyRegistered('Application %s already registered as application' % application)
+        self._nameregistry[application.name] = application
+        
+        model = getattr(application,'model',None)
+        if model:
+            if model in self._registry:
+                raise AlreadyRegistered('Model %s already registered as application' % model)
+            self._registry[model] = application
         else:
-            app = application_class(baseurl, self, editavailable)
-            if app.name in self._nameregistry:
-                raise ValueError('Application %s already registered as application' % app.name)
-            self._nameregistry[app.name] = app
-            self.choices.append((app.name,app.name))
+            pass
+            #self.choices.append((app.name,app.name))
+        application.register(self)
     
     def unregister(self, model):
         '''Unregister the :class:`djpcms.views.appsite.ModelApplication registered for *model*. Return the
@@ -75,6 +65,13 @@ application class which has been unregistered.'''
         if appmodel:
             self._nameregistry.pop(appmodel.name,None)
         return None if not appmodel else appmodel.__class__
+    
+    def clear(self):
+        '''Clear the site from all applications'''
+        del self.choices[1:]
+        self._nameregistry.clear()
+        self._registry.clear()
+        self.isloaded = False
             
     def for_model(self, model):
         '''Obtain a :class:`djpcms.views.appsite.ModelApplication` for model *model*.

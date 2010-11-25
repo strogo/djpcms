@@ -1,9 +1,10 @@
+from djpcms.conf import settings
+
 from django import forms
 from django.forms.forms import get_declared_fields
 from django.forms.widgets import media_property
 from django.db import models
 
-from djpcms.conf import settings
 from djpcms.utils.html import ModelChoiceField, ModelMultipleChoiceField, submit
 
 
@@ -15,7 +16,6 @@ DateField = forms.DateField
 Select    = forms.Select
 Textarea  = forms.Textarea
 TextInput = forms.TextInput
-ModelForm = forms.ModelForm
 BooleanField = forms.BooleanField
 CharField = forms.CharField
 ChoiceField = forms.ChoiceField
@@ -27,6 +27,7 @@ EmailField = forms.EmailField
 PasswordInput = forms.PasswordInput
 ValidationError = forms.ValidationError
 model_to_dict = forms.model_to_dict
+MediaDefiningClass = forms.MediaDefiningClass
 
 
 class Form(forms.Form):
@@ -37,6 +38,18 @@ class Form(forms.Form):
         super(Form,self).__init__(*args, **kwargs)
 
 
+class ModelForm(forms.ModelForm):
+    '''A slight modification on django Form'''
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request',None)
+        super(ModelForm,self).__init__(*args, **kwargs)
+        
+        
+def modelform_factory(model, form=ModelForm, **kwargs):
+    from django.forms import models 
+    return models.modelform_factory(model, form=form, **kwargs)
+
+        
 class LazyChoiceField(ChoiceField):
     '''
     A Lazy ChoiceField.

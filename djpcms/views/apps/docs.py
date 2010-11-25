@@ -123,8 +123,8 @@ class DocApplication(ApplicationBase):
     index = DocView(regex = '')
     document = DocView(parent = 'index')
     
-    def __init__(self, baseurl, application_site, editavailable):
-        super(DocApplication,self).__init__(baseurl, application_site, False)
+    def __init__(self, baseurl, editavailable = False, **kwargs):
+        super(DocApplication,self).__init__(baseurl, editavailable=editavailable, **kwargs)
     
     def get_path_args(self, lang, version):
         return (lang, version, "_build", "json")

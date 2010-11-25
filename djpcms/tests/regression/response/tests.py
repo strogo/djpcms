@@ -1,9 +1,11 @@
 from djpcms.test import TestCase
 from djpcms.conf import settings
-from djpcms.tests.testmodel.models import Strategy
+
+from regression.response.models import Strategy
 
 class TestDjpResponse(TestCase):
     '''Test functions in DjpResponse instances.'''
+    appurls = 'regression.response.appurls'
     
     def testOwnPageSimple(self):
         context = self.get('/')

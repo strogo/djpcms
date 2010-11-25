@@ -3,6 +3,8 @@ from djpcms.views.apps import vanilla
 
 from regression.appvanilla.models import Strategy
 
-appurls = vanilla.Application('/strategies/',Strategy),
+appsite.site.register('/strategies/',
+                      vanilla.Application,
+                      model = Strategy)
 
 

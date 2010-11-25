@@ -22,7 +22,6 @@ INSTALLED_APPS  = ['django.contrib.auth',
 ADMIN_MEDIA_PREFIX = '/media/admin/'
 MEDIA_ROOT = os.path.join(CUR_DIR, 'media')
 TEMPLATE_DIRS = os.path.join(CUR_DIR, 'templates'),
-ROOT_URLCONF           = 'urls'
 
 TEMPLATE_CONTEXT_PROCESSORS = (
             "django.contrib.auth.context_processors.auth",

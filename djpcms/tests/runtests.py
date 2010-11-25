@@ -61,11 +61,11 @@ def setup_logging(verbosity):
     if level is None:
         logger.addHandler(Silence())
     else:
-        logger.addHadler(logging.StreamHandler())
+        logger.addHandler(logging.StreamHandler())
         logger.setLevel(level)
         
         
-def run(tags = None, verbosity = 0, interactive = True, failfast = True):
+def run(tags = None, verbosity = 1, interactive = True, failfast = True):
     setup_logging(verbosity)
     os.environ['DJANGO_SETTINGS_MODULE'] = 'djpcms.tests.testsettings'
     from django.conf import settings

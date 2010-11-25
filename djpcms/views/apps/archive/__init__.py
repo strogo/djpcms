@@ -25,6 +25,10 @@ class ArchiveApplication(ModelApplication):
     month_archive = views.MonthArchiveView(regex = '(?P<month>\w{3})', parent = 'year_archive')
     day_archive   = views.DayArchiveView(regex = '(?P<day>\d{2})',   parent = 'month_archive')
     
+    def __init__(self, *args, **kwargs):
+        self.date_code = kwargs.pop('date_code',self.date_code)
+        super(ArchiveApplication,self).__init__(*args, **kwargs)
+        
     def get_month_value(self, month):
         return force_unicode(MONTHS_3.get(month))
 

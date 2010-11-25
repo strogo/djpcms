@@ -1,21 +1,29 @@
 import datetime
+import os
 
 from djpcms.test import TestCase
+from djpcms.utils.pathtool import parentdir
+from djpcms.views.apps.docs import DocApplication
+
+
+class DocTestApplication(DocApplication):
+    inherit    = True
+    deflang    = None
+    defversion = None
+    name = 'test_documentation'
+    DOCS_PICKLE_ROOT = parentdir(os.path.abspath(__file__))
+    
+    def get_path_args(self, lang, version):
+        return ('docs',)
+
+appurls = DocTestApplication('/docs/'),
+
 
 
 class DocsViewTest(TestCase):
-    fixtures = ["test.json"]
-    appurls  = 'regression.appdoc.appurls'
+    appurls  = 'regression.appdoc.tests'
     
-    def callView(self, url):
-        response = self.client.get(url)
-        self.assertEqual(response.status_code,200)
-        if isinstance(response.context, list):
-            return response.context[1]
-        else:
-            return response.context
-        
     def testIndex(self):
-        context = self.callView('/docs/')
         pass
-        #pa = context["paginator"]
+        #context = self.get('/docs/')
+        

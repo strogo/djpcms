@@ -1,10 +1,11 @@
 import logging
 
+ROOT_URLCONF                    = 'djpcms.views.defaulturls'
+APPLICATION_URL_MODULE          = None
 ADMIN_URL_PREFIX                = '/admin/'
 TEMPLATE_ENGINE                 = 'django'
 LANGUAGE_REDIRECT               = False
 DEFAULT_TEMPLATE_NAME           = ['base.html','djpcms/base.html']
-#DEFAULT_VIEW_MODULE             = 'djpcms.views.pageview.pageview'
 HTML_CLASSES                    = None
 MAX_SEARCH_DISPLAY              = 20
 CACHE_VIEW_OBJECTS              = True
@@ -31,8 +32,6 @@ LLOOGG_ANALYTICS_ID             = None
 
 SITE_NAVIGATION_LEVELS          = 2
 ENABLE_BREADCRUMBS              = 1
-
-APPLICATION_URL_MODULE          = None
 
 DJPCMS_PLUGINS                  = ['djpcms.plugins.*']
 DJPCMS_WRAPPERS                 = ['djpcms.plugins.extrawrappers']

@@ -28,7 +28,7 @@ this_dir = parent(os.path.abspath(__file__))
 libs = []
 
 
-def runtests(tags = None, verbosity = 0, interactive = True, failfast = False):
+def runtests(tags = None, verbosity = 1, interactive = True, failfast = False):
     '''Run tests::
     
     import djpcms

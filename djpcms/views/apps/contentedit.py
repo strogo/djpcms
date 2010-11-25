@@ -378,11 +378,3 @@ class ContentSite(appsite.ModelApplication):
         else:
             return None
     
-    
-if appsite.site.editavailable:
-    baseurl     = settings.CONTENT_INLINE_EDITING.get('pagecontent', '/content/')
-    appsite.site.register(baseurl,
-                          ContentSite,
-                          model = BlockContent,
-                          editavailable = False)
-    

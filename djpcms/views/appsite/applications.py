@@ -9,10 +9,9 @@ from django import http
 from django.utils.datastructures import SortedDict
 from django.template import loader, Template, Context, RequestContext
 from django.conf.urls.defaults import url
-from django import forms
-from django.forms.models import modelform_factory
 
 from djpcms.conf import settings
+from djpcms import forms
 from djpcms.template import loader
 from djpcms.core.models import getmodel
 from djpcms.core.exceptions import PermissionDenied, ApplicationUrlException
@@ -129,16 +128,21 @@ No reason to change this default unless you really don't want to see the views i
     _form_save       = 'done'
     _form_continue   = 'save & continue'
     
-    def __init__(self, baseurl, application_site, editavailable):
-        self.application_site = application_site
+    def __init__(self, baseurl, editavailable = None, name = None):
+        self.application_site = None
+        if editavailable is None:
+            editavailable = settings.CONTENT_INLINE_EDITING.get('available',False)
         self.editavailable    = editavailable
-        self.root_application = None
         if not baseurl.endswith('/'):
             baseurl = '%s/' % baseurl
         if not baseurl.startswith('/'):
             baseurl = '/%s' % baseurl
         self.__baseurl        = baseurl
-        self.name             = self._makename()
+        self.name             = self._makename(name)
+        
+    def register(self, application_site):
+        self.root_application = None
+        self.application_site = application_site
         self.description      = self._makedescription()
         self.views            = deepcopy(self.base_views)
         self.object_views     = []
@@ -201,11 +205,10 @@ No reason to change this default unless you really don't want to see the views i
         if parent_view:
             return parent_view(djp.request, **djp.kwargs)
     
-    def _makename(self):
-        cls = self.__class__
-        name = cls.name
+    def _makename(self, name):
+        name = name or self.name
         if not name:
-            name = cls.__name__
+            name = self.__class__.__name__
         name = name.replace('-','_').lower()
         return str(slugify(name,rtx='_'))
     
@@ -282,7 +285,7 @@ No reason to change this default unless you really don't want to see the views i
                 if form_class._meta.model == model:
                     mform = form_class
                 else:
-                    mform = modelform_factory(model, form_class)
+                    mform = forms.modelform_factory(model, form_class)
         
         return get_form(djp,
                         mform,
@@ -340,10 +343,10 @@ functionality when searching for model instances.'''
     #
     list_display_links = None
     
-    def __init__(self, baseurl, application_site, editavailable, model = None):
+    def __init__(self, baseurl, model, **kwargs):
+        super(ModelApplication,self).__init__(baseurl, **kwargs)
         self.model  = model
         self.opts   = getmodel(self)
-        super(ModelApplication,self).__init__(baseurl, application_site, editavailable)
         
     def get_root_code(self):
         return self.root_application.code
