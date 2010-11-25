@@ -2,13 +2,13 @@
 # Used by testing.py on the package directory for testing
 #
 import os
-BASE = os.path.split(os.path.abspath(__file__))[0]
+CUR_DIR = os.path.split(os.path.abspath(__file__))[0]
 SITE_ID = 1
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE,'tests','testdjpcms.sqlite')
+        'NAME': os.path.join(CUR_DIR,'testdjpcms.sqlite')
     }
 }
 
@@ -20,10 +20,9 @@ INSTALLED_APPS  = ['django.contrib.auth',
                    'djpcms']
 
 ADMIN_MEDIA_PREFIX = '/media/admin/'
-MEDIA_ROOT = os.path.join(BASE, 'tests', 'media')
-
+MEDIA_ROOT = os.path.join(CUR_DIR, 'media')
+TEMPLATE_DIRS = os.path.join(CUR_DIR, 'templates'),
 ROOT_URLCONF           = 'urls'
-APPLICATION_URL_MODULE = 'djpcms.tests.conf.test_urls'
 
 TEMPLATE_CONTEXT_PROCESSORS = (
             "django.contrib.auth.context_processors.auth",

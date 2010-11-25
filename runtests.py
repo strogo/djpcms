@@ -1,3 +1,7 @@
 #!/usr/bin/env python
-import djpcms
-djpcms.runtests()
+
+if __name__ == '__main__':
+    import djpcms
+    import sys
+    tags = sys.argv[1:]
+    djpcms.runtests(tags = tags)

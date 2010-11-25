@@ -14,7 +14,6 @@ class ApplicationSite(object):
     '''
     def __init__(self):
         from djpcms.conf import settings
-        self.root_path     = settings.APPLICATION_URL_PREFIX[1:]
         self.editavailable = settings.CONTENT_INLINE_EDITING.get('available',False)
         self._registry     = {}
         self._nameregistry = SortedDict()

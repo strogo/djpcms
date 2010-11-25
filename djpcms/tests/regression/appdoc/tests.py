@@ -1,11 +1,11 @@
 import datetime
 
-from django.test import TestCase
-from django.conf import settings
+from djpcms.test import TestCase
 
 
 class DocsViewTest(TestCase):
     fixtures = ["test.json"]
+    appurls  = 'regression.appdoc.appurls'
     
     def callView(self, url):
         response = self.client.get(url)

@@ -73,7 +73,7 @@ Not used very often but here just in case.'''
         '''Allowed request methods for this view.
         By default it returns :attr:`_methods`.
         '''
-        return self.__class__._methods
+        return self._methods
     
     def get_template(self, page = None):
         '''Given a :class:`djpcms.models.Page` instance *page*, which may be ``None``,
@@ -135,19 +135,11 @@ Hooks:
 * 'preget':     for pre-processing and redirects
 * 'render':     for creating content when there is no inner_template
 * *extra_response*: for more.'''
-        re = self.preget(djp)
-        if isinstance(re,http.HttpResponse):
-            return re
-        
         # Get page object and template_name
         request = djp.request
         page    = djp.page
         inner_template  = None
         grid    = self.grid960(page)
-        
-        # If user not authenticated set a test cookie  
-        if not request.user.is_authenticated() and request.method == 'GET':
-            request.session.set_test_cookie()
         
         context = {'grid': grid}
         

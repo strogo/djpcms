@@ -42,6 +42,7 @@ def import_tests(tags,apps):
         model_label = '{0}.{1}'.format(loc,app)
         if tags and app not in tags:
             logger.debug("Skipping model %s" % model_label)
+            continue
         logger.info("Importing model %s" % model_label)
         if loc == 'contrib':
             model_label = 'djpcms.'+model_label

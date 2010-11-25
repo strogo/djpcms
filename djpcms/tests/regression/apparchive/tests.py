@@ -1,13 +1,12 @@
 import datetime
 
-from django.test import TestCase
-from django.conf import settings
-
+from djpcms.test import TestCase
 from djpcms.models import SiteContent
 
 
 class CalendarViewTest(TestCase):
     fixtures = ["sitecontent.json"]
+    appurls  = 'regression.apparchive.appurls'
         
     def callView(self, url):
         today = datetime.date.today()

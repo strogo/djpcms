@@ -33,7 +33,6 @@ SITE_NAVIGATION_LEVELS          = 2
 ENABLE_BREADCRUMBS              = 1
 
 APPLICATION_URL_MODULE          = None
-APPLICATION_URL_PREFIX          = '/apps/'
 
 DJPCMS_PLUGINS                  = ['djpcms.plugins.*']
 DJPCMS_WRAPPERS                 = ['djpcms.plugins.extrawrappers']

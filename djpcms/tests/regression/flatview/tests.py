@@ -1,5 +1,4 @@
 from djpcms.test import TestCase
-from djpcms.conf import settings
 
 
 class TestBaseApplication(TestCase):
