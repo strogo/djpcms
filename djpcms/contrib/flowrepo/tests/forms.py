@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
 
-from flowrepo.models import Report, FlowItem
+from djpcms.contrib.flowrepo.models import Report, FlowItem
 
 __all__ = ['FormTest']
 

@@ -4,7 +4,7 @@ from djpcms.test import TestCase
 from djpcms.conf import settings
 from djpcms.utils import navigation
 
-from testmodel.models import Strategy
+from regression.navigation.models import Strategy
 
 
 class TestSiteNavigation(TestCase):

@@ -6,7 +6,8 @@ from djpcms.views.apps import archive
 
 from djpcms.models import SiteContent
 from djpcms.views.apps.docs import DocApplication
-from djpcms.tests.testmodel.forms import Strategy, StrategyForm
+
+from regression.autocomplete.forms import Strategy, StrategyForm
 
 
 class StrategyApplication(appsite.ModelApplication):

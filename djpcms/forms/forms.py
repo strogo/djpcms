@@ -19,6 +19,7 @@ ModelForm = forms.ModelForm
 BooleanField = forms.BooleanField
 CharField = forms.CharField
 ChoiceField = forms.ChoiceField
+CheckboxInput = forms.CheckboxInput
 FileField = forms.FileField
 HiddenInput = forms.HiddenInput
 RegexField = forms.RegexField

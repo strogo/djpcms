@@ -5,7 +5,7 @@ from djpcms.views import appsite
 from djpcms.views.cache import pagecache
 from djpcms.models import Page
 
-from flowrepo.models import Report, FlowItem
+from djpcms.contrib.flowrepo.models import Report, FlowItem
 
 __all__ = ['CmsTest']
 

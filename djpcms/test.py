@@ -1,5 +1,6 @@
 from django import test
 from django.contrib.auth.models import User
+from django.core.urlresolvers import clear_url_caches
 
 from djpcms.forms import model_to_dict
 from djpcms.views.cache import pagecache
@@ -11,11 +12,23 @@ from djpcms.forms.cms import PageForm
 class TestCase(test.TestCase):
     '''Implements shortcut functions for testing djpcms'''
     
-    def setUp(self):
+    def _pre_setup(self):
+        super(TestCase)._pre_setup()
+        self._appurlconf_setup()
         self.pagecache = pagecache
+        self.pagecache.clear()
         self.Page = Page
         self.site = appsite.site
-        p = self.clear()
+        
+    def _urlconf_setup(self):
+        appurls = getattr(self,'appurls',None)
+        if appurls:
+            self._old_appurl = settings.APPLICATION_URL_MODULE
+            settings.APPLICATION_URL_MODULE = appurls
+            clear_url_caches()
+        
+    def setUp(self):
+        self.clear()
         self.superuser = User.objects.create_superuser('testuser', 'test@testuser.com', 'testuser')
         self.user = User.objects.create_user('simpleuser', 'simple@testuser.com', 'simpleuser')
         self.assertEqual(p.url,'/')
