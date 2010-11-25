@@ -271,7 +271,11 @@ No reason to change this default unless you really don't want to see the views i
             template = template(djp)
         
         instance = instance or djp.instance
-        model    = kwargs.pop('model',None) or getattr(self,'model',None)
+        model    = kwargs.pop('model',None)
+        if not model and instance:
+            model = instance.__class__
+        else:
+            model = getattr(self,'model',None)
         request  = djp.request
         form_withrequest = form_withrequest if form_withrequest is not None else self.form_withrequest
         form_ajax = form_ajax if form_ajax is not None else self.form_ajax
