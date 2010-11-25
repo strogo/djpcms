@@ -12,11 +12,8 @@ Add yor token-secret pairs for the social ``providers`` in your settings file::
                           	  ...
                             }
 
-
-
 Requirements
 ==================
-
 * ``flickr``, requires flickrapi_
 * ``google``, requires gdata_.
 * ``twitter``, requires tweepy_.

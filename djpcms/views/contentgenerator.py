@@ -1,9 +1,8 @@
-from django import forms
 from django.forms.formsets import formset_factory
 from django.template import RequestContext, loader
-from django.utils.safestring import mark_safe
 
-from djpcms.utils import UnicodeObject
+from djpcms import forms
+from djpcms.utils import UnicodeObject, mark_safe
 
 
 class BlockContentGen(UnicodeObject):

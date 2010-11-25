@@ -5,6 +5,8 @@ import djpcms_defaults
 def _get_settings():
     framework = os.environ.get('DJPCMS_WEB_FRAMEWORK','django')
     if framework == 'django':
+        if not os.environ.get('DJANGO_SETTINGS_MODULE',None):
+            os.environ['DJANGO_SETTINGS_MODULE'] = 'djpcms.core.defaults.settings'
         from django.conf import settings as framework_settings
     else:
         raise ValueError('Framework %s not supported' % framework)

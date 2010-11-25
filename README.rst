@@ -17,7 +17,10 @@ and Javascript with jQuery_ on the browser side. It is designed to handle dynami
 high level of customization. Lots of AJAX enabled features including inline editing, autocomplete and
 ajax forms.
 
-It is based on django, but it works for other object relational mappers too!
+It is based on django models, for now, but it will work for other object relational mappers too!
+
+.. contents::
+    :local:
 
 .. _intro-features:
 
@@ -78,8 +81,19 @@ or easy_install::
 
 	easy_install djpcms
 	
+	
+Version Check
+=====================
 
+To check the version::
 
+	>>> import djpcms
+	>>> djpcms.__version__
+	'0.8.5'
+	>>> djpcms.get_version()
+	'0.8.5'
+	
+	
 Running tests
 ===================
 
@@ -93,10 +107,11 @@ Otherwise, once installed::
 	djpcms.runtests()
 
 
-Dependencies
-========================
-It requires Python_ 2.6 or above. It is not yet compatible with Python 3 series.
-Currently it depends on django_, however in the long run, this dependency will be
+Dependencies and Python 3
+===========================
+It requires Python_ 2.6 or above. It is not yet compatible with Python 3 series but
+it will be ported as soon as the library is independent from django_ and the API is stable enough.
+As mentioned it idepends on django_, however in the long run, this dependency will be
 removed so that it can be used with other web-frameworks as well.
 
 * django_.
@@ -110,11 +125,11 @@ Optional requirements:
 
 Kudos
 =====================
-Djpcms includes several open-source libraries and plugins developed by other authors:
+Djpcms includes several open-source libraries and plugins developed by other authors and communities:
 
 * jQuery_ the building block of the browser side of djpcms. Thanks to the jQuery and jQuery-UI teams!
+  The latest ``jquery`` and ``jquery-ui`` minified files are shipped with the library. 
 * django-tagging_ for tag management. Shipped with the library in the ``libs`` module but a library in its own.
-  The latest jquery and jquery-ui minified files are shipped with the library. 
 * jQuery tablesorter_ plugin. Thanks to Christian Bach.
 * Modernizr_, a small JavaScript library that detects the availability of native implementations for next-generation web technologies.
 

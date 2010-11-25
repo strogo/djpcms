@@ -14,7 +14,6 @@
 import sys, os
 
 # If your extensions are in another directory, add it here.
-os.environ['DJANGO_SETTINGS_MODULE'] = 'djpcms.testsettings'
 source_dir = os.path.split(os.path.abspath(__file__))[0]
 docs_dir   = os.path.split(source_dir)[0]
 base_dir   = os.path.split(docs_dir)[0]
