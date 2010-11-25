@@ -1,11 +1,11 @@
-from django import forms
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
-from django.utils.encoding import force_unicode
-import django.utils.simplejson as json
 
 from tagging.forms import TagField
 
+from djpcms import forms
+from djpcms.utils import force_unicode
+from djpcms.utils import json
 from djpcms.contrib.flowrepo import models
 
 
@@ -38,20 +38,20 @@ class FlowForm(forms.ModelForm):
     timestamp = forms.DateTimeField(required = False)
     
     def __init__(self, *args, **kwargs):
-        user = kwargs.pop('user',None)
-        request = kwargs.pop('request',None)
-        if not user and request:
-            user = request.user
-        self.user = user
-        super(FlowForm, self).__init__(*args, **kwargs)
+        self._user = kwargs.pop('user',None)
+        super(FlowForm,self).__init__(*args, **kwargs)
         
     class Meta:
         model = models.FlowItem
     
     def savemodel(self, obj):
         raise NotImplementedError()
+    
+    def get_user(self):
+        return self._user or self.request.user
         
     def save(self, commit = True):
+        user       = self.get_user()
         model      = self._underlying
         instance   = self.instance
         instance.content_type = ContentType.objects.get_for_model(model)
@@ -63,7 +63,7 @@ class FlowForm(forms.ModelForm):
             object     = model()
         instance.object_id = self.savemodel(object).id
         instance   = super(FlowForm,self).save(commit = commit)
-        instance.authors.add(self.user)
+        instance.authors.add(user)
         if registered:
             flowitems.registerModel(model)
         return instance
@@ -177,7 +177,7 @@ class WebAccountForm(forms.ModelForm):
     extended = forms.CharField(required = False)
     
     def __init__(self, **kwargs):
-        request = kwargs.pop('request',None)
+        request = kwargs.get('request',None)
         instance = kwargs.get('instance',None)
         self._user = request.user
         if instance:

@@ -136,8 +136,9 @@ class FlowItemApplication(ArchiveTaggedApplication):
     def modelsearch(self):
         return FlowItem
             
-    def basequery(self, request):
-        return FlowItem.objects.public(user = request.user, model = self.model)
+    def basequery(self, djp):
+        user = djp.request.user
+        return FlowItem.objects.public(user = user, model = self.model)
     
     def get_search_fields(self):
         if self.search_fields:

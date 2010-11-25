@@ -169,8 +169,13 @@ class DjpResponse(http.HttpResponse):
         view    = self.view
         request = self.request
         is_ajax = request.is_ajax()
-        page    = None
+        page    = self.page
         method  = request.method.lower()
+        
+        # Check for page view permissions
+        if not view.has_permission(request, page, self.instance):
+            return view.permissionDenied(self)
+        
         if not is_ajax:
             re = view.preget(self)
             if isinstance(re,http.HttpResponse):
@@ -178,12 +183,6 @@ class DjpResponse(http.HttpResponse):
             # If user not authenticated set a test cookie  
             if not request.user.is_authenticated() and method == 'get':
                 request.session.set_test_cookie()
-        else:
-            page = self.page
-            
-        # Check for page view permissions
-        if not view.has_permission(request, page, self.instance):
-            return view.permissionDenied(self)
 
         if method not in (m.lower() for m in view.methods(request)):
             return http.HttpResponseNotAllowed(method)

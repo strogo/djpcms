@@ -1,6 +1,6 @@
-from django.test import TestCase
 from django.contrib.auth.models import User
 
+from djpcms.test import TestCase
 from djpcms.contrib.flowrepo.models import Report, FlowItem
 
 __all__ = ['FormTest']
@@ -8,11 +8,8 @@ __all__ = ['FormTest']
 
 class FormTest(TestCase):
     
-    def setUp(self):
-        self.user = User.objects.create_user('testuser', 'test@testuser.com', 'testuser')
-    
     def testAdd(self):
-        from flowrepo.forms import ReportForm
+        from djpcms.contrib.flowrepo.forms import ReportForm
         f = ReportForm(user = self.user,
                        data = {'title': 'A test report',
                                'body': 'this is the body',

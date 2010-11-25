@@ -34,7 +34,7 @@ class TestCase(test.TestCase):
         super(TestCase,self)._urlconf_teardown()
         
     def setUp(self):
-        p = self.clear()
+        p = self.get()['page']
         self.superuser = User.objects.create_superuser('testuser', 'test@testuser.com', 'testuser')
         self.user = User.objects.create_user('simpleuser', 'simple@testuser.com', 'simpleuser')
         self.assertEqual(p.url,'/')

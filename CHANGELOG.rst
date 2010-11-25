@@ -1,11 +1,11 @@
 Version 0.8.6 - Development
 =======================================
-* Redisign of test suite.
-* Refactoring of application are loaded.
+* Redesign of test suite.
+* Applications reloading.
 * Injecting the instance or ``None`` of current ``url`` into ``request`` object.
 * Added more docs on views and applications.
 * Added :mod:``djpcms.contrib.social`` application with ``OAuth``. Still in ``alpha``.
-* **42 unit tests**.
+* **46 unit tests**.
 
 Version 0.8.5 (2010-Nov-16)
 =======================================

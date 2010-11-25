@@ -303,6 +303,7 @@ The url is given by the ContentBlocks models
 
 
 class ContentSite(appsite.ModelApplication):
+    '''AJAX enabled applications for changing content of a page.'''
     form        = ContentBlockForm
     form_layout = 'onecolumn'
     hidden      = True
@@ -335,7 +336,6 @@ class ContentSite(appsite.ModelApplication):
         if view and self.has_edit_permission(request, obj):
             djp = view(request, instance = obj)
             return djp.url
-        
         
     def get_object(self, request, pageid = 1, blocknumber = 1, position = 1):
         '''

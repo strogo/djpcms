@@ -285,7 +285,7 @@ which is registered to be a plugin, than it will be managed by this plugin.'''
         request = djp.request
         html = u''
         if app.has_permission(request):
-            if djp.view != app:
+            if djp.view != app or kwargs:
                 args = djp.kwargs.copy()
                 args.update(kwargs)
                 t_djp = self.app(djp.request, **args)

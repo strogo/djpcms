@@ -1,12 +1,15 @@
 from django.contrib.auth.models import User
 
 from djpcms.test import TestCase
-from djpcms.conf import settings
+from djpcms.views.apps import vanilla
 
 from regression.page.models import Strategy
 
+appurls = vanilla.Application('/strategies/',Strategy),
+
 
 class TestPage(TestCase):
+    appurls = 'regression.page.tests'
     
     def testRoot(self):
         context = self.get()

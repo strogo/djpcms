@@ -6,7 +6,9 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.core import management
-from django.conf import settings
+
+
+from djpcms.conf import settings
 
 try:
     from djpcms.contrib.jdep.fabtools import *
@@ -54,6 +56,7 @@ if fabric_available:
                 sys.path.insert(0,path)
             env.host_string = 'localhost'
             utils.project('testjdep','testjdep.com', redirect_port = 103)
+            settings.INSTALLED_APPS.append('djpcms.contrib.flowrepo')
         
         def testPath(self):
             upload(False)
@@ -74,7 +77,7 @@ if fabric_available:
                     media_inconf += 1
                     self.assertTrue('location %s {' % app.url() in nginx)
                     self.assertTrue(app.base in nginx)
-            self.assertEqual(media_inconf,3)
+            self.assertEqual(media_inconf,2)
             
         def testServer(self):
             result = deploy(False)
@@ -94,4 +97,5 @@ if fabric_available:
             
         def tearDown(self):
             os.chdir(self.curdir)
+            settings.INSTALLED_APPS.pop()
             

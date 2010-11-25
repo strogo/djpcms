@@ -17,7 +17,8 @@ INSTALLED_APPS  = ['django.contrib.auth',
                    'django.contrib.sessions',
                    'django.contrib.sites',
                    'django.contrib.contenttypes',
-                   'djpcms']
+                   'djpcms',
+                   'tagging']
 
 ADMIN_MEDIA_PREFIX = '/media/admin/'
 MEDIA_ROOT = os.path.join(CUR_DIR, 'media')

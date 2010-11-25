@@ -11,17 +11,21 @@ class TestRootApplicationNavigation(TestCase):
     appurls = 'regression.rootappnav.appurls'
     
     def setUp(self):
+        super(TestRootApplicationNavigation,self).setUp()
+        self._init()
+        
+    def _init(self):
+        self.Page.objects.all().delete()
+        p0 = self.makepage('search',Strategy)
         Strategy(name = 'one').save()
         Strategy(name = 'two').save()
         Strategy(name = 'three').save()
         Strategy(name = 'four').save()
-        super(TestRootApplicationNavigation,self).setUp()
-        p = self.makepage('search',Strategy)
-        p0 = self.makepage(bit = 'random')
-        self.assertFalse(p0.application)
-        self.assertEqual(p,p0.parent)
-        self.assertTrue(p.application)
-        self.assertEqual(p.url,'/')
+        p1 = self.makepage(bit = 'random')
+        self.assertFalse(p1.application)
+        self.assertEqual(p0,p1.parent)
+        self.assertTrue(p0.application)
+        self.assertEqual(p0.url,'/')
         
     def testSimpleApplication(self):
         p1 = self.makepage('add',Strategy,in_navigation=2)

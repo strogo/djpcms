@@ -13,6 +13,7 @@ ModelForm = forms.ModelForm
 IntegerField = forms.IntegerField
 FloatField = forms.FloatField
 DateField = forms.DateField
+DateTimeField = forms.DateTimeField
 Select    = forms.Select
 Textarea  = forms.Textarea
 TextInput = forms.TextInput
