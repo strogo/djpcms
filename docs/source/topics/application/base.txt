@@ -1,10 +1,10 @@
 .. _application-base:
 
 ======================
-ApplicationBase
+Application
 ======================
 
-.. autoclass:: djpcms.views.appsite.ApplicationBase
+.. autoclass:: djpcms.views.appsite.Application
    :members:
    :member-order: bysource
    

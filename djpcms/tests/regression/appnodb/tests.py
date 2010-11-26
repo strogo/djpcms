@@ -4,11 +4,11 @@ from djpcms.test import TestCase
 from djpcms.views import appsite, appview
 
 
-def randomnumber(self, djp):
+def randomnumber(djp):
     return "New random number: {0}".format(random.uniform(0,1))
 
-class RandomApplication(appsite.ApplicationBase):
-    home = appview.AppViewBase(isapp = True, in_navigation = True, renderer = randomnumber)
+class RandomApplication(appsite.Application):
+    home = appview.View(isapp = True, in_navigation = True, renderer = randomnumber)
     
 appurls = RandomApplication('/apps/nodb/', name = 'random application'),
 

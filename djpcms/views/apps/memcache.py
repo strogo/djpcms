@@ -5,7 +5,7 @@ from django.conf.urls.defaults import url
 from django.template import loader
 
 from djpcms.utils.ajax import jhtmls
-from djpcms.views.appsite import ApplicationBase
+from djpcms.views.appsite import Application
 from djpcms.views.appview import AppViewBase
 from djpcms.plugins import register_application
 
@@ -92,7 +92,7 @@ class Flush(AppViewBase):
             pass
 
 
-class MemcacheApplication(ApplicationBase):
+class MemcacheApplication(Application):
     name = 'memcache_monitor'
     index = Index(isplugin = True)
     flush = Flush()

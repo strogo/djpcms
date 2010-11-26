@@ -11,7 +11,7 @@ from djpcms.forms import saveform
 from forms import LoginForm, PasswordChangeForm
 
 
-class LogoutView(appview.AppView):
+class LogoutView(appview.ModelView):
     '''
     Logs out a user, if there is an authenticated user :)
     '''
@@ -31,7 +31,7 @@ class LogoutView(appview.AppView):
 
 
 
-class LoginView(appview.AppView):
+class LoginView(appview.ModelView):
     '''A Battery included Login view.
     '''
     def __init__(self, regex = 'login', parent = None, insitemap = False, isplugin = True,

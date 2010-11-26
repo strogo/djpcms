@@ -1,28 +1,26 @@
 '''
 Base class for djpcms views.
 '''
-import copy
-
-from django import http
-from django.template import RequestContext, Context, loader
-from django.core.exceptions import PermissionDenied
-from django.forms import Media, MediaDefiningClass
-
-
 from djpcms.conf import settings
 from djpcms.permissions import inline_editing, get_view_permission, has_permission
 from djpcms.contrib import messages
 from djpcms.utils.ajax import jservererror, jredirect
-from djpcms.utils.html import grid960, submit
+from djpcms.utils.html import grid960, submit, box
 from djpcms.forms import saveform, get_form
 from djpcms.forms.cms import ShortPageForm, NewChildForm
 from djpcms.utils.uniforms import UniForm
 from djpcms.utils import UnicodeObject, urlbits, urlfrombits, function_module
 from djpcms.utils import htmltype, mark_safe, force_unicode
+from djpcms.utils.media import Media
 
 from djpcms.views.cache import pagecache
 from djpcms.views.response import DjpResponse
 from djpcms.views.contentgenerator import BlockContentGen
+
+from django import http
+from django.template import RequestContext, Context, loader
+from django.core.exceptions import PermissionDenied
+
 
 
 # THE DJPCMS INTERFACE CLASS for handling views
@@ -214,7 +212,7 @@ which handle the response'''
         if is_ajax:
             mimetype = 'application/javascript'
             params   = dict(post.items())
-            ajax_key = params.get(settings.HTML_CLASSES.post_view_key, None)
+            ajax_key = params.get(djp.css.post_view_key, None)
             if ajax_key:
                 ajax_key = ajax_key.replace('-','_').lower()
             
@@ -394,6 +392,8 @@ class editview(wrapview):
     '''Special :class:`djpcms.views.baseview.wrapview` for editing page content.
 This view is never in navigation and it provides a hook for adding the edit page form.
     '''
+    edit_template = 'djpcms/content/edit_page.html' 
+    
     def __init__(self, view, prefix):
         super(editview,self).__init__(view,prefix)
         self.editurl = self.prefix
@@ -409,10 +409,17 @@ This view is never in navigation and it provides a hook for adding the edit page
         
     def extra_content(self, djp, c):
         page = djp.page
-        request = djp.request        
-        c['page_form'] = get_form(djp, ShortPageForm, instance = page, withinputs=True).render(djp,validate=True)
-        c['new_child_form'] = get_form(djp, NewChildForm, instance = page, withinputs=True).render(djp,validate=True)
-        c['page_url'] = self.page_url(djp.request)
+        request = djp.request
+        page_url = self.page_url(djp.request)
+        ed = {
+             'page_form': get_form(djp, ShortPageForm, instance = page, withinputs=True).render(djp,validate=True),
+             'new_child_form': get_form(djp, NewChildForm, instance = page, withinputs=True).render(djp,validate=True),
+             'page_url': self.page_url(djp.request)}
+        bd = loader.render_to_string(self.edit_template,ed)
+        c.update({'page_url':page_url,
+                  'edit_page':box(hd = "Edit Page Layout",
+                                  bd = bd,
+                                  collapsed=True)})
 
     def get_form(self, djp):
         request = djp.request

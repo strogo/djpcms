@@ -10,7 +10,6 @@ from django.utils.datastructures import SortedDict
 from django.template import loader, Template, Context, RequestContext
 from django.conf.urls.defaults import url
 
-from djpcms.conf import settings
 from djpcms import forms
 from djpcms.template import loader
 from djpcms.core.models import getmodel
@@ -22,8 +21,9 @@ from djpcms.utils.html import submit
 from djpcms.utils.uniforms import UniForm
 from djpcms.permissions import has_permission
 from djpcms.views.baseview import editview
-from djpcms.views.appview import AppViewBase, ViewView
+from djpcms.views.appview import View, ViewView
 from djpcms.views.cache import pagecache
+from djpcms.utils.media import MediaDefiningClass
 
 render_to_string = loader.render_to_string
 
@@ -32,7 +32,7 @@ def get_declared_application_views(bases, attrs):
     """Create a list of Application views instances from the passed in 'attrs', plus any
 similar fields on the base classes (in 'bases')."""
     inherit = attrs.pop('inherit',False)
-    apps = [(app_name, attrs.pop(app_name)) for app_name, obj in attrs.items() if isinstance(obj, AppViewBase)]      
+    apps = [(app_name, attrs.pop(app_name)) for app_name, obj in attrs.items() if isinstance(obj, View)]      
     apps.sort(lambda x, y: cmp(x[1].creation_counter, y[1].creation_counter))
 
     # If this class is subclassing another Application, and inherit is True add that Application's views.
@@ -46,7 +46,7 @@ similar fields on the base classes (in 'bases')."""
     return SortedDict(data = apps)
 
 
-class ApplicationMetaClass(forms.MediaDefiningClass):
+class ApplicationMetaClass(MediaDefiningClass):
     
     def __new__(cls, name, bases, attrs):
         attrs['base_views'] = get_declared_application_views(bases, attrs)
@@ -77,7 +77,7 @@ def process_views(view,views,app):
         return view
 
 
-class ApplicationBase(object):
+class Application(object):
     '''Base class for djpcms applications.
     
 .. attribute:: baseurl
@@ -130,8 +130,6 @@ No reason to change this default unless you really don't want to see the views i
     
     def __init__(self, baseurl, editavailable = None, name = None):
         self.application_site = None
-        if editavailable is None:
-            editavailable = settings.CONTENT_INLINE_EDITING.get('available',False)
         self.editavailable    = editavailable
         if not baseurl.endswith('/'):
             baseurl = '%s/' % baseurl
@@ -143,6 +141,9 @@ No reason to change this default unless you really don't want to see the views i
     def register(self, application_site):
         self.root_application = None
         self.application_site = application_site
+        if self.editavailable is None:
+            self.editavailable = application_site.settings.CONTENT_INLINE_EDITING.get('available',False)
+        self.ajax             = self.application_site.settings.HTML_CLASSES
         self.description      = self._makedescription()
         self.views            = deepcopy(self.base_views)
         self.object_views     = []
@@ -166,10 +167,6 @@ No reason to change this default unless you really don't want to see the views i
         '''Get an application view from the view code.'''
         return self.views.get(code, None)
     
-    @property
-    def ajax(self):
-        return settings.HTML_CLASSES
-        
     def get_root_code(self):
         raise NotImplementedError
     
@@ -315,8 +312,8 @@ No reason to change this default unless you really don't want to see the views i
         return sb
 
 
-class ModelApplication(ApplicationBase):
-    '''An :class:`ApplicationBase` class for applications
+class ModelApplication(Application):
+    '''An :class:`Application` class for applications
 based on a back-end database model.
 This class implements the basic functionality for a general model
 User should subclass this for full control on the model application.

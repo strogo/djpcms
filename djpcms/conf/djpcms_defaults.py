@@ -3,15 +3,17 @@ import logging
 ROOT_URLCONF                    = 'djpcms.views.defaulturls'
 APPLICATION_URL_MODULE          = None
 ADMIN_URL_PREFIX                = '/admin/'
-TEMPLATE_ENGINE                 = 'django'
 LANGUAGE_REDIRECT               = False
-DEFAULT_TEMPLATE_NAME           = ['base.html','djpcms/base.html']
 HTML_CLASSES                    = None
 MAX_SEARCH_DISPLAY              = 20
 CACHE_VIEW_OBJECTS              = True
 DJPCMS_IMAGE_UPLOAD_FUNCTION    = None
 SERVE_STATIC_FILES              = True
 DJPCMS_EMPTY_VALUE              = '(None)'
+
+# Template engine settings
+TEMPLATE_ENGINE                 = 'django'
+DEFAULT_TEMPLATE_NAME           = ['base.html','djpcms/base.html']
 
 #styling
 DJPCMS_STYLE                    = 'smooth'

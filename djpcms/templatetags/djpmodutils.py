@@ -74,3 +74,4 @@ def objtable(obj):
         return appmodel.opts.totable(obj)
     else:
         return obj
+    

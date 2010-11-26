@@ -28,6 +28,11 @@ this_dir = parent(os.path.abspath(__file__))
 libs = []
 
 
+def get_site():
+    from djpcms.views.appsite import site
+    return site
+
+
 def runtests(tags = None, verbosity = 1, interactive = True, failfast = False):
     '''Run tests::
     

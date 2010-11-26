@@ -101,13 +101,13 @@ class ArchiveTaggedApplication(ArchiveApplication):
     month_archive = archive.MonthArchiveView(regex = '(?P<month>\w{3})', parent = 'year_archive')
     day_archive   = archive.DayArchiveView(regex = '(?P<day>\d{2})',   parent = 'month_archive')
     
-    tagc0          = appview.AppView(regex = 'tags', in_navigation = True)
+    tagc0          = appview.ModelView(regex = 'tags', in_navigation = True)
     tag1           = TagArchiveView(regex = '(?P<tag1>%s)' % tag_regex, parent = 'tagc0')
     year_archive1  = TagArchiveView(regex = '(?P<year>\d{4})',  parent = 'tag1')
     month_archive1 = TagArchiveView(regex = '(?P<month>\w{3})', parent = 'year_archive1')
     day_archive1   = TagArchiveView(regex = '(?P<day>\d{2})',   parent = 'month_archive1')
     
-    #tagc1          = appview.AppView(regex = 'tags2/(?P<tag1>%s)' % tag_regex)
+    #tagc1          = appview.ModelView(regex = 'tags2/(?P<tag1>%s)' % tag_regex)
     #tag2           = TagArchiveView(regex = '(?P<tag2>%s)' % tag_regex, parent = 'tagc1')
     #year_archive2  = TagArchiveView(regex = '(?P<year>\d{4})',  parent = 'tag2')
     #month_archive2 = TagArchiveView(regex = '(?P<month>\w{3})', parent = 'year_archive2')

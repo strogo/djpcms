@@ -10,7 +10,7 @@ class UserApplication(appsite.ModelApplication):
     baseurl  = settings.USER_ACCOUNT_HOME_URL
     form     = PasswordChangeForm
     
-    home   = appview.AppView()
+    home   = appview.ModelView()
     login  = LoginView(parent = 'home')
     logout = LogoutView(parent = 'home')
     change = appview.EditView(regex = 'change',

@@ -11,11 +11,12 @@ def box(hd = None, bd = None, ft = None, minimize = False, rounded = True,
     from djpcms.template import loader
     classes = classes or []
     menulist = []
+    if collapsed:
+        classes.append('collapsed')
+        collapsable = True
     if collapsable:
         classes.append('collapsable')
         menulist.append(mark_safe('<a class="collapse" href="#">COLLAPSE</a>'))
-    if collapsed:
-        classes.append('collapsed')
     if delurl:
         menulist.append(mark_safe('<a class="deletable ajax" href="%s">DELETE</a>' % delurl))
     c = {'id': id,

@@ -198,3 +198,17 @@ somewhere in your template file.
 .. seealso::
 
 	Check out the ``djpcms/bits/navitem.html`` template which renders the navigation.
+	
+
+.. SETTING:: TEMPLATE_ENGINE
+	
+TEMPLATE_ENGINE
+----------------------
+
+Default: ``django``
+
+The template engine to use when rendering pages. Currently only ``django`` is
+available but plan to add jinja_ are in place.
+
+
+.. jinja: http://jinja.pocoo.org/

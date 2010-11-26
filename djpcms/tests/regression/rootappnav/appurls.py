@@ -10,10 +10,10 @@ from djpcms.views.apps.docs import DocApplication
 from regression.rootappnav.models import Strategy
     
 
-class RandomApplication(appsite.ApplicationBase):
+class RandomApplication(appsite.Application):
     '''A simple application without database model'''
     name = 'random application'
-    home = appview.AppViewBase(isapp = True, in_navigation = True)
+    home = appview.View(isapp = True, in_navigation = True)
 
 
 class ContentArchiveApplication(archive.ArchiveApplication):

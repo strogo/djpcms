@@ -7,12 +7,12 @@ from djpcms.conf import settings
 from djpcms.utils import mark_safe, json 
 from djpcms.template import loader
 from djpcms.utils.unipath import FSPath as Path
-from djpcms.views.appsite import ApplicationBase
-from djpcms.views.appview import AppViewBase
+from djpcms.views.appsite import Application
+from djpcms.views.appview import View
 from djpcms.views.regex import RegExUrl
 
     
-class DocView(AppViewBase):
+class DocView(View):
     '''Sphinx documentation view.'''
     editurl          = None
     
@@ -108,7 +108,7 @@ class DocView(AppViewBase):
         return b
 
 
-class DocApplication(ApplicationBase):
+class DocApplication(Application):
     deflang          = 'en'
     '''Default language. Default ``en``.'''
     defversion       = 'dev'

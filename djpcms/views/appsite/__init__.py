@@ -1,8 +1,6 @@
-from django import forms
 from django.utils.importlib import import_module
-
-from djpcms.views.appsite.appsites import ApplicationBase, ModelApplication, ApplicationSite, site
-from djpcms.forms import LazyChoiceField
+from djpcms.views.appsite.appsites import Application, ModelApplication
+from djpcms.views.appsite.appsites import ApplicationSite, site
 
 
 def load():
@@ -17,9 +15,3 @@ def load():
             appurls = ()
         site.load(*appurls)
 
-
-class ChangeForm(forms.ModelForm):
-    application = LazyChoiceField(choices = site.choices)
-        
-    def save(self, commit = True):
-        return super(ChangeForm,self).save(commit = commit)

@@ -11,7 +11,6 @@ from django.template import loader, RequestContext
 from django.utils.text import smart_split
 from django.utils.translation import ugettext as _
 
-from djpcms.conf import settings
 from djpcms.forms import saveform, deleteinstance
 from djpcms.utils.html import Paginator
 from djpcms.utils import force_unicode, construct_search, isexact
@@ -35,7 +34,7 @@ def selfmethod(self, f):
     return _
 
 
-class AppViewBase(djpcmsview):
+class View(djpcmsview):
     '''This is a specialised view class derived from :class:`djpcms.views.baseview.djpcmsview`
 and used for handling views which belongs to
 :ref:`djpcms applications <topics-applications-index>`.
@@ -43,6 +42,11 @@ and used for handling views which belongs to
 They are specified as class attributes of
 :class:`djpcms.views.appsite.ApplicationBase` and therefore initialised
 at start up.
+
+Views which derives from class are special in the sense that they can also
+appear as content of :class:`djpcms.plugins.DJPplugin` if
+the :attr:`isplugin` is set to ``True``.
+
 All parameters are optionals and usually a small subset of them needs to be used.
 
 :keyword parent: Parent application name. If not supplied, ``djpcms`` will calculate it
@@ -60,14 +64,17 @@ All parameters are optionals and usually a small subset of them needs to be used
 :keyword methods: Tuple used to specify the response method allowed ('get', 'post', put') ro ``None``.
                   If specified it replaces the :attr:`_methods` attribute.
                   Default ``None``.
-:keyword renderer: A two parameters functions which can be used to replace the
-                   default :meth:`render` method. Default ``None``.
+:keyword view_template: Template file used to render the view. Default ``None``.
+                        If specified it replaces the :attr:`view_template` attribute.
+:keyword renderer: A one parameters functions which can be used to replace the
+                   default :meth:`render` method. Default ``None``. The function
+                   must return a safe string ready for rendering on a HTML page.
 :keyword permission: A three parameters function which can be used to
                      replace the default :meth:`_has_permission` method.
                      Default ``None``. The function
                      return a boolean and takes the form::
                      
-                         def permission(self, request, obj):
+                         def permission(view, request, obj):
                              ...
                          
                      where ``self`` is an instance of the view, ``request`` is the HTTP request instance and
@@ -77,12 +84,12 @@ Usage::
     from djpcms.views import appview, appsite
     
     class MyApplication(appsite.ApplicationBase):
-        home = appview.AppViewBase(renderer = lambda s, djp : 'Hello world')
-        test = appview.AppViewBase(regex = 'testview', renderer = lambda s, djp : 'Another view')
+        home = appview.View(renderer = lambda s, djp : 'Hello world')
+        test = appview.View(regex = 'testview', renderer = lambda s, djp : 'Another view')
     
 .. attribute:: parent
 
-    instance of :class:`AppViewBase` or None.
+    instance of :class:`View` or None.
     
 .. attribute:: _form
 
@@ -100,14 +107,20 @@ Usage::
 
     If ``0`` the view won't appear in :ref:`Navigation <topics-included-navigator>`.
     
+.. attribute:: view_template
+
+    Template file or list of template files used to render
+    the view (not the whole page).
+    
 .. attribute:: plugin_form
 
     The :attr:`djpcms.plugins.DJPplugin.form` for this view. Default ``None``.
 '''
     creation_counter = 0
-    plugin_form = None
-    _form       = None
-    _form_ajax  = None
+    plugin_form   = None
+    view_template = None
+    _form         = None
+    _form_ajax    = None
     
     def __init__(self,
                  parent        = None,
@@ -122,6 +135,7 @@ Usage::
                  permission    = None,
                  in_navigation = 0,
                  template_name = None,
+                 view_template = None,
                  description   = None,
                  form          = None,
                  form_withrequest = None,
@@ -141,19 +155,21 @@ Usage::
         self.code      = None
         self.editurl   = None
         if renderer:
-            self.render = selfmethod(self, renderer)
+            self.render = renderer
         if permission:
-            self._has_permission = selfmethod(self, permission)
+            self._has_permission = permission
         if methods:
             self._methods = methods
+        if template_name:
+            self.template_name = template_name
         if success_message:
             self.success_message = success_message
         self._form     = form if form else self._form
         self._form_withrequest = form_withrequest
         self._form_ajax  = form_ajax if form_ajax is not None else self._form_ajax
         self.plugin_form = plugin_form or self.plugin_form
-        self.creation_counter = AppViewBase.creation_counter
-        AppViewBase.creation_counter += 1
+        self.creation_counter = View.creation_counter
+        View.creation_counter += 1
         
     def __get_baseurl(self):
         return self.appmodel.baseurl
@@ -244,7 +260,7 @@ Usage::
         return kwargs
     
     def has_permission(self, request = None, page = None, obj = None):
-        if super(AppViewBase,self).has_permission(request, page, obj):
+        if super(View,self).has_permission(request, page, obj):
             return self._has_permission(request, obj)
         else:
             return False
@@ -279,13 +295,13 @@ replaced during initialization.
         return copy(self)  
     
     
-class AppView(AppViewBase):
-    '''An :class:`AppViewBase` class for views in :class:`djpcms.views.appsite.ModelApplication`.
+class ModelView(View):
+    '''An :class:`View` class for views in :class:`djpcms.views.appsite.ModelApplication`.
     '''
     def __init__(self, isapp = True, splitregex = True, **kwargs):
-        super(AppView,self).__init__(isapp = isapp,
-                                     splitregex = splitregex,
-                                     **kwargs)
+        super(ModelView,self).__init__(isapp = isapp,
+                                       splitregex = splitregex,
+                                       **kwargs)
         
     def __unicode__(self):
         return u'%s: %s' % (self.name,self.regex)
@@ -337,16 +353,16 @@ By default it calls the :func:`djpcms.views.appsite.ModelApplication.basequery` 
         if p.qs:
             c['items'] = appmodel.data_generator(djp, p.qs)
             
-        return loader.render_to_string(['components/pagination.html',
-                                        'djpcms/components/pagination.html'],
-                                        c)  
+        return loader.render_to_string(self.view_template, c)
     
     
-class SearchView(AppView):
-    '''An :class:`AppView` class for searching objects in model. By default :attr:`AppViewBase.in_navigation` is set to ``True``.
+class SearchView(ModelView):
+    '''A :class:`ModelView` class for searching objects in model.
+By default :attr:`View.in_navigation` is set to ``True``.
     '''
     search_text = 'search_text'
     '''identifier for queries. Default ``search_text``.'''
+    view_template = 'djpcms/components/pagination.html'
     
     def __init__(self, in_navigation = True, **kwargs):
         super(SearchView,self).__init__(in_navigation=in_navigation,**kwargs)
@@ -386,8 +402,8 @@ It returns a queryset.
         return self.render_query(djp, query)  
 
 
-class AddView(AppView):
-    '''An :class:`AppView` class which renders a form for adding instances
+class AddView(ModelView):
+    '''A :class:`ModelView` class which renders a form for adding instances
 and handles the saving as default ``POST`` response.'''
     def __init__(self, regex = 'add', isplugin = True,
                  in_navigation = True, **kwargs):
@@ -409,8 +425,8 @@ and handles the saving as default ``POST`` response.'''
         return saveform(djp)
 
             
-class ObjectView(AppView):
-    '''An :class:`AppView` class view for model instances.
+class ObjectView(ModelView):
+    '''A :class:`ModelView` class view for model instances.
 A view of this type has an embedded object available which is used to generate the full url.'''
     object_view = True
     
