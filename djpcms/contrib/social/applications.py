@@ -1,3 +1,5 @@
+import logging
+
 from django import http
 from django.contrib import messages
 from django.conf import settings
@@ -16,7 +18,7 @@ def getprovider(djp):
     return provider_handles.get(djp.kwargs.get('provider',None),None)       
 
 
-class SocialView(appview.AppView):
+class SocialView(appview.ModelView):
     
     def provider(self, djp):
         return provider_handles.get(djp.kwargs.get('provider',None),None)        
@@ -136,8 +138,7 @@ class SocialLoginDoneView(SocialView):
             raise http.Http404
     
 
-
-class SocialActionView(appview.AppView):
+class SocialActionView(appview.ModelView):
     pass
 
 

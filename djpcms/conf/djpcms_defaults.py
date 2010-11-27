@@ -1,6 +1,6 @@
 import logging
 
-ROOT_URLCONF                    = 'djpcms.views.defaulturls'
+ROOT_URLCONF                    = 'djpcms.core.defaults.urls'
 APPLICATION_URL_MODULE          = None
 ADMIN_URL_PREFIX                = '/admin/'
 LANGUAGE_REDIRECT               = False
@@ -21,6 +21,7 @@ DJPCMS_STYLING_FUNCTION         = None
 
 #Logging
 GLOBAL_LOG_LEVEL                = logging.INFO
+GLOBAL_LOG_FORMAT               = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 GLOBAL_LOG_HANDLERS             = [logging.StreamHandler()]
 
 # Root page for user account urls

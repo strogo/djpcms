@@ -1,9 +1,7 @@
 from urlparse import urlparse
 import httplib2
 
-import flick
-from django import http
-from djpcms.contrib import messages
+import flickrapi
 
 from djpcms import forms
 from djpcms.utils.uniforms import FormLayout, Fieldset, nolabel
@@ -49,4 +47,4 @@ class Flickr(SocialProvider):
         pass
     
 
-Google()
+Flickr()

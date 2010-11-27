@@ -36,12 +36,12 @@ class Twitter(SocialProvider):
     def twitter_auth(self):
         return tweepy.OAuthHandler(*self.tokens)
     
-    def request_url(self, done_url = None):
+    def request_url(self, djp, callback_url = None, **kwargs):
         auth = self.twitter_auth()
         signin_url    = auth.get_authorization_url()
-        return signin_url
         request_token = auth.request_token
-        (request_token.key,request_token.secret),auth.get_authorization_url()
+        token_tup     = (request_token.key,request_token.secret)
+        return token_tup,signin_url
 
     def done(self, djp, key, secret):
         data    = djp.request.GET
@@ -59,7 +59,7 @@ Twitter()
 
 
 
-class TwitterPostView(appview.AppView):
+class TwitterPostView(appview.ModelView):
     _form = MessageForm
     _form_ajax = True
     

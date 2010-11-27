@@ -7,7 +7,6 @@ def simpleapp(djp):
 class TinySite(appsite.ApplicationBase):
     home = appview.Application(renderer = simpleapp)
     
-
-
+    
 if __name__ == '__main__':
     app = DjpCMS(__name__)
