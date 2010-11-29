@@ -540,7 +540,7 @@
 	
 	$.djpcms.addDecorator({
 		id:	"autocomplete",
-		description: "add ajax autocomplete to a input",
+		description: "add ajax autocomplete to an input",
 		decorate: function($this,config) {
 			$('.djp-autocomplete',$this).each(function() {
 				var el = $(this);

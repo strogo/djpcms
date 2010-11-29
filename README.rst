@@ -131,6 +131,7 @@ Djpcms includes several open-source libraries and plugins developed by other aut
   The latest ``jquery`` and ``jquery-ui`` minified files are shipped with the library. 
 * django-tagging_ for tag management. Shipped with the library in the ``libs`` module but a library in its own.
 * jQuery tablesorter_ plugin. Thanks to Christian Bach.
+* jQuery cycle_ plugin. 
 * Modernizr_, a small JavaScript library that detects the availability of native implementations for next-generation web technologies.
 
 .. _pypi: http://pypi.python.org/pypi?:action=display&name=djpcms
@@ -145,4 +146,5 @@ Djpcms includes several open-source libraries and plugins developed by other aut
 .. _stdnet: http://code.google.com/p/python-stdnet/
 .. _tablesorter: http://tablesorter.com/
 .. _Modernizr: http://www.modernizr.com/
+.. cycle: http://jquery.malsup.com/cycle/
 
