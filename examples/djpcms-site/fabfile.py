@@ -1,6 +1,7 @@
 from djpcms.contrib.jdep.fabtools import *
 
 def docs():
+    '''Build documentation on the deployment server.'''
     import os
     import tarfile
     parent = lambda x : os.path.split(x)[0]
@@ -18,6 +19,16 @@ def docs():
     local('rm %(docfilename)s' % env)
 
 
-utils.project('sitedjpcms','djpcms.com', apache_port = 93)
-env.redirects.append('www.djpcms.com')
-utils.after_deploy_hook.append(docs)
+#utils.project('sitedjpcms','djpcms.com', apache_port = 93)
+#env.redirects.append('www.djpcms.com')
+#utils.after_deploy_hook.append(docs)
+
+
+utils.project('sitedjpcms',
+              'sbardella.homeip.net',
+              server_type = 'nginx-twisted',
+              #server_type = 'nginx-apache-mod_wsgi',
+              redirect_port = 9011,
+              #secure = True,
+              #certificates='test-certificates',
+              redirects = ['www.sbardella.homeip.net'])

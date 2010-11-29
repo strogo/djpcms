@@ -5,20 +5,9 @@ from djpcms import forms
 from djpcms.utils.uniforms import FormLayout, Fieldset, nolabel
 from djpcms.views import appview
 from djpcms.utils.ajax import jerror, jhtmls
-
-from djpcms.conf import settings
-
-TWITTER_CONSUMER_TOCKEN = getattr(settings,'TWITTER_CONSUMER_TOCKEN',None)
-TWITTER_CONSUMER_SECRET = getattr(settings,'TWITTER_CONSUMER_SECRET',None)
-
-from djpcms.contrib.social import SocialProvider
-
+from djpcms.contrib.social import OAuthProvider
 
 import tweepy
-
-def del_dict_key(src_dict, key):
-    if key in src_dict:
-        del src_dict[key]
 
 
 class MessageForm(forms.Form):
@@ -31,13 +20,16 @@ def post_tweet(user,msg):
 
 
 
-class Twitter(SocialProvider):
+class Twitter(OAuthProvider):
+    ACCESS_TOKEN_URL  = 'https://api.twitter.com/oauth/access_token'
+    REQUEST_TOKEN_URL = 'https://api.twitter.com/oauth/request_token'
+    AUTHORIZATION_URL = 'https://api.twitter.com/oauth/authorize'
 
     def twitter_auth(self):
         return tweepy.OAuthHandler(*self.tokens)
     
     def request_url(self, djp, callback_url = None, **kwargs):
-        auth = self.twitter_auth()
+        auth          = self.twitter_auth()
         signin_url    = auth.get_authorization_url()
         request_token = auth.request_token
         token_tup     = (request_token.key,request_token.secret)
@@ -51,10 +43,14 @@ class Twitter(SocialProvider):
         try:
             return auth.get_access_token(verifier)
         except:
-            return None    
-
-
-Twitter()
+            return None
+        
+    def get_user_details(self, response):
+        return {'email': '',
+                'username': response['screen_name'],
+                'fullname': response['name'],
+                'first_name': response['name'],
+                'last_name': ''}
 
 
 

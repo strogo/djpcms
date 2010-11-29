@@ -30,3 +30,5 @@ TEMPLATE_CONTEXT_PROCESSORS = (
             "django.contrib.messages.context_processors.messages",
             "djpcms.core.context_processors.djpcms"
             )
+
+SOCIAL_OAUTH_CONSUMERS = {'oauthtest':('key','secret')}

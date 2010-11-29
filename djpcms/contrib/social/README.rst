@@ -11,6 +11,11 @@ add your token-secret pairs for the social ``providers`` you want in your settin
                           	  'google':('google-key','google-secret),
                           	  ...
                             }
+                            
+If you want your application to create users, set the flag::
+
+	SOCIAL_AUTH_CREATE_USERS = True
+	
 
 Requirements
 ==================

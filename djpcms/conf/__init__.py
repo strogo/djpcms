@@ -12,8 +12,8 @@ This function sucks but unfortunately we still depends on django. We will get th
     framework_name = getattr(djpcms_defaults,'DJPCMS_WEB_FRAMEWORK','django')
     framework = True
     if framework_name == 'django':
-        if not os.environ.get('DJANGO_SETTINGS_MODULE',None):
-            os.environ['DJANGO_SETTINGS_MODULE'] = 'djpcms.core.defaults.settings'
+        if not os.environ.get(ENVIRONMENT_VARIABLE,None):
+            os.environ[ENVIRONMENT_VARIABLE] = 'djpcms.core.defaults.settings'
             framework = False
         from django.conf import settings as framework_settings
     else:

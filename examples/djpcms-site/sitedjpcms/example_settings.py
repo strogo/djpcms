@@ -15,7 +15,7 @@ DATABASES = {
 }
 
 
-DEBUG = True
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 SERVE_STATIC_FILES = DEBUG
 TIME_ZONE     = 'Europe/London'
@@ -44,6 +44,7 @@ MIDDLEWARE_CLASSES = (
 
 AUTHENTICATION_BACKENDS = (
     'djpcms.permissions.Backend',
+    'djpcms.contrib.social.backends.SocialAuthBackend',
     #'socialauth.auth_backends.OpenIdBackend',
     #'socialauth.auth_backends.TwitterBackend',
     #'socialauth.auth_backends.FacebookBackend',
@@ -75,12 +76,12 @@ INSTALLED_APPS = (
 # The settings changed by the application
 #==========================================================
 import os
-basedir = os.path.split(os.path.split(os.path.abspath(__file__))[0])[0]
+basedir = os.path.split(os.path.abspath(__file__))[0]
 APPLICATION_URL_MODULE = 'sitedjpcms.appurls'
 TEMPLATE_DIRS = (os.path.join(basedir,'templates'),)
-MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(basedir, 'media')
-DJPCMS_STYLE = 'smooth'
+MEDIA_URL = '/media/'
+DJPCMS_STYLE = 'green'
 TEMPLATE_CONTEXT_PROCESSORS = (
             "django.contrib.auth.context_processors.auth",
             "django.contrib.messages.context_processors.messages",
@@ -90,6 +91,7 @@ DJPCMS_PLUGINS = ['djpcms.plugins.*']
 #DJPCMS_PLUGINS = ['djpcms.plugins.*',
 #                  'flowrepo.cms.plugins']
 DJPCMS_USER_CAN_EDIT_PAGES = True
+SOCIAL_AUTH_CREATE_USERS = True
 #=========================================================
 FLOWREPO_STORAGE_IMAGE      = 'sitedjpcms.storage.SiteFileSystemStorage'
 

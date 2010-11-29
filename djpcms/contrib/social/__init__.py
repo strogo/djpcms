@@ -1,7 +1,17 @@
+import httplib2
+from oauth import oauth
+
 from django import http
 from django.contrib import messages
 
+import djpcms
+from .defaults import User
+
 provider_handles = {}
+
+
+def get(provider):
+    return provider_handles.get(str(provider),None)
 
 
 class SocialClient(object):
@@ -16,13 +26,32 @@ class SocialClient(object):
     
     def delete(self):
         self.instance.delete()
+        
 
 
-class SocialProvider(object):
-    '''Social provider base class'''    
+class SocialProviderType(type):
+    
+    def __new__(cls, name, bases, attrs):
+        abstract = attrs.pop('abstract',False)
+        new_class = super(SocialProviderType, cls).__new__(cls, name, bases, attrs)
+        if not abstract:
+            for b in bases:
+                if isinstance(b,SocialProviderType):
+                    new_class()
+                    break
+        return new_class
+
+
+
+class Provider(object):
+    '''Social provider base class'''
+    __metaclass__ = SocialProviderType
+    connection    = httplib2.Http()
+    
     def __init__(self):
         self.name = self.__class__.__name__.lower()
         from djpcms.conf import settings
+        self.settings = settings
         consumers = getattr(settings,'SOCIAL_OAUTH_CONSUMERS',None)
         if consumers:
             consumers = consumers.get(self.name,None)
@@ -72,8 +101,53 @@ class SocialProvider(object):
             home = '%s%s' % (settings.USER_ACCOUNT_HOME_URL,user.username)
             return http.HttpResponseRedirect(home)
         
+    def get_user_details(self, response):
+        raise NotImplementedError
+        
     def client(self, **kwargs):
         raise NotImplentedError
+    
+    
+
+class OAuthProvider(Provider):
+    abstract = True
+    REQUEST_TOKEN_URL = ''
+    ACCESS_TOKEN_URL  = ''
+    AUTHORIZATION_URL = ''
+    
+    @property
+    def redirect_uri(self):
+        return djpcms.get_url(User, 'social_done', provider = self.name)
+    
+    def unauthorized_token(self, request):
+        """Return request for unauthorized token (first stage)"""
+        request = self.oauth_request(request, None, self.REQUEST_TOKEN_URL)
+        response = self.fetch_response(request)
+        return oauth.OAuthToken.from_string(response)
+    
+    def fetch_response(self, request):
+        """Executes request and fetchs service response"""
+        self.connection.request(request.to_url(), method = request.http_method)
+        request, response = self.connection.getresponse()
+        return response
+     
+    def oauth_request(self, request, token, url, extra_params=None):
+        """Generate OAuth request, setups callback url"""
+        params = {'oauth_callback': self.redirect_uri}
+        if extra_params:
+            params.update(extra_params)
+
+        if 'oauth_verifier' in request.GET:
+            params['oauth_verifier'] = request.GET['oauth_verifier']
+        request = oauth.OAuthRequest.from_consumer_and_token(self.consumer,
+                                                             token=token,
+                                                             http_url=url,
+                                                             parameters=params)
+        request.sign_request(oauth.OAuthSignatureMethod_HMAC_SHA1(),
+                             self.consumer,
+                             token)
+        return request
+    
     
         
 def client(user, provider):

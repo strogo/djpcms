@@ -1,8 +1,6 @@
-from django import http
-from django.utils.datastructures import SortedDict
-
 from djpcms.core.exceptions import DjpcmsException, AlreadyRegistered
 from djpcms.views.appsite.applications import Application, ModelApplication
+from djpcms.utils.collections import OrderedDict
 from djpcms import siteapp_choices
 
 
@@ -18,7 +16,7 @@ class ApplicationSite(object):
         self.editavailable = settings.CONTENT_INLINE_EDITING.get('available',False)
         self.editurl       = settings.CONTENT_INLINE_EDITING.get('preurl','/edit/')
         self._registry     = {}
-        self._nameregistry = SortedDict()
+        self._nameregistry = OrderedDict()
         self.choices       = siteapp_choices
         self.isloaded      = False
         

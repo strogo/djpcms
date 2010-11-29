@@ -1,14 +1,15 @@
 import logging
+from datetime import datetime
 
 from django import http
 from django.contrib import messages
-from django.conf import settings
+from django.contrib.auth import authenticate
 
+from djpcms.conf import settings
+import djpcms.contrib.social.providers
 from djpcms.views import appview
 from djpcms.template import loader
 from djpcms.views.apps.user import UserApplication
-
-import djpcms.contrib.social.providers
 from djpcms.views.decorators import deleteview
 from djpcms.contrib.social import provider_handles, client
 from djpcms.contrib.social.models import LinkedAccount
@@ -19,8 +20,11 @@ def getprovider(djp):
 
 
 class SocialView(appview.ModelView):
+    '''Model View class for handling social providers'''
     
     def provider(self, djp):
+        '''Extract provider from url if available. Return and instance of
+:model:`djpcms.contrib.social.SocialProvider` or ``None``.'''
         return provider_handles.get(djp.kwargs.get('provider',None),None)        
     
     def render(self, djp):
@@ -34,6 +38,7 @@ class SocialView(appview.ModelView):
             pass
         
     def render_all(self, djp):
+        '''Render all linked and non-linked providers'''
         user = djp.request.user
         accounts = user.linked_accounts.all()
         linked = []
@@ -70,9 +75,11 @@ class SocialLoginView(SocialView):
     _methods = ('get',)
     
     def get_response(self, djp):
+        request = djp.request
         provider = self.provider(djp)
         dview = self.appmodel.getview('social_done')
         if provider and dview:
+            utoken = provider.unauthorized_token(request)
             request = djp.request
             next = request.GET.get('next', None)
             if next:
@@ -87,6 +94,7 @@ class SocialLoginView(SocialView):
     
 
 class SocialLoginDoneView(SocialView):
+    '''View which handle the callback frpm the AOuth provider'''
     _methods = ('get',)
     
     def get_response(self, djp):
@@ -120,14 +128,11 @@ class SocialLoginDoneView(SocialView):
                 return http.HttpResponseRedirect('/')
             
             user = request.user
-            acc  = user.linked_accounts.filter(provider = str(provider))
-            if acc:
-                acc = acc[0]
+            if not user.is_authenticated():
+                self.create_user(provider, access_token)
             else:
-                acc = LinkedAccount(user = user, provider = str(provider))
-            acc.data = {'key':access_token.key,'secret':access_token.secret}
-            acc.save()
-        
+                self.update_user(user, provider, access_token)
+            
             # authentication was successful, use is now logged in
             next = session.pop('%s_login_next' % provider, None)
             if next:
@@ -136,7 +141,26 @@ class SocialLoginDoneView(SocialView):
                 return http.HttpResponseRedirect(settings.USER_ACCOUNT_HOME_URL)
         else:
             raise http.Http404
+        
     
+    def create_user(self, provider, token):
+        user = authenticate(provider = provider, token = token.key, secret = token.secret)
+    
+    def update_user(self, user, provider, token):
+        acc  = user.linked_accounts.filter(provider = str(provider))
+        if acc:
+            acc = acc[0]
+            if acc.token != token.key:
+                acc.token = token.key
+                acc.secret = token.secret
+                acc.token_date = datetime.now()
+                acc.save()
+        else:
+            acc = LinkedAccount(user = user, provider = str(provider), token_date = datetime.now(),
+                                token = token.key, secret = token.secret)
+            acc.save()
+        return acc
+            
 
 class SocialActionView(appview.ModelView):
     pass

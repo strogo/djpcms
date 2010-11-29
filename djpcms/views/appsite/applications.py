@@ -5,10 +5,7 @@ The main object handle several subviews used for searching, adding and manipulat
 '''
 from copy import deepcopy
 
-from django import http
-from django.utils.datastructures import SortedDict
 from django.template import loader, Template, Context, RequestContext
-from django.conf.urls.defaults import url
 
 from djpcms import forms
 from djpcms.template import loader
@@ -24,6 +21,7 @@ from djpcms.views.baseview import editview
 from djpcms.views.appview import View, ViewView
 from djpcms.views.cache import pagecache
 from djpcms.utils.media import MediaDefiningClass
+from djpcms.utils.collections import OrderedDict
 
 render_to_string = loader.render_to_string
 
@@ -43,7 +41,7 @@ similar fields on the base classes (in 'bases')."""
             if hasattr(base, 'base_views'):
                 apps = base.base_views.items() + apps
                 
-    return SortedDict(data = apps)
+    return OrderedDict(apps)
 
 
 class ApplicationMetaClass(MediaDefiningClass):
@@ -139,6 +137,8 @@ No reason to change this default unless you really don't want to see the views i
         self.name             = self._makename(name)
         
     def register(self, application_site):
+        '''Register application with site'''
+        from django.conf.urls.defaults import url
         self.root_application = None
         self.application_site = application_site
         if self.editavailable is None:
@@ -223,7 +223,7 @@ No reason to change this default unless you really don't want to see the views i
         roots = []
         
         # Find the root view
-        for name,view in self.views.items():
+        for name,view in self.views.iteritems():
             if view.object_view:
                 self.object_views.append(view)
             view.name = name

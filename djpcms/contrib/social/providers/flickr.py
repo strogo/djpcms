@@ -8,10 +8,10 @@ from djpcms.utils.uniforms import FormLayout, Fieldset, nolabel
 from djpcms.views import appview
 from djpcms.utils.ajax import jerror, jhtmls
 
-from djpcms.contrib.social import SocialProvider
+from djpcms.contrib.social import OAuthProvider
 
 
-class Flickr(SocialProvider):
+class Flickr(OAuthProvider):
     
     def request_url(self, djp, callback_url = None, **kwargs):
         r = djp.request
@@ -46,5 +46,3 @@ class Flickr(SocialProvider):
         store = TokenStore(tks)
         pass
     
-
-Flickr()
