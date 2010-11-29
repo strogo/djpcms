@@ -12,10 +12,8 @@ CONTRIB_DIR = os.path.dirname(contrib.__file__)
 TESTS_DIR   = os.path.join(CUR_DIR,'regression')
 
 LOGGING_MAP = {1: logging.CRITICAL,
-               2: logging.ERROR,
-               3: logging.WARN,
-               4: logging.INFO,
-               5: logging.DEBUG}
+               2: logging.INFO,
+               3: logging.DEBUG}
 
 ALL_TEST_PATHS = (TESTS_DIR,CONTRIB_DIR)
 
@@ -44,9 +42,17 @@ def import_tests(tags,apps):
             logger.debug("Skipping model %s" % model_label)
             continue
         logger.info("Importing model %s" % model_label)
+        can_fail = False
         if loc == 'contrib':
             model_label = 'djpcms.'+model_label
-        mod = load_app(model_label)
+            can_fail = True
+        try:
+            mod = load_app(model_label)
+        except ImportError, e:
+            if can_fail:
+                logger.warn("Could not import %s. %s" % (model_label,e))
+                continue
+            raise
         if mod:
             if model_label not in apps:
                 if app in apptests:
