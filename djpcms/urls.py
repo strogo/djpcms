@@ -4,14 +4,21 @@ from django.conf.urls.defaults import url, include
 
 import djpcms
 from djpcms.conf import settings
+from djpcms.utils.log import dictConfig, getLogger
+
+if settings.LOGGING:
+    dictConfig(settings.LOGGING)
+    
+logger = getLogger('djpcms.urls')
+logger.debug("Setting up urls")
+    
 from djpcms.sitemap import DjpUrl, get_site_maps
 from djpcms.utils.importlib import import_module, import_modules
 
 if not settings.DEBUG:
     handler404 = 'djpcms.views.specials.http404view'
     handler500 = 'djpcms.views.specials.http500view'
-
-
+    
 site_urls = DjpUrl()
 
 
