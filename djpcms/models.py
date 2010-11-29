@@ -315,7 +315,7 @@ and for maintaining their position in a :class:`djpcms.models.Page`.
                         return wrapper(djp, self, html)
             return u''
         except Exception, e:
-            self.logger.error('page %s - block %s -- %s' % (self.page,self,e))
+            self.logger.error('%s - block %s -- %s' % (djp.request.path,self,e))
             if djp.request.user.is_superuser:
                 return escape(u'%s' % e)
             else:

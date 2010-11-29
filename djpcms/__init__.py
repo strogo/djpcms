@@ -62,5 +62,14 @@ def install_libs():
     install_lib(libs, 'django-tagging', 'tagging')
     
     
+def init_logging(clear_all = False):
+    '''Initialise logging'''
+    from djpcms.utils.log import dictConfig
+    from djpcms.conf import settings
+
+    if settings.LOGGING:
+        dictConfig(settings.LOGGING)
+        
+    
 install_libs()
 

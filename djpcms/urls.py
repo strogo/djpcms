@@ -4,10 +4,7 @@ from django.conf.urls.defaults import url, include
 
 import djpcms
 from djpcms.conf import settings
-from djpcms.utils.log import dictConfig, getLogger
-
-if settings.LOGGING:
-    dictConfig(settings.LOGGING)
+from djpcms.utils.log import getLogger
     
 logger = getLogger('djpcms.urls')
 logger.debug("Setting up urls")
