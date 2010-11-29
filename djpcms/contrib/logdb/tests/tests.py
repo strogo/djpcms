@@ -42,15 +42,15 @@ class DatabaseHandlerTestCase(TestCase):
                 'database_test': {
                     'handlers': ['mock','database'],
                     'level': 'WARN',
-                    'propagate': True,
+                    'propagate': False,
                 }
             },
             'root': {
-                    'handlers': ['mock','database','database_error'],
-                    'level': 'WARN',
-                    'propagate': True,
+                    'handlers': ['mock'],
+                    'level': 'DEBUG'
             }
         }
+        djpcms.init_logging()
     
     def tearDown(self):
         djpcms.init_logging(clear_all = True)
@@ -64,15 +64,17 @@ class DatabaseHandlerTestCase(TestCase):
     
     def test_basic(self):
         logger = logging.getLogger("database_test")
-        logger.info("My Logging Test")
+        self.assertEqual(len(logger.handlers),2)
+        logger.warn("My Logging Test")
+        self.assertEqual(Log.objects.all().count(),1)
         log_obj = Log.objects.latest()
-        self.assertEquals(log_obj.level, "INFO")
+        self.assertEquals(log_obj.level, "WARNING")
         self.assertEquals(log_obj.source, "database_test")
         self.assertEquals(log_obj.msg, "My Logging Test")
         self.assertTrue(log_obj.host)
     
     def test_multi(self):
-        logger = logging.getLogger("multi_test")
+        logger = logging.getLogger("database_test")
         logger.info("My Logging Test")
         
         log_obj = Log.objects.latest()
