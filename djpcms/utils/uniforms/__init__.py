@@ -374,7 +374,15 @@ class UniForm(UniFormBase):
             media = fmedia if media is None else media + fmedia
         return media
     media = property(__get_media)
-        
+    
+    def __get_instance(self):
+        for form in self.forms:
+            instance = getattr(form[1],'instance',None)
+            if instance:
+                return instance
+        return None
+    instance = property(__get_instance)
+    
     def is_valid(self):
         valid = True
         for form in self.forms:

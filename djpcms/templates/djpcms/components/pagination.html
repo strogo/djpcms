@@ -24,6 +24,6 @@ $(document).ready(function(){
 });
 </script>{% endifnotequal %}
 {% if headers %}{% load tablesorter %}
-{% totable headers paginator.qs djp appmodel %}
+{% totable headers items djp appmodel %}
 {% else %}{% for item in items %}
 {{ item }}{% endfor %}{% endif %}

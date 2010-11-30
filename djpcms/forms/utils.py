@@ -162,7 +162,7 @@ def saveform(djp, editing = False, force_redirect = False):
     cont       = POST.has_key("_save_and_continue")
     url        = djp.url
     curr       = request.environ.get('HTTP_REFERER')
-    next       = get_next(djp.request)
+    next       = get_next(request)
     if next:
         next = request.build_absolute_uri(next)
     
@@ -231,28 +231,27 @@ def saveform(djp, editing = False, force_redirect = False):
             return view.handle_response(djp)
         
 
-def deleteinstance(djp):
+def deleteinstance(djp, force_redirect = False):
     '''Delete an instance from database'''
     instance = djp.instance
     view    = djp.view
     request = djp.request
-    curr    = get_next(request,"_current_url")
+    
+    curr    = request.environ.get('HTTP_REFERER')
     next    = get_next(request)
+    if next:
+        next = request.build_absolute_uri(next)
+    next = next or curr
+        
     bid     = view.appmodel.remove_object(instance)
     msg     = 'Successfully deleted %s' % bid
     if request.is_ajax():
-        if next:
-            if next != curr:
-                messages.info(request,msg)
-                return jredirect(next)
-            else:
-                return 
-        else: 
-            if bid:
-                return jremove('#%s' % bid)
-            else:
-                pass
+        if next == curr and bid and not force_redirect:
+            return jremove('#%s' % bid)
+        else:
+            messages.info(request,msg)
+            return jredirect(next)
     else:
         messages.info(request,msg)
-        next = next or djp.url
+        next = next or curr
         return http.HttpResponseRedirect(next)

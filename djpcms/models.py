@@ -1,5 +1,6 @@
 import datetime
 import re
+import sys
 import logging
 
 from django.http import Http404
@@ -315,7 +316,11 @@ and for maintaining their position in a :class:`djpcms.models.Page`.
                         return wrapper(djp, self, html)
             return u''
         except Exception, e:
-            self.logger.error('%s - block %s -- %s' % (djp.request.path,self,e))
+            exc_info = sys.exc_info()
+            self.logger.error('%s - block %s -- %s' % (plugin,self,e),
+                exc_info=exc_info,
+                extra={'request':djp.request}
+            )
             if djp.request.user.is_superuser:
                 return escape(u'%s' % e)
             else:

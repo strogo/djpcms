@@ -1,5 +1,6 @@
 Version 0.8.6 - Development
 =======================================
+* Added :meth:`djpcms.views.appsite.Application.get_label_for_field`.
 * Added a :mod:`middleware` module for logging when using ``django`` version less than ``1.3``.
 * Renamed ``ApplicationBase`` as :class:`djpcms.views.appsite.Application``.
 * Two of many steps towards a ``django`` free ``djpcms``. You don't need to specify ``settings`` file if you don't want to,

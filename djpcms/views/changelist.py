@@ -36,27 +36,29 @@ def table(headers, queryset_or_list, djp, model = None, nd = 3):
             pass
     try:
         cl = model.opts
-        return queryset_table(queryset_or_list, djp, model, nd)
+        return queryset_table(headers, queryset_or_list, djp, model, nd)
     except Exception, e:
         return {'labels':headers,
                 'items':(nice_items(items,nd) for items in queryset_or_list)}
         
     
-def queryset_table(queryset, djp, appmodel, nd):
+def queryset_table(headers, queryset, djp, appmodel, nd):
     request = djp.request
     cl = appmodel.opts
-    if not cl.appmodel or not cl.list_display:
+    headers = headers or cl.list_display
+    if not cl.appmodel or not headers:
         return ''
     labels = []
     items  = []
-    for name in cl.list_display:
+    path   = djp.request.path
+    for name in headers:
         labels.append(cl.label_for_field(name))
     for result in queryset:
         first = True
         id    = ('%s-%s') % (cl.module_name,result.id)
         display = []
         items.append({'id':id,'display':display})
-        for field_name in cl.list_display:
+        for field_name in headers:
             result_repr = cl.getrepr(field_name, result, nd)
             if force_unicode(result_repr) == '':
                 result_repr = mark_safe('&nbsp;')
@@ -66,7 +68,7 @@ def queryset_table(queryset, djp, appmodel, nd):
             else:
                 url = None
             
-            if url:
+            if url and url != path:
                 var = mark_safe(u'<a href="%s">%s</a>' % (url, conditional_escape(result_repr)))
             else:
                 var = conditional_escape(result_repr)

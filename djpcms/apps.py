@@ -39,14 +39,17 @@ def UnukServe(port = 9011, secure = None):
     start()
     
     
-def get_url(model, view_name, **kwargs):
+def get_url(model, view_name, instance = None, **kwargs):
     from djpcms.views.appsite import site
+    if not isinstance(model,type):
+        instance = model
+        model = instance.__class__
     app = site.for_model(model)
     if app:
         view = app.getview(view_name)
         if view:
             try:
-                return view.get_url(None,**kwargs)
+                return view.get_url(None, instance = instance, **kwargs)
             except:
                 return None
     return None

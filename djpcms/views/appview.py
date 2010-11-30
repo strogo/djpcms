@@ -117,10 +117,11 @@ Usage::
     The :attr:`djpcms.plugins.DJPplugin.form` for this view. Default ``None``.
 '''
     creation_counter = 0
-    plugin_form   = None
-    view_template = None
-    _form         = None
-    _form_ajax    = None
+    plugin_form    = None
+    view_template  = None
+    force_redirect = False
+    _form          = None
+    _form_ajax     = None
     
     def __init__(self,
                  parent        = None,
@@ -136,8 +137,9 @@ Usage::
                  in_navigation = 0,
                  template_name = None,
                  view_template = None,
-                 description   = None,
-                 form          = None,
+                 description    = None,
+                 force_redirect = None,
+                 form           = None,
                  form_withrequest = None,
                  form_ajax     = None,
                  success_message = None):
@@ -166,6 +168,8 @@ Usage::
             self.success_message = success_message
         if view_template:
             self.view_template = view_template
+        if force_redirect is not None:
+            self.force_redirect = force_redirect
         self._form     = form if form else self._form
         self._form_withrequest = form_withrequest
         self._form_ajax  = form_ajax if form_ajax is not None else self._form_ajax
@@ -347,13 +351,24 @@ By default it calls the :func:`djpcms.views.appsite.ModelApplication.basequery` 
 class SearchView(ModelView):
     '''A :class:`ModelView` class for searching objects in model.
 By default :attr:`View.in_navigation` is set to ``True``.
+There are three additional parameters that can be set:
+
+:keyword headers: List of string to display as table header when the
+                  view display a table. Default ``None``.
+:keyword astable: used to force the view not as a table. Default ``True``.
+:keyword table_generator: Optional function to generate table content. Default ``None``.
     '''
     search_text = 'search_text'
     '''identifier for queries. Default ``search_text``.'''
     view_template = 'djpcms/components/pagination.html'
     
-    def __init__(self, in_navigation = True, headers = None, **kwargs):
+    def __init__(self, in_navigation = True, headers = None,
+                 astable = True, table_generator = None,
+                 **kwargs):
         self.headers = headers
+        self.astable = astable
+        if table_generator:
+            self.table_generator = table_generator
         super(SearchView,self).__init__(in_navigation=in_navigation,**kwargs)
     
     def render_query(self, djp, query, appmodel = None):
@@ -364,7 +379,9 @@ By default :attr:`View.in_navigation` is set to ``True``.
         headers = self.headers or appmodel.list_display
         if callable(headers):
             headers = headers(djp)
+        astable = headers and self.astable
         c.update({'paginator': p,
+                  'astable': astable,
                   'djp': djp,
                   'url': djp.url,
                   'model': appmodel.model,
@@ -372,9 +389,18 @@ By default :attr:`View.in_navigation` is set to ``True``.
                   'appmodel': appmodel,
                   'headers': headers})
         if p.qs:
-            c['items'] = appmodel.data_generator(djp, p.qs)
+            if astable:
+                c['items'] = self.table_generator(djp, p.qs)
+            else:    
+                c['items'] = self.data_generator(djp, p.qs)
             
         return loader.render_to_string(self.view_template, c)
+    
+    def table_generator(self, djp, qs):
+        return self.appmodel.table_generator(djp, qs)
+    
+    def data_generator(self, djp, qs):
+        return self.appmodel.data_generator(djp, qs)
     
     def appquery(self, djp):
         '''This function implements the search query.
@@ -431,7 +457,7 @@ and handles the saving as default ``POST`` response.'''
         return self.get_form(djp).render(djp)
     
     def default_post(self, djp):
-        return saveform(djp)
+        return saveform(djp, False, force_redirect = self.force_redirect)
 
             
 class ObjectView(ModelView):
@@ -439,7 +465,7 @@ class ObjectView(ModelView):
 A view of this type has an embedded object available which is used to generate the full url.'''
     object_view = True
     
-    def get_url(self, djp, instance = None, **kwargs):
+    def get_url(self, djp, instance = None, force_redirect = None, **kwargs):
         if instance:
             kwargs.update(self.appmodel.objectbits(instance))
         else:
@@ -448,7 +474,8 @@ A view of this type has an embedded object available which is used to generate t
         if not instance:
             raise http.Http404
         
-        djp.instance = instance
+        if djp:
+            djp.instance = instance
         return super(ObjectView,self).get_url(djp, **kwargs)
     
     
@@ -493,7 +520,7 @@ class DeleteView(ObjectView):
         return self.appmodel.remove_object(instance)
     
     def default_post(self, djp):
-        return deleteinstance(djp)
+        return deleteinstance(djp, force_redirect = self.force_redirect)
     
     def nextviewurl(self, djp):
         view = djp.view
@@ -535,7 +562,7 @@ class EditView(ObjectView):
         return self.default_post(djp,False)
     
     def default_post(self, djp):
-        return saveform(djp,True)
+        return saveform(djp, True, force_redirect = self.force_redirect)
 
     def defaultredirect(self, djp):
         return self.appmodel.viewurl(djp.request, djp.instance) or djp.url

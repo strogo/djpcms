@@ -71,6 +71,8 @@ class ModelTypeWrapper(object):
                 func = getattr(self.appmodel,self.appfuncname(name),None)
                 if func:
                     return name
+                else:
+                    return self.appmodel.get_label_for_field(name)
             raise AttributeError("Attribute %s not available" % name)
         
     def getrepr(self, name, instance, nd = 3):

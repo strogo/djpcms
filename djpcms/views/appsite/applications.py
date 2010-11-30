@@ -311,6 +311,10 @@ No reason to change this default unless you really don't want to see the views i
             sb.append(submit(value = 'cancel', name = '_cancel'))
         return sb
 
+    def get_label_for_field(self, name):
+        '''Fallback function for retriving a label for a given field name.'''
+        raise AttributeError("Attribute %s not available" % name)
+
 
 class ModelApplication(Application):
     '''An :class:`Application` class for applications
@@ -549,6 +553,9 @@ This dictionary should be used to render an object within a template. It returns
         obj.delete()
         return id
         
+    def table_generator(self, djp, qs):
+        return qs
+    
     def data_generator(self, djp, data):
         '''
         Return a generator for the query.
