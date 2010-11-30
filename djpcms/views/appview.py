@@ -164,6 +164,8 @@ Usage::
             self.template_name = template_name
         if success_message:
             self.success_message = success_message
+        if view_template:
+            self.view_template = view_template
         self._form     = form if form else self._form
         self._form_withrequest = form_withrequest
         self._form_ajax  = form_ajax if form_ajax is not None else self._form_ajax
@@ -275,6 +277,9 @@ replaced during initialization.
 :keyword djp: instance of :class:`djpcms.views.response.DjpResponse`.'''
         pass
     
+    def render_query(self, djp, query, appmodel = None):
+        pass
+    
     def parentresponse(self, djp):
         '''
         Retrive the parent response
@@ -296,7 +301,7 @@ replaced during initialization.
     
     
 class ModelView(View):
-    '''An :class:`View` class for views in :class:`djpcms.views.appsite.ModelApplication`.
+    '''A :class:`View` class for views in :class:`djpcms.views.appsite.ModelApplication`.
     '''
     def __init__(self, isapp = True, splitregex = True, **kwargs):
         super(ModelView,self).__init__(isapp = isapp,
@@ -336,24 +341,7 @@ By default it calls the :func:`djpcms.views.appsite.ModelApplication.basequery` 
         return self.appmodel.permissionDenied(djp)
     
     def sitemapchildren(self):
-        return [] 
-    
-    def render_query(self, djp, query, appmodel = None):
-        '''Render a queryset'''
-        appmodel = appmodel or self.appmodel
-        p  = Paginator(djp.request, query, per_page = appmodel.list_per_page)
-        c  = copy(djp.kwargs)
-        c.update({'paginator': p,
-                  'djp': djp,
-                  'url': djp.url,
-                  'model': appmodel.model,
-                  'css': djp.css,
-                  'appmodel': appmodel,
-                  'headers': appmodel.list_display})
-        if p.qs:
-            c['items'] = appmodel.data_generator(djp, p.qs)
-            
-        return loader.render_to_string(self.view_template, c)
+        return []
     
     
 class SearchView(ModelView):
@@ -364,8 +352,29 @@ By default :attr:`View.in_navigation` is set to ``True``.
     '''identifier for queries. Default ``search_text``.'''
     view_template = 'djpcms/components/pagination.html'
     
-    def __init__(self, in_navigation = True, **kwargs):
+    def __init__(self, in_navigation = True, headers = None, **kwargs):
+        self.headers = headers
         super(SearchView,self).__init__(in_navigation=in_navigation,**kwargs)
+    
+    def render_query(self, djp, query, appmodel = None):
+        '''Render a queryset'''
+        appmodel = appmodel or self.appmodel
+        p  = Paginator(djp.request, query, per_page = appmodel.list_per_page)
+        c  = copy(djp.kwargs)
+        headers = self.headers or appmodel.list_display
+        if callable(headers):
+            headers = headers(djp)
+        c.update({'paginator': p,
+                  'djp': djp,
+                  'url': djp.url,
+                  'model': appmodel.model,
+                  'css': djp.css,
+                  'appmodel': appmodel,
+                  'headers': headers})
+        if p.qs:
+            c['items'] = appmodel.data_generator(djp, p.qs)
+            
+        return loader.render_to_string(self.view_template, c)
     
     def appquery(self, djp):
         '''This function implements the search query.

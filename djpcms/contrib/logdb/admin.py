@@ -1,5 +1,5 @@
 from django.contrib import admin
-from jogging.models import Log
+from djpcms.contrib.logdb.models import Log
 
 class LogAdmin(admin.ModelAdmin):
     date_hierarchy = 'datetime' 
