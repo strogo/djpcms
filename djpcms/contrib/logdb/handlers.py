@@ -1,4 +1,6 @@
-import datetime, logging
+import datetime
+import traceback
+import logging
 import platform
 
 from django.contrib.auth.models import User
@@ -36,21 +38,19 @@ class DatabaseHandler(logging.Handler):
                 return user
         except:
             return None
-
-    def format_msg(self, record):
-        return record.msg
-
-
-class DatabaseErrorHandler(DatabaseHandler):
     
     def format_msg(self, record):
+        if record.exc_info:
+            return self.format_error(record)
+        else:
+            return record.msg
+        
+    def format_error(self, record):
         try:
             request = record.request
 
-            subject = '%s (%s IP): %s' % (
-                record.levelname,
-                (request.META.get('REMOTE_ADDR') in settings.INTERNAL_IPS and 'internal' or 'EXTERNAL'),
-                request.path
+            subject = '%s (%s): %s' % (
+                record.levelname,request.META.get('REMOTE_ADDR'),request.path
             )
             request_repr = repr(request)
         except:
@@ -62,6 +62,6 @@ class DatabaseErrorHandler(DatabaseHandler):
         else:
             stack_trace = 'No stack trace available'
 
-        return "%s\n\n%s" % (stack_trace, request_repr)
+        return "%s\n\n%s\n\n%s" % (subject, stack_trace, request_repr)
     
     

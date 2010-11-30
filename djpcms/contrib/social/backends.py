@@ -1,11 +1,15 @@
 import os
-import md5
+from hashlib import md5
 
 from djpcms.contrib import social
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.models import UNUSABLE_PASSWORD
 
 from .models import LinkedAccount, User
+
+def get_random_username():
+    """Return hash from random string cut at 30 chars"""
+    return md5.md5(str(os.urandom(10))).hexdigest()[:30]
 
 
 class SocialAuthBackend(ModelBackend):
@@ -19,6 +23,7 @@ a authentication provider response"""
         verification is made by kwargs inspection for current backend
         name presence.
         """
+        from djpcms.conf import settings
         provider = social.get(kwargs.get('provider',None))
         if not provider:
             return None
@@ -26,34 +31,28 @@ a authentication provider response"""
         name     = str(provider)
         response = kwargs.get('response')
         details  = provider.get_user_details(response)
-        uid      = provider.get_user_id(details, response)
+        uid      = details['uid']
+        #uid      = str(provider.get_user_id(details, response))
         try:
             auth_user = LinkedAccount.objects.select_related('user').get(provider=name,uid=uid)
         except LinkedAccount.DoesNotExist:
             if not getattr(settings, 'SOCIAL_AUTH_CREATE_USERS', False):
                 return None
-            user = self.create_user(details=details, *args, **kwargs)
+            user = self.create_user(provider=provider,details=details, *args, **kwargs)
         else:
             user = auth_user.user
             provider.update_user_details(user, details)
         return user
 
-    def get_username(self, details):
+    def get_uid(self, provider, details, response):
+        return str(provider.get_user_id(details, response))
+    
+    def get_username(self, provider, details, response):
         """Return an unique username, if SOCIAL_AUTH_FORCE_RANDOM_USERNAME
         setting is True, then username will be a random 30 chars md5 hash
         """
-        def get_random_username():
-            """Return hash from random string cut at 30 chars"""
-            return md5.md5(str(os.urandom(10))).hexdigest()[:30]
-
-        if getattr(settings, 'SOCIAL_AUTH_FORCE_RANDOM_USERNAME', False):
-            username = get_random_username()
-        elif 'username' in details:
+        if 'username' in details:
             username = details['username']
-        elif hasattr(settings, 'SOCIAL_AUTH_DEFAULT_USERNAME'):
-            username = settings.SOCIAL_AUTH_DEFAULT_USERNAME
-            if callable(username):
-                username = username()
         else:
             username = get_random_username()
 
@@ -68,12 +67,12 @@ a authentication provider response"""
                 break
         return username
 
-    def create_user(self, response, details, *args, **kwargs):
+    def create_user(self, response, provider, details, *args, **kwargs):
         """Create user with unique username. New social credentials are
         associated with @user if this parameter is not None."""
         user = kwargs.get('user')
         if user is None: # create user, otherwise associate the new credential
-            username = self.get_username(details)
+            username = self.get_username(provider, details, response)
             email = details.get('email', '')
 
             if hasattr(User.objects, 'create_user'): # auth.User
@@ -83,19 +82,19 @@ a authentication provider response"""
                                            password=UNUSABLE_PASSWORD)
 
         # update details and associate account with social credentials
-        self.update_user_details(user, details)
-        self.associate_auth(user, response, details)
+        self.update_user_details(user, provider, details, response)
+        self.associate_auth(user, provider, details, response)
         return user
 
-    def associate_auth(self, user, response, details):
+    def associate_auth(self, user, provider, response, details):
         """Associate an OAuth with a user account."""
         # Check to see if this OAuth has already been claimed.
-        uid = self.get_user_id(details, response)
+        uid = self.get_uid(provider, reponse)
         try:
-            user_social = UserSocialAuth.objects.select_related('user')\
+            user_social = LinkedAccount.objects.select_related('user')\
                                                 .get(provider=self.name,
                                                      uid=uid)
-        except UserSocialAuth.DoesNotExist:
+        except LinkedAccount.DoesNotExist:
             if getattr(settings, 'SOCIAL_AUTH_EXTRA_DATA', True):
                 extra_data = self.extra_data(user, uid, response, details)
             else:
@@ -107,10 +106,6 @@ a authentication provider response"""
             if user_social.user != user:
                 raise ValueError, 'Identity already claimed'
         return user_social
-
-    def extra_data(self, user, uid, response, details):
-        """Return default blank user extra data"""
-        return ''
 
     def update_user_details(self, user, details):
         """Update user details with new (maybe) data"""
@@ -126,20 +121,6 @@ a authentication provider response"""
 
         if changed:
             user.save()
-
-    def get_user_id(self, details, response):
-        """Must return a unique ID from values returned on details"""
-        raise NotImplementedError, 'Implement in subclass'
-
-    def get_user_details(self, response):
-        """Must return user details in a know internal struct:
-            {'email': <user email if any>,
-             'username': <username if any>,
-             'fullname': <user full name if any>,
-             'first_name': <user first name if any>,
-             'last_name': <user last name if any>}
-        """
-        raise NotImplementedError, 'Implement in subclass'
 
     def get_user(self, user_id):
         """Return user instance for @user_id"""

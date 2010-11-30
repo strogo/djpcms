@@ -62,6 +62,9 @@ class Provider(object):
     def __str__(self):
         return self.name
     
+    def cookie(self):
+        return '%s-social' % self.name
+        
     def request_url(self, djp):
         '''The request url'''
         raise NotImplementedError
@@ -112,41 +115,89 @@ class Provider(object):
 class OAuthProvider(Provider):
     abstract = True
     REQUEST_TOKEN_URL = ''
-    ACCESS_TOKEN_URL  = ''
     AUTHORIZATION_URL = ''
+    ACCESS_TOKEN_URL  = ''
     
-    @property
-    def redirect_uri(self):
-        return djpcms.get_url(User, 'social_done', provider = self.name)
+    def redirect_uri(self, request):
+        uri = djpcms.get_url(User, 'social_done', provider = self.name)
+        return '%s://%s%s' % ('https' if request.is_secure() else 'http', request.get_host(), uri)
     
-    def unauthorized_token(self, request):
-        """Return request for unauthorized token (first stage)"""
-        request = self.oauth_request(request, None, self.REQUEST_TOKEN_URL)
-        response = self.fetch_response(request)
-        return oauth.OAuthToken.from_string(response)
+    def request_url(self, **kwargs):
+        return self.REQUEST_TOKEN_URL
+    
+    def authorisation_url(self, **kwargs):
+        return self.AUTHORIZATION_URL
+    
+    def access_url(self, **kwargs):
+        return self.ACCESS_TOKEN_URL
+        
+    def unauthorized_token(self, request, **kwargs):
+        """Return request for unauthorized token. This is the first stage of the authorisation process"""
+        oauth_request = self.oauth_request(request, None, self.request_url(**kwargs))
+        response = self.fetch_response(oauth_request)
+        if response:
+            r = oauth.OAuthToken.from_string(response)
+            setattr(r,'callback',oauth_request.parameters['oauth_callback'])
+            return r
+        
+    def authenticate(self, request, utoken, **kwargs):
+        """Second stage. Using the unauthorised token redirect to authentication page."""
+        signin_url = self.authorisation_url(**kwargs)
+        oauth_callback = utoken.callback
+        request.session['request_token'] = (utoken.key,utoken.secret)
+        if signin_url:
+            signin_url = self.oauth_request(request, utoken, signin_url, **kwargs).to_url()
+            return http.HttpResponseRedirect(str(signin_url))
+        else:
+            return http.HttpResponseRedirect(oauth_callback)
+        
+    def access_token(self, request, token, **kwargs):
+        """Return request for access token value"""
+        oauth_request = self.oauth_request(request, token, self.access_url(**kwargs))
+        return oauth.OAuthToken.from_string(self.fetch_response(oauth_request))
+    
+    def user_data(self, request, access_token):
+        """Loads user data from service"""
+        raise NotImplementedError, 'Implement in subclass'
+    
+    def get_user_id(self, details, response):
+        return details.get('uid','')
     
     def fetch_response(self, request):
         """Executes request and fetchs service response"""
-        self.connection.request(request.to_url(), method = request.http_method)
-        request, response = self.connection.getresponse()
-        return response
+        request, response = self.connection.request(request.to_url(), method = request.http_method)
+        if request.status == 200:
+            return response
      
     def oauth_request(self, request, token, url, extra_params=None):
         """Generate OAuth request, setups callback url"""
-        params = {'oauth_callback': self.redirect_uri}
+        if not token:
+            oauth_callback = self.redirect_uri(request)
+            params = {'oauth_callback': oauth_callback}
+        else:
+            params = {}
         if extra_params:
             params.update(extra_params)
 
         if 'oauth_verifier' in request.GET:
             params['oauth_verifier'] = request.GET['oauth_verifier']
-        request = oauth.OAuthRequest.from_consumer_and_token(self.consumer,
+        consumer = self.consumer()
+        request = oauth.OAuthRequest.from_consumer_and_token(consumer,
                                                              token=token,
                                                              http_url=url,
                                                              parameters=params)
-        request.sign_request(oauth.OAuthSignatureMethod_HMAC_SHA1(),
-                             self.consumer,
-                             token)
+        request.sign_request(oauth.OAuthSignatureMethod_HMAC_SHA1(),consumer,token)
         return request
+    
+    def consumer(self):
+        return oauth.OAuthConsumer(*self.tokens)
+    
+    def authtoken(self, ttoken):
+        '''Auth token from a tuple key,secret'''
+        token = oauth.OAuthConsumer(*ttoken)
+        setattr(token,'callback',None)
+        setattr(token,'verifier',None)
+        return token
     
     
         

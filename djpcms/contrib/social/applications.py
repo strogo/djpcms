@@ -79,16 +79,21 @@ class SocialLoginView(SocialView):
         provider = self.provider(djp)
         dview = self.appmodel.getview('social_done')
         if provider and dview:
-            utoken = provider.unauthorized_token(request)
-            request = djp.request
+            sname  = provider.cookie()
+            key    = request.session.get(sname,None)
             next = request.GET.get('next', None)
             if next:
                 request.session['%s_login_next' % provider] = next
-            path = dview(djp, **djp.kwargs).url
-            callback_url = '%s://%s%s' % ('https' if request.is_secure() else 'http', request.get_host(), path)
-            request_token,signin_url = provider.request_url(djp, callback_url = callback_url)
-            request.session['request_token'] = request_token
-            return http.HttpResponseRedirect(str(signin_url))
+            if key:
+                try:
+                    lacc = LinkedAccount.objects.get(token = key, provider = str(provider))
+                    user = authenticate(provider = provider, token = key, secret = lacc.secret)
+                    return http.HttpResponseRedirect(next)
+                except LinkedAccount.ObjectDoesNotExist:
+                    pass
+                
+            utoken = provider.unauthorized_token(request)
+            return provider.authenticate(request, utoken)
         else:
             raise http.Http404
     
@@ -122,14 +127,15 @@ class SocialLoginDoneView(SocialView):
                 # Redirect the user to the login page
                 return http.HttpResponseRedirect('/')
             
-            access_token = provider.done(djp, key, secret)
+            rtoken = provider.authtoken(request_token)
+            access_token = provider.access_token(request, rtoken)
             
             if not access_token:
                 return http.HttpResponseRedirect('/')
             
             user = request.user
             if not user.is_authenticated():
-                self.create_user(provider, access_token)
+                self.create_user(request, provider, access_token)
             else:
                 self.update_user(user, provider, access_token)
             
@@ -143,8 +149,16 @@ class SocialLoginDoneView(SocialView):
             raise http.Http404
         
     
-    def create_user(self, provider, token):
-        user = authenticate(provider = provider, token = token.key, secret = token.secret)
+    def create_user(self, request, provider, access_token):
+        response = provider.user_data(request, access_token)
+        user = authenticate(provider = provider,
+                            token = access_token.key,
+                            secret = access_token.secret,
+                            response = response)
+        if user:
+            sname  = provider.cookie()
+            request.session[sname] = access_token.key
+        return user
     
     def update_user(self, user, provider, token):
         acc  = user.linked_accounts.filter(provider = str(provider))

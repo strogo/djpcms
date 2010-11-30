@@ -1,3 +1,5 @@
+import json
+
 from django import http
 from djpcms.contrib import messages
 
@@ -7,7 +9,7 @@ from djpcms.views import appview
 from djpcms.utils.ajax import jerror, jhtmls
 from djpcms.contrib.social import OAuthProvider
 
-import tweepy
+#import tweepy
 
 
 class MessageForm(forms.Form):
@@ -24,11 +26,12 @@ class Twitter(OAuthProvider):
     ACCESS_TOKEN_URL  = 'https://api.twitter.com/oauth/access_token'
     REQUEST_TOKEN_URL = 'https://api.twitter.com/oauth/request_token'
     AUTHORIZATION_URL = 'https://api.twitter.com/oauth/authorize'
+    TWITTER_CHECK_AUTH = 'https://twitter.com/account/verify_credentials.json'
 
     def twitter_auth(self):
         return tweepy.OAuthHandler(*self.tokens)
     
-    def request_url(self, djp, callback_url = None, **kwargs):
+    def __authorisation_url(self, **kwargs):
         auth          = self.twitter_auth()
         signin_url    = auth.get_authorization_url()
         request_token = auth.request_token
@@ -45,11 +48,26 @@ class Twitter(OAuthProvider):
         except:
             return None
         
+    def user_data(self, request, access_token):
+        request = self.oauth_request(request, access_token, self.TWITTER_CHECK_AUTH)
+        data = self.fetch_response(request)
+        try:
+            return json.loads(data)
+        except json.JSONDecodeError:
+            return None
+        
+        
     def get_user_details(self, response):
-        return {'email': '',
+        name = response['name']
+        return {'uid': response['id'],
+                'email': '',
                 'username': response['screen_name'],
-                'fullname': response['name'],
-                'first_name': response['name'],
+                'fullname': name,
+                'first_name': name,
+                'description': response.get('description',''),
+                'location': response.get('location',''),
+                'profile_image_url': response.get('profile_image_url',None),
+                'url': response.get('url',None),
                 'last_name': ''}
 
 

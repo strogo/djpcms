@@ -11,14 +11,13 @@ appurls = SocialUserApplication('/accounts/', User),
 class oauthtest(OAuthProvider):
     '''Test server from http://term.ie/oauth/example/'''
     REQUEST_TOKEN_URL = 'http://term.ie/oauth/example/request_token.php'
-    ACCESS_TOKEN_URL  = 'https://api.twitter.com/oauth/access_token'
-    AUTHORIZATION_URL = 'https://api.twitter.com/oauth/authorize'
+    ACCESS_TOKEN_URL  = 'http://term.ie/oauth/example/access_token.php'
+    #AUTHORIZATION_URL = 'https://api.twitter.com/oauth/authorize'
 
 
 class SocialTest(TestCase):
     appurls = 'djpcms.contrib.social.tests'
     
     def testRequest(self):
-        pass
-        #self.get('/accounts/oauthtest/login/')
+        self.get('/accounts/oauthtest/login/')
     
