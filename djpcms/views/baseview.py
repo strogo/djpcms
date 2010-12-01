@@ -337,7 +337,7 @@ If we didn't do that, test_navigation.testMultiPageApplication would fail.'''
     def nextviewurl(self, djp):
         '''Calculate the best possible url for a possible next view.
 By default it is ``djp.url``'''
-        return djp.url
+        return djp.request.path
 
 class pageview(djpcmsview):
     

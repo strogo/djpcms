@@ -31,6 +31,8 @@
 	
 			this.options = {
 				media_url:		   "/media-site/",
+				confirm_actions:   {'delete': 'Please confirm delete',
+									'flush': 'Please confirm flush'},
 				autoload_class:	   "autoload",
 				ajax_server_error: "ajax-server-error",
 				errorlist:		   "errorlist",
@@ -273,6 +275,7 @@
 		description: "add ajax functionality to links, buttons and selects",
 		decorate: function($this,config) {
 			var ajaxclass = config.ajaxclass ? config.ajaxclass : 'ajax';
+			var confirm = config.confirm_actions;
 			
 			function sendrequest(elem,name) {
 				var url = elem.attr('href');
@@ -285,8 +288,9 @@
 				event.preventDefault();
 				var a = $(elem);
 				var name = a.attr('name');
-				if(name == 'delete') {
-					var el = $('<div></div>').html('Please confirm delete.');
+				var conf = confirm[name]
+				if(conf) {
+					var el = $('<div></div>').html(conf);
 					el.dialog({modal: true,
 							   draggable: false,
 							   resizable: false,

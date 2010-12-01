@@ -13,6 +13,14 @@ from djpcms.utils.ajax import jredirect, jremove
 get_next = lambda request, name = "next" : request.POST.get(name,request.GET.get(name,None))
 
 
+def next_and_current(request):
+    next = get_next(request)
+    curr = request.environ.get('HTTP_REFERER')
+    if next:
+        next = request.build_absolute_uri(next)
+    return next,curr
+
+
 def form_kwargs(request,
                 instance = None,
                 withrequest = False,

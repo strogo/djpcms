@@ -388,11 +388,11 @@ There are three additional parameters that can be set:
                   'css': djp.css,
                   'appmodel': appmodel,
                   'headers': headers})
-        if p.qs:
-            if astable:
-                c['items'] = self.table_generator(djp, p.qs)
-            else:    
-                c['items'] = self.data_generator(djp, p.qs)
+        
+        if astable:
+            c['items'] = self.table_generator(djp, p.qs)
+        else:    
+            c['items'] = self.data_generator(djp, p.qs)
             
         return loader.render_to_string(self.view_template, c)
     

@@ -120,6 +120,7 @@ class Application(object):
 No reason to change this default unless you really don't want to see the views in the site navigation.'''
     list_per_page    = 30
     '''Number of objects per page. Default is ``30``.'''
+    exclude_links    = []
 
     _form_add        = 'add'
     _form_edit       = 'change'
@@ -315,6 +316,44 @@ No reason to change this default unless you really don't want to see the views i
         '''Fallback function for retriving a label for a given field name.'''
         raise AttributeError("Attribute %s not available" % name)
 
+    def links(self, djp, asbuttons = True, exclude = None):
+        '''Create a list of application links available to the user'''
+        css     = djp.css
+        next    = djp.url
+        request = djp.request
+        post    = ('post',)
+        posts   = []
+        gets    = []
+        exclude = exclude or []
+        for ex in self.exclude_links:
+            if ex not in exclude:
+                exclude.append(ex)
+        content = {'geturls':gets,
+                   'posturls':posts}
+        kwargs  = djp.kwargs
+        for view in self.views.itervalues():
+            if view.object_view:
+                continue
+            name = view.name
+            if name in exclude:
+                continue
+            djpv = view(request, **kwargs)
+            if view.has_permission(request):
+                url   = '%s?next=%s' % (djpv.url,view.nextviewurl(djp))
+                title = ' title="%s"' % name
+                if asbuttons:
+                    if view.methods(request) == post:
+                        cl = ' class="%s %s"' % (css.ajax,css.nicebutton)
+                    else:
+                        cl = ' class="%s"' % css.nicebutton
+                else:
+                    if view.methods(request) == post:
+                        cl = ' class="%s"' % css.ajax
+                    else:
+                        cl = ' '
+                posts.append(mark_safe('<a href="{0}"{1}{2} name="{3}">{3}</a>'.format(url,cl,title,name)))
+                content['%surl' % name] = url
+        return content
 
 class ModelApplication(Application):
     '''An :class:`Application` class for applications
@@ -484,7 +523,7 @@ This dictionary should be used to render an object within a template. It returns
         content.update(self.object_links(djp,obj))
         return content
     
-    def object_links(self, djp, obj):
+    def object_links(self, djp, obj, asbuttons = True, exclude = None):
         '''Create permitted object links'''
         css     = djp.css
         next    = djp.url

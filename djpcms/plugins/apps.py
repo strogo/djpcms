@@ -136,18 +136,38 @@ class ModelFilter(DJPplugin):
         return f.render()
     
     
-
-class ObjectInstanceLinks(forms.Form):
+class ModelLinksForm(forms.Form):
+    asbuttons = forms.BooleanField(initial = True, required = False, label = 'as buttons')
     layout = forms.ChoiceField(choices = (('horizontal','horizontal'),('vertical','vertical')))
+    exclude = forms.CharField(max_length=600,required=False)
     
     
-class EditObject(DJPplugin):
+class ObjectLinks(DJPplugin):
     name = 'edit-object'
-    description = 'Object Instance Links'
-    form = ObjectInstanceLinks
-    def render(self, djp, wrapper, prefix, layout = 'horizontal', **kwargs):
+    description = 'Links for a model instance'
+    form = ModelLinksForm
+    def render(self, djp, wrapper, prefix, layout = 'horizontal',
+               asbuttons = True, exclude = '', **kwargs):
         try:
-            links = djp.view.appmodel.object_links(djp,djp.instance)
+            exclude = exclude.split(',')
+            links = djp.view.appmodel.object_links(djp,djp.instance, asbuttons=asbuttons, exclude=exclude)
+            links['layout'] = layout
+            return loader.render_to_string(['bits/editlinks.html',
+                                            'djpcms/bits/editlinks.html'],
+                                            links)
+        except:
+            return u''
+    
+    
+class ModelLinks(DJPplugin):
+    name = 'model-links'
+    description = 'Links for a model'
+    form = ModelLinksForm
+    def render(self, djp, wrapper, prefix, layout = 'horizontal',
+               asbuttons = True, exclude = '', **kwargs):
+        try:
+            exclude = exclude.split(',')
+            links = djp.view.appmodel.links(djp, asbuttons=asbuttons, exclude=exclude)
             links['layout'] = layout
             return loader.render_to_string(['bits/editlinks.html',
                                             'djpcms/bits/editlinks.html'],
