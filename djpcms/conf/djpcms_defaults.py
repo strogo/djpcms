@@ -3,12 +3,13 @@ import logging
 ROOT_URLCONF                    = 'djpcms.core.defaults.urls'
 APPLICATION_URL_MODULE          = None
 ADMIN_URL_PREFIX                = '/admin/'
+ADMIN_MEDIA_PREFIX              = '/media/'
 LANGUAGE_REDIRECT               = False
 HTML_CLASSES                    = None
 MAX_SEARCH_DISPLAY              = 20
 CACHE_VIEW_OBJECTS              = True
 DJPCMS_IMAGE_UPLOAD_FUNCTION    = None
-SERVE_STATIC_FILES              = True
+SERVE_STATIC_FILES              = False
 DJPCMS_EMPTY_VALUE              = '(None)'
 
 # Template engine settings
@@ -68,7 +69,7 @@ CONTENT_INLINE_EDITING = {'available':True,
                           'width': 600,
                           'height': 400}
 
-
+LOGGING_CONFIG = None
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,

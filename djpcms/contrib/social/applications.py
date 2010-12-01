@@ -3,7 +3,7 @@ from datetime import datetime
 
 from django import http
 from django.contrib import messages
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, login
 
 from djpcms.conf import settings
 import djpcms.contrib.social.providers
@@ -75,27 +75,32 @@ class SocialLoginView(SocialView):
     _methods = ('get',)
     
     def get_response(self, djp):
-        request = djp.request
         provider = self.provider(djp)
-        dview = self.appmodel.getview('social_done')
-        if provider and dview:
-            sname  = provider.cookie()
-            key    = request.session.get(sname,None)
-            next = request.GET.get('next', None)
-            if next:
-                request.session['%s_login_next' % provider] = next
-            if key:
-                try:
-                    lacc = LinkedAccount.objects.get(token = key, provider = str(provider))
-                    user = authenticate(provider = provider, token = key, secret = lacc.secret)
-                    return http.HttpResponseRedirect(next)
-                except LinkedAccount.ObjectDoesNotExist:
-                    pass
-                
-            utoken = provider.unauthorized_token(request)
-            return provider.authenticate(request, utoken)
-        else:
+        if not provider:
             raise http.Http404
+    
+        request  = djp.request
+        user     = request.user
+        next     = request.GET.get('next', None)
+        
+        # User may be authenticated, In which case we see if it has already the account linked.
+        if user.is_authenticated():
+            if authenticate(provider = provider, user = user) == user:
+                return http.HttpResponseRedirect(next)
+            
+        sname  = provider.cookie()
+        key    = request.COOKIES.get(sname,None)
+        if next:
+            request.session['%s_login_next' % provider] = next
+        if key and not user.is_authenticated():
+            user = authenticate(provider = provider, token = key)
+            if user:
+                if user.is_active:
+                    login(request, user)
+                return http.HttpResponseRedirect(next)
+            
+        utoken = provider.unauthorized_token(request)
+        return provider.authenticate(request, utoken)
     
 
 class SocialLoginDoneView(SocialView):
@@ -112,7 +117,7 @@ class SocialLoginDoneView(SocialView):
             
             if not request_token:
                 # Redirect the user to the login page,
-                messages.info(request, 'No request token for session. Could not login.')
+                messages.error(request, 'No request token for session. Could not login.')
                 return http.HttpResponseRedirect('/')
             
             if data.get('denied', None):
@@ -133,31 +138,30 @@ class SocialLoginDoneView(SocialView):
             if not access_token:
                 return http.HttpResponseRedirect('/')
             
-            user = request.user
-            if not user.is_authenticated():
-                self.create_user(request, provider, access_token)
-            else:
-                self.update_user(user, provider, access_token)
+            self.create_or_update_user(request, provider, access_token)
             
             # authentication was successful, use is now logged in
             next = session.pop('%s_login_next' % provider, None)
             if next:
-                return http.HttpResponseRedirect(next)
+                res = http.HttpResponseRedirect(next)
             else:
-                return http.HttpResponseRedirect(settings.USER_ACCOUNT_HOME_URL)
+                res = http.HttpResponseRedirect(settings.USER_ACCOUNT_HOME_URL)
+            sname  = provider.cookie()
+            res.set_cookie(sname,access_token.key)
+            return res
         else:
             raise http.Http404
         
     
-    def create_user(self, request, provider, access_token):
+    def create_or_update_user(self, request, provider, access_token):
         response = provider.user_data(request, access_token)
         user = authenticate(provider = provider,
                             token = access_token.key,
                             secret = access_token.secret,
-                            response = response)
-        if user:
-            sname  = provider.cookie()
-            request.session[sname] = access_token.key
+                            response = response,
+                            user = request.user)
+        if user and user.is_active:
+            login(request, user)
         return user
     
     def update_user(self, user, provider, token):

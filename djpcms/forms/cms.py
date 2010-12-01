@@ -352,19 +352,30 @@ def ferrors(errdict):
             yield e
 
 
+
+def _getid(obj):
+    if obj:
+        try:
+            return obj.id
+        except:
+            return obj
+    else:
+        return obj
+        
+
 def create_page(parent = None, user = None, inner_template = None, commit = True, **kwargs):
     '''Shortcut function for creating pages'''
     form = PageForm()
     data = forms.model_to_dict(form.instance, form._meta.fields, form._meta.exclude)
     data.update(**kwargs)
+    user = _getid(user)
     if parent:
         if not user:
             user = parent.user
         if not inner_template:
             inner_template = parent.inner_template
         parent = parent.id
-    if inner_template:
-        inner_template = inner_template.id
+    inner_template = _getid(inner_template)
     data.update({'parent':parent,'user':user, 'inner_template': inner_template})
     f = PageForm(data = data)
     if f.is_valid():

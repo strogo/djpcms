@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 from hashlib import md5
 
 from djpcms.contrib import social
@@ -16,45 +17,83 @@ class SocialAuthBackend(ModelBackend):
     """A django.contrib.auth backend that authenticates the user based on
 a authentication provider response"""
 
-    def authenticate(self, *args, **kwargs):
-        """Authenticate user using social credentials
-
-        Authentication is made if this is the correct backend, backend
-        verification is made by kwargs inspection for current backend
-        name presence.
-        """
+    def authenticate(self,
+                     provider = None, response = None, token = None,
+                     secret = None, user = None, **kwargs):
         from djpcms.conf import settings
-        provider = social.get(kwargs.get('provider',None))
+        
+        provider = social.get(provider)
         if not provider:
             return None
-
-        name     = str(provider)
-        response = kwargs.get('response')
-        details  = provider.get_user_details(response)
-        uid      = details['uid']
-        #uid      = str(provider.get_user_id(details, response))
-        try:
-            auth_user = LinkedAccount.objects.select_related('user').get(provider=name,uid=uid)
-        except LinkedAccount.DoesNotExist:
-            if not getattr(settings, 'SOCIAL_AUTH_CREATE_USERS', False):
+        
+        name    = str(provider)
+        objects = LinkedAccount.objects.select_related('user')
+        
+        if user and user.is_authenticated():
+            if not user.is_active:
+                logger.warn('Inactive user %s trying to login with %s.' %(user,provider))
                 return None
-            user = self.create_user(provider=provider,details=details, *args, **kwargs)
         else:
-            user = auth_user.user
-            provider.update_user_details(user, details)
+            user = None
+                
+        # No user, no response but a token, we are trying to authenticate using a token
+        if not user and not response and token:
+            try:
+                linked = objects.get(provider=name, token=token)
+                return linked.user
+            except LinkedAccount.DoesNotExist:
+                return None
+        
+        if not (token and secret and response):
+            return None
+
+        linked   = None
+        details  = provider.get_user_details(response)
+        uid      = str(details['uid'])
+        if not user:
+            username = self.get_unique_username(provider, details, response)
+            try:
+                linked = objects.get(provider=name,uid=uid)
+                user = linked.user
+            except LinkedAccount.DoesNotExist:
+                if not getattr(settings, 'SOCIAL_AUTH_CREATE_USERS', False):
+                    return None
+                user = self.create_user(provider,details,response)
+        else:
+            username = self.get_username(provider, details, response)
+               
+                
+        if user.username != username:
+            logger.warn('Trying to link user %s with %s provider. But the username is different from %s in the provider' %(user,provider,username))
+            return None
+        
+        if not linked:
+            linked = self.create_linked(user,uid,token,secret,provider,details)
+            
+        self.update_user_details(user, provider, details, response)
         return user
 
-    def get_uid(self, provider, details, response):
-        return str(provider.get_user_id(details, response))
     
+    def create_linked(self,user,uid,token,secret,provider,details):
+        return LinkedAccount.objects.create(user=user,
+                                            uid=uid,
+                                            tokendate=datetime.now(),
+                                            token=token,
+                                            secret=secret,
+                                            provider=str(provider),
+                                            data=details)
+        
     def get_username(self, provider, details, response):
+        if 'username' in details:
+            return details['username']
+        else:
+            return get_random_username()
+            
+    def get_unique_username(self, provider, details, response):
         """Return an unique username, if SOCIAL_AUTH_FORCE_RANDOM_USERNAME
         setting is True, then username will be a random 30 chars md5 hash
         """
-        if 'username' in details:
-            username = details['username']
-        else:
-            username = get_random_username()
+        username = self.get_username(provider, details, response)
 
         name, idx = username, 2
         while True:
@@ -67,47 +106,27 @@ a authentication provider response"""
                 break
         return username
 
-    def create_user(self, response, provider, details, *args, **kwargs):
-        """Create user with unique username. New social credentials are
-        associated with @user if this parameter is not None."""
-        user = kwargs.get('user')
-        if user is None: # create user, otherwise associate the new credential
-            username = self.get_username(provider, details, response)
-            email = details.get('email', '')
+    def create_user(self, provider, details, response):
+        username = self.get_username(provider, details, response)
+        email = details.get('email', '')
 
-            if hasattr(User.objects, 'create_user'): # auth.User
-                user = User.objects.create_user(username, email)
-            else: # create user setting password to an unusable value
-                user = User.objects.create(username=username, email=email,
-                                           password=UNUSABLE_PASSWORD)
+        if hasattr(User.objects, 'create_user'): # auth.User
+            user = User.objects.create_user(username, email)
+        else: # create user setting password to an unusable value
+            user = User.objects.create(username=username,
+                                       email=email,
+                                       password=UNUSABLE_PASSWORD)
 
-        # update details and associate account with social credentials
         self.update_user_details(user, provider, details, response)
-        self.associate_auth(user, provider, details, response)
         return user
 
-    def associate_auth(self, user, provider, response, details):
-        """Associate an OAuth with a user account."""
-        # Check to see if this OAuth has already been claimed.
-        uid = self.get_uid(provider, reponse)
-        try:
-            user_social = LinkedAccount.objects.select_related('user')\
-                                                .get(provider=self.name,
-                                                     uid=uid)
-        except LinkedAccount.DoesNotExist:
-            if getattr(settings, 'SOCIAL_AUTH_EXTRA_DATA', True):
-                extra_data = self.extra_data(user, uid, response, details)
-            else:
-                extra_data = ''
-            user_social = UserSocialAuth.objects.create(user=user, uid=uid,
-                                                        provider=self.name,
-                                                        extra_data=extra_data)
-        else:
-            if user_social.user != user:
-                raise ValueError, 'Identity already claimed'
-        return user_social
+    def associate_auth(self, user, uid, provider, details, response):
+        return LinkedAccount.objects.create(user=user,
+                                            uid=uid,
+                                            provider=str(provider),
+                                            data=details)
 
-    def update_user_details(self, user, details):
+    def update_user_details(self, user, provider, details, response):
         """Update user details with new (maybe) data"""
         fields = (name for name in ('first_name', 'last_name', 'email')
                         if user._meta.get_field(name))

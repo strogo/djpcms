@@ -19,5 +19,6 @@ class SocialTest(TestCase):
     appurls = 'djpcms.contrib.social.tests'
     
     def testRequest(self):
-        self.get('/accounts/oauthtest/login/')
+        resp = self.get('/accounts/oauthtest/login/', status = 302, response = True)
+        
     

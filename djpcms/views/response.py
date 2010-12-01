@@ -13,7 +13,7 @@ from djpcms.utils.navigation import Navigator, Breadcrumbs
 
 
 class DjpResponse(http.HttpResponse):
-    '''Djpcms Http Response class. It which contains information associated with a given url.
+    '''Djpcms Http Response class. It contains information associated with a given url.
         
         .. attribute: request
         

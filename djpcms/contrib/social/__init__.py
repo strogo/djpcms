@@ -160,9 +160,6 @@ class OAuthProvider(Provider):
         """Loads user data from service"""
         raise NotImplementedError, 'Implement in subclass'
     
-    def get_user_id(self, details, response):
-        return details.get('uid','')
-    
     def fetch_response(self, request):
         """Executes request and fetchs service response"""
         request, response = self.connection.request(request.to_url(), method = request.http_method)

@@ -1,10 +1,12 @@
-from djpcms.views.decorator import getview
+import djpcms
+from djpcms.views import appsite, appview
 
 djpcms.MakeSite(__file__)
 
-def simpleapp(djp):
-    return 'Hello World'
 
-class TinySite(appsite.ApplicationBase):
-    home = appview.Application(renderer = simpleapp)
+class TinySite(appsite.Application):
+    home = appview.View(renderer = lambda djp : 'Hello World')
     
+appurls = TinySite('/'),
+
+djpcms.UnukServe(port = 9011)
