@@ -39,8 +39,8 @@ class ContentView(appview.SearchView):
         else:
             return super(ContentView,self).title(page,**kwargs)
         
-    def appquery(self, request, content_model = None, **kwargs):
-        qs = self.basequery(request, **kwargs)
+    def appquery(self, djp, content_model = None):
+        qs = super(ContentView,self).appquery(djp)
         if content_model:
             ctype = ContentType.objects.get_for_model(content_model)
             return qs.filter(content_type = ctype)
