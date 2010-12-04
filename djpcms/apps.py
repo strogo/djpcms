@@ -3,14 +3,17 @@ import sys
 
 
 def MakeSite(name, settings = 'settings'):
-    '''Initialise DjpCms from a directory'''
+    '''Initialise DjpCms from a directory or a file'''
+    import djpcms
     from djpcms.utils.importlib import import_module
     # if not a directory it may be a file
     if not os.path.isdir(name):
         if not os.path.isfile(name):
             raise ValueError('Could not find directory or file {0}'.format(name))
-        path = os.path.realpath(name)
-    path = os.path.realpath(name)
+        appdir = os.path.split(os.path.realpath(name))[0]
+    else:
+        appdir = name
+    path = os.path.realpath(appdir)
     base,name = os.path.split(path)
     if base not in sys.path:
         sys.path.insert(0, base)
@@ -23,20 +26,9 @@ def MakeSite(name, settings = 'settings'):
     # IMPORTANT! NEED TO IMPORT HERE TO PREVENT DJANGO TO IMPORT FIRST
     from djpcms.conf import settings
     settings.SITE_DIRECTORY = path
+    djpcms.init_logging()
     from djpcms.views import appsite
     return appsite.site
-    
-
-def UnukServe(port = 9011, secure = None):
-    from unuk.contrib.txweb import start, djangoapp
-    from djpcms.views.appsite import site
-    #if secure:
-    #    secure = (os.path.join(locdir,secure,'server.key'),
-    #              os.path.join(locdir,secure,'server.crt'))
-    app =  djangoapp.ApplicationServer(site.settings.SITE_DIRECTORY,
-                                       port = port,
-                                       secure = secure)
-    start()
     
     
 def get_url(model, view_name, instance = None, **kwargs):

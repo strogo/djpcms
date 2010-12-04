@@ -3,7 +3,7 @@ import logging
 ROOT_URLCONF                    = 'djpcms.core.defaults.urls'
 APPLICATION_URL_MODULE          = None
 ADMIN_URL_PREFIX                = '/admin/'
-ADMIN_MEDIA_PREFIX              = '/media/'
+ADMIN_MEDIA_PREFIX              = '/media/admin/'
 LANGUAGE_REDIRECT               = False
 HTML_CLASSES                    = None
 MAX_SEARCH_DISPLAY              = 20

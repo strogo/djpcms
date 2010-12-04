@@ -23,7 +23,7 @@ __homepage__ = "http://djpcms.com/"
 
 import os
 import sys
-from apps import MakeSite, UnukServe, get_url
+from apps import MakeSite, get_url
 
 parent = lambda x : os.path.split(x)[0]
 this_dir = parent(os.path.abspath(__file__))
