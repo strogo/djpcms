@@ -26,6 +26,7 @@ class ChangeList(object):
 def nice_items(items,nd):
     for item in items:
         yield nicerepr(item,nd)
+        
 
 
 def table(headers, queryset_or_list, djp, model = None, nd = 3):
