@@ -20,14 +20,14 @@ If you want your application to create users, set the flag::
 Requirements
 ==================
 * httplib2_ no other ``http`` python library is better than this one.
-* python-oauth_
+* oauth_ for authentication.
 * ``flickr``, requires flickrapi_
 * ``google``, requires gdata_.
 * ``twitter``, requires tweepy_.
 
 
 .. _httplib2: http://code.google.com/p/httplib2/
-.. _python-oath: https://github.com/leah/python-oauth
+.. _oauth: http://pypi.python.org/pypi/oauth
 .. _flickrapi: http://pypi.python.org/pypi/flickrapi
 .. _gdata: http://code.google.com/p/gdata-python-client/
 .. _tweepy: https://github.com/joshthecoder/tweepy

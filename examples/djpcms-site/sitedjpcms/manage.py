@@ -6,7 +6,7 @@ try:
 except:
     parent = lambda x : os.path.split(x)[0]
     djpdir = parent(parent(parent(os.path.abspath(__file__))))
-    sys.path.insert(0,djpdir)     
+    sys.path.insert(0,djpdir)
     
     
 from django.core.management import execute_manager
@@ -21,4 +21,5 @@ except ImportError:
         sys.exit(1)
 
 if __name__ == "__main__":
+    djpcms.MakeSite(__file__)
     execute_manager(settings)

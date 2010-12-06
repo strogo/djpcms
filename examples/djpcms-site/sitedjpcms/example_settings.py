@@ -59,12 +59,11 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     #
     # third parties
-    #'socialauth',
-    #'openid_consumer',
     'south',
     'debug_toolbar',
     #
     'djpcms',
+    'djpcms.contrib.admin',
     'djpcms.contrib.jdep',
     'djpcms.contrib.social',
     #'flowrepo',
@@ -94,3 +93,24 @@ SOCIAL_AUTH_CREATE_USERS = True
 #=========================================================
 FLOWREPO_STORAGE_IMAGE      = 'sitedjpcms.storage.SiteFileSystemStorage'
 
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(asctime)s | (p=%(process)s,t=%(thread)s) | %(levelname)s | %(name)s | %(message)s'
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        }
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+    }
+}

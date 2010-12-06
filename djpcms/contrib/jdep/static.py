@@ -42,6 +42,7 @@ def application_map():
         sapp = app.split('.')
         name = sapp[-1]
         if app.startswith('django.'):
+            continue
             if app == 'django.contrib.admin':
                 base = 'admin'
                 handler = djangoAdminHandler

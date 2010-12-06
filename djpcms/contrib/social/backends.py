@@ -1,4 +1,5 @@
 import os
+import logging
 from datetime import datetime
 from hashlib import md5
 
@@ -7,6 +8,10 @@ from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.models import UNUSABLE_PASSWORD
 
 from .models import LinkedAccount, User
+
+
+logger = logging.getLogger('djpcms.contrib.social')
+
 
 def get_random_username():
     """Return hash from random string cut at 30 chars"""
