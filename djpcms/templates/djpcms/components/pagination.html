@@ -24,7 +24,7 @@ $(document).ready(function(){
 });
 </script>{% endifnotequal %}{% else %}
 <div class="information">No entries</div>{% endif %}
-{% if headers %}{% load tablesorter %}
+{% if astable %}{% load tablesorter %}
 {% totable headers items djp appmodel %}
 {% else %}{% for item in items %}
 {{ item }}{% endfor %}{% endif %}

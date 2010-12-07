@@ -79,6 +79,8 @@ All parameters are optionals and usually a small subset of them needs to be used
                          
                      where ``self`` is an instance of the view, ``request`` is the HTTP request instance and
                      ``obj`` is an instance of model or ``None``.
+:keyword headers: List of string to display as table header when the
+                  view display a table. Default ``None``.
 Usage::
 
     from djpcms.views import appview, appsite
@@ -110,7 +112,7 @@ Usage::
 .. attribute:: view_template
 
     Template file or list of template files used to render
-    the view (not the whole page).
+    the view (not the whole page). Default ``djpcms/components/pagination.html``.
     
 .. attribute:: plugin_form
 
@@ -118,7 +120,7 @@ Usage::
 '''
     creation_counter = 0
     plugin_form    = None
-    view_template  = None
+    view_template  = 'djpcms/components/pagination.html'
     force_redirect = False
     _form          = None
     _form_ajax     = None
@@ -142,6 +144,9 @@ Usage::
                  form           = None,
                  form_withrequest = None,
                  form_ajax     = None,
+                 headers       = None,
+                 astable        = False,
+                 table_generator = None,
                  success_message = None):
         self.name        = None
         self.description = description
@@ -156,6 +161,10 @@ Usage::
         self.func      = None
         self.code      = None
         self.editurl   = None
+        self.headers   = headers
+        self.astable   = astable
+        if table_generator:
+            self.table_generator = table_generator
         if renderer:
             self.render = renderer
         if permission:
@@ -282,13 +291,41 @@ replaced during initialization.
         pass
     
     def render_query(self, djp, query, appmodel = None):
-        pass
+        '''Render a queryset'''
+        appmodel = appmodel or self.appmodel
+        p  = Paginator(djp.request, query, per_page = appmodel.list_per_page)
+        c  = copy(djp.kwargs)
+        headers = self.headers or appmodel.list_display
+        if callable(headers):
+            headers = headers(djp)
+        astable = headers and self.astable
+        c.update({'paginator': p,
+                  'astable': astable,
+                  'djp': djp,
+                  'url': djp.url,
+                  'model': appmodel.model,
+                  'css': djp.css,
+                  'appmodel': appmodel,
+                  'headers': headers})
+        
+        if astable:
+            c['items'] = self.table_generator(djp, p.qs)
+        else:    
+            c['items'] = self.data_generator(djp, p.qs)
+            
+        return loader.render_to_string(self.view_template, c)
     
     def parentresponse(self, djp):
         '''
         Retrive the parent response
         '''
         return self.appmodel.parentresponse(djp, self)
+    
+    def table_generator(self, djp, qs):
+        return self.appmodel.table_generator(djp, qs)
+    
+    def data_generator(self, djp, qs):
+        return self.appmodel.data_generator(djp, qs)
     
     def processurlbits(self, appmodel):
         '''Process url bits and store information for navigation and urls
@@ -353,54 +390,16 @@ class SearchView(ModelView):
 By default :attr:`View.in_navigation` is set to ``True``.
 There are three additional parameters that can be set:
 
-:keyword headers: List of string to display as table header when the
-                  view display a table. Default ``None``.
 :keyword astable: used to force the view not as a table. Default ``True``.
 :keyword table_generator: Optional function to generate table content. Default ``None``.
     '''
     search_text = 'search_text'
     '''identifier for queries. Default ``search_text``.'''
-    view_template = 'djpcms/components/pagination.html'
     
-    def __init__(self, in_navigation = True, headers = None,
-                 astable = True, table_generator = None,
-                 **kwargs):
-        self.headers = headers
-        self.astable = astable
-        if table_generator:
-            self.table_generator = table_generator
-        super(SearchView,self).__init__(in_navigation=in_navigation,**kwargs)
-    
-    def render_query(self, djp, query, appmodel = None):
-        '''Render a queryset'''
-        appmodel = appmodel or self.appmodel
-        p  = Paginator(djp.request, query, per_page = appmodel.list_per_page)
-        c  = copy(djp.kwargs)
-        headers = self.headers or appmodel.list_display
-        if callable(headers):
-            headers = headers(djp)
-        astable = headers and self.astable
-        c.update({'paginator': p,
-                  'astable': astable,
-                  'djp': djp,
-                  'url': djp.url,
-                  'model': appmodel.model,
-                  'css': djp.css,
-                  'appmodel': appmodel,
-                  'headers': headers})
-        
-        if astable:
-            c['items'] = self.table_generator(djp, p.qs)
-        else:    
-            c['items'] = self.data_generator(djp, p.qs)
-            
-        return loader.render_to_string(self.view_template, c)
-    
-    def table_generator(self, djp, qs):
-        return self.appmodel.table_generator(djp, qs)
-    
-    def data_generator(self, djp, qs):
-        return self.appmodel.data_generator(djp, qs)
+    def __init__(self, in_navigation = True, astable = True, **kwargs):
+        super(SearchView,self).__init__(in_navigation=in_navigation,
+                                        astable=astable,
+                                        **kwargs)
     
     def appquery(self, djp):
         '''This function implements the search query.

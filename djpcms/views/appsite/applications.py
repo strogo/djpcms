@@ -354,6 +354,11 @@ No reason to change this default unless you really don't want to see the views i
                 posts.append(mark_safe('<a href="{0}"{1}{2} name="{3}">{3}</a>'.format(url,cl,title,name)))
                 content['%surl' % name] = url
         return content
+    
+    def table_generator(self, djp, qs):
+        '''Return an iterable for an input iterable :param qs:.'''
+        return qs
+
 
 class ModelApplication(Application):
     '''An :class:`Application` class for applications
@@ -591,9 +596,6 @@ This dictionary should be used to render an object within a template. It returns
         id = obj.id
         obj.delete()
         return id
-        
-    def table_generator(self, djp, qs):
-        return qs
     
     def data_generator(self, djp, data):
         '''

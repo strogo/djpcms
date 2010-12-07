@@ -110,7 +110,7 @@ class ModelTypeWrapper(object):
         def data():
             for field in self.object_display:
                 name = label_for_field(field)
-                yield {'name':name,'value':getrepr(name,obj)}
+                yield {'name':name,'value':getrepr(field,obj)}
         content = {'module_name':self.module_name,
                    'id':self.get_object_id(obj),
                    'data':data(),
