@@ -337,7 +337,7 @@ class UniForm(UniFormBase):
         self.inputs          = inputs or []
         self.tag             = tag
         self._messages       = []
-        self._errors         = ''
+        self._errors         = []
         self.is_ajax         = is_ajax
         self.error_message   = error_message if error_message is not None else self.default_error_msg
         self.template        = template or self.default_template

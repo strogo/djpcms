@@ -10,15 +10,18 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import clear_url_caches
 
 
-class TestCase(test.TestCase):
-    '''Implements shortcut functions for testing djpcms'''
+
+class DjpCmsTestHandle(test.TestCase):
+    '''Implements shortcut functions for testing djpcms.
+Must be used as a base class for TestCase classes'''
+    
+    pagecache = pagecache
+    Page = Page
+    site = appsite.site
     
     def _pre_setup(self):
-        super(TestCase,self)._pre_setup()
-        self.pagecache = pagecache
+        super(DjpCmsTestHandle,self)._pre_setup()
         self.pagecache.clear()
-        self.Page = Page
-        self.site = appsite.site
         
     def _urlconf_setup(self):
         appurls = getattr(self,'appurls',None)
@@ -31,35 +34,12 @@ class TestCase(test.TestCase):
         if hasattr(self,'_old_appurl'):
             settings.APPLICATION_URL_MODULE = self._old_appurl
         appsite.site.clear()
-        super(TestCase,self)._urlconf_teardown()
-        
-    def setUp(self):
-        p = self.get()['page']
-        self.superuser = User.objects.create_superuser('testuser', 'test@testuser.com', 'testuser')
-        self.user = User.objects.create_user('simpleuser', 'simple@testuser.com', 'simpleuser')
-        self.assertEqual(p.url,'/')
-        if not hasattr(self,'fixtures'):
-            self.assertEqual(Page.objects.all().count(),1)
-        
+        super(DjpCmsTestHandle,self)._urlconf_teardown()
+    
     def clear(self):
         self.pagecache.clear()
         return self.get()['page']
-        
-    def get(self, url = '/', status = 200, response = False):
-        '''Quick function for getting some content'''
-        resp = self.client.get(url)
-        self.assertEqual(resp.status_code,status)
-        if response:
-            return resp
-        else:
-            return resp.context
-    
-    def post(self, url = '/', data = {}, status = 200):
-        '''Quick function for posting some content'''
-        response = self.client.post(url,data)
-        self.assertEqual(response.status_code,status)
-        return response.context
-    
+
     def makepage(self, view = None, model = None, bit = '', parent = None, fail = False, **kwargs):
         form = PageForm()
         data = model_to_dict(form.instance, form._meta.fields, form._meta.exclude)
@@ -81,6 +61,42 @@ class TestCase(test.TestCase):
             instance = form.save()
             self.assertTrue(instance.pk)
             return instance
+
+    def post(self, url = '/', data = {}, status = 200):
+        '''Quick function for posting some content'''
+        response = self.client.post(url,data)
+        self.assertEqual(response.status_code,status)
+        return response.context
+    
+    def get(self, url = '/', status = 200, response = False):
+        '''Quick function for getting some content'''
+        resp = self.client.get(url)
+        self.assertEqual(resp.status_code,status)
+        if response:
+            return resp
+        else:
+            return resp.context
+        
+    def clear(self):
+        self.pagecache.clear()
+        return self.get()['page']
+    
+    def post(self, url = '/', data = {}, status = 200):
+        '''Quick function for posting some content'''
+        response = self.client.post(url,data)
+        self.assertEqual(response.status_code,status)
+        return response.context
+        
+        
+class TestCase(DjpCmsTestHandle):
+        
+    def setUp(self):
+        p = self.get()['page']
+        self.superuser = User.objects.create_superuser('testuser', 'test@testuser.com', 'testuser')
+        self.user = User.objects.create_user('simpleuser', 'simple@testuser.com', 'simpleuser')
+        self.assertEqual(p.url,'/')
+        if not hasattr(self,'fixtures'):
+            self.assertEqual(Page.objects.all().count(),1)
         
     def login(self, username = None, password = None):
         if not username:

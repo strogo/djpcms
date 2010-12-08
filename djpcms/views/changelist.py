@@ -28,7 +28,6 @@ def nice_items(items,nd):
         yield nicerepr(item,nd)
         
 
-
 def table(headers, queryset_or_list, djp, model = None, nd = 3):
     if not model:
         try:
