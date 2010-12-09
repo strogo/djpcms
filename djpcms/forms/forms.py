@@ -4,6 +4,7 @@ from django import forms
 from django.forms.forms import get_declared_fields
 from django.forms.widgets import media_property
 from django.db import models
+from django.forms.forms import BoundField
 
 from djpcms.utils.html import ModelChoiceField, ModelMultipleChoiceField, submit
 

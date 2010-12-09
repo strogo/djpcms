@@ -263,3 +263,20 @@ def deleteinstance(djp, force_redirect = False):
         messages.info(request,msg)
         next = next or curr
         return http.HttpResponseRedirect(next)
+    
+    
+
+def fill_form_data(f):
+    '''Utility for filling a dictionary with data contained in a form'''
+    data = {}
+    initial = f.initial
+    is_bound = f.is_bound
+    for field in f:
+        v = field.data
+        if v is None and not is_bound:
+             v = getattr(field.field,'initial',None)
+             if v is None:
+                 v = initial.get(field.name,None)
+        if v is not None:
+            data[field.html_name] = v
+    return data 

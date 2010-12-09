@@ -1,14 +1,6 @@
 .documentation h2, .documentation h3, .documentation h4 {
 	margin-top:1.4em;
 }
-/*.documentation .section h1 {display: none;}*/
-.documentation .section h2 {font-size: 150%;}
-.documentation .section h3 {
-	font-size: 120%;
-	font-weight: bold;
-	color: rgb(103,105,107);
-	padding-left: 10px;
-}
 .documentation :hover > a.headerlink {
 	visibility:visible;
 }
@@ -26,28 +18,39 @@
 }
 /*
 ------------------------------- LISTS */
-.documentation ul {
+div.documentation-main ul {
+	list-style: none outside none;
 	margin-left: 20px;
 }
-.documentation li,
-.documentation li.toctree-l1 {
+.documentation-secondary ul {
+	margin: 10px 0;
+}
+.documentation-secondary ul ul {
+	margin: 0 0 0 20px;
+	list-style: square outside none;
+}
+.documentation-secondary ul ul li {
+	list-style: square outside none;
+}
+.documentation-main li,
+.documentation-main li.toctree-l1 {
 	list-style-type:disc;
 	margin-bottom: 10px;
 }
-.documentation li.toctree-l2 {
+.documentation-main li.toctree-l2 {
 	list-style-type:circle;
 	margin-bottom: 0;
 	margin-top: 3px;
 }
-.documentation li.toctree-l1 a {
+.documentation-main li.toctree-l1 a {
 	font-weight: bold;
 	font-size: 110%;
 }
-.documentation li.toctree-l2 a {
+.documentation-main li.toctree-l2 a {
 	font-weight: normal;
 	font-size: 100%;
 }
-.documentation pre {
+.documentation-main pre {
 	background: #fff;
 	border: 1px solid #C6C9CB;
 	color: #222222;
