@@ -90,6 +90,11 @@ class DjpResponse(http.HttpResponse):
         setattr(self,'_media',other)
     media = property(__get_media,__set_media)
     
+    def getdata(self, name):
+        '''Extract data out of url dictionary. Return ``None`` if ``name`` is not in the dictionary.'''
+        self.url
+        return self.kwargs.get(name,None)
+    
     @lazyattr
     def in_navigation(self):
         return self.view.in_navigation(self.request, self.page)

@@ -1,8 +1,9 @@
 from django import forms
-from django.template import loader
 from django.utils.datastructures import MultiValueDict, MergeDict
 from django.db import models
-from django.utils.safestring import mark_safe
+
+from djpcms.template import loader
+from djpcms.utils import mark_safe
 from djpcms.conf import settings
 
 

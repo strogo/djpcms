@@ -16,7 +16,7 @@ except ImportError:
     fabric_available = False
 
 
-NUM_MEDIA = 3    
+NUM_MEDIA = 4 
     
 from StringIO import StringIO
 from django.core.management.base import CommandError

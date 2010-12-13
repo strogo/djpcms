@@ -11,13 +11,12 @@ from django.template import loader, RequestContext
 from django.utils.text import smart_split
 from django.utils.translation import ugettext as _
 
-from djpcms.forms import saveform, deleteinstance
+from djpcms.forms import saveform, deleteinstance, autocomplete
 from djpcms.utils.html import Paginator
 from djpcms.utils import force_unicode, construct_search, isexact
 from djpcms.views.regex import RegExUrl 
 from djpcms.views.cache import pagecache
 from djpcms.views.baseview import djpcmsview
-from djpcms.utils.html import autocomplete
 
 
 class pageinfo(object):

@@ -71,7 +71,7 @@ class NiceReportForm(ReportForm):
                              Html(CRL_HELP, key = 'help',
                                       renderer = lambda html : collapse('Writing Tips',html,True,True)),
                     
-                             template = 'flowrepo/djpcms/report-form-layout.html')
+                             template = 'flowrepo/report-form-layout.html')
 
 
     

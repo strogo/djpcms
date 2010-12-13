@@ -36,9 +36,11 @@ Must be used as a base class for TestCase classes'''
         appsite.site.clear()
         super(DjpCmsTestHandle,self)._urlconf_teardown()
     
-    def clear(self):
-        self.pagecache.clear()
-        return self.get()['page']
+    def clear(self, db = False):
+        if db:
+            self.Page.objects.all().delete()
+        else:
+            self.pagecache.clear()
 
     def makepage(self, view = None, model = None, bit = '', parent = None, fail = False, **kwargs):
         form = PageForm()
@@ -76,10 +78,6 @@ Must be used as a base class for TestCase classes'''
             return resp
         else:
             return resp.context
-        
-    def clear(self):
-        self.pagecache.clear()
-        return self.get()['page']
     
     def post(self, url = '/', data = {}, status = 200):
         '''Quick function for posting some content'''

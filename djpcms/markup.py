@@ -9,6 +9,8 @@ can be used rather than the limited one in djpcms'''
         
     @property
     def markup_module(self):
+        from djpcms.contrib.flowrepo import markups
+        return markups
         if not self._module:
             from djpcms.conf import settings
             self._module = __import__(settings.DJPCMS_MARKUP_MODULE,globals(),locals(),[''])

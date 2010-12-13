@@ -1,9 +1,10 @@
 import os
 import logging
 
-from django import http, forms
+from django import http
 from django.utils.text import capfirst
 
+from djpcms import forms
 from djpcms.forms import form_kwargs
 from djpcms.utils import UnicodeObject, force_unicode, json, mark_safe
 from djpcms.utils.formjson import form2json

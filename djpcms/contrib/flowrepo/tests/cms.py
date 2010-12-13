@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 
 from djpcms.test import TestCase
 from djpcms.contrib.flowrepo.models import Report, FlowItem
+from djpcms.contrib.flowrepo.cms import NiceReportForm
 
 __all__ = ['CmsTest']
 
@@ -11,7 +12,7 @@ class CmsTest(TestCase):
     
     def setUp(self):
         super(CmsTest,self).setUp()
-        self.Page.objects.all().delete()
+        self.clear(True)
         self.makepage('main',FlowItem)
         
     def testRoot(self):
@@ -23,6 +24,24 @@ class CmsTest(TestCase):
         self.assertEqual(page.url,'/')
         self.assertEqual(page.application_view,'flowitemapplication-main')
         
+    def testAddReportForm(self):
+        self.assertTrue(self.login())
+        resp = self.get('/weblog/add/', response = True)
+        context = resp.context
+        uni = context['uniform']
+        self.assertEqual(uni.instance.__class__,FlowItem)
+        self.assertEqual(uni.template,'flowrepo/report-form.html')
+        forms = list(uni.forms_only())
+        self.assertEqual(len(forms),1)
+        form = forms[0]
+        self.assertEqual(form.__class__,NiceReportForm)
+        layout = form.layout
+        self.assertEqual(layout.template,'flowrepo/report-form-layout.html')
+        
+    def testAddReportResponse(self):
+        self.assertTrue(self.login())
+        uni = self.get('/weblog/add/')['uniform']
+        data = uni.htmldata()        
         
     def testContent(self):
         djp = self.get()['djp']

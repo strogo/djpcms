@@ -48,6 +48,21 @@ add('crl','creole',creole_text2html)
 #add('tex','LaTeX',text2html)
 
 
+#______________________________________________________________________ RestructuredText
+try:
+    #reStructuredText, which requires docutils from http://docutils.sf.net/
+    from docutils.core import publish_parts 
+    
+    def restructured_text2html(text):
+        parts = publish_parts(source=smart_str(value),
+                              writer_name="html4css1")
+        return parts["fragment"]
+    
+    add('res','reStructuredText',restructured_text2html)
+except:
+    pass
+
+
 #______________________________________________________________________ MARKDOWN2
 try:
     import markdown2

@@ -76,9 +76,8 @@ class FlowItemApplication(ArchiveTaggedApplication):
     content_forms    = {Report: NiceReportForm,
                         Image: NiceUloaderForm,
                         Attachment: NiceUloaderForm}
-    form_templates   = {Report: 'flowrepo/djpcms/report-form.html'}
+    form_templates   = {Report: 'flowrepo/report-form.html'}
     add_title        = {Report: 'write', Image: 'upload'}
-    #name             = 'Flow Item'
     
     main             = FlowMainView()
     search           = appview.SearchView(regex = 'search', parent = 'main', in_navigation = 0)
@@ -113,7 +112,7 @@ class FlowItemApplication(ArchiveTaggedApplication):
         return self.form_templates.get(content,None)
         
     def get_form(self, djp, form_class, **kwargs):
-        content = djp.kwargs.get('content_model',None)
+        content = djp.getdata('content_model')
         if not form_class:
             form_class = self.content_forms.get(content,form_class)
         uni = super(FlowItemApplication,self).get_form(djp,form_class,forceform=True,**kwargs)

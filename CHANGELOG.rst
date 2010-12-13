@@ -1,5 +1,8 @@
 Version 0.8.6 - Development
 =======================================
+* Added ``getdata`` function to ``DjpResponse`` as the preferred way to extract data from the response object.
+  In this way it is guaranteed the response object is initialised properly.
+* ``forms.LazyChoiceField`` replaced by ``forms.ChoiceField``, lazy by default.
 * Added :meth:`djpcms.views.appsite.Application.get_label_for_field`.
 * Added a :mod:`middleware` module for logging when using ``django`` version less than ``1.3``.
 * Renamed ``ApplicationBase`` as :class:`djpcms.views.appsite.Application``.
@@ -11,7 +14,7 @@ Version 0.8.6 - Development
 * Injecting the instance or ``None`` of current ``url`` into ``request`` object.
 * Added more docs on views and applications.
 * Added :mod:`djpcms.contrib.social` application with ``OAuth``. Still in ``alpha``.
-* **55 unit tests**.
+* **57 unit tests**.
 
 Version 0.8.5 (2010-Nov-16)
 =======================================

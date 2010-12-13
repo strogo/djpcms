@@ -153,7 +153,7 @@ class FlowItemSelector(forms.ModelForm):
     '''
     Form for selecting items to display
     '''
-    content_type = forms.ModelMultipleChoiceField(queryset = models.FlowItem.objects.allmodels(),
+    content_type = forms.ModelMultipleChoiceField(queryset = models.FlowItem.objects.allmodels,
                                                   label = 'types',
                                                   required = False)
     item_per_page = forms.IntegerField(initial = 10)

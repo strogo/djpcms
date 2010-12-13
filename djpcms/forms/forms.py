@@ -5,8 +5,9 @@ from django.forms.forms import get_declared_fields
 from django.forms.widgets import media_property
 from django.db import models
 from django.forms.forms import BoundField
+from djpcms.utils.html import submit
 
-from djpcms.utils.html import ModelChoiceField, ModelMultipleChoiceField, submit
+from .autocomplete import *
 
 
 BaseForm = forms.BaseForm
@@ -20,7 +21,6 @@ Textarea  = forms.Textarea
 TextInput = forms.TextInput
 BooleanField = forms.BooleanField
 CharField = forms.CharField
-ChoiceField = forms.ChoiceField
 CheckboxInput = forms.CheckboxInput
 FileField = forms.FileField
 HiddenInput = forms.HiddenInput
@@ -52,7 +52,7 @@ def modelform_factory(model, form=ModelForm, **kwargs):
     return models.modelform_factory(model, form=form, **kwargs)
 
         
-class LazyChoiceField(ChoiceField):
+class ChoiceField(forms.ChoiceField):
     '''
     A Lazy ChoiceField.
     This ChoiceField does not unwind choices until a deepcopy is called on it.
@@ -60,10 +60,10 @@ class LazyChoiceField(ChoiceField):
     '''
     def __init__(self, *args, **kwargs):
         self._lazy_choices = kwargs.pop('choices',())
-        super(LazyChoiceField,self).__init__(*args, **kwargs)
+        super(ChoiceField,self).__init__(*args, **kwargs)
         
     def __deepcopy__(self, memo):
-        result = super(LazyChoiceField,self).__deepcopy__(memo)
+        result = super(ChoiceField,self).__deepcopy__(memo)
         lz = self._lazy_choices
         if callable(lz):
             lz = lz()
@@ -71,7 +71,7 @@ class LazyChoiceField(ChoiceField):
         return result
 
 
-class LazyAjaxChoice(LazyChoiceField):
+class LazyAjaxChoice(ChoiceField):
     
     def __init__(self, *args, **kwargs):
         super(LazyAjaxChoice,self).__init__(*args, **kwargs)

@@ -1,6 +1,6 @@
 from django.utils.http import urlquote
 
-from djpcms.utils.html import AutocompleteManyToManyInput, set_autocomplete
+from djpcms.forms import AutocompleteManyToManyInput, set_autocomplete
 from djpcms.views import appsite, appview
 from djpcms.views.apps.archive import ArchiveApplication, views as archive
 

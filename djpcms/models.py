@@ -25,7 +25,8 @@ from djpcms.utils import lazyattr, function_module, force_unicode, mark_safe, ht
 from djpcms.utils.func import PathList
 from djpcms.uploads import upload_function, site_image_storage
 from djpcms.managers import PageManager, BlockContentManager, SiteContentManager, PermissionManager
-from djpcms.markup import markuplib
+
+import djpcms.contrib.flowrepo.markups as markuplib
 
 protocol_re = re.compile('^\w+://')
 
