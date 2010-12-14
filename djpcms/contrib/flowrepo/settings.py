@@ -1,5 +1,5 @@
 import os
-from django.conf import settings
+from djpcms.conf import settings
 
 FLOWREPO_DATE_FORMAT = getattr(settings, 'FLOWREPO_DATE_FORMAT', '%a %d %b %Y')
 FLOWREPO_TIME_FORMAT = getattr(settings, 'FLOWREPO_TIME_FORMAT', '%H:%M')
@@ -35,6 +35,14 @@ DELICIOUS_GETDNS       = True
 DELICIOUS_USERNAME     = getattr(settings, 'DELICIOUS_USERNAME', None)
 DELICIOUS_PASSWORD     = getattr(settings, 'DELICIOUS_PASSWORD', None)
 
+
+restmarkup = {'extensions':['pngmath']}
+creolemarkup = {'extensions':[]}
+markdownmarkup = {}
+
+MARKUP_CONFIG = {'rst':restmarkup,
+                 'crl':creolemarkup,
+                 'md':markdownmarkup}
 
 #LATEX SETTINGS
 curdir = os.path.join(os.path.dirname(__file__),'markups','latex','workspace')

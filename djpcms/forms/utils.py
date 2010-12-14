@@ -206,6 +206,8 @@ def saveform(djp, editing = False, force_redirect = False):
         if cont:
             if is_ajax:
                 return f.json_message()
+            else:
+                redirect_url = curr
         else:
             redirect_url = next
             if not redirect_url:

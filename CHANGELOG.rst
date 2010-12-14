@@ -1,5 +1,6 @@
 Version 0.8.6 - Development
 =======================================
+* Added `rst` markup handled by sphinx_ in `flowrepo` contrib application.
 * Added ``getdata`` function to ``DjpResponse`` as the preferred way to extract data from the response object.
   In this way it is guaranteed the response object is initialised properly.
 * ``forms.LazyChoiceField`` replaced by ``forms.ChoiceField``, lazy by default.
@@ -241,3 +242,4 @@ Version 0.4 (2009-Dec-24)
 .. _South: http://south.aeracode.org/
 .. _stdnet: http://github.com/lsbardel/python-stdnet
 .. _jquery.cicle: http://jquery.malsup.com/cycle/
+.. _sphinx: http://sphinx.pocoo.org 

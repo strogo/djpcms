@@ -11,6 +11,7 @@ CACHE_VIEW_OBJECTS              = True
 DJPCMS_IMAGE_UPLOAD_FUNCTION    = None
 SERVE_STATIC_FILES              = False
 DJPCMS_EMPTY_VALUE              = '(None)'
+CMS_ORM                         = 'django'
 
 # Template engine settings
 TEMPLATE_ENGINE                 = 'django'
@@ -39,7 +40,6 @@ ENABLE_BREADCRUMBS              = 1
 
 DJPCMS_PLUGINS                  = ['djpcms.plugins.*']
 DJPCMS_WRAPPERS                 = ['djpcms.plugins.extrawrappers']
-DJPCMS_MARKUP_MODULE            = 'djpcms.utils.markups'
 DJPCMS_SITE_MAP                 = True
 
 DJPCMS_USER_CAN_EDIT_PAGES      = False
@@ -82,6 +82,9 @@ LOGGING = {
         },
     },
     'handlers': {
+        'silent': {
+            'class': 'djpcms.utils.log.NullHandler',
+        },
         'console': {
             'level': 'INFO',
             'class': 'logging.StreamHandler',

@@ -20,11 +20,15 @@ class FlowMainView(appview.SearchView):
     pass
 
 
-def get_content_url(self, djp, **kwargs):
+def addContentModel(self, djp, **kwargs):
     try:
         djp.kwargs['content_model'] = self.appmodel.get_content_model(kwargs['content'])
     except:
         raise http.Http404
+    
+
+def get_content_url(self, djp, **kwargs):
+    addContentModel(self,djp,**kwargs)
     return super(self.__class__,self).get_url(djp, **kwargs)
     
 
@@ -39,8 +43,9 @@ class ContentView(appview.SearchView):
         else:
             return super(ContentView,self).title(page,**kwargs)
         
-    def appquery(self, djp, content_model = None):
+    def appquery(self, djp):
         qs = super(ContentView,self).appquery(djp)
+        content_model = djp.getdata('content_model')
         if content_model:
             ctype = ContentType.objects.get_for_model(content_model)
             return qs.filter(content_type = ctype)
@@ -59,6 +64,14 @@ class FlowAddView(appview.AddView):
             return super(FlowAddView,self).title(page, content = None, **kwargs)
         else:
             return t
+        
+
+class FlowEditView(appview.EditView):
+    
+    def get_url(self, djp, **kwargs):
+        url = super(FlowEditView,self).get_url(djp, **kwargs)
+        djp.kwargs['content_model'] = djp.instance.object.__class__
+        return url    
 
        
 slug_regex = '(?P<id>[-\.\w]+)'
@@ -86,7 +99,7 @@ class FlowItemApplication(ArchiveTaggedApplication):
     applications     = ContentView(regex = '(?P<content>[-\w]+)', parent = 'main')
     add              = FlowAddView(parent = 'applications')
     view             = appview.ViewView(regex = slug_regex, parent = 'applications')
-    edit             = appview.EditView()
+    edit             = FlowEditView()
 
     class Media:
         css = {'all': ('flowrepo/flowrepo.css',)}
@@ -226,8 +239,7 @@ class FlowItemApplication(ArchiveTaggedApplication):
         Reimplement for custom arguments
         '''
         try:
-            cn = kwargs.get('content')
-            model = self.content_models.get(cn,None)
+            model = self.get_content_model(kwargs['content'])
             if model:
                 id   = kwargs.get('id',None)
                 try:

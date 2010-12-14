@@ -1,4 +1,6 @@
 import os
+from djpcms.utils.importlib import import_module
+
 
 def add(code, name, handler):
     '''
@@ -12,66 +14,44 @@ def add(code, name, handler):
                                  'handler': handler}
 
 def choices():
+    load()
     global MARKUP_HANDLERS
     yield ('','None')
     for k,v in MARKUP_HANDLERS.items():
         yield (k,v.get('name'))
 
 def default():
+    load()
     global _default_markup
     return _default_markup
 
 def get(name):
+    load()
     global MARKUP_HANDLERS
     return MARKUP_HANDLERS.get(name,None)
 
+
+def load():
+    '''Load markup applications'''
+    global _loaded
+    if not _loaded:
+        path = os.path.split(os.path.abspath(__file__))[0]
+        for d in os.listdir(path):
+            if os.path.isdir(os.path.join(path,d)):
+                try:
+                    appmod = import_module('djpcms.contrib.flowrepo.markups.{0}'.format(d))
+                    app = appmod.app
+                except ImportError, e:
+                    pass
+                else:
+                    app.setup()
+                    add(d,app.name,app)
+        _loaded = True
+        
+        
+_loaded = False
 _default_markup = None
 MARKUP_HANDLERS = {}
-
-
-
-
-#______________________________________________________________________    WIKI CREOLE MARKUP
-import creole
-def creole_text2html(text):
-    '''
-    Parse creole text to form HTML
-    '''
-    document = creole.Parser(text).parse()
-    return creole.HtmlEmitter(document).emit().encode('utf-8', 'ignore')
-add('crl','creole',creole_text2html)
-
-
-
-#______________________________________________________________________ LATEX
-#from latex import text2html
-#add('tex','LaTeX',text2html)
-
-
-#______________________________________________________________________ RestructuredText
-try:
-    #reStructuredText, which requires docutils from http://docutils.sf.net/
-    from docutils.core import publish_parts 
-    
-    def restructured_text2html(text):
-        parts = publish_parts(source=smart_str(value),
-                              writer_name="html4css1")
-        return parts["fragment"]
-    
-    add('res','reStructuredText',restructured_text2html)
-except:
-    pass
-
-
-#______________________________________________________________________ MARKDOWN2
-try:
-    import markdown2
-    
-    def markdown_text2html(text):
-        return markdown2.markdown(text)
-    add('mkd','markdown',markdown_text2html)
-except:
-    pass
 
 
 def help(code = 'crl'):
@@ -80,10 +60,11 @@ def help(code = 'crl'):
         return ''
     else:
         d = os.path.split(os.path.abspath(__file__))[0]
-        templ = os.path.join(d,'%s-help.txt' % c['name'])
+        templ = os.path.join(d,'code','%s-help.txt' % c['name'])
         try:
             f = open(templ,'r')
         except:
             return ''
         data = f.read()
         return c['handler'](data)
+

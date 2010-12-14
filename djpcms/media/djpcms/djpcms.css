@@ -396,6 +396,13 @@ a.editable {
 a.deletable {
 	background:transparent url("img/icons/cross.png") no-repeat;
 }
+a:link.headerlink,
+a:visited.headerlink {
+	color: transparent;
+}
+a:hover.headerlink {
+	color: #666;
+}
 
 /*  Edit Page
 ---------------------------------------------------------------*/

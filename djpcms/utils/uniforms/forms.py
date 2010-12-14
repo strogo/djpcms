@@ -42,7 +42,7 @@ inlineFormsets = 'blockLabels2'
 nolabel        = 'nolabel'
 default_style  = inlineLabels
 
-default_csrf = 'django.middleware.csrf.CsrfMiddleware' in settings.MIDDLEWARE_CLASSES
+default_csrf = 'django.middleware.csrf.CsrfViewMiddleware' in settings.MIDDLEWARE_CLASSES
 
 #_required_tag = mark_safe('<em>*</em>')
 _required_tag = mark_safe('')

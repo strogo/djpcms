@@ -1,6 +1,8 @@
 import logging
 import os
 import sys
+
+import djpcms
 import djpcms.contrib as contrib
 
 logger = logging.getLogger()
@@ -11,16 +13,12 @@ if CUR_DIR not in sys.path:
 CONTRIB_DIR = os.path.dirname(contrib.__file__)
 TESTS_DIR   = os.path.join(CUR_DIR,'regression')
 
-LOGGING_MAP = {1: logging.CRITICAL,
-               2: logging.INFO,
-               3: logging.DEBUG}
+LOGGING_MAP = {1: 'CRITICAL',
+               2: 'INFO',
+               3: 'DEBUG'}
 
 ALL_TEST_PATHS = (TESTS_DIR,CONTRIB_DIR)
 
-
-class Silence(logging.Handler):
-    def emit(self, record):
-        pass 
 
 def get_tests():
     tests = []
@@ -42,7 +40,7 @@ def import_tests(tags,apps):
             logger.debug("Skipping model %s" % model_label)
             continue
         logger.info("Importing model %s" % model_label)
-        can_fail = False
+        can_fail = True
         if loc == 'contrib':
             model_label = 'djpcms.'+model_label
             can_fail = True
@@ -63,18 +61,24 @@ def import_tests(tags,apps):
 
 
 def setup_logging(verbosity):
+    from djpcms.conf import settings
+    LOGGING = settings.LOGGING
+    LOGGING['loggers'] = {}
+    root = {}
+    LOGGING['root'] = root
     level = LOGGING_MAP.get(verbosity,None)
     if level is None:
-        logger.addHandler(Silence())
+        root['handlers'] = ['silent']
     else:
-        logger.addHandler(logging.StreamHandler())
-        logger.setLevel(level)
-        
+        root['handlers'] = ['console']
+        root['level'] = level
+    djpcms.init_logging(True)
+
         
 def run(tags = None, verbosity = 1, interactive = True, failfast = True):
+    site = djpcms.MakeSite('regression','conf')
+    settings = site.settings
     setup_logging(verbosity)
-    os.environ['DJANGO_SETTINGS_MODULE'] = 'djpcms.tests.testsettings'
-    from django.conf import settings
     apps = settings.INSTALLED_APPS
     apptests = import_tests(tags,apps)
     

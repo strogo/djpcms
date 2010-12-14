@@ -6,11 +6,16 @@ def MakeSite(name, settings = 'settings'):
     '''Initialise DjpCms from a directory or a file'''
     import djpcms
     from djpcms.utils.importlib import import_module
+    #
     # if not a directory it may be a file
     if not os.path.isdir(name):
-        if not os.path.isfile(name):
-            raise ValueError('Could not find directory or file {0}'.format(name))
-        appdir = os.path.split(os.path.realpath(name))[0]
+        try:
+            mod = import_module(name)
+            appdir = mod.__path__[0]
+        except ImportError:
+            if not os.path.isfile(name):
+                raise ValueError('Could not find directory or file {0}'.format(name))
+            appdir = os.path.split(os.path.realpath(name))[0]
     else:
         appdir = name
     path = os.path.realpath(appdir)
@@ -27,9 +32,13 @@ def MakeSite(name, settings = 'settings'):
     from djpcms.conf import settings
     settings.SITE_DIRECTORY = path
     djpcms.init_logging()
+    return get_site()
+    
+
+def get_site():
     from djpcms.views import appsite
     return appsite.site
-    
+
     
 def get_url(model, view_name, instance = None, **kwargs):
     from djpcms.views.appsite import site

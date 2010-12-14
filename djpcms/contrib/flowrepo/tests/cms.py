@@ -14,6 +14,27 @@ class CmsTest(TestCase):
         super(CmsTest,self).setUp()
         self.clear(True)
         self.makepage('main',FlowItem)
+    
+    def addReport(self,
+                  title='Just a test',
+                  abstract='This is a test report',
+                  body='Empty',
+                  tags='bla test'):
+        self.assertTrue(self.login())
+        uni = self.get('/weblog/add/')['uniform']
+        data = uni.htmldata()
+        data['title'] = title
+        data['abstract'] = abstract
+        data['body'] = body
+        data['tags'] = tags
+        self.post('/weblog/add/', data = data, status = 302)
+        item = FlowItem.objects.latest()
+        self.assertEqual(item.tags,tags)
+        r = item.object
+        self.assertEqual(r.name,title)
+        self.assertEqual(r.description,abstract)
+        self.assertEqual(r.body,body)
+        return item
         
     def testRoot(self):
         context = self.get()
@@ -39,9 +60,21 @@ class CmsTest(TestCase):
         self.assertEqual(layout.template,'flowrepo/report-form-layout.html')
         
     def testAddReportResponse(self):
-        self.assertTrue(self.login())
-        uni = self.get('/weblog/add/')['uniform']
-        data = uni.htmldata()        
+        self.addReport()
+        
+    def testEditReportForm(self):
+        item = self.addReport()
+        resp = self.get('/weblog/{0}/edit/'.format(item.object.slug), response = True)
+        context = resp.context
+        uni = context['uniform']
+        self.assertEqual(uni.instance.__class__,FlowItem)
+        self.assertEqual(uni.template,'flowrepo/report-form.html')
+        forms = list(uni.forms_only())
+        self.assertEqual(len(forms),1)
+        form = forms[0]
+        self.assertEqual(form.__class__,NiceReportForm)
+        layout = form.layout
+        self.assertEqual(layout.template,'flowrepo/report-form-layout.html')
         
     def testContent(self):
         djp = self.get()['djp']

@@ -3,7 +3,7 @@
 {{ form }}
 </div>{% endif %}{% if paginator.total %}{% ifnotequal paginator.pages 1 %}
 <div id="{% if id %}{{ id }}{% else %}Pagination{% endif %}" class="jquery-pagination"></div>
-<script>
+<script type="text/javascript">
 $(document).ready(function(){
     // Create pagination element with options from form
     var optInit = {
@@ -15,7 +15,7 @@ $(document).ready(function(){
     			  var data = "{{ paginator.datadict }}";
     			  var url = "{{ url }}?page=" + cp;
     			  if(data) {
-        			  url += '&' + data;
+        			  url += "&amp;" + data;
     			  }
     			  window.location = url;
     		}

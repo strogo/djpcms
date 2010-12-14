@@ -25,7 +25,7 @@
 {% block extra-head %}{% endblock %}{% endcompress %}
 </head>
 
-<body {% block bodybits %}{{ djp.bodybits }}{% endblock %}>{% block pre-body %}{% if prebody %}
+<body{% block bodybits %}{% if djp.bodybits %} {{ djp.bodybits }}{% endif %}{% endblock %}>{% block pre-body %}{% if prebody %}
 <!-- PRE-BODY SCRIPTS -->
 {{ prebody }}{% endif %}{% endblock %}
 

@@ -478,6 +478,9 @@
 	dj.addDecorator({
 		id:"image_cycle",
 		decorate: function($this, config) {
+			if(!$.cycle) {
+				return;
+			}
 			$('.image-cycle', $this).each(function() {
 				var this_ = $(this);
 				var w     = this_.width();

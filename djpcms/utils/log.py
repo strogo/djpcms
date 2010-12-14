@@ -35,6 +35,7 @@ class AdminEmailHandler(logging.Handler):
     def emit(self, record):
         import traceback
         from django.conf import settings
+        from django.core import mail
 
         try:
             if sys.version_info < (2,5):

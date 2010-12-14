@@ -11,10 +11,6 @@ can be used rather than the limited one in djpcms'''
     def markup_module(self):
         from djpcms.contrib.flowrepo import markups
         return markups
-        if not self._module:
-            from djpcms.conf import settings
-            self._module = __import__(settings.DJPCMS_MARKUP_MODULE,globals(),locals(),[''])
-        return self._module
 
     def choices(self):
         return self.markup_module.choices()

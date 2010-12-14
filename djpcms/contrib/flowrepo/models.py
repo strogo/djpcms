@@ -1,4 +1,5 @@
 from datetime import datetime
+import logging
 
 from django.db import models
 from django.utils import text
@@ -18,6 +19,10 @@ from djpcms.contrib.flowrepo.managers import slugify, source_interactive
 from djpcms.contrib.flowrepo.storage import uploader, storage_manager
 from djpcms.contrib.flowrepo.utils import encrypt, decrypt, nicetimedelta
 from djpcms.contrib.flowrepo import settings
+
+
+logger = logging.getLogger('flowrepo')
+
 
 report_type = (
         (1, 'blog'),
@@ -141,7 +146,8 @@ class FlowItem(FlowItemBase):
         
         try:
             repr = instance.representation(mkp)
-        except:
+        except Exception, e:
+            logger.error('Failed to render {0}. {1}'.format(instance,e))
             repr = smart_unicode(instance)
         
         try:

@@ -463,7 +463,7 @@ class ObjectView(ModelView):
 A view of this type has an embedded object available which is used to generate the full url.'''
     object_view = True
     
-    def get_url(self, djp, instance = None, force_redirect = None, **kwargs):
+    def get_url(self, djp, instance = None, **kwargs):
         if instance:
             kwargs.update(self.appmodel.objectbits(instance))
         else:

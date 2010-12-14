@@ -321,13 +321,11 @@ If we didn't do that, test_navigation.testMultiPageApplication would fail.'''
                 continue
             if cview.has_permission(request, child, instance):
                 cdjp = cview(request, **cview.specialkwargs(child,kwargs))
-                if isinstance(cdjp,DjpResponse):
-                    try:
-                        cdjp.url
-                    except:
-                        pass
-                    else:
-                        views.append(cdjp)
+                try:
+                    cdjp.url
+                except:
+                    continue
+                views.append(cdjp)
         return views
     
     def redirect(self, url):
