@@ -79,11 +79,14 @@ Must be used as a base class for TestCase classes'''
         else:
             return resp.context
     
-    def post(self, url = '/', data = {}, status = 200):
+    def post(self, url = '/', data = {}, status = 200, response = False):
         '''Quick function for posting some content'''
-        response = self.client.post(url,data)
-        self.assertEqual(response.status_code,status)
-        return response.context
+        resp = self.client.post(url,data)
+        self.assertEqual(resp.status_code,status)
+        if response:
+            return resp
+        else:
+            return resp.context
         
         
 class TestCase(DjpCmsTestHandle):

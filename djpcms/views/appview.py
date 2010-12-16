@@ -384,6 +384,16 @@ By default it calls the :func:`djpcms.views.appsite.ModelApplication.basequery` 
         return []
     
     
+def model_defaultredirect(self, request, next = None, instance = None, **kwargs):
+    if not next:
+        if instance:
+            next = self.appmodel.viewurl(request,instance)
+        if not next:
+            next = self.appmodel.baseurl
+    return super(ModelView,self).defaultredirect(request, next = next,
+                                                 instance = instance, **kwargs)
+    
+    
 class SearchView(ModelView):
     '''A :class:`ModelView` class for searching objects in model.
 By default :attr:`View.in_navigation` is set to ``True``.
@@ -456,6 +466,10 @@ and handles the saving as default ``POST`` response.'''
     
     def default_post(self, djp):
         return saveform(djp, False, force_redirect = self.force_redirect)
+    
+    def defaultredirect(self, request, next = None, instance = None, **kwargs):
+        return model_defaultredirect(self, request, next = next,
+                                     instance = instance, **kwargs)
 
             
 class ObjectView(ModelView):
@@ -476,9 +490,12 @@ A view of this type has an embedded object available which is used to generate t
             djp.instance = instance
         return super(ObjectView,self).get_url(djp, **kwargs)
     
-    
     def title(self, page, instance = None, **kwargs):
         return self.appmodel.title_object(instance)
+
+    def defaultredirect(self, request, next = None, instance = None, **kwargs):
+        return model_defaultredirect(self, request, next = next,
+                                     instance = instance, **kwargs)
     
 
 class ViewView(ObjectView):
@@ -561,10 +578,7 @@ class EditView(ObjectView):
     
     def default_post(self, djp):
         return saveform(djp, True, force_redirect = self.force_redirect)
-
-    def defaultredirect(self, djp):
-        return self.appmodel.viewurl(djp.request, djp.instance) or djp.url
-
+    
     
 class AutocompleteView(SearchView):
     '''This is an interesting view. It is an **AJAX Get only** view for :ref:`auto-complete <autocomplete>` functionalities.

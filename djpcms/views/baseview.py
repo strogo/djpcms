@@ -220,12 +220,12 @@ which handle the response'''
         if is_ajax:
             #
             # Handle the cancel request redirect.
-            # Check for next in the parameters, If not there redirect to self.defaultredirect
+            # Check for next in the parameters,
+            # If not there redirect to self.defaultredirect
             if ajax_key == 'cancel':
-                url = params.get('next',None)
-                if not url:
-                    url = self.defaultredirect(djp)
-                res = jredirect(url)
+                next = params.get('next',None)
+                next = self.defaultredirect(djp.request, next = url, **djp.kwargs)
+                res  = jredirect(next)
             else:
                 ajax_view_function = None
                 if ajax_key:
@@ -298,8 +298,22 @@ which handle the response'''
     def permissionDenied(self, djp):
         raise PermissionDenied
     
-    def defaultredirect(self, djp):
-        return djp.url
+    def defaultredirect(self, request, next = None,
+                        instance = None, **kwargs):
+        '''This function is used to build a redirect ``url`` for a given view.
+It is called by ``djpcms`` only when a redirect is needed.
+
+:parameter request: HttpRequest object.
+:parameter url: optional ``url`` provided.
+:parameter instance: optional instance of a model.
+:parameter kwargs: additional url bits.
+
+By default it returns ``next`` if available, otherwise ``request.path``.
+'''
+        if next:
+            return request.build_absolute_uri(next)
+        else:
+            return request.environ.get('HTTP_REFERER')
     
     def children(self, djp, instance = None, **kwargs):
         '''Return children permitted views for self.

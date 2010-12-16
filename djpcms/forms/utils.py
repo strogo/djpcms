@@ -171,8 +171,6 @@ def saveform(djp, editing = False, force_redirect = False):
     url        = djp.url
     curr       = request.environ.get('HTTP_REFERER')
     next       = get_next(request)
-    if next:
-        next = request.build_absolute_uri(next)
     
     if POST.has_key("_cancel"):
         redirect_url = next
@@ -209,31 +207,21 @@ def saveform(djp, editing = False, force_redirect = False):
             else:
                 redirect_url = curr
         else:
-            redirect_url = next
-            if not redirect_url:
-                if hasattr(view,'appmodel'):
-                    if instance:
-                        redirect_url = view.appmodel.viewurl(request,instance) or view.appmodel.baseurl
-                    else:
-                        redirect_url = view.appmodel.baseurl
+            redirect_url = view.defaultredirect(request,
+                                                next = next,
+                                                instance = instance)
+            
+            # not forcing redirect. Check if we can send a json message
             if not force_redirect:
-                if redirect_url and redirect_url == curr and is_ajax:
+                if redirect_url == curr and is_ajax:
                     return f.json_message()
-            else:
-                redirect_url = redirect_url or '/'
             
         # We are Redirecting
-        if redirect_url:
-            if is_ajax:
-                f.force_message(request)
-                return jredirect(url = redirect_url)                
-            else:
-                return http.HttpResponseRedirect(redirect_url)
+        if is_ajax:
+            f.force_message(request)
+            return jredirect(url = redirect_url)
         else:
-            if is_ajax:
-                return f.json_message()      
-            else:
-                return view.handle_response(djp)
+            return http.HttpResponseRedirect(redirect_url)
     else:
         if is_ajax:
             return f.json_errors()

@@ -2,7 +2,7 @@ import os
 import sys
 
 
-def MakeSite(name, settings = 'settings'):
+def MakeSite(name, settings = 'settings', clearlog = True):
     '''Initialise DjpCms from a directory or a file'''
     import djpcms
     from djpcms.utils.importlib import import_module
@@ -31,7 +31,7 @@ def MakeSite(name, settings = 'settings'):
     # IMPORTANT! NEED TO IMPORT HERE TO PREVENT DJANGO TO IMPORT FIRST
     from djpcms.conf import settings
     settings.SITE_DIRECTORY = path
-    djpcms.init_logging()
+    djpcms.init_logging(clearlog)
     return get_site()
     
 
