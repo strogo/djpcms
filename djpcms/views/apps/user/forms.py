@@ -89,7 +89,7 @@ class UserChangeForm(forms.ModelForm):
 
 class PasswordChangeForm(authforms.PasswordChangeForm):
     
-    def __init__(self, instance = None, *args, **kwargs):
+    def __init__(self, instance = None, save_as_new=False, *args, **kwargs):
         self.instance = instance
         super(PasswordChangeForm,self).__init__(user = instance, *args, **kwargs)
     

@@ -14,9 +14,7 @@ try:
     fabric_available = True
 except ImportError:
     fabric_available = False
-
-
-NUM_MEDIA = 4 
+ 
     
 from StringIO import StringIO
 from django.core.management.base import CommandError
@@ -78,7 +76,6 @@ if fabric_available:
                     media_inconf += 1
                     self.assertTrue('location %s {' % app.url() in nginx)
                     self.assertTrue(app.base in nginx)
-            self.assertEqual(media_inconf,NUM_MEDIA)
             
         def testServer(self):
             result = deploy(False)

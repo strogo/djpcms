@@ -1,4 +1,3 @@
-from djpcms.conf import settings
 from djpcms.views import appsite, appview
 from djpcms.views.apps.user.views import *
 
@@ -7,7 +6,6 @@ permission = lambda self, request, obj: False if not request else request.user.i
 class UserApplication(appsite.ModelApplication):
     name     = 'account'
     userpage = False
-    baseurl  = settings.USER_ACCOUNT_HOME_URL
     form     = PasswordChangeForm
     
     home   = appview.ModelView()

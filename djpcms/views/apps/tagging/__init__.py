@@ -46,12 +46,21 @@ class TagView(appview.SearchView):
     def title(self, page, **urlargs):
         return urlargs.get('tag1','')
     
-    def appquery(self, request, **tags):
-        qs = self.basequery(request)
+    def tags(self, djp):
+        tags = []
+        for name in self.regex.names:
+            tag = djp.getdata(name)
+            if tag:
+                tags.append(tag)
+        return tags
+        
+    def appquery(self, djp):
+        query = super(TagView,self).appquery(djp)
+        tags = self.tags(djp)
         if tags:
-            return TaggedItem.objects.get_by_model(qs, tags.values())
+            return TaggedItem.objects.get_by_model(query, tags)
         else:
-            return qs
+            return query
 
 
 class TagArchiveView(archive.ArchiveView):
@@ -66,8 +75,9 @@ class TagArchiveView(archive.ArchiveView):
         urlargs = djp.kwargs
         return urlargs.get('tag1',None)
         
-    def appquery(self, request, year = None, month = None, day = None, **tags):
-        query = super(TagArchiveView,self).appquery(request, year = year, month = month, day = day)
+    def appquery(self, djp):
+        query = super(TagArchiveView,self).appquery(djp)
+        tags = djp.get('tags',None)
         if tags:
             return TaggedItem.objects.get_by_model(query, tags.values())
         else:
