@@ -119,4 +119,6 @@ class ModelTypeWrapper(object):
                                         'djpcms/components/object_definition.html'],
                                         content)
             
+    def model_to_dict(self, instance, fields = None, exclude = None):
+        raise NotImplementedError
         

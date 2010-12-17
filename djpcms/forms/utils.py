@@ -86,19 +86,17 @@ def success_message(instance, mch):
         return _('%(mch)s %(dt)s') % c
 
 
-def update_initial(request, form_class, initial = None, own_view = True):
+def update_initial(request, form_class, initial = None,
+                   own_view = True):    
     if request.method == 'GET':
         params = dict(request.GET.items())
         next   = params.get('next',None)
-        _current_url = request.path
         if not next and not own_view:
-            next = _current_url
+            next = request.path
         if next:
             form_class = add_hidden_field(form_class,'next')
-        form_class = add_hidden_field(form_class,'_current_url')
         initial = initial or {}
         initial['next'] = next
-        initial['_current_url'] = _current_url
     return initial
 
 
@@ -107,8 +105,6 @@ def get_form(djp,
              method = 'POST',
              initial = None,
              prefix = None,
-             wrapped = True,
-             form = None,
              addinputs = None,
              withdata = True,
              instance  = None,
@@ -117,25 +113,32 @@ def get_form(djp,
              template = None,
              form_ajax = False,
              withinputs = False):
-    '''Build a form:
+    '''Comprehensive method for building a
+:class:`djpcms.utils.uniforms.UniForm` instance:
     
-* *djp*: instance of djpcms.views.DjpRequestWrap.
-* *initial*: If not none, a dictionary of initial values for model fields.
-* *prefix*: prefix to use in the form.
-* *wrapper*: instance of djpcms.plugins.wrapper.ContentWrapperHandler with information on layout.
+:parameter djp: instance of :class:`djpcms.views.DjpResponse`.
+:parameter form_class: required form class.
+:parameter method: optional string indicating submit method. Default ``POST``.
+:parameter initial: If not none, a dictionary of initial values.
+:parameter prefix: Optional prefix string to use in the form.
+:parameter addinputs: An optional function for creating submit inputs.
+                      If available, it is called if the
+                      available form class as no submit inputs associated with it.
+                      Default ``None``.
 '''
     from djpcms.utils.uniforms import UniForm
     request  = djp.request
     own_view = djp.own_view()
-    
-    initial = update_initial(request, form_class, initial, own_view = own_view)
+    save_as_new = request.POST.has_key('_save_as_new')
+    initial  = update_initial(request, form_class, initial,
+                              own_view = own_view)
     
     inputs = getattr(form_class,'submits',None)
     if inputs:
         inputs = [submit(value = val, name = nam) for val,nam in inputs]
     elif addinputs:
         inputs = addinputs(instance, own_view)
-            
+                
     f     = form_class(**form_kwargs(request     = request,
                                      initial     = initial,
                                      instance    = instance,
@@ -144,6 +147,7 @@ def get_form(djp,
                                      withrequest = form_withrequest,
                                      method      = method,
                                      own_view    = own_view,
+                                     save_as_new = save_as_new,
                                      inputs      = inputs if withinputs else None))
         
     wrap = UniForm(f,
@@ -151,7 +155,8 @@ def get_form(djp,
                    instance = instance,
                    action   = djp.url,
                    inputs   = inputs,
-                   template = template)
+                   template = template,
+                   save_as_new = save_as_new)
     if form_ajax:
         wrap.addClass(djp.css.ajax)
     wrap.is_ajax = request.is_ajax()
@@ -167,8 +172,6 @@ def saveform(djp, editing = False, force_redirect = False):
     is_ajax    = request.is_ajax()
     POST       = request.POST
     GET        = request.GET
-    cont       = POST.has_key("_save_and_continue")
-    url        = djp.url
     curr       = request.environ.get('HTTP_REFERER')
     next       = get_next(request)
     
@@ -185,9 +188,10 @@ def saveform(djp, editing = False, force_redirect = False):
         else:
             return http.HttpResponseRedirect(redirect_url)
     
-    f      = view.get_form(djp)
+    f  = view.get_form(djp)
     if f.is_valid():
         try:
+            editing  = editing if not POST.has_key('_save_as_new') else False
             instance = view.save(request, f)
             smsg     = getattr(view,'success_message',success_message)
             msg      = smsg(instance, 'changed' if editing else 'added')
@@ -201,7 +205,7 @@ def saveform(djp, editing = False, force_redirect = False):
             else:
                 return view.handle_response(djp)
         
-        if cont:
+        if POST.has_key('_continue'):
             if is_ajax:
                 return f.json_message()
             else:

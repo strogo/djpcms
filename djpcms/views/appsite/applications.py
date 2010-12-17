@@ -122,10 +122,14 @@ No reason to change this default unless you really don't want to see the views i
     '''Number of objects per page. Default is ``30``.'''
     exclude_links    = []
 
+    # Submit buton customization
     _form_add        = 'add'
     _form_edit       = 'change'
     _form_save       = 'done'
+    _submit_cancel   = 'cancel'
     _form_continue   = 'save & continue'
+    _submit_as_new   = None
+    '''Set to a value if you want to include a save as new submit input when editing an instance.'''
     
     def __init__(self, baseurl, editavailable = None, name = None):
         self.application_site = None
@@ -304,12 +308,15 @@ No reason to change this default unless you really don't want to see the views i
         '''
         if instance:
             sb = [submit(value = self._form_save, name = '_save')]
+            if self._submit_as_new:
+                sb.append(submit(value = self._submit_as_new, name = '_save_as_new'))
         else:
             sb = [submit(value = self._form_add, name = '_save')]
-        if self._form_continue and own_view:
-            sb.append(submit(value = self._form_continue, name = '_save_and_continue'))
         if own_view:
-            sb.append(submit(value = 'cancel', name = '_cancel'))
+            if self._form_continue:
+                sb.append(submit(value = self._form_continue, name = '_save_and_continue'))
+            if self._submit_cancel:
+                sb.append(submit(value = self._submit_cancel, name = '_cancel'))
         return sb
 
     def get_label_for_field(self, name):

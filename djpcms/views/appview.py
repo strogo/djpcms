@@ -383,13 +383,15 @@ By default it calls the :func:`djpcms.views.appsite.ModelApplication.basequery` 
     def sitemapchildren(self):
         return []
     
+    def defaultredirect(self, request, **kwargs):
+        return model_defaultredirect(self, request, **kwargs)
+    
     
 def model_defaultredirect(self, request, next = None, instance = None, **kwargs):
+    if instance:
+        next = self.appmodel.viewurl(request,instance)
     if not next:
-        if instance:
-            next = self.appmodel.viewurl(request,instance)
-        if not next:
-            next = self.appmodel.baseurl
+        next = self.appmodel.baseurl
     return super(ModelView,self).defaultredirect(request, next = next,
                                                  instance = instance, **kwargs)
     
@@ -562,19 +564,8 @@ class EditView(ObjectView):
         return self.get_form(djp).render(djp)
     
     def save(self, request, f):
+        as_new = request.POST.has_key("_save_as_new")
         return self.appmodel.object_from_form(f)
-    
-    def ajax__save(self, djp):
-        '''
-        Save and redirect to default redirect
-        '''
-        return self.default_post(djp,True)
-    
-    def ajax__save_and_continue(self, djp):
-        '''
-        Save and redirect to default redirect
-        '''
-        return self.default_post(djp,False)
     
     def default_post(self, djp):
         return saveform(djp, True, force_redirect = self.force_redirect)

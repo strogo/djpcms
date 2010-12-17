@@ -324,6 +324,7 @@ class UniForm(UniFormBase):
                  inputs = None,
                  tag = True,
                  csrf = default_csrf,
+                 save_as_new  = False,
                  is_ajax = False):
         self.use_csrf_protection = csrf
         self.attr = {}
@@ -339,6 +340,7 @@ class UniForm(UniFormBase):
         self.tag             = tag
         self._messages       = []
         self._errors         = []
+        self.save_as_new     = save_as_new
         self.is_ajax         = is_ajax
         self.error_message   = error_message if error_message is not None else self.default_error_msg
         self.template        = template or self.default_template
@@ -398,9 +400,14 @@ class UniForm(UniFormBase):
                             self._errors.extend(all)
                     valid = False
         return valid and all_valid(self.formsets)
-                    
+    
     def save(self, commit = True):
-        instance = None
+        '''Save the form's content wherever it needs to be stored.
+Loops through the forms and call individual save methods if they are
+available.
+
+:parameter commit: if ``True`` changes are committed. Default ``True``.'''
+        instances = None
         for form in self.forms:
             save = getattr(form[1],'save',None)
             if save:
@@ -513,6 +520,7 @@ class UniForm(UniFormBase):
             return ''
     
     def _build_fsets(self, form, request, instance):
+        '''Build formsets related to ``instance`` model'''
         formsets = self.formsets
         prefixes = {}
         for inline in form.layout.inlines:
@@ -521,9 +529,10 @@ class UniForm(UniFormBase):
             if prefixes[prefix] != 1:
                 prefix = "%s-%s" % (prefix, prefixes[prefix])
             formset = inline.get_formset(request = request,
-                                         data = form.data,
+                                         data     = form.data,
                                          instance = instance,
-                                         prefix   = prefix)
+                                         prefix   = prefix,
+                                         save_as_new = self.save_as_new)
             formsets.append(formset)
     
     def _make_messages(self, cname, mlist):

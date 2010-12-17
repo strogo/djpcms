@@ -8,8 +8,7 @@ from djpcms.models import Page, BlockContent, SiteContent, ObjectPermission
 from djpcms.utils.uniforms import FormLayout, Fieldset, Columns, Row, Html, inlineLabels, inlineLabels3
 from djpcms.plugins import get_plugin, plugingenerator, wrappergenerator
 
-import forms
-
+from djpcms import forms
 
 
 class SearchForm(forms.Form):

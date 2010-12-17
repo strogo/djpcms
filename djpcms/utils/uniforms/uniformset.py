@@ -1,23 +1,13 @@
-from django.forms import formsets
-
 from djpcms.utils import force_unicode, mark_safe
 from djpcms.forms import form_kwargs, BoundField
+from djpcms.forms.formsets import inlineformset_factory
 
 __all__ = ['ModelFormInlineHelper']
-
-
-# special field names
-TOTAL_FORM_COUNT = formsets.TOTAL_FORM_COUNT
-INITIAL_FORM_COUNT = formsets.INITIAL_FORM_COUNT
-MAX_NUM_FORM_COUNT = formsets.MAX_NUM_FORM_COUNT
-ORDERING_FIELD_NAME = formsets.ORDERING_FIELD_NAME
-DELETION_FIELD_NAME = formsets.DELETION_FIELD_NAME
 
 
 class ModelFormInlineHelper(object):
     '''Inline formset helper for model with foreign keys.'''
     def __init__(self, parent_model, model, legend = None, **kwargs):
-        from django.forms.models import inlineformset_factory
         self.parent_model = parent_model
         self.model   = model
         if legend is not False:
@@ -31,16 +21,16 @@ class ModelFormInlineHelper(object):
     def queryset(self, request):
         return self.model._default_manager.all()
     
-    def get_formset(self, data = None, request = None, instance = None, prefix = None):
+    def get_formset(self,
+                    request = None,
+                    data = None,
+                    **kwargs):
         if not request:
-            formset = self.FormSet(data=data,
-                                   instance=instance,
-                                   prefix=prefix)
+            formset = self.FormSet(data=data, **kwargs)
         else:
             formset = self.FormSet(**form_kwargs(request  = request,
-                                                 instance = instance,
-                                                 prefix   = prefix,
-                                                 queryset = self.queryset(request)))
+                                                 queryset = self.queryset(request),
+                                                 **kwargs))
         return FormsetWrap(formset,self.legend)
     
 

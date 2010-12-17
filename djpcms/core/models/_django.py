@@ -1,4 +1,5 @@
 from django.db.models.base import ModelBase
+from django.forms.models import model_to_dict
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.admin import site
@@ -105,3 +106,5 @@ class ModelType(ModelTypeWrapper):
                     result_repr = display_for_field(value, f)
         return result_repr
     
+    def model_to_dict(self, instance, fields = None, exclude = None):
+        raise model_to_dict(instance, fields, exclude)
