@@ -1,9 +1,11 @@
+import djpcms
 from djpcms.conf import settings
 from djpcms.forms import model_to_dict
 from djpcms.views.cache import pagecache
 from djpcms.views import appsite
 from djpcms.models import Page
 from djpcms.forms.cms import PageForm
+from djpcms.core.exceptions import *
 
 from django import test
 from django.contrib.auth.models import User
@@ -104,4 +106,19 @@ class TestCase(DjpCmsTestHandle):
             return self.client.login(username = 'testuser', password = 'testuser')
         else:
             return self.client.login(username = username,password = password)
+        
+    
+class PluginTest(TestCase):
+    plugin = None
+    
+    def testBlockOutOfBound(self):
+        p = self.get('/')['page']
+        self.assertRaises(BlockOutOfBound, p.add_plugin, self.plugin)
+        
+    def testSimple(self):
+        p = self.get('/')['page']
+        p.set_template(p.create_template('simple','{{ content0 }}','content'))
+        b = p.add_plugin(self.plugin)
+        self.assertEqual(b.plugin_name,self.plugin.name)
+        self.assertEqual(b.plugin,self.plugin())
         

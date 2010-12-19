@@ -1,9 +1,9 @@
-from django import forms
 from django.template import loader
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 
 from djpcms.plugins import DJPplugin
+from djpcms import forms
 from djpcms.utils.html import htmlwrap, Paginator
 from djpcms.views import appsite
 

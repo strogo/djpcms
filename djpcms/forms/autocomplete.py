@@ -153,6 +153,9 @@ class ModelChoiceField(forms.ModelChoiceField):
         
     def __deepcopy__(self, memo):
         result = super(ModelChoiceField,self).__deepcopy__(memo)
+        qs = result.queryset
+        if hasattr(qs,'__call__'):
+            result.queryset = qs()
         return set_autocomplete(result)
 
             
@@ -166,4 +169,7 @@ class ModelMultipleChoiceField(forms.ModelMultipleChoiceField):
         
     def __deepcopy__(self, memo):
         result = super(ModelMultipleChoiceField,self).__deepcopy__(memo)
+        qs = result.queryset
+        if hasattr(qs,'__call__'):
+            result.queryset = qs()
         return set_autocomplete(result)

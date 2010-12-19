@@ -18,6 +18,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.template import Template
 
 from djpcms.conf import settings
+from djpcms.core.page import PageInterface
 from djpcms.permissions import has_permission, get_view_permission
 from djpcms.fields import SlugCode
 from djpcms.plugins import get_wrapper, default_content_wrapper, get_plugin
@@ -95,7 +96,7 @@ class CssPageInfo(TimeStamp):
             return self.container_class_name
     
     
-class Page(TimeStamp):
+class Page(TimeStamp, PageInterface):
     '''The page model holds several information regarding pages in the sitemap.'''
     site        = models.ForeignKey(Site)
     '''Site to which the page belongs.'''
@@ -227,6 +228,27 @@ If not specified we get the template of the :attr:`parent` page.'''
     
     def additional_head(self):
         return self.additionaldata.filter(where = 1)
+    
+    def numblocks(self):
+        t = self.inner_template
+        return 0 if not t else t.numblocks()
+    
+    def create_template(self, name, template, blocks):
+        t = InnerTemplate(name = name,
+                          template = template,
+                          blocks = blocks)
+        t.save()
+        return t
+    
+    def _get_block(self, block, plugin, position = None):
+        blocks = BlockContent.objects.filter(page = self, block = block)
+        N = blocks.count()
+        if position == None:
+            b = BlockContent(page = self,block = block,position = N)
+            b.save()
+            return b
+        else:
+            return blocks.get(position = position)
 
 
 

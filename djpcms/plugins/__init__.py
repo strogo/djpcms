@@ -158,6 +158,7 @@ The basics:
     form_withrequest = False
     '''Equivalent to :attr:`djpcms.views.appsite.ModelApplication.form_withrequest`. If set to ``True``,
     the ``request`` instance is passed to the :attr:`form` constructor. Default is ``False``.'''
+    permission      = 'authenticated'
     #storage       = _plugin_dictionary
     #URL           = None
     
@@ -234,6 +235,11 @@ Usually, there is no need to override this function. If your plugin needs input 
     def _register(self):
         global _plugin_dictionary
         _plugin_dictionary[self.name] = self
+        
+    def __eq__(self, other):
+        if isinstance(other,DJPplugin):
+            return self.name == other.name
+        return False
     
 
 class EmptyPlugin(DJPplugin):

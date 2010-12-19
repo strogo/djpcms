@@ -26,6 +26,17 @@ related to urls configuration'''
     pass
 
 
-class PageNotFound(DjpcmsException):
-    '''A :class:`DjpcmsException` raised when page is not found.'''
+class PageException(DjpcmsException):
+    '''A :class:`DjpcmsException` for pages.'''
     pass
+
+
+class PageNotFound(PageException):
+    '''A :class:`PageException` raised when page is not found.'''
+    pass
+
+
+class BlockOutOfBound(PageException):
+    '''A :class:`PageException` raised when requesting a block not available in page.'''
+    pass
+    
