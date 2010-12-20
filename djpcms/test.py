@@ -100,6 +100,9 @@ class TestCase(DjpCmsTestHandle):
         self.assertEqual(p.url,'/')
         if not hasattr(self,'fixtures'):
             self.assertEqual(Page.objects.all().count(),1)
+            
+    def editurl(self, url):
+        return '/{0}{1}'.format(self.site.settings.CONTENT_INLINE_EDITING['preurl'],url)
         
     def login(self, username = None, password = None):
         if not username:
@@ -116,9 +119,16 @@ class PluginTest(TestCase):
         self.assertRaises(BlockOutOfBound, p.add_plugin, self.plugin)
         
     def testSimple(self):
-        p = self.get('/')['page']
+        c = self.get('/')
+        p = c['page']
         p.set_template(p.create_template('simple','{{ content0 }}','content'))
         b = p.add_plugin(self.plugin)
         self.assertEqual(b.plugin_name,self.plugin.name)
         self.assertEqual(b.plugin,self.plugin())
-        
+        return c
+    
+    def testEdit(self):
+        c = self.testSimple()
+        self.login()
+        ec = self.get(self.editurl('/'))
+        self.assertEqual(c['page'],ec['page'])
