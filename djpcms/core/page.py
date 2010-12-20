@@ -1,4 +1,10 @@
+import sys
+import logging
+
+from djpcms.conf import settings
+from djpcms.utils import escape
 from djpcms.core.exceptions import BlockOutOfBound
+from djpcms.permissions import has_permission, get_view_permission
 
 
 class PageInterface(object):
@@ -35,3 +41,36 @@ class PageInterface(object):
     
     def _get_block(self, block, position):
         raise NotImplementedError
+    
+    
+
+class BlockInterface(object):
+    logger  = logging.getLogger('BlockContent')
+    
+    def render(self, djp, plugin = None, wrapper = None):
+        '''Render the plugin in the content block
+This function call the plugin render function and wrap the resulting HTML
+with the wrapper callable.'''
+        html = ''
+        try:
+            plugin  = plugin or self.plugin
+            wrapper = wrapper or self.wrapper
+            if plugin:
+                if has_permission(djp.request.user,get_view_permission(self), self):
+                    djp.media += plugin.media
+                    html = plugin(djp, self.arguments, wrapper = wrapper)
+        except Exception, e:
+            if getattr(settings,'TESTING',False):
+                raise
+            exc_info = sys.exc_info()
+            self.logger.error('%s - block %s -- %s' % (plugin,self,e),
+                exc_info=exc_info,
+                extra={'request':djp.request}
+            )
+            if djp.request.user.is_superuser:
+                html = escape(u'%s' % e)
+        
+        if html:
+            return wrapper(djp, self, html)
+        else:
+            return html

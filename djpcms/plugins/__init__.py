@@ -128,7 +128,9 @@ This function should be implemented by derived classes.
             return u''
     
     def __call__(self, djp, cblock, html):
-        return mark_safe(u'\n'.join(['<div class="djpcms-block-element">',
+        name = cblock.plugin_name
+        head = '<div class="djpcms-block-element plugin-{0}">'.format(name)
+        return mark_safe(u'\n'.join([head,
                                      self.wrap(djp, cblock, html),
                                      '</div>']))
     

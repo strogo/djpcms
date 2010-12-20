@@ -18,11 +18,11 @@ from django.utils.translation import ugettext_lazy as _
 from django.template import Template
 
 from djpcms.conf import settings
-from djpcms.core.page import PageInterface
+from djpcms.core.page import PageInterface, BlockInterface
 from djpcms.permissions import has_permission, get_view_permission
 from djpcms.fields import SlugCode
 from djpcms.plugins import get_wrapper, default_content_wrapper, get_plugin
-from djpcms.utils import lazyattr, function_module, force_unicode, mark_safe, htmltype, escape
+from djpcms.utils import lazyattr, function_module, force_unicode, mark_safe, htmltype
 from djpcms.utils.func import PathList
 from djpcms.uploads import upload_function, site_image_storage
 from djpcms.managers import PageManager, BlockContentManager, SiteContentManager, PermissionManager
@@ -252,8 +252,7 @@ If not specified we get the template of the :attr:`parent` page.'''
 
 
 
-class BlockContent(models.Model):
-    logger         = logging.getLogger('BlockContent')
+class BlockContent(models.Model, BlockInterface):
     '''A block content object is responsible storing :class:`djpcms.plugins.DJPplugin`
 and for maintaining their position in a :class:`djpcms.models.Page`.
     '''
@@ -329,33 +328,6 @@ and for maintaining their position in a :class:`djpcms.models.Page`.
         return formlet(form = f, layout = 'onecolumn',
                        submit = submit(value = 'Change',
                                        name  = 'change_plugin_content'))
-    
-    def render(self, djp, plugin = None, wrapper = None):
-        '''
-        Render the plugin.
-        This function call the plugin render function
-        '''
-        try:
-            plugin  = plugin or self.plugin
-            wrapper = wrapper or self.wrapper
-            if plugin:
-                opts = self._meta
-                if has_permission(djp.request.user,get_view_permission(self), self):
-                    djp.media += plugin.media
-                    html   = plugin(djp, self.arguments, wrapper = wrapper)
-                    if html:
-                        return wrapper(djp, self, html)
-            return u''
-        except Exception, e:
-            exc_info = sys.exc_info()
-            self.logger.error('%s - block %s -- %s' % (plugin,self,e),
-                exc_info=exc_info,
-                extra={'request':djp.request}
-            )
-            if djp.request.user.is_superuser:
-                return escape(u'%s' % e)
-            else:
-                return u''
     
     def change_plugin_content(self, request):
         '''

@@ -11,6 +11,8 @@ from django import test
 from django.contrib.auth.models import User
 from django.core.urlresolvers import clear_url_caches
 
+from BeautifulSoup import BeautifulSoup 
+
 
 
 class DjpCmsTestHandle(test.TestCase):
@@ -24,6 +26,7 @@ Must be used as a base class for TestCase classes'''
     def _pre_setup(self):
         super(DjpCmsTestHandle,self)._pre_setup()
         self.pagecache.clear()
+        self.site.settings.TESTING = True
         
     def _urlconf_setup(self):
         appurls = getattr(self,'appurls',None)
@@ -90,6 +93,9 @@ Must be used as a base class for TestCase classes'''
         else:
             return resp.context
         
+    def bs(self, doc):
+        return BeautifulSoup(doc)
+        
         
 class TestCase(DjpCmsTestHandle):
         
@@ -132,3 +138,11 @@ class PluginTest(TestCase):
         self.login()
         ec = self.get(self.editurl('/'))
         self.assertEqual(c['page'],ec['page'])
+        
+    def testRender(self):
+        self.testSimple()
+        c = self.get('/')
+        inner = c['inner']
+        bs = self.bs(inner).find('div', {'class': 'djpcms-block-element plugin-{0}'.format(self.plugin.name)})
+        self.assertTrue(bs)
+        return bs

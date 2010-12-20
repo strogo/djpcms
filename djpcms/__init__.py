@@ -60,6 +60,7 @@ def install_lib(basepath, dirname, module_name):
 def install_libs():
     libs = os.path.join(this_dir,'libs')
     install_lib(libs, 'django-tagging', 'tagging')
+    install_lib(libs, 'BeautifulSoup', 'BeautifulSoup')
     
     
 def init_logging(clear_all = False):

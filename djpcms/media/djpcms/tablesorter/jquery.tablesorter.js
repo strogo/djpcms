@@ -1028,4 +1028,16 @@
             }
         }
     });
+    
+    ts.addWidget({
+    	id:"hovering",
+    	format: function(table) {
+    		$('tr',table).hover(function() {
+    				$(this).addClass('hover');
+    			},
+    			function(){
+    				$(this).removeClass('hover');
+    			});
+    	}
+    });
 })(jQuery);
