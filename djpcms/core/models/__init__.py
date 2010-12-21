@@ -1,5 +1,6 @@
 from djpcms.core.exceptions import ModelException 
-from base import ModelTypeWrapper, nicerepr, _boolean_icon
+from base import *
+
 _models = {}
 
 try:

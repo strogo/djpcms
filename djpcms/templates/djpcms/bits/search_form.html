@@ -1,6 +1,10 @@
 <form method="{{ method }}" action="{{ url }}">
-  <div class="sw_b">{% for field in html %}
-    {{ field }}{% endfor %}
-	<input id="sb_form_go" class="sw_qbtn" type="submit" value="" title="Search" tabindex="0" name="go"/>
+<div class="cx-search-bar">
+  <div class="cx-submit">
+    <input type="submit" title="Search" value="" class="cx-search-btn">
   </div>
-</form> 
+  <div class="cx-input">{% for field in html %}
+    {{ field }}{% endfor %}
+  </div>
+</div>
+</form>

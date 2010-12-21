@@ -382,6 +382,30 @@
 	});
 	
 	/**
+	 * Classy Search
+	 */
+	dj.addDecorator({
+		id:"classy-search",
+		decorate: function($this,config) {
+			$('.classy-search',$this).each(function() {
+				var el = $(this);
+				el.defaultValue = el.attr('title');
+				if(!el.val()) {
+					el.val(el.defaultValue);
+				}
+				if(el.val() == el.defaultValue) {
+					el.addClass('idlefield');
+				}
+				el.focus(function() {
+						$(this).removeClass('idlefield').val('');
+				}).blur(function() {
+					$(this).addClass('idlefield');
+				});
+			});
+		}
+	});
+	
+	/**
 	 * box decorator
 	 * 
 	 */

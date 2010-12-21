@@ -11,16 +11,6 @@ from djpcms.plugins import get_plugin, plugingenerator, wrappergenerator
 from djpcms import forms
 
 
-class SearchForm(forms.Form):
-    '''
-    A simple search form used by plugins.apps.SearchBox.
-    The search_text name will be used by SearchViews to handle text search
-    '''
-    search_text = forms.CharField(required = False,
-                                  widget = forms.TextInput(attrs = {'class': 'sw_qbox autocomplete-off',
-                                                              'title': 'Enter your search text'}))
-
-
 def CalculatePageUrl(data,page):
     '''Calculate url for a page'''
     application_view = data.get('application_view','')

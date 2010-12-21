@@ -6,7 +6,6 @@ from djpcms.conf import settings
 from djpcms.plugins import DJPplugin
 from djpcms.utils.uniforms import UniForm, FormLayout, Fieldset
 from djpcms.utils.html import submit
-from djpcms.forms.cms import SearchForm
 from djpcms.views import appsite
 
 
@@ -41,6 +40,16 @@ def app_model_from_ct(ct):
     else:
         return u'', False
     
+    
+
+class SearchForm(forms.Form):
+    '''
+    A simple search form used by plugins.apps.SearchBox.
+    The search_text name will be used by SearchViews to handle text search
+    '''
+    q = forms.CharField(required = False,
+                        widget = forms.TextInput(attrs = {'class': 'classy-search autocomplete-off',
+                                                          'title': 'Enter your search text'}))
 
 class ForModelForm(forms.Form):
     for_model   = forms.ModelChoiceField(queryset = registered_models,
@@ -80,10 +89,12 @@ class SearchBox(DJPplugin):
     A search box for a model
     '''
     name = 'search-box'
-    description = 'Search a Model'
+    description = 'Search a Model' 
     form = SearchModelForm
     
-    def render(self, djp, wrapper, prefix, for_model = None, title = None, **kwargs):
+    def render(self, djp, wrapper, prefix,
+               for_model = None, method = 'post',
+               title = None, **kwargs):
         if for_model:
             try:
                 ct = ContentType.objects.get(id = int(for_model))
@@ -95,6 +106,8 @@ class SearchBox(DJPplugin):
                 search_url = appmodel.searchurl(djp.request)
                 if search_url:
                     f = SearchForm(data = djp.request.GET)
+                    if title:
+                        f.fields['q'].widget.attrs['title'] = title
                     return loader.render_to_string(['search_form.html',
                                                     'bits/search_form.html',
                                                     'djpcms/bits/search_form.html'],

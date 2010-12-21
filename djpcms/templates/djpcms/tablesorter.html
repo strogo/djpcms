@@ -4,12 +4,9 @@
   <th>{{ label }}</th>{% endfor %}
  </tr>
 </thead>{% endif %}
-<tbody>{% for item in items %}{% if item.id %}
- <tr id="{{ item.id }}">{% for val in item.display %}
+<tbody>{% for item in items %}
+ <tr{% if item.id %} id="{{ item.id }}"{% endif %}>{% for val in item.display %}
    <td>{{ val }}</td>{% endfor %}
- </tr>{% else %}
- <tr>{% for val in item %}
-   <td>{{ val }}</td>{% endfor %}
- </tr>{% endif %}{% endfor %}
+ </tr>{% endfor %}
 </tbody>
 </table>

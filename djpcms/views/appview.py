@@ -1,16 +1,22 @@
 import operator
 from copy import copy
-from itertools import izip
 from datetime import datetime
+
+try:
+    from itertools import izip as zip
+except ImportError:
+    import zip
+    
+from djpcms.conf import settings
 
 from django import http
 from django.db.models import Q
 from django.db.models.query import QuerySet
 from django.core.exceptions import ObjectDoesNotExist
-from django.template import loader, RequestContext
 from django.utils.text import smart_split
 from django.utils.translation import ugettext as _
 
+from djpcms.template import loader, RequestContext
 from djpcms.forms import saveform, deleteinstance, autocomplete
 from djpcms.utils.html import Paginator
 from djpcms.utils import force_unicode, construct_search, isexact
@@ -267,7 +273,7 @@ Usage::
                 kwargs = kwargs.copy()
                 if page.url_pattern:
                     bits = page.url_pattern.split('/')
-                    kwargs.update(dict(izip(self.regex.names,bits)))
+                    kwargs.update(dict(zip(self.regex.names,bits)))
                 else:
                     for name in names:
                         kwargs.pop(name,None)
@@ -403,11 +409,13 @@ There are three additional parameters that can be set:
 
 :keyword astable: used to force the view not as a table. Default ``True``.
 :keyword table_generator: Optional function to generate table content. Default ``None``.
+:keyword search_text: string identifier for text queries.
     '''
-    search_text = 'search_text'
-    '''identifier for queries. Default ``search_text``.'''
+    search_text = 'q'
+    '''identifier for queries. Default ``q``.'''
     
-    def __init__(self, in_navigation = True, astable = True, **kwargs):
+    def __init__(self, in_navigation = True, astable = True, search_text = None, **kwargs):
+        self.search_text = search_text or self.search_text
         super(SearchView,self).__init__(in_navigation=in_navigation,
                                         astable=astable,
                                         **kwargs)

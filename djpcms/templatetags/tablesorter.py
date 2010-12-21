@@ -1,6 +1,5 @@
 from django import template
-from djpcms.views.changelist import ChangeList, table
-from djpcms.core.models import nicerepr
+from djpcms.core.models import nicerepr, table
 
 register = template.Library()
 

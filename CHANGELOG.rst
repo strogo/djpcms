@@ -1,7 +1,7 @@
 Version 0.8.6 - Development
 =======================================
-* Added ``save as new`` functionalities to :class:djpcms.views.appview.EditView``.
-* Added `rst` markup handled by sphinx_ in `flowrepo` contrib application.
+* Added ``save as new`` functionality to :class:`djpcms.views.appview.EditView`.
+* Added `rst` markup handled by sphinx_ in :mod:`djpcms.contrib.flowrepo.markups` module.
 * Added ``getdata`` function to ``DjpResponse`` as the preferred way to extract data from the response object.
   In this way it is guaranteed the response object is initialised properly.
 * ``forms.LazyChoiceField`` replaced by ``forms.ChoiceField``, lazy by default.
