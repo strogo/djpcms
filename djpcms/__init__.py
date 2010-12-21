@@ -2,13 +2,8 @@
 
 VERSION = (0, 8, '6dev')
 
-
 def get_version():
-    if len(VERSION) == 3:
-        v = '%s.%s.%s' % VERSION
-    else:
-        v = '%s.%s' % VERSION[:2]
-    return v
+    return '.'.join(map(str,VERSION))
 
 # This list is updated by the views.appsite.appsite handler
 siteapp_choices = [('','-----------------')]
@@ -23,7 +18,7 @@ __homepage__ = "http://djpcms.com/"
 
 import os
 import sys
-from apps import MakeSite, get_url, get_site
+from .apps import MakeSite, get_url, get_site
 
 parent = lambda x : os.path.split(x)[0]
 this_dir = parent(os.path.abspath(__file__))
@@ -60,7 +55,7 @@ def install_lib(basepath, dirname, module_name):
 def install_libs():
     libs = os.path.join(this_dir,'libs')
     install_lib(libs, 'django-tagging', 'tagging')
-    install_lib(libs, 'BeautifulSoup', 'BeautifulSoup')
+    #install_lib(libs, 'BeautifulSoup', 'BeautifulSoup')
     
     
 def init_logging(clear_all = False):

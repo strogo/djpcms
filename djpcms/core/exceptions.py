@@ -6,6 +6,15 @@ class DjpcmsException(Exception):
     pass
 
 
+class ImproperlyConfigured(DjpcmsException):
+    '''A :class:`DjpcmsException` raised when djpcms has inconsistent configuration.'''
+    pass
+
+class CommandError(ImproperlyConfigured):
+    '''A :class:`DjpcmsException` raised when a management command throws an error.'''
+    pass
+
+
 class AlreadyRegistered(DjpcmsException):
     '''A :class:`DjpcmsException` raised when trying to register the same application twice.'''
     pass
