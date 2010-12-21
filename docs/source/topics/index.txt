@@ -17,3 +17,4 @@ Introductions to all the key parts of Djpcms you'll need to know:
    settings
    utils/index
    models
+   patterns

@@ -1,0 +1,10 @@
+.. _design_pattern:
+
+=================================
+Design Patterns
+=================================
+
+.. toctree::
+   :maxdepth: 1
+   
+   addrelated

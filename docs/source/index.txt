@@ -54,6 +54,7 @@ Contents
    topics/settings
    topics/utils/index
    topics/contrib/index
+   topics/patterns/index
    authors
    changelog
 

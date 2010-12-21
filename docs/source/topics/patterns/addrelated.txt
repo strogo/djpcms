@@ -1,0 +1,37 @@
+
+===========================
+Add Related Object View
+===========================
+
+This is a very very useful view for adding related objects to an existing 
+model instance. The view is derived from :class:`djpcms.views.appview.EditView`
+and therefore it is an object view.
+
+Let's say we have these the following two models::
+
+	class Author(models.Model):
+	    name = models.CharField(max_length = 60)
+	
+	
+	class Book(models.Model):
+	    title = models.CharField(max_length = 200)
+	    author = models.ForeignKey(Author)
+	
+	
+The view would become::
+
+	class BookForm(forms.ModelForm):
+	    author = forms.CharField()
+	    
+	    
+	class AddBookView(appview.EditView):
+	    _form = BookForm
+	    
+	    def get_form(self, djp, initial = None,
+	                 instance = False, **kwargs):
+	        initial = initial or {}
+	        initial['author'] = djp.instance.id
+	        return super(AddBookView,self).get_form(djp,instance=False,
+	                                                initial=initial,**kwargs)
+
+	    	
