@@ -1,10 +1,12 @@
+import json
+
 import djpcms
 from djpcms.conf import settings
-from djpcms.forms import model_to_dict
+from djpcms.plugins import SimpleWrap
+from djpcms.forms import fill_form_data, model_to_dict, cms
 from djpcms.views.cache import pagecache
 from djpcms.views import appsite
 from djpcms.models import Page
-from djpcms.forms.cms import PageForm
 from djpcms.core.exceptions import *
 
 from django import test
@@ -48,7 +50,7 @@ Must be used as a base class for TestCase classes'''
             self.pagecache.clear()
 
     def makepage(self, view = None, model = None, bit = '', parent = None, fail = False, **kwargs):
-        form = PageForm()
+        form = cms.PageForm()
         data = model_to_dict(form.instance, form._meta.fields, form._meta.exclude)
         data.update(**kwargs)
         data.update({'url_pattern': bit,
@@ -60,7 +62,7 @@ Must be used as a base class for TestCase classes'''
             else:
                 view = self.site.getapp(view)
             data['application_view'] = view.code
-        form = PageForm(data = data)
+        form = cms.PageForm(data = data)
         if fail:
             self.assertFalse(form.is_valid())
         else:
@@ -84,9 +86,12 @@ Must be used as a base class for TestCase classes'''
         else:
             return resp.context
     
-    def post(self, url = '/', data = {}, status = 200, response = False):
+    def post(self, url = '/', data = {}, status = 200, ajax = False, response = False):
         '''Quick function for posting some content'''
-        resp = self.client.post(url,data)
+        if ajax:
+            resp = self.client.post(url,data,HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        else:
+            resp = self.client.post(url,data)
         self.assertEqual(resp.status_code,status)
         if response:
             return resp
@@ -120,6 +125,11 @@ class TestCase(DjpCmsTestHandle):
 class PluginTest(TestCase):
     plugin = None
     
+    def _pre_setup(self):
+        super(PluginTest,self)._pre_setup()
+        module = self.plugin.__module__
+        self.site.settings.DJPCMS_PLUGINS = [module]
+        
     def testBlockOutOfBound(self):
         p = self.get('/')['page']
         self.assertRaises(BlockOutOfBound, p.add_plugin, self.plugin)
@@ -138,11 +148,46 @@ class PluginTest(TestCase):
         self.login()
         ec = self.get(self.editurl('/'))
         self.assertEqual(c['page'],ec['page'])
+        inner = ec['inner']
+        bs = self.bs(inner).find('div', {'id': 'blockcontent-1-0-0'})
+        self.assertTrue(bs)
+        f  = bs.find('form')
+        self.assertTrue(f)
+        action = dict(f.attrs)['action']
+        
+        # Send bad post request
+        res = self.post(action, {}, ajax = True, response = True)
+        self.assertEqual(res['content-type'],'application/javascript')
+        body = json.loads(res.content)
+        self.assertFalse(body['error'])
+        self.assertEqual(body['header'],'htmls')
+        
+        data = {'plugin_name': self.plugin.name,
+                'container_type': SimpleWrap.name}
+        data.update(self.get_plugindata(f))
+        res = self.post(action, data, ajax = True, response = True)
+        self.assertEqual(res['content-type'],'application/javascript')
+        body = json.loads(res.content)
+        self.assertFalse(body['error'])
+        
+        preview = False
+        for msg in body['body']:
+            if msg['identifier'] == '#plugin-1-0-0-preview':
+                html = msg['html']
+                preview = True
+                break
+        self.assertTrue(preview)
         
     def testRender(self):
-        self.testSimple()
+        self.testEdit()
         c = self.get('/')
         inner = c['inner']
         bs = self.bs(inner).find('div', {'class': 'djpcms-block-element plugin-{0}'.format(self.plugin.name)})
         self.assertTrue(bs)
         return bs
+    
+    def get_plugindata(self, soup_form):
+        '''To be implemented by derived classes'''
+        form = self.plugin.form
+        return fill_form_data(form()) if form else {}
+    

@@ -1,7 +1,6 @@
-from django import forms
 from django.contrib.contenttypes.models import ContentType
-from django.forms.models import modelform_factory
 
+from djpcms import forms
 from djpcms.template import loader
 from djpcms.conf import settings
 from djpcms.plugins import DJPplugin
@@ -25,13 +24,14 @@ def registered_models():
 
 def app_model_from_ct(ct):
     if ct:
-        try:
-            ct = ContentType.objects.get(id = int(ct))
-        except:
-            if settings.DEBUG:
-                return u'Content type %s not available' % ct, False
-            else:
-                return u'', False
+        if not isinstance(ct,ContentType):
+            try:
+                ct = ContentType.objects.get(id = int(ct))
+            except:
+                if settings.DEBUG:
+                    return u'Content type %s not available' % ct, False
+                else:
+                    return u'', False
         model = ct.model_class()
         appmodel = appsite.site.for_model(model)
         if appmodel:
@@ -43,7 +43,8 @@ def app_model_from_ct(ct):
     
 
 class ForModelForm(forms.Form):
-    for_model   = forms.ModelChoiceField(queryset = registered_models(), empty_label=None)
+    for_model   = forms.ModelChoiceField(queryset = registered_models,
+                                         empty_label=None)
     
     def clean_for_model(self):
         ct = self.cleaned_data['for_model']
@@ -61,7 +62,8 @@ class LatestItemForm(ForModelForm):
 
 
 class FormModelForm(ForModelForm):
-    method      = forms.ChoiceField(choices = (('get','get'),('post','post')))
+    method      = forms.ChoiceField(choices = (('get','get'),('post','post')),
+                                    initial = 'get')
     ajax        = forms.BooleanField(initial = False, required = False)
 
 
@@ -78,7 +80,7 @@ class SearchBox(DJPplugin):
     A search box for a model
     '''
     name = 'search-box'
-    description = 'Search a Django Model'
+    description = 'Search a Model'
     form = SearchModelForm
     
     def render(self, djp, wrapper, prefix, for_model = None, title = None, **kwargs):
@@ -86,10 +88,7 @@ class SearchBox(DJPplugin):
             try:
                 ct = ContentType.objects.get(id = int(for_model))
             except:
-                if settings.DEBUG:
-                    return 'Content type %s not available' % for_model
-                else:
-                    return ''
+                raise ValueError('Content type %s not available' % for_model)
             model = ct.model_class()
             appmodel = appsite.site.for_model(model)
             if appmodel:
@@ -103,6 +102,8 @@ class SearchBox(DJPplugin):
                                                      'title': title or 'Enter your search term',
                                                      'url':   search_url,
                                                      'method':'get'})
+        else:
+            raise ValueError('Content type not available')
 
 
 class ModelFilter(DJPplugin):
@@ -125,7 +126,7 @@ class ModelFilter(DJPplugin):
             return u''
         model = appmodel.model
         initial = dict((request.GET or request.POST).items())
-        form = modelform_factory(model, appmodel.form, fields = filters, exclude = [])
+        form = forms.modelform_factory(model, appmodel.form, fields = filters, exclude = [])
         form.layout = FormLayout()
         f = UniForm(form(initial = initial),
                     method = method,

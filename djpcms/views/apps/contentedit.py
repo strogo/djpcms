@@ -212,7 +212,7 @@ class ChangeContentView(appview.EditView):
             if is_ajax:
                 return form.json_errors()
             else:
-                pass
+                return djp.view.handle_response(djp)
         
         url   = form.cleaned_data['url']
         form  =  self.get_form(djp)

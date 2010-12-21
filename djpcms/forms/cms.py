@@ -255,16 +255,6 @@ class ContentBlockForm(EditingForm):
         model = BlockContent
         fields = ['plugin_name','container_type','title','for_not_authenticated','requires_login']
         
-    def __init__(self, instance = None, **kwargs):
-        '''
-        @param instance: must be an instance of BlockContent not Null
-        '''
-        if not instance:
-            raise ValueError('No content block available')
-        super(ContentBlockForm,self).__init__(instance = instance, **kwargs)
-        # Hack the field ordering
-        #self.fields.keyOrder = ['plugin_name', 'container_type', 'title']
-        
     def save(self, commit = True):
         pt = self.cleaned_data.pop('plugin_name')
         pe = self.cleaned_data.pop('view_permission')
