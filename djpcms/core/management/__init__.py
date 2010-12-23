@@ -22,7 +22,7 @@ class CommandFactory(object):
         parser = OptionParser()
         commands = find_commands()
         for command in commands:
-            parser.
+            pass
 
 
 

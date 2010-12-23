@@ -23,24 +23,13 @@ from .apps import MakeSite, get_url, get_site
 
 parent = lambda x : os.path.split(x)[0]
 this_dir = parent(os.path.abspath(__file__))
+path_dir = parent(this_dir)
 libs = []
 
 
 def get_site():
     from djpcms.views.appsite import site
     return site
-
-
-def runtests(tags = None, verbosity = 1, interactive = True, failfast = False):
-    '''Run tests::
-    
-    import djpcms
-    djpcms.runtests()'''
-    path_dir = parent(this_dir)
-    if path_dir not in sys.path:
-        sys.path.insert(0,path_dir)
-    from djpcms.tests.runtests import run
-    run(tags, verbosity, interactive, failfast)
 
 
 def install_lib(basepath, dirname, module_name):
@@ -54,6 +43,8 @@ def install_lib(basepath, dirname, module_name):
     
     
 def install_libs():
+    if path_dir not in sys.path:
+        sys.path.insert(0,path_dir)
     libs = os.path.join(this_dir,'libs')
     install_lib(libs, 'django-tagging', 'tagging')
     #install_lib(libs, 'BeautifulSoup', 'BeautifulSoup')

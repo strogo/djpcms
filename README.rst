@@ -101,11 +101,14 @@ On the top level directory type::
 
 	python runtests.py
 	
-Otherwise, once installed::
+To access coverage of tests you need to install the coverage_ package and run the tests using::
 
-	import djpcms
-	djpcms.runtests()
+	coverage run --source=djpcms runtests.py
+	
+and to check out the coverage report::
 
+	coverage report -m
+	
 
 Dependencies and Python 3
 ===========================
@@ -146,5 +149,5 @@ Djpcms includes several open-source libraries and plugins developed by other aut
 .. _stdnet: http://code.google.com/p/python-stdnet/
 .. _tablesorter: http://tablesorter.com/
 .. _Modernizr: http://www.modernizr.com/
-.. cycle: http://jquery.malsup.com/cycle/
-
+.. _cycle: http://jquery.malsup.com/cycle/
+.. _coverage: http://nedbatchelder.com/code/coverage/

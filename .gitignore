@@ -5,6 +5,7 @@ dist/*
 docs/build/*
 MANIFEST
 .project
+.coverage
 .pydevproject
 .settings/*
 examples/djpcms-site/runfab.py

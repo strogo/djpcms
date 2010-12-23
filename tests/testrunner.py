@@ -75,7 +75,7 @@ def setup_logging(verbosity):
     djpcms.init_logging(True)
 
         
-def run(tags = None, verbosity = 1, interactive = True, failfast = True):
+def run(tags = None, verbosity = 1, interactive = True, failfast = False):
     site = djpcms.MakeSite('regression','conf')
     settings = site.settings
     setup_logging(verbosity)
