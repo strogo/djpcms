@@ -1,10 +1,24 @@
+"""
+Base classes for writing management commands (named commands which can
+be executed through ``django-admin.py`` or ``manage.py``).
+
+"""
+
 import os
 import sys
 from optparse import make_option, OptionParser
 
-import djpcms
 from djpcms.core.exceptions import ImproperlyConfigured, CommandError
-from djpcms.utils import smart_str
+
+
+def handle_default_options(options):
+    """
+    Include any default options that all commands should accept here
+    so that ManagementUtility can handle them before searching for
+    user commands.
+    """
+    if options.pythonpath:
+        sys.path.insert(0, options.pythonpath)
 
 
 class BaseCommand(object):
@@ -87,14 +101,23 @@ class BaseCommand(object):
         make_option('-v', '--verbosity', action='store', dest='verbosity', default='1',
             type='choice', choices=['0', '1', '2', '3'],
             help='Verbosity level; 0=minimal output, 1=normal output, 2=all output'),
+        make_option('--settings',
+            help='The Python path to a settings module, e.g. "myproject.settings.main". If this isn\'t provided, the DJANGO_SETTINGS_MODULE environment variable will be used.'),
         make_option('--pythonpath',
-            help='A directory to add to the Python path, e.g. "/home/myprojects/myproject".'),
+            help='A directory to add to the Python path, e.g. "/home/djangoprojects/myproject".'),
         make_option('--traceback', action='store_true',
             help='Print traceback on exception'),
     )
     help = ''
     args = ''
 
+    # Configuration shortcuts that alter various logic.
+    can_import_settings = True
+    requires_model_validation = True
+    output_transaction = False # Whether to wrap the output in a "BEGIN; COMMIT;"
+
+    def __init__(self):
+        self.style = color_style()
 
     def get_version(self):
         """
@@ -149,16 +172,68 @@ class BaseCommand(object):
         self.execute(*args, **options.__dict__)
 
     def execute(self, *args, **options):
-        """Execute the command"""
+        """
+        Try to execute this command, performing model validation if
+        needed (as controlled by the attribute
+        ``self.requires_model_validation``). If the command raises a
+        ``CommandError``, intercept it and print it sensibly to
+        stderr.
+
+        """
+        # Switch to English, because django-admin.py creates database content
+        # like permissions, and those shouldn't contain any translations.
+        # But only do this if we can assume we have a working settings file,
+        # because django.utils.translation requires settings.
+        if self.can_import_settings:
+            try:
+                from django.utils import translation
+                translation.activate('en-us')
+            except ImportError, e:
+                # If settings should be available, but aren't,
+                # raise the error and quit.
+                sys.stderr.write(smart_str(self.style.ERROR('Error: %s\n' % e)))
+                sys.exit(1)
         try:
             self.stdout = options.get('stdout', sys.stdout)
             self.stderr = options.get('stderr', sys.stderr)
+            if self.requires_model_validation:
+                self.validate()
             output = self.handle(*args, **options)
             if output:
+                if self.output_transaction:
+                    # This needs to be imported here, because it relies on
+                    # settings.
+                    from django.db import connections, DEFAULT_DB_ALIAS
+                    connection = connections[options.get('database', DEFAULT_DB_ALIAS)]
+                    if connection.ops.start_transaction_sql():
+                        self.stdout.write(self.style.SQL_KEYWORD(connection.ops.start_transaction_sql()) + '\n')
                 self.stdout.write(output)
+                if self.output_transaction:
+                    self.stdout.write('\n' + self.style.SQL_KEYWORD("COMMIT;") + '\n')
         except CommandError, e:
             self.stderr.write(smart_str(self.style.ERROR('Error: %s\n' % e)))
             sys.exit(1)
+
+    def validate(self, app=None, display_num_errors=False):
+        """
+        Validates the given app, raising CommandError for any errors.
+
+        If app is None, then this will validate all installed apps.
+
+        """
+        from django.core.management.validation import get_validation_errors
+        try:
+            from cStringIO import StringIO
+        except ImportError:
+            from StringIO import StringIO
+        s = StringIO()
+        num_errors = get_validation_errors(s, app)
+        if num_errors:
+            s.seek(0)
+            error_text = s.read()
+            raise CommandError("One or more models did not validate:\n%s" % error_text)
+        if display_num_errors:
+            self.stdout.write("%s error%s found\n" % (num_errors, num_errors != 1 and 's' or ''))
 
     def handle(self, *args, **options):
         """
@@ -167,7 +242,6 @@ class BaseCommand(object):
 
         """
         raise NotImplementedError()
-
 
 class AppCommand(BaseCommand):
     """
@@ -204,7 +278,6 @@ class AppCommand(BaseCommand):
         """
         raise NotImplementedError()
 
-
 class LabelCommand(BaseCommand):
     """
     A management command which takes one or more arbitrary arguments
@@ -240,7 +313,6 @@ class LabelCommand(BaseCommand):
         """
         raise NotImplementedError()
 
-
 class NoArgsCommand(BaseCommand):
     """
     A command which takes no arguments on the command line.
@@ -265,7 +337,6 @@ class NoArgsCommand(BaseCommand):
 
         """
         raise NotImplementedError()
-
 
 def copy_helper(style, app_or_project, name, directory, other_name=''):
     """
@@ -325,7 +396,6 @@ def copy_helper(style, app_or_project, name, directory, other_name=''):
             except OSError:
                 sys.stderr.write(style.NOTICE("Notice: Couldn't set permission bits on %s. You're probably using an uncommon filesystem setup. No problem.\n" % path_new))
 
-
 def _make_writeable(filename):
     """
     Make sure that the file is writeable. Useful if our source is
@@ -340,3 +410,4 @@ def _make_writeable(filename):
         st = os.stat(filename)
         new_permissions = stat.S_IMODE(st.st_mode) | stat.S_IWUSR
         os.chmod(filename, new_permissions)
+

@@ -1,5 +1,6 @@
 import logging
 
+INSTALLED_APPS                  = []
 ROOT_URLCONF                    = 'djpcms.core.defaults.urls'
 APPLICATION_URL_MODULE          = None
 ADMIN_URL_PREFIX                = '/admin/'

@@ -2,10 +2,7 @@ import json
 from djpcms.conf import settings
 
 if settings.TEMPLATE_ENGINE == 'django':
-    from django.utils.safestring import mark_safe
-    from django.utils.html import escape, conditional_escape
-    from django.template import *
-    from django.template import loader
+    from ._django import *
 elif settings.TEMPLATE_ENGINE == 'jinja2':
     from ._jinja2 import *
 elif settings.TEMPLATE_ENGINE == 'cheetah':
