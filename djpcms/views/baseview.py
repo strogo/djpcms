@@ -2,6 +2,7 @@
 Base class for djpcms views.
 '''
 from djpcms.conf import settings
+from djpcms import http
 from djpcms.permissions import inline_editing, get_view_permission, has_permission
 from djpcms.contrib import messages
 from djpcms.utils.ajax import jservererror, jredirect
@@ -10,16 +11,13 @@ from djpcms.forms import saveform, get_form
 from djpcms.forms.cms import ShortPageForm, NewChildForm
 from djpcms.utils.uniforms import UniForm
 from djpcms.utils import UnicodeObject, urlbits, urlfrombits, function_module
-from djpcms.utils import htmltype, mark_safe, force_unicode
+from djpcms.utils import htmltype
 from djpcms.utils.media import Media
-
 from djpcms.views.cache import pagecache
 from djpcms.views.response import DjpResponse
 from djpcms.views.contentgenerator import BlockContentGen
-
-from django import http
-from django.template import RequestContext, Context, loader
-from django.core.exceptions import PermissionDenied
+from djpcms.template import mark_safe, RequestContext, Context, loader
+from djpcms.core.exceptions import PermissionDenied
 
 
 

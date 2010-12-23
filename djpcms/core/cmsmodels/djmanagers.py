@@ -4,7 +4,7 @@ from django.contrib.sites.models import Site
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 
-from djpcms.utils import force_unicode
+from djpcms.utils import force_str
 from djpcms.permissions import get_view_permission
 
 
@@ -225,7 +225,7 @@ class PermissionManager(models.Manager):
         if pe:
             pe = pe[0]
         elif create:
-            pe = Permission(codename = code, content_type = ct, name = 'Can view %s' % force_unicode(obj._meta.verbose_name))
+            pe = Permission(codename = code, content_type = ct, name = 'Can view %s' % force_str(obj._meta.verbose_name))
             pe.save()
         return pe
         

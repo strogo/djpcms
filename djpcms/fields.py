@@ -1,9 +1,10 @@
 """
 A custom Model Field for djpcms.
 """
+import json
 from django.db import models
 
-from djpcms.utils import json, JSONDateDecimalEncoder, date_decimal_hook, slugify
+from djpcms.utils import JSONDateDecimalEncoder, date_decimal_hook, slugify
 
 try:
     import cPickle as pickle

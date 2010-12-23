@@ -4,7 +4,6 @@ from django.contrib.contenttypes.models import ContentType
 from tagging.forms import TagField
 
 from djpcms import forms
-from djpcms.utils import force_unicode
 from djpcms.utils import json
 from djpcms.contrib.flowrepo import models
 

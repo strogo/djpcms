@@ -3,16 +3,12 @@
 # Adapted from http://github.com/pydanny/django-uni-form
 #
 #
+from djpcms.conf import settings
 from django.forms.formsets import all_valid
-from django.conf import settings
-
-# Wild import af all django forms stuff
-#from django.forms import *
 
 from djpcms.forms import BoundField, fill_form_data, MediaDefiningClass, BaseForm
 from djpcms.contrib import messages
-from djpcms.template import loader, RequestContext
-from djpcms.utils import mark_safe
+from djpcms.template import loader, RequestContext, mark_safe
 from djpcms.utils.ajax import jhtmls
 
 

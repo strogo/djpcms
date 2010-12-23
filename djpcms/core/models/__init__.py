@@ -1,17 +1,18 @@
-from djpcms.core.exceptions import ModelException 
-from base import *
+from djpcms.core.exceptions import ModelException
+ 
+from .base import *
 
 _models = {}
 
 try:
-    from djpcms.core.models import _django
-    _models['django'] = _django.ModelType
+    from ._django import ModelType
+    _models['django'] = ModelType
 except:
     pass
 
 try:
-    from djpcms.core.models import _stdnet
-    _models['stdnet'] = _stdnet.ModelType
+    from ._stdnet import ModelType
+    _models['stdnet'] = ModelType
 except:
     pass
 

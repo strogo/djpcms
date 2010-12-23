@@ -2,7 +2,7 @@
 #    Utility for managing grid 960 css templates
 #
 from djpcms.conf import settings
-from djpcms.utils import mark_safe
+from djpcms.template import mark_safe
 
 __all__ = ['grid960']
 
@@ -24,7 +24,7 @@ class grid960_base(object):
     '''
     def __init__(self, columns, fixed):
         self.fixed  = fixed
-        self.clear  = mark_safe(u'<div class="clear"></div>')
+        self.clear  = mark_safe('<div class="clear"></div>')
         c4 = columns/4
         c6 = columns/6
         c3 = 2*c6

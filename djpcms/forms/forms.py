@@ -1,4 +1,5 @@
 from djpcms.conf import settings
+
 from django import forms
 from django.forms import models 
 from django.forms.forms import get_declared_fields
@@ -10,6 +11,7 @@ __all__ = ['BaseForm',
            'ValidationError',
            'model_to_dict',
            'MediaDefiningClass',
+           'Media',
            'get_declared_fields',
            'modelform_factory']
 
@@ -17,6 +19,7 @@ __all__ = ['BaseForm',
 BaseForm = forms.BaseForm
 ValidationError = forms.ValidationError
 model_to_dict = forms.model_to_dict
+Media = forms.Media
 MediaDefiningClass = forms.MediaDefiningClass
 
 

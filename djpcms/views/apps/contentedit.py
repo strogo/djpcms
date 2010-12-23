@@ -3,15 +3,12 @@ Application for handling inline editing of blocks
 The application derives from the base appsite.ModelApplication
 and defines several subviews 
 '''
-from django import http
-from django import forms
-from django.utils.translation import ugettext_lazy as _
-from django.template import RequestContext, loader
-
 from djpcms.conf import settings
+from djpcms import forms, http
+from djpcms.utils.translation import ugettext_lazy as _
 from djpcms.core.exceptions import PermissionDenied
 from djpcms.models import BlockContent
-from djpcms.utils import mark_safe
+from django.template import RequestContext, loader, mark_safe
 from djpcms.utils.func import isforminstance
 from djpcms.utils.ajax import jhtmls, jremove, dialog, jempty, jerror
 from djpcms.utils.html import submit, htmlcomp

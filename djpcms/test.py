@@ -1,6 +1,7 @@
 import json
 
 import djpcms
+from djpcms import http
 from djpcms.conf import settings
 from djpcms.plugins import SimpleWrap
 from djpcms.forms import fill_form_data, model_to_dict, cms
@@ -130,6 +131,11 @@ class PluginTest(TestCase):
         module = self.plugin.__module__
         self.site.settings.DJPCMS_PLUGINS = [module]
         
+    def request(self, user = None):
+        req = http.HttpRequest()
+        req.user = user
+        return req
+        
     def testBlockOutOfBound(self):
         p = self.get('/')['page']
         self.assertRaises(BlockOutOfBound, p.add_plugin, self.plugin)
@@ -186,8 +192,8 @@ class PluginTest(TestCase):
         self.assertTrue(bs)
         return bs
     
-    def get_plugindata(self, soup_form):
+    def get_plugindata(self, soup_form, request = None):
         '''To be implemented by derived classes'''
         form = self.plugin.form
-        return fill_form_data(form()) if form else {}
+        return fill_form_data(form(request = request)) if form else {}
     

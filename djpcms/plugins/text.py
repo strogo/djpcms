@@ -1,19 +1,16 @@
-#
-#
-from django.template import RequestContext
+import json
 
-from djpcms.core.exceptions import PermissionDenied
 from djpcms.conf import settings
+from djpcms.template import RequestContext, mark_safe
+from djpcms.core.exceptions import PermissionDenied
 from djpcms import forms
 from djpcms.forms import form_kwargs
 from djpcms.forms.cms import EditingForm
-from djpcms.utils import json, mark_safe
 from djpcms.models import SiteContent
 from djpcms.plugins import DJPplugin
 from djpcms.utils.uniforms import FormLayout, Fieldset, blockLabels2, inlineLabels
 from djpcms.markup import markuplib
 from djpcms.permissions import has_permission, get_change_permission
-
 from djpcms.utils import uniforms
 
 

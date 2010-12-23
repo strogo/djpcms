@@ -1,7 +1,7 @@
-from django import http
-from django.template import RequestContext, loader
-
+from djpcms import http
+from djpcms.template import RequestContext, loader
 from djpcms.views.baseview import djpcmsview
+
 
 class badview(djpcmsview):
     

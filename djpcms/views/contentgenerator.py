@@ -1,11 +1,9 @@
-from django.forms.formsets import formset_factory
-from django.template import RequestContext, loader
-
 from djpcms import forms
-from djpcms.utils import UnicodeObject, mark_safe
+from djpcms.forms.formsets import formset_factory
+from djpcms.template import RequestContext, loader, mark_safe
 
 
-class BlockContentGen(UnicodeObject):
+class BlockContentGen(object):
     '''Block Content Generator is responsible for generating contents within a ``block``.
 A page is associated with a given url and a page has a certain number
 of ``blocks`` depending on the template chosen for the pages: anything between 1 and 10 is highly possible.

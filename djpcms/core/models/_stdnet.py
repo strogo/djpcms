@@ -1,6 +1,6 @@
 from stdnet.orm import StdNetType
 
-from base import ModelTypeWrapper
+from .base import ModelTypeWrapper
 
 
 class ModelType(ModelTypeWrapper):

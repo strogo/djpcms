@@ -5,8 +5,8 @@ import copy
 
 from django.template import loader, Context
 from django.utils.dates import MONTHS_3, MONTHS_3_REV, WEEKDAYS_ABBR, MONTHS
-from django.utils.encoding import force_unicode
 
+from djpcms.utils import force_str
 from djpcms.views.appsite import ModelApplication
 from djpcms.views.apps.archive import views 
 
@@ -30,7 +30,7 @@ class ArchiveApplication(ModelApplication):
         super(ArchiveApplication,self).__init__(*args, **kwargs)
         
     def get_month_value(self, month):
-        return force_unicode(MONTHS_3.get(month))
+        return force_str(MONTHS_3.get(month))
 
     def get_month_number(self, month):
         try:
@@ -76,10 +76,10 @@ class ArchiveApplication(ModelApplication):
                 content['year']  = {'url': self.yearurl(request,dt.year,**urlargs),
                                     'value': dt.year}
                 content['month'] = {'url': self.monthurl(request,dt.year,dt.month,**urlargs),
-                                    'value': force_unicode(MONTHS[dt.month])}
+                                    'value': force_str(MONTHS[dt.month])}
                 content['day']   = {'url': self.dayurl(request,dt.year,dt.month,dt.day,**urlargs),
                                     'value': dt.day}
-                content['wday']  = force_unicode(WEEKDAYS_ABBR[dt.weekday()])
+                content['wday']  = force_str(WEEKDAYS_ABBR[dt.weekday()])
                 date = ddate
             yield loader.render_to_string(template_name    = self.get_item_template(obj, wrapper),
                                           context_instance = Context(content))

@@ -1,10 +1,9 @@
+from djpcms.conf import settings
+from djpcms.template import loader, mark_safe
+
 from django import forms
 from django.utils.datastructures import MultiValueDict, MergeDict
 from django.db import models
-
-from djpcms.template import loader
-from djpcms.utils import mark_safe
-from djpcms.conf import settings
 
 
 __all__ = ['autocomplete',

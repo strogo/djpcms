@@ -4,12 +4,12 @@ from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.admin import site
 from django.contrib.admin.util import label_for_field, display_for_field, lookup_field
-from django.utils.html import escape, conditional_escape
 
 from djpcms.permissions import has_permission
-from djpcms.utils import mark_safe, smart_unicode
+from djpcms.utils import force_str
+from djpcms.template import mark_safe, escape, conditional_escape
 
-from base import ModelTypeWrapper, _boolean_icon, EMPTY_VALUE, nicerepr
+from .base import ModelTypeWrapper, _boolean_icon, EMPTY_VALUE, nicerepr
 
 
 class ModelType(ModelTypeWrapper):
@@ -90,7 +90,7 @@ class ModelType(ModelTypeWrapper):
                     allow_tags = True
                     result_repr = _boolean_icon(value)
                 else:
-                    result_repr = smart_unicode(value)
+                    result_repr = force_str(value)
                 # Strip HTML tags in the resulting text, except if the
                 # function has an "allow_tags" attribute set to True.
                 if not allow_tags:

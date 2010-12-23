@@ -8,10 +8,10 @@ from copy import deepcopy
 from django.template import loader, Template, Context, RequestContext
 
 from djpcms import forms
-from djpcms.template import loader
+from djpcms.template import loader, mark_safe
 from djpcms.core.models import getmodel
 from djpcms.core.exceptions import PermissionDenied, ApplicationUrlException
-from djpcms.utils import UnicodeObject, force_unicode, slugify, mark_safe
+from djpcms.utils import UnicodeObject, slugify
 from djpcms.forms import get_form
 from djpcms.plugins import register_application
 from djpcms.utils.html import submit

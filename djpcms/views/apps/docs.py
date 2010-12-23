@@ -1,15 +1,16 @@
 import datetime
+import json
 
-from django import http
-from django.conf.urls.defaults import url
-
-from djpcms.conf import settings
-from djpcms.utils import mark_safe, json 
-from djpcms.template import loader
+from djpcms.conf import settings 
+from djpcms.template import loader, mark_safe
 from djpcms.utils.unipath import FSPath as Path
 from djpcms.views.appsite import Application
 from djpcms.views.appview import View
 from djpcms.views.regex import RegExUrl
+
+from django import http
+from django.conf.urls.defaults import url
+
 
     
 class DocView(View):

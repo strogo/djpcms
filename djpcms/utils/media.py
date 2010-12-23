@@ -2,8 +2,9 @@ from urlparse import urljoin
 from itertools import chain
 
 from djpcms import get_site
-from djpcms.utils.encoding import StrAndUnicode
-from djpcms.utils import mark_safe
+from djpcms.template import mark_safe
+
+from .strings import StrAndUnicode
   
 
 MEDIA_TYPES = ('css','js')

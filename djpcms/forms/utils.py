@@ -6,7 +6,7 @@ from djpcms.contrib import messages
 from django.utils.translation import ugettext_lazy as _
 
 from djpcms.utils.html import submit
-from djpcms.utils import force_unicode
+from djpcms.utils import force_str
 from djpcms.utils.ajax import jredirect, jremove
 
 
@@ -80,7 +80,7 @@ def success_message(instance, mch):
          'mch': mch,
          'obj': instance}
     if instance:
-        c['name'] = force_unicode(instance._meta.verbose_name)
+        c['name'] = force_str(instance._meta.verbose_name)
         return _('The %(name)s "%(obj)s" was succesfully %(mch)s %(dt)s') % c
     else:
         return _('%(mch)s %(dt)s') % c

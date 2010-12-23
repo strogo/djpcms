@@ -1,11 +1,19 @@
-from django.template import loader, Context
-from django.forms.util import flatatt
-from django.utils.datastructures import SortedDict
-from django.utils.safestring import mark_safe
-from django.forms import Media
-
 from djpcms.conf import settings
+from djpcms.template import loader, Context, mark_safe, conditional_escape
+from djpcms.utils.collections import OrderedDict
+from djpcms.forms import Media
 from djpcms.utils import UnicodeObject
+
+
+def flatatt(attrs):
+    """
+    Convert a dictionary of attributes to a single string.
+    The returned string will contain a leading space followed by key="value",
+    XML-style pairs.  It is assumed that the keys do not need to be XML-escaped.
+    If the passed dictionary is empty, then return an empty string.
+    """
+    return u''.join([u' %s="%s"' % (k, conditional_escape(v)) for k, v in attrs.items()])
+
 
 class htmlbase(UnicodeObject):
     ajax = settings.HTML_CLASSES
@@ -144,7 +152,7 @@ class htmlcomp(htmltag):
         super(htmlcomp,self).__init__(tag, **attrs)
         self.template = template
         self.tag      = tag
-        self.inner    = SortedDict()
+        self.inner    = OrderedDict()
         if inner:
             self['inner'] = inner
         

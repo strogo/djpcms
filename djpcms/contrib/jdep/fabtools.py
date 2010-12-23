@@ -13,8 +13,7 @@ The :func:`djpcms.contrib.jdep.utils.project` must have been called already
 with the name of the project.'''
     import os
     import tarfile
-    from django.template import loader
-    from djpcms.utils import mark_safe
+    from django.template import loader, mark_safe
     utils.rmfiles(os.curdir, ext = 'pyc')
     filename = '%s.tar.gz' % env.project
     data = loader.render_to_string('jdep/server.txt', {'env':mark_safe('%s\n' % env), 'release': release})

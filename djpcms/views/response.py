@@ -1,14 +1,11 @@
 from copy import copy
 
-from django import http
-from django.shortcuts import render_to_response
-from django.template import RequestContext
-
 from djpcms.conf import settings
+from djpcms import http
 from djpcms.uploads import apply_styling
 from djpcms.utils.ajax import jredirect, jhtmls
-from djpcms.template import Template, Context
-from djpcms.utils import lazyattr, mark_safe, smart_str
+from djpcms.template import loader, Template, Context, RequestContext, mark_safe
+from djpcms.utils import lazyattr
 from djpcms.utils.navigation import Navigator, Breadcrumbs
 
 
@@ -233,7 +230,10 @@ class DjpResponse(http.HttpResponse):
                  b = Breadcrumbs(self,min_length = settings.ENABLE_BREADCRUMBS)
             d['breadcrumbs'] = b
         template_file = template_file or self.template_file
-        return render_to_response(template_file, context_instance=context, **kwargs)
+        
+        httpresponse_kwargs = {'mimetype': kwargs.pop('mimetype', None)}
+        html = loader.render_to_string(template_file, context_instance=context, **kwargs)
+        return http.HttpResponse(html, **httpresponse_kwargs)
         
     def redirect(self, url):
         if self.request.is_ajax():

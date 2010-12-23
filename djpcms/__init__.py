@@ -1,6 +1,6 @@
 '''Dynamic content management system using Javascript and Python'''
 
-VERSION = (0, 8, '6dev')
+VERSION = (0, 9, 'dev')
 
 def get_version():
     return '.'.join(map(str,VERSION))
@@ -9,11 +9,12 @@ def get_version():
 siteapp_choices = [('','-----------------')]
 
 
-__version__  = get_version()
-__license__  = "BSD"
-__author__   = "Luca Sbardella"
-__contact__  = "luca.sbardella@gmail.com"
-__homepage__ = "http://djpcms.com/"
+__version__   = get_version()
+__license__   = "BSD"
+__author__    = "Luca Sbardella"
+__contact__   = "luca.sbardella@gmail.com"
+__homepage__  = "http://djpcms.com/"
+__docformat__ = "restructuredtext"
 
 
 import os

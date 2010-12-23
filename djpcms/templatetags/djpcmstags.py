@@ -1,8 +1,8 @@
+from djpcms.conf import settings
 from django import template
 
-from djpcms.utils import mark_safe
+from djpcms.template import mark_safe
 from djpcms.plugins import get_plugin
-from djpcms.conf import settings
 
 register = template.Library()
 

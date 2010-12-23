@@ -1,19 +1,21 @@
 import os
 import logging
+import json
 
 from django import http
 from django.utils.text import capfirst
 
 from djpcms import forms
 from djpcms.forms import form_kwargs
-from djpcms.utils import UnicodeObject, force_unicode, json, mark_safe
+from djpcms.utils import UnicodeObject, force_str
 from djpcms.utils.formjson import form2json
 from djpcms.utils.deco import response_wrap
+from djpcms.template import mark_safe
 
 _plugin_dictionary = {}
 _wrapper_dictionary = {}
 
-nicename = lambda name : force_unicode(capfirst(name.replace('-',' ').replace('_',' ')))
+nicename = lambda name : force_str(capfirst(name.replace('-',' ').replace('_',' ')))
 
 def ordered_generator(di):
     def cmp(x,y):

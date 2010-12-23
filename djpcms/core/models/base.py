@@ -3,9 +3,8 @@ from datetime import date, datetime
 from django.utils.dateformat import format as date_format, time_format
 
 from djpcms.conf import settings
-from djpcms.utils import mark_safe, force_unicode, significant_format
-from djpcms.utils import escape, conditional_escape
-from djpcms.template import loader
+from djpcms.utils import force_str, significant_format
+from djpcms.template import loader, mark_safe, escape, conditional_escape
 
 
 
@@ -123,7 +122,7 @@ class ModelTypeWrapper(object):
             item = {'id':id,'display':display}
             for field_name in headers:
                 result_repr = self.getrepr(field_name, result, nd)
-                if force_unicode(result_repr) == '':
+                if force_str(result_repr) == '':
                     result_repr = mark_safe('&nbsp;')
                 if (first and not self.list_display_links) or field_name in self.list_display_links:
                     first = False

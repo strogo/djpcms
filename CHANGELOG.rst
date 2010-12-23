@@ -1,4 +1,4 @@
-Version 0.8.6 - Development
+Version 0.9.0 - Development
 =======================================
 * Added ``save as new`` functionality to :class:`djpcms.views.appview.EditView`.
 * Added `rst` markup handled by sphinx_ in :mod:`djpcms.contrib.flowrepo.markups` module.
@@ -16,7 +16,7 @@ Version 0.8.6 - Development
 * Injecting the instance or ``None`` of current ``url`` into ``request`` object.
 * Added more docs on views and applications.
 * Added :mod:`djpcms.contrib.social` application with ``OAuth``. Still in ``alpha``.
-* **65 unit tests**.
+* **67 unit tests**.
 
 Version 0.8.5 (2010-Nov-16)
 =======================================

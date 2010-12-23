@@ -1,6 +1,7 @@
-from djpcms.utils import force_unicode, mark_safe
+from djpcms.utils import force_str
 from djpcms.forms import form_kwargs, BoundField
 from djpcms.forms.formsets import inlineformset_factory
+from djpcms.template import mark_safe
 
 __all__ = ['ModelFormInlineHelper']
 
@@ -11,7 +12,7 @@ class ModelFormInlineHelper(object):
         self.parent_model = parent_model
         self.model   = model
         if legend is not False:
-            legend = legend or force_unicode(model._meta.verbose_name_plural)
+            legend = legend or force_str(model._meta.verbose_name_plural)
         self.legend = mark_safe('' if not legend else '<legend>'+legend+'</legend>')
         self.FormSet = inlineformset_factory(parent_model, model, **kwargs)
         
@@ -80,7 +81,7 @@ class FormsetWrap(object):
                 continue
             #bound_field = BoundField(form, field, name)
             if field.label is None:
-                field.label = force_unicode(name.replace('_',' '))
+                field.label = force_str(name.replace('_',' '))
             yield field
 
     def save(self, parent_instance):

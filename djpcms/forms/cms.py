@@ -3,7 +3,7 @@ from django.contrib.sites.models import Site
 from django.utils.translation import ugettext_lazy as _
 
 from djpcms import siteapp_choices
-from djpcms.utils import smart_unicode, slugify
+from djpcms.utils import force_str, slugify
 from djpcms.models import Page, BlockContent, SiteContent, ObjectPermission
 from djpcms.utils.uniforms import FormLayout, Fieldset, Columns, Row, Html, inlineLabels, inlineLabels3
 from djpcms.plugins import get_plugin, plugingenerator, wrappergenerator
@@ -181,7 +181,7 @@ class PageForm(forms.ModelForm):
         data     = self.data
         value    = data.get('url_pattern',None)
         if value:
-            value = slugify(smart_unicode(value))
+            value = slugify(force_str(value))
         if data.get('application_view',None):
             return value
         parent = self.get_parent()

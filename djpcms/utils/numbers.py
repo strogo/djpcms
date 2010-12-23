@@ -1,4 +1,7 @@
 
+__all__ = ['significant_format',
+           'significant']
+
 
 def significant(number, n = 3):
     '''Round a number up to a given number ``n`` of significant figures.

@@ -1,11 +1,13 @@
-import time
-from datetime import datetime, date
+from time import mktime
+from datetime import datetime, date, time
 from decimal import Decimal
 import json
     
+all = ['JSONDateDecimalEncoder', 'date_decimal_hook']
 
 def totimestamp(dte):
-    return time.mktime(dte.timetuple())
+    return mktime(dte.timetuple())
+
 
 def todatetime(tstamp):
     return datetime.fromtimestamp(tstamp)
@@ -20,6 +22,8 @@ class JSONDateDecimalEncoder(json.JSONEncoder):
             return {'__datetime__':totimestamp(obj)}
         elif isinstance(obj, date):
             return {'__date__':totimestamp(obj)}
+        elif isinstance(obj, time):
+            return {'__time__':totimestamp(obj)}
         elif isinstance(obj, Decimal):
             return {'__decimal__':str(obj)}
         else:
@@ -31,6 +35,8 @@ def date_decimal_hook(dct):
         return todatetime(dct['__datetime__'])
     elif '__date__' in dct:
         return todatetime(dct['__date__']).date()
+    elif '__time__' in dct:
+        return todatetime(dct['__time__']).time()
     elif '__decimal__' in dct:
         return Decimal(dct['__decimal__'])
     else:

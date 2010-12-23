@@ -1,8 +1,7 @@
 import re
 
-from django.http import Http404, HttpResponseRedirect
-
 from djpcms.conf import settings
+from djpcms.http import Http404, HttpResponseRedirect
 from djpcms.views import appsite
 from djpcms.views.cache import pagecache
 from djpcms.views.response import DjpResponse 

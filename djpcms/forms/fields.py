@@ -1,8 +1,8 @@
+from djpcms.conf import settings
+
 from django import forms
 from django.forms.forms import BoundField
 from django.db import models
-
-from djpcms.conf import settings
 
 
 __all__ = ['IntegerField',

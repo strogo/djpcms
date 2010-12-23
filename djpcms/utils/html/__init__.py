@@ -1,13 +1,12 @@
-from pagination import *
-from base import *
-from grid960 import *
+from .pagination import *
+from .base import *
+from .grid960 import *
 
 
 def box(hd = None, bd = None, ft = None, minimize = False, rounded = True,
         collapsable = False, collapsed = False, classes = None,  id = None,
         delurl = None):
-    from djpcms.utils import mark_safe
-    from djpcms.template import loader
+    from djpcms.template import loader, mark_safe
     classes = classes or []
     menulist = []
     if collapsed:

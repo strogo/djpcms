@@ -9,17 +9,17 @@ except ImportError:
     
 from djpcms.conf import settings
 
-from django import http
 from django.db.models import Q
 from django.db.models.query import QuerySet
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.text import smart_split
-from django.utils.translation import ugettext as _
 
+from djpcms import http
+from djpcms.utils.translation import ugettext as _
 from djpcms.template import loader, RequestContext
 from djpcms.forms import saveform, deleteinstance, autocomplete
 from djpcms.utils.html import Paginator
-from djpcms.utils import force_unicode, construct_search, isexact
+from djpcms.utils import construct_search, isexact
 from djpcms.views.regex import RegExUrl 
 from djpcms.views.cache import pagecache
 from djpcms.views.baseview import djpcmsview

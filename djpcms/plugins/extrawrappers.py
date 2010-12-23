@@ -1,5 +1,4 @@
-from djpcms.utils import mark_safe
-from djpcms.template import loader
+from djpcms.template import loader, mark_safe
 from djpcms.plugins import DJPwrapper
 from djpcms.utils.html import box
 

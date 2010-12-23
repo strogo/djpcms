@@ -1,16 +1,25 @@
-from django.utils.encoding import smart_str, force_unicode
-from django.utils.encoding import smart_unicode, StrAndUnicode
-from django.utils.safestring import mark_safe
-from django.utils.html import escape, conditional_escape
-from djpcms.utils.numbers import significant_format, significant
+import re
+import json
+import unicodedata
 from uuid import uuid4
-from anyjson import json, JSONDateDecimalEncoder, date_decimal_hook
 
+from .strings import *
+from .jsontools import *
+from .numbers import *
 
-json_dump_safe = lambda data: mark_safe(force_unicode(json.dumps(data)))
 
 def gen_unique_id():
     return str(uuid4())
+
+
+def flatatt(attrs):
+    """
+    Convert a dictionary of attributes to a single string.
+    The returned string will contain a leading space followed by key="value",
+    XML-style pairs.  It is assumed that the keys do not need to be XML-escaped.
+    If the passed dictionary is empty, then return an empty string.
+    """
+    return u''.join([u' %s="%s"' % (k, conditional_escape(v)) for k, v in attrs.items()])
 
 
 def construct_search(field_name):
@@ -24,6 +33,7 @@ def construct_search(field_name):
     else:
         return "%s__icontains" % field_name
 
+
 def isexact(bit):
     if not bit:
         return bit
@@ -36,14 +46,6 @@ def isexact(bit):
         return bit
 
 
-class NoAjaxKeyError(Exception):
-    
-    def __init__(self, key):
-        super(NoAjaxKeyError,self).__init__('Ajax key "%s" was not found' % key)
-
-
-    
-
 def function_module(dotpath, default = None):
     '''
     Load a function from a module.
@@ -54,7 +56,7 @@ def function_module(dotpath, default = None):
         try:
             module = __import__('.'.join(bits[:-1]),globals(),locals(),[''])
             return getattr(module,bits[-1],default)
-        except Exception, e:
+        except Exception as e:
             return default
     else:
         return default
@@ -106,44 +108,21 @@ class UnicodeObject(object):
     
     def __repr__(self):
         try:
-            u = unicode(self)
-        except (UnicodeEncodeError, UnicodeDecodeError):
+            u = stringtype(self)
+        except:
             u = '[Bad Unicode data]'
-        return smart_str(u'<%s: %s>' % (self.__class__.__name__, u))
+        return smart_str('<{0}: {1}>'.format(self.__class__.__name__, u))
 
     def __str__(self):
         if hasattr(self, '__unicode__'):
-            return force_unicode(self).encode('utf-8')
-        return '%s object' % self.__class__.__name__
+            return force_str(self).encode('utf-8')
+        return '{0} object'.format(self.__class__.__name__)
 
     
-class requestwrap(UnicodeObject):
-    
-    def __init__(self, obj, request):
-        self.request = request
-        self.obj = obj
-        
-    def __unicode__(self):
-        return unicode(self.obj)
-        
-    def __getattr__(self, name):
-        attr = getattr(self.obj,name,None)
-        if attr and callable(attr):
-            # First we try using request as argument
-            try:
-                return attr(self.request)
-            except:
-                return attr()
-        else:
-            return attr
-
-
 def slugify(value, rtx = '-'):
-    import re
-    import unicodedata
     '''Normalizes string, removes non-alpha characters,
 and converts spaces to hyphens *rtx* character'''
     value = unicodedata.normalize('NFKD', unicode(value)).encode('ascii', 'ignore')
     value = unicode(re.sub('[^\w\s-]', '', value).strip())
-    return mark_safe(re.sub('[-\s]+', rtx, value))
+    return re.sub('[-\s]+', rtx, value)
 
