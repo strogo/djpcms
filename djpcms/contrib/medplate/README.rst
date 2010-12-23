@@ -1,7 +1,11 @@
-Djpcms Django compressor adaptation
+MedPlate
 =========================================
 
-Compresses linked and inline javascript or CSS into a single cached file.
+Compresses linked and inline javascript or CSS templates into a single cached file.
+
+MedPlat stands for Media temPlate and it is a sweet library for compressing templates
+css and javascript files.
+It started as a fork of 'django_compressor_ and it has evolved.
 
 Syntax::
 
@@ -153,3 +157,5 @@ Dependecies
 
 * BeautifulSoup
 
+
+.. _django_compressor: https://github.com/mintchaos/django_compressor
