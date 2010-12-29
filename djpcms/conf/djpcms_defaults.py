@@ -19,7 +19,7 @@ TEMPLATE_ENGINE                 = 'django'
 DEFAULT_TEMPLATE_NAME           = ['base.html','djpcms/base.html']
 
 #styling
-DJPCMS_STYLE                    = 'smooth'
+DJPCMS_STYLE                    = None
 DJPCMS_STYLING_FUNCTION         = None
 
 #Logging
@@ -37,7 +37,7 @@ GOOGLE_ANALYTICS_ID             = None
 LLOOGG_ANALYTICS_ID             = None
 
 SITE_NAVIGATION_LEVELS          = 2
-ENABLE_BREADCRUMBS              = 1
+ENABLE_BREADCRUMBS              = 2
 
 DJPCMS_PLUGINS                  = ['djpcms.plugins.*']
 DJPCMS_WRAPPERS                 = ['djpcms.plugins.extrawrappers']
@@ -69,6 +69,11 @@ CONTENT_INLINE_EDITING = {'available':True,
                           'pagecontent': '/site-content/',
                           'width': 600,
                           'height': 400}
+
+#
+JINJA2_TEMPLATE_LOADERS = [('djpcms.utils.jinja2loaders.ApplicationLoader',)]
+JINJA2_EXTENSIONS = []
+
 
 LOGGING_CONFIG = None
 LOGGING = {

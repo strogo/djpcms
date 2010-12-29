@@ -1,41 +1,51 @@
-/*
------------------------------------------------
-Navigation
------------------------------------------------ */
+{% extends "themes/elem.css_t" %}
 
+{% block body %}
 /* Dimensions
 ------------------------------------------------*/
-ul.main-nav ul li a {
+{{ elem.tag }} ul li a {
  	width:12em;
   	line-height:2em;
   	height:2em;
   	text-align:left;
 }
 /* level 3+ list */
-ul.main-nav ul ul {
+{{ elem.tag }} ul ul {
 	position:relative !important;
 	left: 12em;
 	top: 0;
 }
-ul.main-nav,
-ul.main-nav li,
-ul.main-nav li a {
-	height:2.5em;
-	line-height:2.5em;
+{{ elem.tag }} {
+	height:{{ elem.height }};
+	padding:{{ elem.padding }};
+}
+{{ elem.tag }} li,
+{{ elem.tag }} li a {
+	height:{{ nav.height }};
+	line-height:{{ nav.height }};
 	border:0;
 }
-ul.main-nav li ul {top:2.5em;}
-ul.main-nav li ul li,
-ul.main-nav li ul li a {
+{{ elem.tag }} li {
+	-webkit-border-radius: {{ nav.inner_radius }};
+	-moz-border-radius: {{ nav.inner_radius }};
+}
+{{ elem.tag }} li ul {top: {{ nav.height }};}
+{{ elem.tag }} li ul li,
+{{ elem.tag }} li ul li a {
 	line-height:2em;
 	height:2em;
+}
+ul.main-nav li:hover {
+	background: {{ nav.hover_background }};
+}
+ul.main-nav li.selected {
+	background: {{ nav.selected_background }};
 }
  
 /* navigation (horizontal subnavigation)
 ----------------------------------------------- */
-ul.main-nav,
-ul.main-nav * { margin:0;padding:0;border:0;}
 ul.main-nav li:hover > ul {
+	background: {{ nav.hover_background }};
 	display: block;
 }
 ul.main-nav ul {
@@ -107,3 +117,4 @@ ul.main-nav li.secondary span.status a {
 	line-height:auto;
 	background:transparent;
 }
+{% endblock %}

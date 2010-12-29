@@ -4,7 +4,6 @@ import logging
 from django.db import models
 from django.utils import text
 from django.utils.encoding import force_unicode, smart_unicode
-from django.utils.safestring import mark_safe
 from django.contrib.contenttypes.models import ContentType
 from django.db.models.query import QuerySet
 from django.contrib.contenttypes import generic
@@ -13,10 +12,12 @@ from django.contrib.auth.models import User, Group, AnonymousUser
 
 from tagging.fields import TagField
 
+from djpcms.utils import slugify
+from djpcms.uploads import uploader, storage_manager
+from djpcms.template import mark_safe
 from djpcms.contrib.flowrepo import markups
 from djpcms.contrib.flowrepo.managers import FlowManager, SlugManager, RepoManager 
-from djpcms.contrib.flowrepo.managers import slugify, source_interactive
-from djpcms.contrib.flowrepo.storage import uploader, storage_manager
+from djpcms.contrib.flowrepo.managers import source_interactive
 from djpcms.contrib.flowrepo.utils import encrypt, decrypt, nicetimedelta
 from djpcms.contrib.flowrepo import settings
 
@@ -68,7 +69,7 @@ class FlowItem(FlowItemBase):
     url             = models.CharField(blank=True, max_length=1000)
     visibility      = models.IntegerField(choices=visibility_choices, default=3)
     tags            = TagField(max_length=2500, blank = True)
-    allow_comments  = models.BooleanField(_('allow comments'), default=True)
+    allow_comments  = models.BooleanField(_('allow comments'), default=False)
     
     # Metadata about where the object "came from"
     source       = models.CharField(max_length=100, blank=True, editable = False)
@@ -248,11 +249,6 @@ class Category(SlugBase):
 class Report(SlugBase):
     description = models.TextField(_('abstract'),blank=True)
     body        = models.TextField(_('body'),blank=True)
-    #markup      = models.CharField(max_length=3,
-    #                               choices=markups.choices(),
-    #                               default=markups.default(),
-    #                               editable=settings.FLOWREPO_SHOW_MARKUP_CHOICE,
-    #                               blank=True)
     parent      = models.ForeignKey('self',
                                     null = True,
                                     blank = True,
@@ -277,7 +273,9 @@ class Bookmark(SlugBase):
     '''
     url           = models.URLField(max_length=1000)
     extended      = models.TextField(blank=True)
-    thumbnail     = models.ImageField(upload_to = uploader, blank=True)
+    thumbnail     = models.ImageField(upload_to = uploader('bookmark'),
+                                      storage = storage_manager('bookmark'),
+                                      blank=True)
     thumbnail_url = models.URLField(blank=True, verify_exists=False, max_length=1000)
     
     def representation(self):
@@ -315,8 +313,8 @@ class Image(UploadBase):
     elem        = models.ImageField(_('image'),
                                     help_text = _('upload an image. If set remote url is ignored'),
                                     blank = True,
-                                    upload_to = uploader,
-                                    storage = storage_manager('IMAGE'))
+                                    upload_to = uploader('image'),
+                                    storage = storage_manager('image'))
 
 
 class Gallery(SlugBase):
@@ -341,8 +339,9 @@ class Attachment(UploadBase):
     elem        = models.FileField(_('attachment'),
                                    help_text = _('upload an attachment. If set remote url is ignored'),
                                    blank = True,
-                                   upload_to = uploader,
-                                   storage = storage_manager('ATTACHMENT'))
+                                   upload_to = uploader('attachment'),
+                                   storage = storage_manager('attachment'))
+    
     
 class Message(models.Model):
     """

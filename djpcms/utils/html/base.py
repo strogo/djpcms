@@ -1,5 +1,5 @@
 from djpcms.conf import settings
-from djpcms.template import loader, Context, mark_safe, conditional_escape
+from djpcms.template import loader, mark_safe, conditional_escape
 from djpcms.utils.collections import OrderedDict
 from djpcms.forms import Media
 from djpcms.utils import UnicodeObject

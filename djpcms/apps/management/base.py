@@ -8,6 +8,7 @@ import os
 import sys
 from optparse import make_option, OptionParser
 
+import djpcms
 from djpcms.core.exceptions import ImproperlyConfigured, CommandError
 
 
@@ -116,9 +117,6 @@ class BaseCommand(object):
     requires_model_validation = True
     output_transaction = False # Whether to wrap the output in a "BEGIN; COMMIT;"
 
-    def __init__(self):
-        self.style = color_style()
-
     def get_version(self):
         """
         Return the Django version, which should be correct for all
@@ -126,7 +124,7 @@ class BaseCommand(object):
         override this method.
 
         """
-        return django.get_version()
+        return djpcms.get_version()
 
     def usage(self, subcommand):
         """

@@ -27,8 +27,7 @@ def get_tests():
         loc = os.path.split(dirpath)[1]
         for d in os.listdir(dirpath):
             if os.path.isdir(join(dirpath,d)):
-                tests.append((loc,d))
-    return tests
+                yield (loc,d)
 
 
 def import_tests(tags,apps):

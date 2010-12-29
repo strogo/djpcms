@@ -1,14 +1,18 @@
+import sys
+import logging
 from datetime import datetime
 
-from django import http
 from django.utils.dateformat import format
 from djpcms.contrib import messages
 from django.utils.translation import ugettext_lazy as _
 
+from djpcms import http
 from djpcms.utils.html import submit
 from djpcms.utils import force_str
 from djpcms.utils.ajax import jredirect, jremove
 
+
+logger = logging.getLogger('djpcms.forms')
 
 get_next = lambda request, name = "next" : request.POST.get(name,request.GET.get(name,None))
 
@@ -197,6 +201,10 @@ def saveform(djp, editing = False, force_redirect = False):
             msg      = smsg(instance, 'changed' if editing else 'added')
             f.add_message(request, msg)
         except Exception, e:
+            exc_info = sys.exc_info()
+            logger.error('Form Error: %s' % request.path,
+                         exc_info=exc_info,
+                         extra={'request':request})
             f.add_message(request,e,error=True)
             if is_ajax:
                 return f.json_errors()

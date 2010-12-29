@@ -74,7 +74,7 @@ def load_command_class(app_name, name):
 def get_commands():
     global _commands, settings
     if _commands is None:
-        _commands = dict([(name, 'djpcms.core') for name in find_commands(__path__[0])])
+        _commands = dict([(name, 'djpcms.apps') for name in find_commands(__path__[0])])
         apps = settings.INSTALLED_APPS
 
         # Find and load the management module for each installed app.

@@ -570,6 +570,17 @@
 	});
 	
 	$.djpcms.addDecorator({
+		id: 'taboverride',
+		description: "Override tab key to insert 4 spaces",
+		decorate: function($this,config) {
+			if($.fn.tabOverride) {
+				$.fn.tabOverride.setTabSize(4);
+				$('textarea.taboverride',$this).tabOverride(true);
+			}
+		}
+	});
+	
+	$.djpcms.addDecorator({
 		id:	"autocomplete",
 		description: "add ajax autocomplete to an input",
 		decorate: function($this,config) {

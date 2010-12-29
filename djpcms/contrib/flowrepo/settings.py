@@ -46,6 +46,6 @@ MARKUP_CONFIG = {'rst':restmarkup,
 
 #LATEX SETTINGS
 curdir = os.path.join(os.path.dirname(__file__),'markups','latex','workspace')
-LATEX_PYTHON_PATH      = getattr(settings,'LATEX_CLASSES_PATH',os.path.join(curdir,'src'))
-LATEX_TEMPLATE_PATH    = getattr(settings,'LATEX_CLASSES_PATH',os.path.join(curdir,'render'))
-LATEX_TEX_PATH         = getattr(settings,'LATEX_CLASSES_PATH',os.path.join(curdir,'tex'))
+LATEX_PYTHON_PATH = getattr(settings,'LATEX_CLASSES_PATH',os.path.join(curdir,'src'))
+LATEX_TEMPLATE_PATH = getattr(settings,'LATEX_CLASSES_PATH',os.path.join(curdir,'render'))
+LATEX_TEX_PATH = getattr(settings,'LATEX_CLASSES_PATH',os.path.join(curdir,'tex'))

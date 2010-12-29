@@ -1,0 +1,34 @@
+{% extends "medplate/elem.css_t" %}
+
+{% block body %}
+{{ tag }} {
+    padding: 2px;
+}
+
+{{ tag }} .hd {
+	padding:6px 12px;
+	margin: 0;
+	border: none;
+	min-height: 8px;
+	overflow:hidden;
+	background: {{ box.hd.background }};
+}
+{{ tag }} .hd h2 {
+	float: left;
+	margin:0;
+	padding:0;
+	font-size:1em;
+	font-weight:normal;
+	text-transform:uppercase;
+}
+{{ tag }}.collapsed .bd {
+	display: none;
+}
+
+{{ tag }}.edit-block .hd {
+	cursor: move;
+}
+{{ tag }}.edit-block .ft {
+	margin-top: 2px;
+}
+{% endblock %}

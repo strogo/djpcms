@@ -3,55 +3,50 @@ Image upload function
 '''
 import os
 
-from django.core.files.storage import FileSystemStorage
+from djpcms.conf import settings
+
+from django.utils.functional import LazyObject
+from django.core.files.storage import get_storage_class
 
 from djpcms.utils import function_module, safepath
 
 
-def _default_uploads(obj, name):
+def _default_uploads(obj, name, model):
     '''
-    Default function for editing permissions
+    Default UPLOAD FUNCTIONS
     '''
-    path = 'images'
-    if obj.path:
-        obj.path = safepath(obj.path)
-        if obj.path:
-            path = os.path.join(path,obj.path)
-    return os.path.join(path,name)
+    return os.path.join(model,name)
 
 
+class uploader(object):
+    
+    def __init__(self, model):
+        self.model = model.lower()
+        self._func = None
+    
+    def __call__(self, obj, name):
+        if not self._func:
+            model = self.model.upper()
+            sname =  getattr(settings,'ULOADER_FUNCTION_{0}'.format(model),None)
+            if sname:
+                func = function_module(sname,_default_uploads)
+            else:
+                func = _default_uploads
+            self._func = func
+        return self._func(obj,name,self.model)
+    
+    
+class storage_manager(LazyObject):
+    '''Lazy class for setting flowitem storge'''
+    def __init__(self, model):
+        self.__dict__['model'] = model
+        super(storage_manager,self).__init__()
+        
+    def _setup(self):
+        model = self.model.upper()
+        SETMOD = 'STORAGE_MANAGER_{0}'.format(model)
+        self._wrapped = get_storage_class(getattr(settings,SETMOD,None))()
+        
 
-def upload_function(obj, name):
-    from djpcms.settings import DJPCMS_IMAGE_UPLOAD_FUNCTION
-    if DJPCMS_IMAGE_UPLOAD_FUNCTION:
-        func = function_module(DJPCMS_IMAGE_UPLOAD_FUNCTION,_default_uploads)
-        try:
-            return func(obj, name)
-        except:
-            return _default_uploads(obj, name)
-    else:
-        return _default_uploads(obj, name)
-    
-    
-def _default_style(request):
-    from djpcms.conf import settings
-    style = settings.DJPCMS_STYLE
-    if style:
-        return {'all':['djpcms/jquery-ui-css/%s/jquery-ui.css' % style,
-                       'djpcms/tablesorter/themes/%s/style.css' % style,
-                       'djpcms/themes/%s.css' % style]}
-    
-def apply_styling(request):
-    from djpcms.conf import settings
-    if settings.DJPCMS_STYLING_FUNCTION:
-        func = function_module(settings.DJPCMS_STYLING_FUNCTION,_default_style)
-        try:
-            return func(request)
-        except:
-            return _default_style(request)
-    else:
-        return _default_style(request)
-    
-    
-def site_image_storage():
-    return FileSystemStorage()
+
+        

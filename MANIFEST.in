@@ -17,8 +17,7 @@ include djpcms/contrib/jdep/README.rst
 include djpcms/contrib/jdep/tests/requirements.txt
 recursive-include docs/source/_ext *
 recursive-include docs/source *.txt
-recursive-include tests/regression/media *
-recursive-include tests/regression/template *
+recursive-include tests *
 recursive-include djpcms/templates *
 recursive-include djpcms/tests/templates *
 recursive-include djpcms/media *

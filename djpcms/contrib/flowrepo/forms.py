@@ -1,7 +1,6 @@
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
-
-from tagging.forms import TagField
+from djpcms.views.apps.tagging import TagField
 
 from djpcms import forms
 from djpcms.utils import json
@@ -35,6 +34,7 @@ class FlowForm(forms.ModelForm):
     '''General form for a flowitem'''
     _underlying = None
     timestamp = forms.DateTimeField(required = False)
+    tags      = TagField(required = False)
     
     def __init__(self, *args, **kwargs):
         self._user = kwargs.pop('user',None)
@@ -93,8 +93,8 @@ class ReportForm(FlowFormRelated):
     '''The Report Form'''
     _underlying = models.Report
     title = forms.CharField()
-    abstract = forms.CharField(widget = forms.Textarea, required = False)
-    body  = forms.CharField(widget = forms.Textarea, required = False)
+    abstract = forms.CharField(widget = forms.Textarea(attrs = {'class':'taboverride'}), required = False)
+    body  = forms.CharField(widget = forms.Textarea(attrs = {'class':'taboverride'}), required = False)
     slug  = forms.CharField(required = False)
     
     class Meta:
@@ -174,6 +174,7 @@ class WebAccountForm(forms.ModelForm):
     email    = forms.EmailField(required = False)
     pin      = forms.CharField(required = False, max_length = 200)
     extended = forms.CharField(required = False)
+    tags     = TagField(required = False)
     
     def __init__(self, **kwargs):
         request = kwargs.get('request',None)

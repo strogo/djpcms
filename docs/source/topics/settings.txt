@@ -103,28 +103,6 @@ default: ``True``
 if ``False`` sitemap won't be added to the urls.
 
 
-.. setting:: DJPCMS_STYLING_FUNCTION
-
-DJPCMS_STYLING_FUNCTION
----------------------------
-
-default: ``None``
-
-A python dotted path to a styling function which takes ``request``
-as the only parameter.
-
-
-.. settings:: DJPCMS_STYLE
-
-DJPCMS_STYLE
--------------------
-
-Default: ``'smooth'``
-
-Css style to be included in pages. If you don't want to include any styling from ``djpcms`` set the value to ``None``.
-
-
-
 .. setting:: ENABLE_BREADCRUMBS
 
 ENABLE_BREADCRUMBS

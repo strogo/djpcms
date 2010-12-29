@@ -1,0 +1,30 @@
+{% extends "medplate/elem.css_t" %}
+
+{% block body %}
+
+{{ tag }} {
+	margin-bottom: 10px;
+}
+{{ tag }} dl {
+	overflow: hidden;
+	margin: 5px 0 0; 
+}
+{{ tag }} dl:first-child {
+	margin-top:0;
+}
+{{ tag }} dl dt {
+	opacity: 0.6;
+	float: left;
+	width: 30%;
+	margin: 0;
+}
+{{ tag }} dl dd {
+	margin: 0;
+}
+{{ tag }}.w40 dl dt {
+	width: 40%;
+}
+{{ tag }}.w50 dl dt {
+	width: 50%;
+}
+{% endblock %}

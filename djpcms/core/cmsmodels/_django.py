@@ -23,7 +23,7 @@ from djpcms.fields import SlugCode
 from djpcms.plugins import get_wrapper, default_content_wrapper, get_plugin
 from djpcms.utils import lazyattr, function_module, force_str, htmltype
 from djpcms.utils.func import PathList
-from djpcms.uploads import upload_function, site_image_storage
+from djpcms.uploads import uploader, storage_manager
 import djpcms.contrib.flowrepo.markups as markuplib
 
 from .djmanagers import PageManager, BlockContentManager, SiteContentManager, PermissionManager
@@ -46,7 +46,9 @@ class TimeStamp(models.Model):
 class InnerTemplate(TimeStamp):
     '''Page Inner template'''
     name     = models.CharField(max_length = 200)
-    image    = models.ImageField(upload_to = upload_function, storage = site_image_storage(), null = True, blank = True)
+    image    = models.ImageField(upload_to = uploader('template'),
+                                 storage = storage_manager('template'),
+                                 null = True, blank = True)
     template = models.TextField(blank = True)
     blocks   = models.TextField(help_text = _('comma separated strings indicating the content blocks'))
         

@@ -2,7 +2,6 @@ from copy import copy
 
 from djpcms.conf import settings
 from djpcms import http
-from djpcms.uploads import apply_styling
 from djpcms.utils.ajax import jredirect, jhtmls
 from djpcms.template import loader, Template, Context, RequestContext, mark_safe
 from djpcms.utils import lazyattr
@@ -211,9 +210,6 @@ class DjpResponse(http.HttpResponse):
         if more_context:
             d.update(more_context)
         media = self.media
-        style = apply_styling(self.request)
-        if style:
-            media.add_css(style)
         sitenav = Navigator(self,
                             classes = css.main_nav,
                             levels = settings.SITE_NAVIGATION_LEVELS)

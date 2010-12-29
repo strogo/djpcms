@@ -1,9 +1,11 @@
 import os
+import time
 from docutils.core import publish_parts
 
 from sphinx.application import Sphinx
 
 import djpcms
+from djpcms.utils import gen_unique_id
 from djpcms.contrib.flowrepo.markups import application
 from .builders import SingleStringHTMLBuilder
 
@@ -36,13 +38,19 @@ class Application(object):
                     self.outdir,
                     self.srcdir,SingleStringHTMLBuilder.name)
         sx.media_url = self.media_url
-        fname = os.path.join(self.srcdir,'contents.rst')
+        master_doc = gen_unique_id()
+        mc = (master_doc,'env')
+        sx.config.values['master_doc'] = mc
+        sx.config.config_values['master_doc'] = mc
+        fname = os.path.join(self.srcdir,'{0}.rst'.format(master_doc))
+        fdoc = os.path.join(self.srcdir,'{0}.doctree'.format(master_doc))
         f = open(fname,'w')
         f.write(text)
         f.close()
         sx.build(force_all=True)
         res = sx.builder.docwriter.parts['fragment']
         os.remove(fname)
+        os.remove(fdoc)
         return res
     
     

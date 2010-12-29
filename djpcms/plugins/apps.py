@@ -166,9 +166,12 @@ class ObjectLinks(DJPplugin):
             exclude = exclude.split(',')
             links = djp.view.appmodel.object_links(djp,djp.instance, asbuttons=asbuttons, exclude=exclude)
             links['layout'] = layout
-            return loader.render_to_string(['bits/editlinks.html',
-                                            'djpcms/bits/editlinks.html'],
-                                            links)
+            if links['geturls'] or links['posturls']:
+                return loader.render_to_string(['bits/editlinks.html',
+                                                'djpcms/bits/editlinks.html'],
+                                                links)
+            else:
+                return u''
         except:
             return u''
     

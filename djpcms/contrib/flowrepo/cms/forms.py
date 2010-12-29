@@ -22,11 +22,6 @@ __all__ = ['FlowForm','NiceWebAccountForm','NiceUloaderForm','NiceReportForm']
 
 
 
-def AutocompleteTagField(required = False):
-    wg = AutocompleteManyToManyInput(Tag, ['name'], separator = ' ', inline = True)
-    return TagField(required = required, widget = wg)
-
-
 #_________________________________________________________ UNIFORMS
 
 class NiceWebAccountForm(WebAccountForm):
@@ -38,7 +33,6 @@ class NiceWebAccountForm(WebAccountForm):
     
     
 class NiceUloaderForm(UploadForm):
-    tags         = TagField(required = False)
     
     layout = FormLayout(Fieldset('visibility', 'tags', 'name', css_class = inlineLabels),
                                  Fieldset('elem','description', css_class = blockLabels2),
@@ -47,7 +41,6 @@ class NiceUloaderForm(UploadForm):
     
 class NiceReportForm(ReportForm):
     authors  = forms.ModelMultipleChoiceField(User.objects.all(), required = False)
-    tags         = TagField(required = False)
     related_items = forms.ModelMultipleChoiceField(queryset = FlowItem.objects.all(),
                                                    required = False,
                                                    label = 'Connect the write-up with other items')
@@ -73,5 +66,7 @@ class NiceReportForm(ReportForm):
                     
                              template = 'flowrepo/report-form-layout.html')
 
+    class Media:
+        js = ('djpcms/taboverride.js',)
 
     

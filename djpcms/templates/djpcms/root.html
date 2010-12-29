@@ -12,8 +12,6 @@
 {{ head|safe }}{% endfor %}{% endif %}
 <!--  STYLING -->{% compress_if_you_can css %}{% block style-reset %}
 {% include "djpcms/bits/reset.html" %}{% endblock %}{% block extrastyle %}
-<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/djpcms.css"/>
-<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/uni-form.css"/>
 <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}djpcms/jquery-autocomplete/jquery.autocomplete.css"/>{% if media %}{% for css in media.render_css %}
 {{ css|safe }}{% endfor %}{% endif %}{% endblock %}
 <style type="text/css">{% block body-extra-style %}{% endblock %}

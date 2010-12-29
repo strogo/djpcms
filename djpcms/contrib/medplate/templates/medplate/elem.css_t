@@ -1,0 +1,51 @@
+/*
+-----------------------------------------------
+{{ description }}
+----------------------------------------------- */
+{% block include-media %}{% endblock %}
+
+{{ tag }} {
+	background: {{ background }};
+	color: {{ color }};
+	-x-system-font:none;	
+	font-family:{{ font_family }};
+	font-size:{{ font_size }};
+	font-size-adjust:none;
+	font-stretch:normal;
+	font-style:{{ font_style }};
+	font-variant:normal;
+	font-weight:{{ font_weight }};
+	text-align: {{ text_align }};{% if overflow %}
+	overflow: {{ overflow }};{% endif %}{% if display %}
+	display: {{ display }};{% endif %}{% if height %}
+	height: {{ height }};{% endif %}{% if width %}
+	width: {{ width }};{% endif %}{% if padding %}
+	padding: {{ padding }};{% endif %}{% if float %}
+	float: {{ float }};{% endif %}{% if margin %}
+	margin: {{ margin }};{% endif %}{% if position %}
+	position: {{ position }};{% endif %}{% if radius %}
+	-webkit-border-radius: {{ radius }};
+	-moz-border-radius: {{ radius }};
+	border-radius: {{ radius }};{% endif %}{% if radius_top_left %}
+	-webkit-border-top-left-radius: {{ radius_top_left }};
+	-moz-border-radius-topleft: {{ radius_top_left }};
+	border-top-right-radius: {{ radius_top_right }};{% endif %}{% if radius_top_right %}
+	-webkit-border-top-right-radius: {{ radius_top_right }};
+	-moz-border-radius-topright: {{ radius_top_right }};
+	border-bottom-right-radius: {{ radius_bottom_right }};{% endif %}{% if radius_bottom_left %}
+	-webkit-border-bottom-left-radius: {{ radius_bottom_left }};
+	-moz-border-radius-bottomleft: {{ radius_bottom_left }};
+	border-bottom-right-radius: {{ radius_bottom_right }};{% endif %}{% if radius_bottom_right %}
+	-webkit-border-bottom-right-radius: {{ radius_bottom_right }};
+	-moz-border-radius-bottomright: {{ radius_bottom_right }};
+	border-bottom-right-radius: {{ radius_bottom_right }};{% endif %}
+}
+
+{% block body %}
+{% endblock %}
+
+{% for elem in elems %}
+{{ elem }}
+{% endfor %}
+
+{% block end-layout %}{% endblock %}

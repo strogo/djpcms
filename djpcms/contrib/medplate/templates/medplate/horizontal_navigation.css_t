@@ -1,0 +1,121 @@
+{% extends "medplate/elem.css_t" %}
+
+{% block body %}
+{% block nav-container %}
+.nav-container {
+	width: 100%;
+	text-align: {{ text_align }}; 
+}
+{% endblock %}
+
+/* level 3+ list */
+{{ tag }} ul ul {
+	position:relative !important;
+	left: 12em;
+	top: 0;
+}
+{{ tag }} li,
+{{ tag }} li a {
+	height:{{ height }};
+	line-height:{{ height }};
+	border:0;
+}
+{{ tag }} li a {
+	text-decoration:none;
+	display:block;
+	float:left;
+	padding:{{ anchor_padding }};
+}
+{{ tag }} li {
+	-webkit-border-radius: {{ inner_radius }};
+	-moz-border-radius: {{ inner_radius }};
+}
+{{ tag }} li ul {top: {{ height }};}
+{{ tag }} li ul li,
+{{ tag }} li ul li a {
+	width: {{ secondary_width }};
+	line-height:2em;
+	height:2em;
+	text-align:left;
+}
+{{ tag }} li:hover {
+	background: {{ hover_background }};
+}
+{% if selected_background %}
+{{ tag }} li.selected {
+	background: {{ selected_background }};
+}{% endif %}
+{% if selected_color %}
+{{ tag }} li.selected a {
+	color: {{ selected_color }};
+}{% endif %}
+ 
+/* navigation (horizontal subnavigation)
+----------------------------------------------- */
+{{ tag }} li:hover > ul {
+	background: {{ hover_background }};
+	display: block;
+}
+{{ tag }} ul {
+	display: none;
+}
+{{ tag }} li {
+    cursor:pointer;
+    float:left;
+    text-align:center;
+    list-style-type:none;
+    font-weight:normal;
+}
+{{ tag }} li ul {
+	cursor: default;
+	position: absolute;
+	width: auto;
+	height: auto;
+}
+{{ tag }} li ul li {
+	padding:0;
+	border:none;
+	width:auto;
+	max-width:none;
+}
+{{ tag }} li ul li a {
+	cursor:pointer !important;
+	white-space:nowrap;
+	font-weight:normal;
+	/*background-position:0 50% !important;*/
+}
+/*
+{{ tag }} li:hover ul {left:0;z-index:10} 
+{{ tag }} li.current a {cursor:default; font-weight:bold;}
+{{ tag }} li.current ul {left:0;z-index:5}
+{{ tag }} li.current ul li a {font-weight:normal;}*/
+
+/* navigation (vertical subnavigation)
+----------------------------------------------- */
+{{ tag }} li {
+  	position:relative;
+  	top:0;
+  	left:0;
+}
+/* secondary list
+----------------------------------------------- */
+{{ tag }} li.secondary {
+	float:right;
+	background:transparent !important;
+}
+{{ tag }} li.secondary span.status {
+	float:left;
+	padding:0 1em;
+	line-height:2.77em;
+	height:2.77em;
+	font-size:0.9em;
+}
+{{ tag }} li.secondary span.status a {
+	float:none;
+	display:inline;
+	padding:0;
+	height:auto;
+	line-height:auto;
+	background:transparent;
+}
+{% endblock %}

@@ -40,12 +40,6 @@ TagApplication
 ~~~~~~~~~~~~~~~~~~~~~
 This is a :class:`djpcms.views.appsite.ModelApplication` which implements a tag view.
 
-.. admonition:: Dependencies:
-
-    If you want to use the tagging applications you need to install django-tagging__.
-    
-__ http://code.google.com/p/django-tagging/
-
 
 .. _tag-autocomplete:
 

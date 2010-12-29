@@ -16,11 +16,11 @@ class simplediv(DJPwrapper):
             return u''
 
 class PannelWrapper(DJPwrapper):
-    name = 'pannel'
+    name = 'panel'
     def wrap(self, djp, cblock, html):
         if html:
             id = cblock.htmlid()
-            return mark_safe(u'\n'.join(['<div id="%s" class="flat-pannel">' % id,
+            return mark_safe(u'\n'.join(['<div id="%s" class="flat-panel">' % id,
                                          html,
                                          '</div>']))
         else:

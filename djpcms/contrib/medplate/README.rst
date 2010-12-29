@@ -1,5 +1,23 @@
-MedPlate
-=========================================
+
+A library for Creating media files and compress them.
+
+
+Creating css files
+==========================
+
+* Add a ``style.py`` python module within your site directory. Add the context::
+
+	from djpcms.contrib.medplate.themes.allwhite import context as base_context
+
+	context = base_context.copy()
+	
+	# Edit your context
+
+* Add a ``layout.css`` file within your site templates directory.
+
+
+Compress
+==============
 
 Compresses linked and inline javascript or CSS templates into a single cached file.
 

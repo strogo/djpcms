@@ -100,6 +100,7 @@ class FlowItemApplication(ArchiveTaggedApplication):
     add              = FlowAddView(parent = 'applications')
     view             = appview.ViewView(regex = slug_regex, parent = 'applications')
     edit             = FlowEditView()
+    delete           = appview.DeleteView()
 
     class Media:
         css = {'all': ('flowrepo/flowrepo.css',)}

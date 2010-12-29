@@ -61,15 +61,6 @@ def function_module(dotpath, default = None):
     else:
         return default
     
-
-def safepath(path, rtx = '-'):
-    rpath = path.split('/')
-    bits = []
-    for p in rpath:
-        if p:
-            bits.append(slugify(p, rtx = rtx))
-    return '/'.join(bits)
-    
     
 def lazyattr(f):
     
@@ -83,11 +74,32 @@ def lazyattr(f):
             return v
     return wrapper
 
+
+class lazyjoin(object):
+    
+    def __init__(self, sep):
+        self.sep = sep
+        
+    def __call__(self, f):
+        
+        def _(obj, *args, **kwargs):
+            return self.sep.join(f(*args,**kwargs))
+        
+        return _
+        
+
 def setlazyattr(obj,name,value):
     name = '_lazy_%s' % name
     setattr(obj,name,value)
     
     
+@lazyjoin('/')
+def safepath(path, rtx = '-'):
+    for p in path.split('/'):
+        if p:
+            yield slugify(p, rtx = rtx)
+
+
 def urlbits(url):
     if url.endswith('/'):
         url = url[:-1]

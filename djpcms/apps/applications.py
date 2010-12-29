@@ -2,6 +2,11 @@ import os
 import sys
 
 
+__all__ = ['MakeSite',
+           'get_site',
+           'get_url']
+
+
 def MakeSite(name, settings = 'settings', clearlog = True):
     '''Initialise DjpCms from a directory or a file'''
     import djpcms
@@ -31,6 +36,14 @@ def MakeSite(name, settings = 'settings', clearlog = True):
     # IMPORTANT! NEED TO IMPORT HERE TO PREVENT DJANGO TO IMPORT FIRST
     from djpcms.conf import settings
     settings.SITE_DIRECTORY = path
+    settings.SITE_MODULE = name
+    
+    # Add template media directory to template directories
+    path = os.path.join(djpcms.__path__[0],'media','djpcms')
+    if path not in settings.TEMPLATE_DIRS:
+        settings.TEMPLATE_DIRS += path,
+    
+    
     djpcms.init_logging(clearlog)
     return get_site()
     

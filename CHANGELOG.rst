@@ -16,7 +16,7 @@ Version 0.9.0 - Development
 * Injecting the instance or ``None`` of current ``url`` into ``request`` object.
 * Added more docs on views and applications.
 * Added :mod:`djpcms.contrib.social` application with ``OAuth``. Still in ``alpha``.
-* **67 unit tests**. Coverage **51%**.
+* **69 unit tests**. Coverage **51%**.
 
 Version 0.8.5 (2010-Nov-16)
 =======================================
