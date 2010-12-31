@@ -1,18 +1,20 @@
+from copy import copy
 import logging
 from datetime import datetime
 
-from django import http
-from django.contrib import messages
-from django.contrib.auth import authenticate, login
-
 from djpcms.conf import settings
 import djpcms.contrib.social.providers
+from djpcms import http, get_site
+from djpcms.plugins import DJPplugin, get_plugin
+from djpcms.contrib import messages
 from djpcms.views import appview
 from djpcms.template import loader
 from djpcms.views.apps.user import UserApplication
 from djpcms.views.decorators import deleteview
 from djpcms.contrib.social import provider_handles, client
 from djpcms.contrib.social.models import LinkedAccount
+
+from django.contrib.auth import authenticate, login
 
 
 def getprovider(djp):
@@ -30,12 +32,12 @@ class SocialView(appview.ModelView):
     def render(self, djp):
         user = djp.request.user
         if not user.is_authenticated() or not user.is_active:
-            return u''
+            return ''
         provider = self.provider(djp)
         if not provider:
             return self.render_all(djp)
         else:
-            pass
+            return ''
         
     def render_all(self, djp):
         '''Render all linked and non-linked providers'''
@@ -177,11 +179,44 @@ class SocialLoginDoneView(SocialView):
             acc = LinkedAccount(user = user, provider = str(provider), token_date = datetime.now(),
                                 token = token.key, secret = token.secret)
             acc.save()
-        return acc
+        return acc            
             
 
-class SocialActionView(appview.ModelView):
-    pass
+class SocialActionView(SocialView):
+    
+    def get_auth(self, djp):
+        user = djp.request.user
+        if user.is_authenticated() and user.is_active:
+            provider = self.provider(djp)
+            social = user.linked_accounts.filter(provider = str(provider))
+            if social:
+                social = social[0]
+            else:
+                return None
+            return provider.authtoken((social.token,social.secret))
+    
+    def default_post(self, djp):
+        user = djp.request.user
+        if user.is_authenticated() and user.is_active:
+            provider = self.provider(djp)
+            social = user.linked_accounts.filter(provider = str(provider))
+            if social:
+                social = social[0]
+            else:
+                return self.error_post('Could not authenticate user')
+                
+            name = '{0}/{1}'.format(provider,djp.getdata('action'))
+            plugin = get_plugin(name)
+            if not plugin:
+                return self.error_post('Could not find plugin {0}'.format(name))
+            api  = provider.authenticated_api(social.token,social.secret)
+            return plugin.handle_post(djp, api, social)
+
+    def error_post(self, djp, msg):
+        if djp.request.is_ajax():
+            return jerror(msg)
+        else:
+            return self.handle_response(djp)
 
 
 def deletesocial(djp):
@@ -189,18 +224,43 @@ def deletesocial(djp):
     c.delete()
         
 
-
-
 class SocialUserApplication(UserApplication):
+    '''Extend user application with AOUTH and social actions'''
     inherit = True
-    social_home   = SocialView(regex = '(?P<provider>[-\.\w]+)', parent = 'home', isplugin = True)
+    name          = 'account'
+    social_home   = SocialView(regex = '(?P<provider>[-\.\w]+)',
+                               parent = 'home',
+                               isplugin = True)
     social_login  = SocialLoginView(regex = 'login', parent = 'social_home')
     social_done   = SocialLoginDoneView(regex = 'done', parent = 'social_login')
     social_delete = deleteview(deletesocial, parent = 'social_home')
     social_action = SocialActionView(regex = '(?P<action>[-\.\w]+)',
                                      parent = 'social_home',
                                      isapp = False,
-                                     isplugin = True,
+                                     isplugin = False,
                                      form_withrequest = True,
                                      form_ajax = True)
+    
+
+class SocialActionPlugin(DJPplugin):
+    provider_name = None
+    action_name = None
+    
+    def get_view(self, djp):
+        site = get_site(djp.request.path)
+        return site.getapp('account-social_action')
+        
+    def render(self, djp, wrapper, prefix, **kwargs):
+        view = self.get_view(djp)
+        viewdjp = view(djp.request, provider = self.provider_name, action = self.action_name)
+        return self._render(viewdjp)
+    
+    def _render(self, djp):
+        return ''
+        
+    def _register(self):
+        if self.action_name and self.provider_name:
+            self.name = '{0}/{1}'.format(self.provider_name,self.action_name)
+            super(SocialActionPlugin,self)._register()
+    
     

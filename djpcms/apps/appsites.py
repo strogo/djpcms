@@ -1,27 +1,29 @@
 from djpcms.core.exceptions import DjpcmsException, AlreadyRegistered
-from djpcms.views.appsite.applications import Application, ModelApplication
+from djpcms.views.appsite import Application, ModelApplication
 from djpcms.utils.collections import OrderedDict
-from djpcms import siteapp_choices
+from djpcms.core.urlresolvers import SiteResolver
 
 
-class ApplicationSite(object):
+class ApplicationSite(SiteResolver):
     '''
     Application site manager
-    An instance of this class is used as singletone to handle url of
-    registered django applications.
+    An instance of this class is used to handle url of
+    registered applications.
     '''
-    def __init__(self):
-        from djpcms.conf import settings
-        self.settings      = settings
-        self.editavailable = settings.CONTENT_INLINE_EDITING.get('available',False)
-        self.editurl       = settings.CONTENT_INLINE_EDITING.get('preurl','/edit/')
-        self._registry     = {}
+    def __init__(self, url, config):
+        self.url = url
+        self.config = config
+        self.settings = config
+        self.editavailable = config.CONTENT_INLINE_EDITING.get('available',False)
+        self.editurl  = config.CONTENT_INLINE_EDITING.get('preurl','/edit/')
+        self._registry = {}
         self._nameregistry = OrderedDict()
-        self.choices       = siteapp_choices
-        self.isloaded      = False
+        self.choices = [('','-----------------')]
+        self.isloaded = False
+        self.ModelApplication = ModelApplication
         
     def load_initial(self):
-        baseurl = self.settings.CONTENT_INLINE_EDITING.get('pagecontent', '/content/')
+        baseurl = self.config.CONTENT_INLINE_EDITING.get('pagecontent', '/content/')
         from djpcms.views.apps.contentedit import ContentSite, BlockContent
         self.register(ContentSite(baseurl, BlockContent, editavailable = False))
         
@@ -69,6 +71,7 @@ application class which has been unregistered.'''
         del self.choices[1:]
         self._nameregistry.clear()
         self._registry.clear()
+        self._urls = None
         self.isloaded = False
             
     def for_model(self, model):
@@ -98,17 +101,18 @@ returns the application handler. If the appname is not available, it raises a Ke
     def count(self):
         return len(self._registry)
             
-    def get_urls(self):
-        from django.conf.urls.defaults import url
-        urls = ()
-        # Add in each model's views.
-        for app in self._nameregistry.values():
-            baseurl = app.baseurl
-            if baseurl:
-                urls += url(regex = '^%s(.*)' % baseurl[1:],
-                            name = app.name,
-                            view = app),
-        return urls    
+    def urls(self):
+        urls = getattr(self,'_urls',None)
+        if urls is None:
+            from django.conf.urls.defaults import url
+            urls = ()
+            # Add in each model's views.
+            for app in self._nameregistry.values():
+                baseurl = app.baseurl
+                if baseurl:
+                    urls += url(regex = '^{0}(.*)'.format(baseurl[1:]),
+                                name = app.name,
+                                view = app),
+            self._urls = urls
+        return urls
         
-        
-site = ApplicationSite()

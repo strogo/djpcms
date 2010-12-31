@@ -236,7 +236,7 @@ which handle the response'''
             
                 try:
                     res  = ajax_view_function(djp)
-                except Exception, e:
+                except Exception as e:
                     # we got an error. If in debug mode send a JSON response with
                     # the error message back to javascript.
                     if settings.DEBUG:
@@ -329,7 +329,7 @@ If we didn't do that, test_navigation.testMultiPageApplication would fail.'''
         for child in pchildren:
             try:
                 cview = pagecache.view_from_page(request, child)
-            except Exception, e:
+            except Exception as e:
                 continue
             if cview.has_permission(request, child, instance):
                 cdjp = cview(request, **cview.specialkwargs(child,kwargs))

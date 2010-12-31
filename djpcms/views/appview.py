@@ -231,11 +231,17 @@ Usage::
         '''True if this application view represents the root view of the application.'''
         return self.appmodel.root_application is self
     
-    def get_form(self, djp, **kwargs):
+    def get_form(self, djp,
+                 form = None,
+                 form_withrequest = None,
+                 form_ajax = None,
+                 **kwargs):
+        form_withrequest = form_withrequest if form_withrequest is not None else self._form_withrequest
+        form_ajax = form_ajax if form_ajax is not None else self._form_ajax
         return self.appmodel.get_form(djp,
-                                      self._form,
-                                      form_withrequest = self._form_withrequest,
-                                      form_ajax = self._form_ajax,
+                                      form or self._form,
+                                      form_withrequest = form_withrequest,
+                                      form_ajax = form_ajax,
                                       **kwargs)
         
     def is_soft(self, djp):

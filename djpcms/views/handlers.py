@@ -1,21 +1,18 @@
 import re
 
-from djpcms.conf import settings
+from djpcms import sites, get_site
 from djpcms.http import Http404, HttpResponseRedirect
-from djpcms.views import appsite
 from djpcms.views.cache import pagecache
 from djpcms.views.response import DjpResponse 
-
 
 def djpcmsHandler(request, url):
     '''
     Fetch a static view or an application view
     '''
-    appsite.load()
+    sites.load()
     from django.core import urlresolvers
     
-    #url = clean_url('/{0}'.format(url))    Python 3.1
-    url = clean_url('/%s' % url)
+    url = clean_url('/{0}'.format(url))
     if isinstance(url,HttpResponseRedirect):
         return url, (), {}
     
@@ -24,6 +21,11 @@ def djpcmsHandler(request, url):
         view = pagecache.view_from_url(request, url)
         if view and not view.names():
             return view, (), {}
+    
+    try:
+        return sites(request, url) 
+    except Exception as e:
+        raise Http404
 
     resolver = urlresolvers.RegexURLResolver(r'^/', pagecache.build_app_urls(request))
     try:
@@ -62,7 +64,8 @@ def editHandler(request, url):
     view, args, kwargs = djpcmsHandler(request, url)
     if isinstance(view,HttpResponseRedirect):
         return view
-    view = editview(view, settings.CONTENT_INLINE_EDITING['preurl'])
+    site = get_site('/'+url)
+    view = editview(view, site.settings.CONTENT_INLINE_EDITING['preurl'])
     return view(request, **kwargs).response()
 
 

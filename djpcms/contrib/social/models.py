@@ -5,6 +5,7 @@ from .defaults import User
 
 
 class LinkedAccount(models.Model):
+    '''Stores authentication token and secret key for a linked account'''
     user       = models.ForeignKey(User, related_name = 'linked_accounts')
     tokendate  = models.DateTimeField()
     uid        = models.CharField(max_length=255)

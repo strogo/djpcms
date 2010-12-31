@@ -1,7 +1,8 @@
-from django.template import loader
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 
+from djpcms import get_site
+from djpcms.template import loader
 from djpcms.plugins import DJPplugin
 from djpcms import forms
 from djpcms.utils.html import htmlwrap, Paginator
@@ -45,13 +46,13 @@ class FlowItemSelection(DJPplugin):
                                         {'items': self.paginator(djp,pa)})
         
     def paginator(self, djp, pa):
-        from djpcms.views import appsite
-        appmodel  = appsite.site.for_model(FlowItem)
+        site      = get_site()
+        appmodel  = site.for_model(FlowItem)
         qs        = pa.qs
         for obj in qs:
             object    = obj.object
             model     = object.__class__
-            objmodel  = appsite.site.for_model(model) or appmodel
+            objmodel  = site.for_model(model) or appmodel
             if objmodel:
                 content = objmodel.object_content(djp, obj)
                 tname   = '%s_list_item.html' % model.__name__.lower()

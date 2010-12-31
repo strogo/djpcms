@@ -214,7 +214,7 @@ This is the function plugins need to implement.
 * *wrapper* :class:`DJPwrapper` instance which wraps the plugin.
 * *prefix* a prefix string or ``None`` to use for forms within the plugin.
 * *kwargs* plugin specific key-valued arguments.'''
-        return u''
+        return ''
     
     def save(self, pform):
         '''Save the form plugin'''

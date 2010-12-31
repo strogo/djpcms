@@ -19,18 +19,12 @@ __docformat__ = "restructuredtext"
 
 import os
 import sys
-from .apps import MakeSite, get_url, get_site
+from .apps import MakeSite, get_url, get_site, loadapps, get_urls, sites
 
 parent = lambda x : os.path.split(x)[0]
 this_dir = parent(os.path.abspath(__file__))
 path_dir = parent(this_dir)
 libs = []
-
-
-def get_site():
-    from djpcms.views.appsite import site
-    return site
-
 
 def install_lib(basepath, dirname, module_name):
     try:

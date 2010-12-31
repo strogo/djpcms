@@ -1,4 +1,6 @@
 from copy import deepcopy
+
+from djpcms import get_site
 from django.core.cache import cache
 from django.contrib.sites.models import Site
 from django.db.models import signals
@@ -36,11 +38,10 @@ class PageCache(object):
         return '%s:pagecache:url:%s' % (self.domain,url)
     
     def build_app_urls(self, request, force = True):
-        from djpcms.views import appsite
         session = self.session(request)
         b = session.get('application-urls-built',0)
         if not self.applications_url or (force and not b):
-            self.applications_url = appsite.site.get_urls()
+            self.applications_url = get_urls()
             session['application-urls-built'] = 1
         return self.applications_url
     
@@ -59,8 +60,9 @@ class PageCache(object):
         if docache:
             force = self._set_if_not(self.urlkey(page.url),page)
         if page.application_view:
-            self.build_app_urls(request, False)
-            view = appsite.site.getapp(page.application_view)
+            site = get_site(page.url)
+            #self.build_app_urls(request, False)
+            view = site.getapp(page.application_view)
             if not view:
                 raise Http404
         else:

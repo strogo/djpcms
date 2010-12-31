@@ -4,7 +4,7 @@ The application derives from the base appsite.ModelApplication
 and defines several subviews 
 '''
 from djpcms.conf import settings
-from djpcms import forms, http
+from djpcms import forms, http, get_site
 from djpcms.utils.translation import ugettext_lazy as _
 from djpcms.core.exceptions import PermissionDenied
 from djpcms.models import BlockContent
@@ -36,7 +36,7 @@ class content_view(object):
         '''
         request  = djp.request
         url      = djp.view.page_url(request)
-        appmodel = appsite.site.for_model(BlockContent)
+        appmodel = get_site(url).for_model(BlockContent)
         editview = appmodel.getview('edit')
         wrapper  = EditWrapperHandler(url)
         pos = 0

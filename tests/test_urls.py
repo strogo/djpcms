@@ -47,9 +47,11 @@ class DocTestApplication(DocApplication):
     
     
 #Register few applications for testing
-appsite.site.register('/content/', ContentArchiveApplication, model = SiteContent)
-appsite.site.register('/strategies/', StrategyApplication, model = Strategy)
-appsite.site.register('/docs/', DocTestApplication)
-appsite.site.register('/apps/nodb/', RandomApplication)
+appurls = (
+           ContentArchiveApplication('/content/', SiteContent),
+           StrategyApplication('/strategies/',Strategy),
+           DocTestApplication('/docs/', DocTestApplication),
+           RandomApplication('/apps/nodb/', RandomApplication),
+           )
 
 

@@ -5,11 +5,10 @@ The main object handle several subviews used for searching, adding and manipulat
 '''
 from copy import deepcopy
 
-from django.template import loader, Template, Context, RequestContext
-
 from djpcms import forms
-from djpcms.template import loader, mark_safe
+from djpcms.template import loader, Template, Context, RequestContext, mark_safe
 from djpcms.core.models import getmodel
+from djpcms.core.urlresolvers import SiteResolver
 from djpcms.core.exceptions import PermissionDenied, ApplicationUrlException
 from djpcms.utils import UnicodeObject, slugify
 from djpcms.forms import get_form
@@ -75,7 +74,7 @@ def process_views(view,views,app):
         return view
 
 
-class Application(object):
+class Application(SiteResolver):
     '''Base class for djpcms applications.
     
 .. attribute:: baseurl
@@ -160,7 +159,10 @@ No reason to change this default unless you really don't want to see the views i
                        view  = app,
                        name  = view_name)
             urls.append(nurl)
-        self.urls = tuple(urls)
+        self._urls = tuple(urls)
+        
+    def urls(self):
+        return self._urls
     
     def __repr__(self):
         return '%s: %s' % (self.__class__.__name__,self.baseurl)
@@ -178,11 +180,6 @@ No reason to change this default unless you really don't want to see the views i
     def __get_baseurl(self):
         return self.__baseurl
     baseurl = property(__get_baseurl)
-    
-    def __call__(self, request, rurl):
-        from django.core import urlresolvers
-        resolver = urlresolvers.RegexURLResolver(r'^', self.urls)
-        return resolver.resolve(rurl)
     
     def isroot(self):
         return True

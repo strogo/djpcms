@@ -1,18 +1,17 @@
 from django.contrib.contenttypes.models import ContentType
 
-from djpcms import forms
+from djpcms import forms, get_site
 from djpcms.template import loader
-from djpcms.conf import settings
 from djpcms.plugins import DJPplugin
 from djpcms.utils.uniforms import UniForm, FormLayout, Fieldset
 from djpcms.utils.html import submit
-from djpcms.views import appsite
 
 
-def registered_models():
+def registered_models(url = None):
     ids = []
-    for model,app in appsite.site._registry.items():
-        if isinstance(app,appsite.ModelApplication) and not app.hidden:
+    site = get_site(url)
+    for model,app in site._registry.items():
+        if isinstance(app,site.ModelApplication) and not app.hidden:
             try:
                 ct = ContentType.objects.get_for_model(model)
             except:
@@ -21,24 +20,25 @@ def registered_models():
     return ContentType.objects.filter(pk__in = ids)
 
 
-def app_model_from_ct(ct):
+def app_model_from_ct(ct, url = None):
     if ct:
+        site = get_site(url)
         if not isinstance(ct,ContentType):
             try:
                 ct = ContentType.objects.get(id = int(ct))
             except:
-                if settings.DEBUG:
-                    return u'Content type %s not available' % ct, False
+                if site.settings.DEBUG:
+                    return 'Content type %s not available' % ct, False
                 else:
-                    return u'', False
+                    return '', False
         model = ct.model_class()
-        appmodel = appsite.site.for_model(model)
+        appmodel = site.for_model(model)
         if appmodel:
             return appmodel, True
         else:
-            return u'', False
+            return '', False
     else:
-        return u'', False
+        return '', False
     
     
 
@@ -56,9 +56,10 @@ class ForModelForm(forms.Form):
                                          empty_label=None)
     
     def clean_for_model(self):
+        site = get_site()
         ct = self.cleaned_data['for_model']
         model = ct.model_class()
-        appmodel = appsite.site.for_model(model)
+        appmodel = site.for_model(model)
         if appmodel:
             return ct
         else:
@@ -96,12 +97,13 @@ class SearchBox(DJPplugin):
                for_model = None, method = 'post',
                title = None, **kwargs):
         if for_model:
+            site = get_site()
             try:
                 ct = ContentType.objects.get(id = int(for_model))
             except:
                 raise ValueError('Content type %s not available' % for_model)
             model = ct.model_class()
-            appmodel = appsite.site.for_model(model)
+            appmodel = site.for_model(model)
             if appmodel:
                 search_url = appmodel.searchurl(djp.request)
                 if search_url:
@@ -210,9 +212,10 @@ class LatestItems(DJPplugin):
                for_model = None, max_display = 5,
                pagination = False, **kwargs):
         try:
+            site = get_site()
             ct = ContentType.objects.get(id = for_model)
             model = ct.model_class()
-            appmodel = appsite.site.for_model(model)
+            appmodel = site.for_model(model)
             if not appmodel:
                 return u''
         except:

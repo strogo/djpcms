@@ -2,24 +2,27 @@ from django.contrib.auth.models import Group
 from django.contrib.sites.models import Site
 from django.utils.translation import ugettext_lazy as _
 
-from djpcms import siteapp_choices
+from djpcms import get_site, forms
 from djpcms.utils import force_str, slugify
 from djpcms.models import Page, BlockContent, SiteContent, ObjectPermission
 from djpcms.utils.uniforms import FormLayout, Fieldset, Columns, Row, Html, inlineLabels, inlineLabels3
 from djpcms.plugins import get_plugin, plugingenerator, wrappergenerator
 
-from djpcms import forms
 
 
-def CalculatePageUrl(data,page):
+def siteapp_choices():
+    return get_site().choices
+
+
+def CalculatePageUrl(data, page):
     '''Calculate url for a page'''
+    site = get_site()
     application_view = data.get('application_view','')
     url_pattern  = data.get('url_pattern','')
     parent = data['parent']
-    site = data['site']
+    website = data['site']
     if application_view:
-        from djpcms.views import appsite
-        app = appsite.site.getapp(application_view)
+        app = site.getapp(application_view)
         if not app:
             raise ValueError("Application view %s not available on site." % application_view)
         data['application_view'] = app.code
@@ -27,7 +30,7 @@ def CalculatePageUrl(data,page):
         purl = app.urlbit.url
         if app.isroot():
             url  = app.baseurl
-            root = Page.objects.filter(site = site, level = 0)
+            root = Page.objects.filter(site = website, level = 0)
             if url == '/':
                 if root:
                     root = root[0]
@@ -40,7 +43,7 @@ def CalculatePageUrl(data,page):
                 if len(urls) > 1:
                     url     = urls[-1]
                     parent_url = '/%s/' % '/'.join(urls[:-1])
-                    root    = Page.objects.filter(site = site, url = parent_url)
+                    root    = Page.objects.filter(site = website, url = parent_url)
                 else:
                     parent_url = '/'
                     
@@ -51,7 +54,7 @@ def CalculatePageUrl(data,page):
         else:
             if not parent:
                 pages = Page.objects.filter(application_view = app.parent.code,
-                                            site = site,
+                                            site = website,
                                             url_pattern = '')
                 if pages.count() == 1:
                     parent = pages[0]
@@ -110,12 +113,12 @@ class PageForm(forms.ModelForm):
     def clean_application_view(self):
         '''If application type is specified, than it must be unique
         '''
-        from djpcms.views import appsite
+        site = get_site()
         data = self.data
         app = data.get('application_view',None)
         if app:
             try:
-                application_view = appsite.site.getapp(app)
+                application_view = site.getapp(app)
             except KeyError:
                 raise forms.ValidationError('Application view %s not available' % app)
             parent = self.get_parent()

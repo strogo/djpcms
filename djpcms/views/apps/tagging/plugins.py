@@ -1,17 +1,14 @@
 #
 # Collection of plugins which handle tags
 #
-#@requires: django-tagging    http://code.google.com/p/django-tagging/
-#
-from django import forms
+from djpcms import forms, get_site
+from djpcms.template import loader
+from djpcms.plugins import DJPplugin
+
 from django.contrib.contenttypes.models import ContentType
-from django.template import loader
 
 from tagging.models import Tag, TaggedItem
 from tagging.utils import calculate_cloud, LOGARITHMIC, LINEAR
-
-from djpcms.plugins import DJPplugin
-from djpcms.views import appsite
 
 
 class CloudForm(forms.Form):
@@ -46,7 +43,8 @@ class tagcloud(DJPplugin):
         steps     = int(steps)
         if min_count:
             min_count = int(min_count)
-        appmodel  = appsite.site.for_model(formodel)
+        site = get_site(djp.request.path)
+        appmodel  = site.for_model(formodel)
         
         tags = self.get_tags(**kwargs)
         if tags:

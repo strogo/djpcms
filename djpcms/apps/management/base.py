@@ -178,19 +178,6 @@ class BaseCommand(object):
         stderr.
 
         """
-        # Switch to English, because django-admin.py creates database content
-        # like permissions, and those shouldn't contain any translations.
-        # But only do this if we can assume we have a working settings file,
-        # because django.utils.translation requires settings.
-        if self.can_import_settings:
-            try:
-                from django.utils import translation
-                translation.activate('en-us')
-            except ImportError, e:
-                # If settings should be available, but aren't,
-                # raise the error and quit.
-                sys.stderr.write(smart_str(self.style.ERROR('Error: %s\n' % e)))
-                sys.exit(1)
         try:
             self.stdout = options.get('stdout', sys.stdout)
             self.stderr = options.get('stderr', sys.stderr)

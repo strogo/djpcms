@@ -261,9 +261,8 @@ class ManagementUtility(object):
 
 
 def execute(argv=None):
-    """
-    A simple method that runs a ManagementUtility.
-    """
     utility = ManagementUtility(argv)
     utility.execute()
+        
+        
 

@@ -196,6 +196,9 @@ class OAuthProvider(Provider):
         setattr(token,'verifier',None)
         return token
     
+    def authenticated_api(self, key, secret):
+        raise NotImplementedError
+    
     
         
 def client(user, provider):

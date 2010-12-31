@@ -1,12 +1,10 @@
 import json
 
 import djpcms
-from djpcms import http
-from djpcms.conf import settings
+from djpcms import http, get_site
 from djpcms.plugins import SimpleWrap
 from djpcms.forms import fill_form_data, model_to_dict, cms
 from djpcms.views.cache import pagecache
-from djpcms.views import appsite
 from djpcms.models import Page
 from djpcms.core.exceptions import *
 
@@ -21,12 +19,13 @@ from BeautifulSoup import BeautifulSoup
 class DjpCmsTestHandle(test.TestCase):
     '''Implements shortcut functions for testing djpcms.
 Must be used as a base class for TestCase classes'''
-    
+    urlbase   = '/'
     pagecache = pagecache
     Page = Page
-    site = appsite.site
+    site = get_site()
     
     def _pre_setup(self):
+        self.site = get_site(self.urlbase)
         super(DjpCmsTestHandle,self)._pre_setup()
         self.pagecache.clear()
         self.site.settings.TESTING = True
@@ -34,14 +33,14 @@ Must be used as a base class for TestCase classes'''
     def _urlconf_setup(self):
         appurls = getattr(self,'appurls',None)
         if appurls:
-            self._old_appurl = settings.APPLICATION_URL_MODULE
-            settings.APPLICATION_URL_MODULE = appurls
+            self._old_appurl = self.site.settings.APPLICATION_URL_MODULE
+            self.site.settings.APPLICATION_URL_MODULE = appurls
         clear_url_caches()
             
     def _urlconf_teardown(self):
         if hasattr(self,'_old_appurl'):
-            settings.APPLICATION_URL_MODULE = self._old_appurl
-        appsite.site.clear()
+            self.site.settings.APPLICATION_URL_MODULE = self._old_appurl
+        self.site.clear()
         super(DjpCmsTestHandle,self)._urlconf_teardown()
     
     def clear(self, db = False):

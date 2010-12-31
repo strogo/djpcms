@@ -2,7 +2,8 @@ from django import template
 from django.db import models
 
 from djpcms.utils import force_str
-from djpcms.views import appsite
+from djpcms import get_site
+
 
 register = template.Library()
 
@@ -67,7 +68,7 @@ def objvalue(obj,name):
     
 @register.filter
 def objtable(obj):
-    appmodel = appsite.site.for_model(obj.__class__)
+    appmodel = get_site().for_model(obj.__class__)
     if appmodel:
         return appmodel.opts.totable(obj)
     else:
