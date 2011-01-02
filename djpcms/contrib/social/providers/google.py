@@ -1,49 +1,27 @@
-from urlparse import urlparse
-import httplib2
-
-from gdata.auth import OAuthToken, GenerateOAuthRequestTokenUrl, OAuthTokenFromHttpBody
-from gdata.auth import OAuthInputParams, GenerateOAuthAuthorizationUrl, GenerateClientLoginAuthToken
-from gdata.auth import GenerateOAuthAccessTokenUrl
-from atom.token_store import TokenStore
-
-from django import http
-from djpcms.contrib import messages
-
-from djpcms import forms
-from djpcms.utils.uniforms import FormLayout, Fieldset, nolabel
-from djpcms.views import appview
-from djpcms.utils.ajax import jerror, jhtmls
-
+import oauth
+from djpcms.conf import settings
 from djpcms.contrib.social import OAuthProvider
 
 
+DEFAULT_GOOGLE_SCOPE_SERVICES = ['http://finance.google.com/finance/feeds/']
+
+
+
 class Google(OAuthProvider):
-    scopes = ['http://finance.google.com/finance/feeds/']
+    REQUEST_TOKEN_URL = 'https://www.google.com/accounts/OAuthGetRequestToken'
+    AUTHORIZATION_URL = 'https://www.google.com/accounts/OAuthAuthorizeToken'
+    ACCESS_TOKEN_URL  = 'https://www.google.com/accounts/OAuthGetAccessToken'
     
-    def request_url(self, djp, callback_url = None, **kwargs):
-        r = djp.request
-        p = OAuthInputParams('HMAC_SHA1',*self.tokens)
-        url = GenerateOAuthRequestTokenUrl(p,self.scopes)
-        r = httplib2.Http()
-        response, content = r.request(str(url))
-        if response.status == 200:
-            token = OAuthTokenFromHttpBody(content)
-            url = GenerateOAuthAuthorizationUrl(token, callback_url = callback_url)
-            return (token.key,token.secret),url
-        else:
-            return None,None
+    def extra_request_parameters(self):
+        scopes = getattr(settings,'GOOGLE_SCOPE_SERVICES',DEFAULT_GOOGLE_SCOPE_SERVICES)
+        scopes_string = ' '.join((str(scope) for scope in scopes))
+        return {'scope':scopes_string}
         
-    def done(self, djp, key, secret):
-        p = OAuthInputParams('HMAC_SHA1',*self.tokens)
-        token = OAuthToken(key, secret, self.scopes)
-        url = GenerateOAuthAccessTokenUrl(token,p)
-        r = httplib2.Http()
-        response, content = r.request(str(url))
-        if response.status == 200:
-            return OAuthTokenFromHttpBody(content)
-        else:
-            return None
-        
+    def authenticated_api(self, key, secret):
+        auth = GoogleApi(*self.tokens)
+        api = GoogleApi(auth)
+        api.set_access_token(key, secret)
+        return api
         
     def client(self, key = None, secret = None, **kwargs):
         tks = {}

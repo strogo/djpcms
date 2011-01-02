@@ -1,13 +1,17 @@
+import cgi
 import httplib2
-from oauth import oauth
-
-from django import http
-from django.contrib import messages
+import oauth2 as oauth
+#from oauth import oauth
 
 import djpcms
-from .defaults import User
+from djpcms import http
+from djpcms.contrib import messages
 
 provider_handles = {}
+
+
+class SocialAuthenticationException(Exception):
+    pass
 
 
 def get(provider):
@@ -46,7 +50,7 @@ class SocialProviderType(type):
 class Provider(object):
     '''Social provider base class'''
     __metaclass__ = SocialProviderType
-    connection    = httplib2.Http()
+    client_class  = httplib2.Http
     
     def __init__(self):
         self.name = self.__class__.__name__.lower()
@@ -68,59 +72,26 @@ class Provider(object):
     def request_url(self, djp):
         '''The request url'''
         raise NotImplementedError
-    
-    def done(self, djp, oauth_token, key, secret):
-        data    = djp.request.GET
-        verifier = data.get('oauth_verifier', None)
-    
-        # If the token from session and token from twitter does not match
-        # means something bad happened to tokens
-        if key != oauth_token:
-            messages.info(request, "Token for session and from twitter don't mach. Could not login.")
-            # Redirect the user to the login page
-            return http.HttpResponseRedirect('/')
-    
-        auth = twitter_auth()
-        auth.set_request_token(key,secret)
-        try:
-            access_token = auth.get_access_token(verifier)
-        except:
-            return
-        user = request.user
-        acc  = user.linked_accounts.filter(provider = 'twitter')
-        if acc:
-            acc = acc[0]
-        else:
-            acc = LinkedAccount(user = user, provider = 'twitter')
-        acc.data = {'key':access_token.key,'secret':access_token.secret}
-        acc.save()
-    
-        # authentication was successful, use is now logged in
-        next = request.session.get('twitter_login_next', None)
-        if next:
-            del_dict_key(request.session, 'twitter_login_next')
-            return http.HttpResponseRedirect(next)
-        else:
-            home = '%s%s' % (settings.USER_ACCOUNT_HOME_URL,user.username)
-            return http.HttpResponseRedirect(home)
         
     def get_user_details(self, response):
         raise NotImplementedError
-        
-    def client(self, **kwargs):
-        raise NotImplentedError
-    
     
 
 class OAuthProvider(Provider):
     abstract = True
+    auth_popup        = False
+    
+    REQUEST_METHOD    = 'GET'
+    ACCESS_METHOD     = 'GET'
     REQUEST_TOKEN_URL = ''
     AUTHORIZATION_URL = ''
     ACCESS_TOKEN_URL  = ''
+    SIGNATURE_METHOD  = oauth.SignatureMethod_HMAC_SHA1()
+    DEFAULT_CONTENT_TYPE = 'application/x-www-form-urlencoded'
     
-    def redirect_uri(self, request):
-        uri = djpcms.get_url(User, 'social_done', provider = self.name)
-        return '%s://%s%s' % ('https' if request.is_secure() else 'http', request.get_host(), uri)
+    OAuthToken = oauth.Token
+    OAuthConsumer = oauth.Consumer
+    OAuthRequest = oauth.Request
     
     def request_url(self, **kwargs):
         return self.REQUEST_TOKEN_URL
@@ -131,81 +102,103 @@ class OAuthProvider(Provider):
     def access_url(self, **kwargs):
         return self.ACCESS_TOKEN_URL
         
-    def unauthorized_token(self, request, **kwargs):
-        """Return request for unauthorized token. This is the first stage of the authorisation process"""
-        oauth_request = self.oauth_request(request, None, self.request_url(**kwargs))
-        response = self.fetch_response(oauth_request)
+    def extra_request_parameters(self):
+        '''A dictionary of extra parameters to include in the OAUTH request.'''
+        return {}
+    
+    def get_callback_url(self, token):
+        if token:
+            return token.get_callback_url()
+        
+    def fetch_request_token(self, callback, **kwargs):
+        """Return request for unauthorized token.
+        This is the first stage of the authorisation process"""
+        oauth_request = self.oauth_request(None,
+                                           self.request_url(**kwargs),
+                                           callback = callback)
+        response = self.fetch_response(oauth_request, self.REQUEST_METHOD)
         if response:
-            r = oauth.OAuthToken.from_string(response)
-            setattr(r,'callback',oauth_request.parameters['oauth_callback'])
-            return r
+            token = self.OAuthToken.from_string(response)
+            params = cgi.parse_qs(response, keep_blank_values=False)
+            url = params.get('xoauth_request_auth_url',None)
+            if url:
+                token.set_callback(url[0])
+            return token
         
-    def authenticate(self, request, utoken, **kwargs):
-        """Second stage. Using the unauthorised token redirect to authentication page."""
-        signin_url = self.authorisation_url(**kwargs)
-        oauth_callback = utoken.callback
-        request.session['request_token'] = (utoken.key,utoken.secret)
-        if signin_url:
-            signin_url = self.oauth_request(request, utoken, signin_url, **kwargs).to_url()
-            return http.HttpResponseRedirect(str(signin_url))
-        else:
-            return http.HttpResponseRedirect(oauth_callback)
+    def fetch_authentication_uri(self, rtoken, **kwargs):
+        """Second stage. Using the request token obtained from
+:meth:`OAuthProvider.fetch_request_token` calculate the authorization `uri`."""
+        uri = self.get_callback_url(rtoken)
+        if not uri:
+            uri = self.authorisation_url(**kwargs)
+            if uri:
+                request = self.oauth_request(rtoken, uri)
+                uri = request.to_url()
+        return uri
         
-    def access_token(self, request, token, **kwargs):
+    def quick_access_token(self, data):
+        return None
+    
+    def access_token(self, token, **kwargs):
         """Return request for access token value"""
-        oauth_request = self.oauth_request(request, token, self.access_url(**kwargs))
-        return oauth.OAuthToken.from_string(self.fetch_response(oauth_request))
+        oauth_request = self.oauth_request(token, self.access_url(**kwargs))
+        return self.OAuthToken.from_string(self.fetch_response(oauth_request,
+                                                               self.ACCESS_METHOD))
     
     def user_data(self, request, access_token):
         """Loads user data from service"""
         raise NotImplementedError, 'Implement in subclass'
-    
-    def fetch_response(self, request):
-        """Executes request and fetchs service response"""
-        request, response = self.connection.request(request.to_url(), method = request.http_method)
+        
+    def fetch_response(self, oauth_request, method = 'GET'):
+        """Executes request and fetches service response"""
+        connection = self.client_class()
+        body = None
+        headers = {}
+        if method == "POST":
+            headers['Content-Type'] = self.DEFAULT_CONTENT_TYPE
+            body = oauth_request.to_postdata()
+        elif method == "GET":
+            uri = oauth_request.to_url()
+        else:
+            headers.update(oauth_request.to_header())
+
+        request, response = connection.request(uri, method=method, body=body, 
+                                               headers=headers)
         if request.status == 200:
             return response
-     
-    def oauth_request(self, request, token, url, extra_params=None):
-        """Generate OAuth request, setups callback url"""
-        if not token:
-            oauth_callback = self.redirect_uri(request)
-            params = {'oauth_callback': oauth_callback}
         else:
-            params = {}
-        if extra_params:
-            params.update(extra_params)
-
-        if 'oauth_verifier' in request.GET:
-            params['oauth_verifier'] = request.GET['oauth_verifier']
+            raise SocialAuthenticationException(response)
+     
+    def oauth_request(self, token, uri, callback = None):
+        """Generate OAuth request, setups callback url"""
         consumer = self.consumer()
-        request = oauth.OAuthRequest.from_consumer_and_token(consumer,
-                                                             token=token,
-                                                             http_url=url,
-                                                             parameters=params)
-        request.sign_request(oauth.OAuthSignatureMethod_HMAC_SHA1(),consumer,token)
-        return request
+        parameters  = self.extra_request_parameters()
+        if callback:
+            parameters['oauth_callback'] = callback
+
+        req = self.OAuthRequest.from_consumer_and_token(consumer,
+                                                        token=token,
+                                                        http_url=uri, 
+                                                        parameters=parameters)
+        req.sign_request(self.SIGNATURE_METHOD, consumer, token)
+        return req
     
     def consumer(self):
-        return oauth.OAuthConsumer(*self.tokens)
+        return self.OAuthConsumer(*self.tokens)
     
-    def authtoken(self, ttoken):
-        '''Auth token from a tuple key,secret'''
-        token = oauth.OAuthConsumer(*ttoken)
-        setattr(token,'callback',None)
-        setattr(token,'verifier',None)
+    def authtoken(self, key, secret, verifier = None):
+        '''Create the authentication token to use for obtaining the Access Token.'''
+        token = self.OAuthToken(key,secret)
+        if verifier:
+            token.set_verifier(verifier)
         return token
+    
+    def get_access_token_key(self, access_token):
+        return access_token.key
     
     def authenticated_api(self, key, secret):
         raise NotImplementedError
     
-    
-        
-def client(user, provider):
-    if not isinstance(user,User):
-        user = User.objects.get(username = user)
-    p = user.linked_accounts.get(provider = str(provider))
-    handler = provider_handles[p.provider]
-    return SocialClient(handler,p)
+
     
     

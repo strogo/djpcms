@@ -15,13 +15,10 @@ class TwitterPostMessage(SocialActionPlugin):
     action_name   = 'post-message'
     description   = 'twitter messaging'
     
-    _form = MessageForm
-    _form_ajax = True
-    
     def get_form(self, djp):
         return djp.view.get_form(djp,
-                                 form = self._form,
-                                 form_ajax = self._form_ajax)
+                                 form = MessageForm,
+                                 form_ajax = True)
                                  
     def _render(self, djp):
         return self.get_form(djp).render(djp)

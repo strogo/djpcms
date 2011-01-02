@@ -108,7 +108,7 @@ class jerror(HeaderBody):
     
     def body(self):
         return self.html
-    
+
 
 class jhtmls(HeaderBody):
     '''
@@ -187,4 +187,10 @@ class jredirect(HeaderBody):
         
     def body(self):
         return self.url
+
     
+class jpopup(jredirect):
+    '''Contains a link to use for opening a popup windows'''
+    
+    def header(self):
+        return 'popup'

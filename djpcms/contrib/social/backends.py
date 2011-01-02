@@ -33,12 +33,14 @@ a authentication provider response"""
         
         name    = str(provider)
         objects = LinkedAccount.objects.select_related('user')
+        user_available = True
         
         if user and user.is_authenticated():
             if not user.is_active:
                 logger.warn('Inactive user %s trying to login with %s.' %(user,provider))
                 return None
         else:
+            user_available = False
             user = None
                 
         # No user, no response but a token, we are trying to authenticate using a token
@@ -49,7 +51,7 @@ a authentication provider response"""
             except LinkedAccount.DoesNotExist:
                 return None
         
-        if not (token and secret and response):
+        if not (token and response):
             return None
 
         linked   = None
@@ -75,7 +77,8 @@ a authentication provider response"""
         if not linked:
             linked = self.create_linked(user,uid,token,secret,provider,details)
             
-        self.update_user_details(user, provider, details, response)
+        if not user_available:
+            self.update_user_details(user, provider, details, response)
         return user
 
     

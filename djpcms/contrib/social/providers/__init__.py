@@ -9,3 +9,4 @@ def safeimport(name):
 safeimport('flickr')
 safeimport('google')
 safeimport('twitter')
+safeimport('yahoo')

@@ -3,18 +3,22 @@ import logging
 from datetime import datetime
 
 from djpcms.conf import settings
+import djpcms
 import djpcms.contrib.social.providers
 from djpcms import http, get_site
 from djpcms.plugins import DJPplugin, get_plugin
 from djpcms.contrib import messages
 from djpcms.views import appview
 from djpcms.template import loader
+from djpcms.utils.ajax import jpopup
 from djpcms.views.apps.user import UserApplication
 from djpcms.views.decorators import deleteview
-from djpcms.contrib.social import provider_handles, client
+from djpcms.contrib.social import provider_handles
 from djpcms.contrib.social.models import LinkedAccount
 
 from django.contrib.auth import authenticate, login
+
+from .defaults import User
 
 
 def getprovider(djp):
@@ -35,6 +39,9 @@ class SocialView(appview.ModelView):
             return ''
         provider = self.provider(djp)
         if not provider:
+            p = djp.kwargs.get('provider',None)
+            if p:
+                raise http.Http404('Provider {0} not available'.format(p))
             return self.render_all(djp)
         else:
             return ''
@@ -53,9 +60,10 @@ class SocialView(appview.ModelView):
         
         loginview = self.appmodel.getview('social_login')
         if loginview:
-            for provider in providers:
+            for provider in providers.values():
                 vdjp = loginview(djp, provider = provider)
-                tolink.append({'name':provider, 'url':vdjp.url})
+                clsname  = None if not provider.auth_popup else djp.css.ajax
+                tolink.append({'name':provider, 'url':vdjp.url, 'class':clsname})
                     
         c = {'accounts':accounts,
              'url': djp.request.path,
@@ -74,9 +82,15 @@ class SocialView(appview.ModelView):
 
 
 class SocialLoginView(SocialView):
-    _methods = ('get',)
+    _methods = ('get','post')
     
     def get_response(self, djp):
+        return self._handle(djp)
+    
+    def default_post(self, djp):
+        return self._handle(djp)
+
+    def _handle(self, djp):
         provider = self.provider(djp)
         if not provider:
             raise http.Http404
@@ -101,8 +115,24 @@ class SocialLoginView(SocialView):
                     login(request, user)
                 return http.HttpResponseRedirect(next)
             
-        utoken = provider.unauthorized_token(request)
-        return provider.authenticate(request, utoken)
+        uri = djpcms.get_url(User, 'social_done', provider = provider)
+        if uri:
+            uri = '%s://%s%s' % ('https' if request.is_secure() else 'http', request.get_host(), uri)
+        
+        rtoken = provider.fetch_request_token(uri)
+        
+        referer_url = request.environ.get('HTTP_REFERER') or '/'
+        url = provider.fetch_authentication_uri(rtoken)
+        
+        if rtoken:
+            request.session['request_token'] = rtoken.key,rtoken.secret,referer_url
+        else:
+            request.session['request_token'] = None,None,referer_url
+            
+        if request.is_ajax():
+            return jpopup(url)
+        else:
+            return http.HttpResponseRedirect(url)
     
 
 class SocialLoginDoneView(SocialView):
@@ -114,52 +144,61 @@ class SocialLoginDoneView(SocialView):
         if provider:
             request = djp.request
             session = request.session
-            data    = request.GET
-            request_token = session.pop('request_token', None)
+            data    = dict(request.GET.items())
             
-            if not request_token:
+            try:
+                key, secret, refer_url = session.pop('request_token', None)
+            except:
                 # Redirect the user to the login page,
                 messages.error(request, 'No request token for session. Could not login.')
                 return http.HttpResponseRedirect('/')
             
-            if data.get('denied', None):
-                messages.info(request, 'Could not login. Access denied.')
-                return http.HttpResponseRedirect(settings.USER_ACCOUNT_HOME_URL)
-            
-            oauth_token = data.get('oauth_token', 'no-token')
-            key,secret = request_token
-            
-            if key != oauth_token:
-                messages.info(request, "Token for session and from %s don't mach. Could not login." % provider)
-                # Redirect the user to the login page
-                return http.HttpResponseRedirect('/')
-            
-            rtoken = provider.authtoken(request_token)
-            access_token = provider.access_token(request, rtoken)
+            access_token = provider.quick_access_token(data)
             
             if not access_token:
-                return http.HttpResponseRedirect('/')
+                
+                if data.get('denied', None):
+                    messages.info(request, 'Could not login. Access denied.')
+                    return http.HttpResponseRedirect(settings.USER_ACCOUNT_HOME_URL)
+                
+                oauth_token = data.get('oauth_token', None)
+                oauth_verifier = data.get('oauth_verifier', None)
+                    
+                if not oauth_token:
+                    messages.error(request, "{0} authorization token not available.".format(provider))
+                    return http.HttpResponseRedirect(refer_url)
+                
+                if key != oauth_token:
+                    messages.error(request, "{0} authorization token and session token don't mach.".format(provider))
+                    return http.HttpResponseRedirect(refer_url)
+                
+                rtoken = provider.authtoken(key,secret,oauth_verifier)
+                
+                try:
+                    access_token = provider.access_token(rtoken)
+                    if not access_token:
+                        messages.error(request, "Coud not obtain access token")
+                        return http.HttpResponseRedirect(refer_url)
+                except Exception as e:
+                    messages.error(request, "Coud not obtain access token. {0}".format(e))
+                    return http.HttpResponseRedirect(refer_url)
             
             self.create_or_update_user(request, provider, access_token)
             
             # authentication was successful, use is now logged in
-            next = session.pop('%s_login_next' % provider, None)
-            if next:
-                res = http.HttpResponseRedirect(next)
-            else:
-                res = http.HttpResponseRedirect(settings.USER_ACCOUNT_HOME_URL)
-            sname  = provider.cookie()
-            res.set_cookie(sname,access_token.key)
+            next = session.pop('%s_login_next' % provider, refer_url)
+            res = http.HttpResponseRedirect(next)
+            res.set_cookie(provider.cookie(),provider.get_access_token_key(access_token))
             return res
         else:
             raise http.Http404
         
     
     def create_or_update_user(self, request, provider, access_token):
-        response = provider.user_data(request, access_token)
+        response, access_token_key, access_token_secret = provider.user_data(access_token)
         user = authenticate(provider = provider,
-                            token = access_token.key,
-                            secret = access_token.secret,
+                            token = access_token_key,
+                            secret = access_token_secret,
                             response = response,
                             user = request.user)
         if user and user.is_active:

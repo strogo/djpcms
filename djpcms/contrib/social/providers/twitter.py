@@ -14,25 +14,15 @@ class Twitter(OAuthProvider):
     REQUEST_TOKEN_URL = 'https://api.twitter.com/oauth/request_token'
     AUTHORIZATION_URL = 'https://api.twitter.com/oauth/authorize'
     TWITTER_CHECK_AUTH = 'https://twitter.com/account/verify_credentials.json'
-
-    def done(self, djp, key, secret):
-        data    = djp.request.GET
-        verifier = data.get('oauth_verifier', None)
-        auth = self.twitter_auth()
-        auth.set_request_token(key,secret)
-        try:
-            return auth.get_access_token(verifier)
-        except:
-            return None
         
-    def user_data(self, request, access_token):
-        request = self.oauth_request(request, access_token, self.TWITTER_CHECK_AUTH)
+    def user_data(self, access_token):
+        request = self.oauth_request(access_token, self.TWITTER_CHECK_AUTH)
         data = self.fetch_response(request)
         try:
-            return json.loads(data)
+            data = json.loads(data)
         except json.JSONDecodeError:
-            return None
-        
+            data = None
+        return data,access_token.key,access_token.secret
         
     def get_user_details(self, response):
         name = response['name']

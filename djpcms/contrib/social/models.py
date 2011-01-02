@@ -1,4 +1,8 @@
+'''
+Django model for linked accounts
+'''
 from django.db import models
+#from django.db.models import signals
 
 from djpcms.fields import JSONField
 from .defaults import User
@@ -16,3 +20,11 @@ class LinkedAccount(models.Model):
     
     def __unicode__(self):
         return self.provider
+
+
+
+#def clearcookie(sender, instance, **kwargs):
+#    provider = instance.get_provider(instance.provider)
+    
+    
+#signals.post_delete.connect(clearcookie, sender=LinkedAccount)
