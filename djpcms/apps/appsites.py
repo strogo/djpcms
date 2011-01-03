@@ -22,6 +22,10 @@ class ApplicationSite(SiteResolver):
         self.isloaded = False
         self.ModelApplication = ModelApplication
         
+    def __repr__(self):
+        return '{0} - {1}'.format(self.url,'loaded' if self.isloaded else 'not loaded')
+    __str__ = __repr__
+        
     def load_initial(self):
         baseurl = self.config.CONTENT_INLINE_EDITING.get('pagecontent', '/content/')
         from djpcms.views.apps.contentedit import ContentSite, BlockContent

@@ -15,7 +15,7 @@ logger = logging.getLogger('djpcms.contrib.social')
 
 def get_random_username():
     """Return hash from random string cut at 30 chars"""
-    return md5.md5(str(os.urandom(10))).hexdigest()[:30]
+    return md5(str(os.urandom(10))).hexdigest()[:30]
 
 
 class SocialAuthBackend(ModelBackend):
@@ -68,11 +68,11 @@ a authentication provider response"""
                 user = self.create_user(provider,details,response)
         else:
             username = self.get_username(provider, details, response)
-               
-                
-        if user.username != username:
-            logger.warn('Trying to link user %s with %s provider. But the username is different from %s in the provider' %(user,provider,username))
-            return None
+           
+        if not user_available:      
+            if user.username != username:
+                logger.warn('Trying to link user %s with %s provider. But the username is different from %s in the provider' %(user,provider,username))
+                return None
         
         if not linked:
             linked = self.create_linked(user,uid,token,secret,provider,details)

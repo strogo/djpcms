@@ -1,0 +1,569 @@
+{% block include-media %}
+{% include "jquery-ui-css/smooth/jquery-ui.css" %}
+{% include "tablesorter/themes/smooth/style.css" %}
+{% endblock %}
+
+
+{% block text %}
+
+/**  MAIN BODY TEXT
+---------------------------------------------------------------**/
+body {
+	background: {{ background }};
+	color: {{ color }};
+	-x-system-font:none;
+	font-family:{{ font_family }};
+	font-size:{{ font_size }};
+	font-size-adjust:none;
+	font-stretch:normal;
+	font-style:normal;
+	font-variant:normal;
+	font-weight:normal;
+	line-height:{{ line_height }};
+}
+pre {
+	font-family: monospace;
+	font-size: 100%;
+}
+h1 {
+	font-size:180%;
+	line-height:1.1em;
+	margin-bottom:0.6em;
+}
+h2 {
+	font-size:150%;
+	line-height:1.2em;
+	margin-bottom:0.2em;
+}
+h3 {
+	font-size:120%;
+	line-height:1.2em;
+	margin-bottom:0.2em;
+}
+p {
+	margin-bottom: 1em;
+}
+blockquote div.body-quote {
+	font-style: italic;
+	font-size: 100%;
+	font-family: Georgia,"Times New Roman",Times,serif;
+}
+#page-header h1 {
+	font-family:Georgia,"Times New Roman","Bitstream Charter",Times,serif;
+	font-size: 210%;
+	text-align: center;
+	font-weight: bold;
+}
+.breadcrumbs {
+	font-size: 120%;
+}
+#site-navigation ul {
+	font-size: 150%;
+}
+#footer {
+	font-size:90%;
+	line-height:1.5em;
+}
+.topnav {
+	font-size: 90%;
+}
+{% endblock %}
+
+
+
+{% block body-edit %}
+
+/** BLOCK BODY EDIT
+-------------------------------------------------------**/
+
+body.edit {
+	background: {{ edit_background }};
+	color: {{ edit_color }};
+}
+{% endblock %}
+
+
+
+
+{% block anchor %}
+
+/** ANCHORS
+------------------------------------------------------**/
+
+a {
+	font-weight:{{ anchor_weight }};
+	text-decoration: none;
+}
+a:link,
+a:visited {
+	color:#33789C;
+}
+a:hover {
+	color:#204C64;
+}
+
+{% endblock %}
+
+
+{% block simple-nav %}
+
+/** UL.SIMPLE-NAV
+-----------------------------------------------------------*/
+ul.simple-nav li {
+	display: inline;
+}
+ul.simple-nav.right {
+	float: right;
+}
+ul.simple-nav.right li {
+	margin-left: 10px;
+}
+{% endblock %}
+
+
+
+{% block breadcrumbs %}
+
+/** BREADCRUMBS
+-----------------------------------------------------------*/
+.breadcrumbs {
+	font-size: {{ breadcrumbs.font_size }};
+	padding: {{ breadcrumbs.padding }};
+}
+.breadcrumbs ul,
+.breadcrumbs ul li {
+	list-style: none;
+	display:inline;
+}
+{% endblock %}
+
+{% block djpcms-block-element %} 
+div.djpcms-block-element,
+div.edit-block {
+	overflow: hidden;
+	margin-bottom: 20px;
+}
+div.flat-element,
+div.flat-pannel {
+	overflow:hidden;
+	padding: 10px;
+}
+{% endblock %}
+
+
+
+{% block box-class %}
+
+/* BOX class djpcms-html-box
+------------------------------------------------*/
+
+.djpcms-html-box {
+    padding: 2px;
+}
+
+.djpcms-html-box .hd {
+	padding:6px 12px;
+	margin: 0;
+	border: none;
+	min-height: 8px;
+	overflow:hidden;
+	background: {{ box.hd.background }};
+}
+.djpcms-html-box .hd h2 {
+	float: left;
+	margin:0;
+	padding:0;
+	font-size:1em;
+	font-weight:normal;
+	text-transform:uppercase;
+}
+.djpcms-html-box .bd,
+.djpcms-html-box .ft {
+	padding: 5px 5px;
+	overflow: hidden;
+}
+.djpcms-html-box .bd {
+	background: {{ box.bd.background }};
+}
+.djpcms-html-box .ft {
+	background: {{ box.ft.background }};
+}
+.djpcms-html-box.collapsed .bd {
+	display: none;
+}
+
+.djpcms-html-box.edit-block .hd {
+	cursor: move;
+}
+.djpcms-html-box.edit-block .ft {
+	margin-top: 2px;
+} 
+{% endblock %}
+
+
+
+/* jQuery Pagination
+---------------------------------------------------------------------------*/
+{% block jquery-pagination %}
+.jquery-pagination {
+	overflow: hidden;
+	margin-bottom: 10px;
+}
+
+.jquery-pagination .navigator {
+	float: left;
+	font-size: 80%;
+}
+.jquery-pagination .information {
+	float: right;
+}
+        
+.jquery-pagination a {
+    text-decoration: none;
+    border: solid 1px #AAE;
+    color: #15B;
+}
+
+.jquery-pagination a, .jquery-pagination span {
+    display: block;
+    float: left;
+    padding: 0.3em 0.5em;
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+
+.jquery-pagination .current {
+    background: #26B;
+    color: #fff;
+    border: solid 1px #AAE;
+}
+
+.jquery-pagination .current.prev, .jquery-pagination .current.next{
+    color:#999;
+    border-color:#999;
+    background:#fff;
+}
+{% endblock %}
+
+
+
+
+/*  SEARCH BOX
+----------------------------------------------*/
+{% block search-box %}
+.cx-search-bar {
+	width: 100%;
+}
+.cx-input {
+	float: none;
+	margin: 0px 30px 0 0;
+	padding: 5px 0 5px 5px;
+	border-color: #D1D8E8;
+	border-style: solid none solid solid;
+	border-width: 1px;
+	width: auto;
+	display: block;
+}
+.cx-input input {	
+    border: none;
+    width: 100%;
+    height: 16px;
+}
+.cx-submit {
+	display: block;
+	float: right;
+	margin: 0;
+	width: 30px;
+}
+.cx-search-btn {
+	border: none;
+    background: url("{{ MEDIA_URL }}djpcms/img/images/sprites.png") repeat scroll -440px 0 transparent;
+    cursor: pointer;
+    height: 28px;
+    width: 30px;
+}
+.idlefield {
+	color: #adadad;
+	font-weight: bold;
+}
+{% endblock %}
+
+
+
+{% block page-edit %}
+
+/*  PAGE EDITING
+---------------------------------------------------------------*/
+
+.edit-page {
+	padding: 0;
+}
+.edit-page .formColumn {
+	display: inline;
+	float: left;
+}
+.edit-page h1 {
+	font-size: 150%;
+	text-align: center;
+	margin-top: 10px;
+	margin-botton: 15px;
+}
+{% endblock %}
+
+
+
+{% block content-editing %}
+
+/** INLINE CONTENT EDITING
+-----------------------------------------------------------*/
+.edit-contentblock .djpcms-block-element {
+	margin-bottom: 0;
+}	
+.edit-contentblock .hd {
+	padding: 5px 10px;
+	margin: 0;
+}
+.edit-contentblock {
+	margin-bottom: 20px;
+}
+.edit-contentblock .hd textarea {
+	width: 100%;
+}
+.edit-contentblock .actions  {
+	padding:6px 12px;
+	overflow:hidden;
+	min-height:16px;
+}
+.edit form.editing ,
+.edit fieldset.editing .ctrlHolder {height: 100%;}
+.edit fieldset.editing {height: 80%;}
+.edit fieldset.editing label {display: none;}
+.edit .editing #id_body {
+	font-family:Monaco,"Courier New","DejaVu Sans Mono","Bitstream Vera Sans Mono",monospace;
+	font-size: 12px;
+	width: 100%;
+	min-height: 98%;
+	height: 98%;
+}
+{% endblock %}
+
+
+
+{% block action %}
+
+/* Actions menu
+--------------------------------------------------------- */
+div.edit-menu {
+	float: right;
+}
+div.edit-menu.left {
+	float: left;
+}
+div.edit-menu a {
+	display:inline;
+	float:left;
+	border:none;
+	margin:0 0 0 3px;
+	text-indent:-9999em;
+	padding:0;
+	height:14px;
+	width:14px;
+}
+a.collapse {
+	background:transparent url({{ MEDIA_URL }}djpcms/img/buttons.gif) no-repeat scroll -52px 0;
+}
+.collapsed a.collapse {
+	background:transparent url({{ MEDIA_URL }}djpcms/img/buttons.gif) no-repeat scroll -38px 0;
+}
+a.editable {
+	background:transparent url("{{ MEDIA_URL }}djpcms/img/icons/pencil.png") no-repeat;
+}
+a.deletable {
+	background:transparent url("{{ MEDIA_URL }}djpcms/img/icons/cross.png") no-repeat;
+}
+a:link.headerlink,
+a:visited.headerlink {
+	color: transparent;
+}
+a:hover.headerlink {
+	color: #666;
+}
+{% endblock %}
+
+
+
+
+
+{% block autocomplete %}
+/* AUTOCOMPLETE
+-------------------------------------------------------*/
+
+.djp-autocomplete {
+	overflow: hidden;
+	/*float: left;*/
+}
+.djp-autocomplete input.multi {
+	clear: both;
+}
+.djp-autocomplete div.selected {
+	float: left;
+	width: 98%;
+}
+.djp-autocomplete a.deletable {
+	float: left;
+	border:medium none;
+	display:inline;
+	height:1.2em;
+	margin:0 0 0 3px;
+	padding:0;
+	text-indent:-9999em;
+	width:20px;
+	cursor:pointer;
+	background: url("{{ MEDIA_URL }}djpcms/img/icons/cross.png") no-repeat center;
+}
+	
+.djp-autocomplete div.to_delete {
+	margin-top: 3px;
+	line-height: 1.2em;
+	overflow: hidden;
+}
+{% endblock %}
+
+
+
+
+{% block object-definition %}
+
+/**  OBJECT DEFINITION
+---------------------------------------------------------**/
+
+.object-definition {
+	margin-bottom: 10px;
+}
+.object-definition dl {
+	overflow: hidden;
+	margin: 5px 0 0; 
+}
+.object-definition dl:first-child {
+	margin-top:0;
+}
+.object-definition dl dt {
+	opacity: 0.6;
+	float: left;
+	width: 30%;
+	margin: 0;
+}
+.object-definition dl dd {
+	margin: 0;
+}
+.object-definition.w40 dl dt {
+	width: 40%;
+}
+.object-definition.w50 dl dt {
+	width: 50%;
+}
+{% endblock %}
+
+
+
+{% block openid %}
+
+/* OPEN ID
+--------------------------------------------------------*/
+
+
+input.openid {
+    background: url({{ MEDIA_URL }}djpcms/img/icons/openid-icon.png) no-repeat 0 50%;
+    background-color:#FFFFFF;
+    padding:0.2em;
+    padding-left:1.5em;
+    border:1px solid #B7C6CE;
+}
+{% endblock %}
+
+
+
+
+{% block edit-links %}
+
+/* EDIT-LINKS
+--------------------------------------------------------*/
+
+ul.edit-links.horizontal li {
+	display: inline;
+	margin-right: 5px;
+}
+ul.edit-links.vertical li {
+	display: block;
+	margin-bottom: 5px;
+}
+ul.edit-links.vertical a {
+	width: 80px;
+}
+{% endblock %}
+
+
+
+{% block special-classes %}
+
+/* SPECIAL CLASSES
+--------------------------------------------------------*/
+
+.djphide {
+	display: none;
+}
+{% endblock %}
+
+
+
+{% block tag-cloud %}
+
+/* TAG CLOUD
+--------------------------------------------------------*/
+
+.tagindex {
+	letter-spacing:normal;
+	line-height:{{ tags.line_height }};
+	text-align:justify;
+	text-decoration:none;
+	text-indent:0;
+	text-transform:none;
+	word-spacing:normal;
+}
+.tagindex a.size-1 {font-size:70%;filter:alpha(opacity=70);opacity:0.7;}
+.tagindex a.size-2 {font-size:80%;filter:alpha(opacity=80);opacity:0.8;}
+.tagindex a.size-3 {font-size:100%;filter:alpha(opacity=90);opacity:0.9;}
+.tagindex a.size-4 {font-size:150%;}
+.tagindex a.size-5 {font-size:180%;}
+.tagindex a.size-6 {font-size:210%;}
+{% endblock %}
+
+
+
+{% block footer %}
+/*	FOOTER
+-------------------------------------------------*/
+#page-footer {
+	overflow: hidden;
+	font-size:80%;
+	padding: 20px 0;
+}
+#footer-promos {
+	padding: 20px 0;
+	text-align: center;
+}
+#footer-social {
+	padding: 10px 0;
+	text-align: center;
+}
+#footer-technology {
+	text-align: right;
+}
+#footer-technology a {
+	margin: 10px 0 10px 10px;
+}
+{% endblock %}
+
+
+{% for elem in elems %}
+{{ elem }}{% endfor %}

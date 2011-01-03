@@ -169,12 +169,14 @@ class OAuthProvider(Provider):
         else:
             raise SocialAuthenticationException(response)
      
-    def oauth_request(self, token, uri, callback = None):
+    def oauth_request(self, token, uri, callback = None, extra_parameters = None):
         """Generate OAuth request, setups callback url"""
         consumer = self.consumer()
         parameters  = self.extra_request_parameters()
         if callback:
             parameters['oauth_callback'] = callback
+        if extra_parameters:
+            parameters = extra_parameters
 
         req = self.OAuthRequest.from_consumer_and_token(consumer,
                                                         token=token,

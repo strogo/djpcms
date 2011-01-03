@@ -1,5 +1,8 @@
 import os
 import sys
+import logging
+
+from djpcms.core.exceptions import AlreadyRegistered
 from djpcms.utils.collections import OrderedDict
 from djpcms.core.urlresolvers import SiteResolver
 
@@ -34,16 +37,16 @@ class ApplicationSites(OrderedDict,SiteResolver):
         import djpcms
         #
         # if not a directory it may be a file
-        if not os.path.isdir(name):
+        if os.path.isdir(name):
+            appdir = name
+        elif os.path.isfile(name):
+            appdir = os.path.split(os.path.realpath(name))[0]
+        else:
             try:
                 mod = self.import_module(name)
                 appdir = mod.__path__[0]
             except ImportError:
-                if not os.path.isfile(name):
-                    raise ValueError('Could not find directory or file {0}'.format(name))
-                appdir = os.path.split(os.path.realpath(name))[0]
-        else:
-            appdir = name
+                raise ValueError('Could not find directory or file {0}'.format(name))
         path = os.path.realpath(appdir)
         base,name = os.path.split(path)
         if base not in sys.path:
@@ -65,14 +68,17 @@ class ApplicationSites(OrderedDict,SiteResolver):
             settings.TEMPLATE_DIRS += path,
         
         djpcms.init_logging(clearlog)
+        self.logger = logging.getLogger('ApplicationSites')
         
         return self._create_site(url,settings)
     
     def _create_site(self,url,settings):
         from djpcms.apps import appsites
+        url = self.makeurl(url)
+        self.logger.info('Creating new site at route "{0}"'.format(url))
         site = self.get_site(url)
         if site:
-            raise appsite.AlreadyRegistered
+            raise AlreadyRegistered('Site with url {0} already avalable "{1}"'.format(url,site))
         site = appsites.ApplicationSite(self.makeurl(url),settings)
         self[site.url] = site
         self._urls = None

@@ -1,0 +1,19 @@
+/*
+-----------------------------------------------
+Navigation
+----------------------------------------------- */
+{{ elem.tag }},
+{{ elem.tag }} * { margin:0;padding:0;border:0;}
+
+{{ elem.tag }} {
+	font-family:{{ elem.font_family }};
+	font-size:{{ elem.font_size }};
+	font-size-adjust:none;
+	font-stretch:normal;
+	font-style:{{ elem.font_style }};
+	font-variant:normal;
+	font-weight:{{ elem.font_weight }};
+}
+
+{% block body %}
+{% endblock %}

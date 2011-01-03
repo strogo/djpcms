@@ -5,6 +5,7 @@ from djpcms.http import Http404, HttpResponseRedirect
 from djpcms.views.cache import pagecache
 from djpcms.views.response import DjpResponse 
 
+
 def djpcmsHandler(request, url):
     '''
     Fetch a static view or an application view
@@ -12,7 +13,7 @@ def djpcmsHandler(request, url):
     sites.load()
     from django.core import urlresolvers
     
-    url = clean_url('/{0}'.format(url))
+    url = clean_url(request, '/{0}'.format(url))
     if isinstance(url,HttpResponseRedirect):
         return url, (), {}
     
@@ -69,7 +70,7 @@ def editHandler(request, url):
     return view(request, **kwargs).response()
 
 
-def clean_url(path):
+def clean_url(request, path):
     '''
     Clean url and redirect if needed
     '''
@@ -87,12 +88,10 @@ def clean_url(path):
         if modified:
             if not url.startswith('/'):
                 url = '/%s' % url
+            qs = request.environ.get('QUERY_STRING')
+            if qs and request.method == 'GET':
+                url = '{0}?{1}'.format(url,qs)
             return HttpResponseRedirect(url)
-    
-        #if url.endswith('/'):
-        #    url = url[:-1]
-        #if url.startswith('/'):
-        #    url = url[1:]
             
     return url
 
