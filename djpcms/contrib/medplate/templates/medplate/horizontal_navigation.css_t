@@ -3,8 +3,6 @@
 {% block body %}
 {% block nav-container %}
 .nav-container {
-	width: 100%;
-	text-align: {{ text_align }}; 
 }
 {% endblock %}
 
@@ -24,11 +22,14 @@
 	text-decoration:none;
 	display:block;
 	float:left;
+	color: {{ color }};
+	font-weight: {{ font_weight }};
 	padding:{{ anchor_padding }};
 }
 {{ tag }} li {
 	-webkit-border-radius: {{ inner_radius }};
 	-moz-border-radius: {{ inner_radius }};
+	margin: {{ list_margin }};
 }
 {{ tag }} li ul {top: {{ height }};}
 {{ tag }} li ul li,
@@ -40,7 +41,10 @@
 }
 {{ tag }} li:hover {
 	background: {{ hover_background }};
-}
+}{% if hover_color %}
+{{ tag }} li:hover a {
+	color: {{ hover_color }};
+}{% endif %}
 {% if selected_background %}
 {{ tag }} li.selected {
 	background: {{ selected_background }};
@@ -101,21 +105,5 @@
 ----------------------------------------------- */
 {{ tag }} li.secondary {
 	float:right;
-	background:transparent !important;
-}
-{{ tag }} li.secondary span.status {
-	float:left;
-	padding:0 1em;
-	line-height:2.77em;
-	height:2.77em;
-	font-size:0.9em;
-}
-{{ tag }} li.secondary span.status a {
-	float:none;
-	display:inline;
-	padding:0;
-	height:auto;
-	line-height:auto;
-	background:transparent;
 }
 {% endblock %}

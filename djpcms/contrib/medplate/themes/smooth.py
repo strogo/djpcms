@@ -1,4 +1,4 @@
-from djpcms.contrib.medplate.defaults import template, base_context
+from djpcms.contrib.medplate.allwhite import base_context
 
 
 context = base_context.copy()

@@ -19,7 +19,7 @@ __docformat__ = "restructuredtext"
 
 import os
 import sys
-from .apps import MakeSite, get_url, get_site, loadapps, get_urls, sites
+from .apps import *
 
 parent = lambda x : os.path.split(x)[0]
 this_dir = parent(os.path.abspath(__file__))

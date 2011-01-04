@@ -52,14 +52,16 @@ class Command(BaseCommand):
         make_option('-t','--target',
                     action='store',
                     dest='target',
-                    default='media/site/site.css',
+                    default='',
                     help='Target path of css file.'),
     )
     help = "Creates a css file from a template css."
     
     def handle(self, *args, **options):
         style = options['style']
-        target = os.path.join(settings.SITE_DIRECTORY,options['target'])
+        target = options['target']
+        if not target:
+            target = os.path.join(settings.MEDIA_ROOT,'site','site.css')
         render(style,target)
         
         

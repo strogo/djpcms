@@ -5,7 +5,8 @@ A library for Creating media files and compress them.
 Creating css files
 ==========================
 
-* Add a ``style.py`` python module within your site directory. Add the context::
+* Add a ``style.py`` python module within your site directory and
+  add the context::
 
 	from djpcms.contrib.medplate.themes.allwhite import context as base_context
 
@@ -15,6 +16,10 @@ Creating css files
 
 * Add a ``layout.css`` file within your site templates directory.
 
+Run::
+
+	python manage.py style
+	
 
 Compress
 ==============

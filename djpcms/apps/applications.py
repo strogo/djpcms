@@ -8,6 +8,7 @@ from djpcms.core.urlresolvers import SiteResolver
 
 
 __all__ = ['MakeSite',
+           'GetOrCreate',
            'get_site',
            'get_url',
            'get_urls',
@@ -32,10 +33,11 @@ class ApplicationSites(OrderedDict,SiteResolver):
                     appurls = ()
                 site.load(*appurls)
             
-    def make(self, name, settings = 'settings', url = None, clearlog = True):
+    def make(self, name, settings = None, url = None, clearlog = True):
         '''Initialise DjpCms from a directory or a file'''
         import djpcms
         #
+        settings = settings or 'settings'
         # if not a directory it may be a file
         if os.path.isdir(name):
             appdir = name
@@ -83,6 +85,14 @@ class ApplicationSites(OrderedDict,SiteResolver):
         self[site.url] = site
         self._urls = None
         return site
+    
+    def get_or_create(self, name, settings = None, route = None):
+        route = self.makeurl(route)
+        site = self.get_site(route)
+        if site:
+            return site
+        else:
+            return self.make(name,settings,route)
     
     def makeurl(self, url = None):
         url = url or '/'
@@ -147,6 +157,7 @@ class ApplicationSites(OrderedDict,SiteResolver):
 sites = ApplicationSites()
 
 MakeSite = sites.make
+GetOrCreate = sites.get_or_create
 get_site = sites.get_site
 get_url  = sites.get_url
 get_urls = sites.get_urls

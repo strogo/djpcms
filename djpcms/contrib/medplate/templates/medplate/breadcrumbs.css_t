@@ -2,9 +2,8 @@
 
 {% block body %}
 
-{{ tag }} {
-	font-size: {{ breadcrumbs.font_size }};
-	padding: {{ breadcrumbs.padding }};
+{{ tag }} a {
+	font-weight: {{ font_weight }};
 }
 {{ tag }} ul,
 {{ tag }} ul li {

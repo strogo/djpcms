@@ -46,6 +46,7 @@ context.add(
                                'height': '2.5em',
                                'padding': 0,
                                'inner_height': '2.5em',
+                               'list_margin': '0',
                                'secondary_width': '100px'}
                        )
             )
