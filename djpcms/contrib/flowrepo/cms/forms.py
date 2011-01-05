@@ -7,7 +7,6 @@ from djpcms.contrib.flowrepo.forms import WebAccountForm, UploadForm, FlowForm, 
 from djpcms import forms
 from djpcms.utils.uniforms import FormLayout, Fieldset, Html, inlineLabels, blockLabels2
 from djpcms.utils.html import htmlwrap, box
-from djpcms.views.apps.tagging import Tag, TagField
 
 
 CRL_HELP = htmlwrap('div',

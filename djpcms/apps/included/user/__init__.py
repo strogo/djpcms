@@ -3,6 +3,7 @@ from djpcms.apps.included.user.views import *
 
 permission = lambda self, request, obj: False if not request else request.user.is_authenticated()
 
+
 class UserApplication(appsite.ModelApplication):
     name     = 'account'
     userpage = False

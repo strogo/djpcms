@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
-from djpcms.views.apps.tagging import TagField
+from djpcms.apps.included.tagging import TagField
 
 from djpcms import forms
 from djpcms.utils import json

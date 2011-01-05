@@ -27,41 +27,17 @@ It is based on django models, for now, but it will work for other object relatio
 Features
 ===============================
 
- * Dynamic pages based on database models, not only django_ models!
- * If you need more than django_ and stdnet_ models,
-   register your model type and off you go::
- 
- 	from djpcms.core.models import ModelTypeWrapper, register
- 	
- 	class MyModelType(ModelTypeWrapper):
- 	
- 	    def setup(self):
- 	        '''Set up your model type for djpcms interaction'''
- 	   
- 	    def test(self, model):
- 	        '''test if model is a type handled by this wrapper'''  
- 	
- 	register('mymodeltype',MyModelType)
- 	
- 	
- * Extendible using plugins::
- 
- 	from djpcms.plugins import DJPplugin
- 	
- 	class MyPlugin(DJPplugin):
- 	
- 	    def render(self, djp, **kwargs):
- 	        ...
- 	        
- * Inline editing of plugins and pages.
- * Autocomplete for models when the autocomplete view is added to the model application.
+ * Dynamic pages based on database models.
+ * Application based on database model or not.
+ * Extendible using ``plugins``.
+ * Inline editing of ``plugins`` and ``pages``.
+ * ``Autocomplete`` for models when the autocomplete view is added to the model application.
  * Extendible AJAX decorators.
  * Tagging with django-tagging_, included in distribution.
  * Several battery included application classes.
- * Integration of any Django app which provides ``urls.py``.
+ * Integration with ``Django`` and South_ support for database migration.
  * Nice form layout with extendible ``uniforms``.
  * Deployment tools using fabric_.
- * South_ support for database migration.
  * Sitemap design.
 
 

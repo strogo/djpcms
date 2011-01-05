@@ -1,18 +1,12 @@
-#
-# flowrepo cms
-#
-# Requires djpcms
-#
 from django.contrib.contenttypes.models import ContentType
-from django.forms.models import modelform_factory
-from django import http
 from django.utils.encoding import force_unicode
 
 from djpcms.views import appview, appsite
 from djpcms.utils.html import htmlwrap, Paginator
-from djpcms.views.apps.tagging import ArchiveTaggedApplication
+from djpcms.apps.included.tagging import ArchiveTaggedApplication, TagApplication
 
-from djpcms.contrib.flowrepo.models import FlowRelated, FlowItem, Report, Message, Category, Image, Attachment
+from djpcms.contrib.flowrepo.models import FlowRelated, FlowItem, Report
+from djpcms.contrib.flowrepo.models import Message, Category, Image, Attachment
 from djpcms.contrib.flowrepo.cms.forms import *
 
 
@@ -254,3 +248,26 @@ class FlowItemApplication(ArchiveTaggedApplication):
         except:
             return None
 
+
+
+class WebAccountApplication(TagApplication):
+    name             = 'webaccount'
+    form             = NiceWebAccountForm
+    form_withrequest = True
+    inherit          = True
+    
+    add       = appview.AddView(regex = 'add', parent = None)
+    edit      = appview.EditView(regex = 'edit/(?P<id>\d+)', parent = None)
+    delete    = appview.DeleteView(regex = 'delete/(?P<id>\d+)', parent = None)
+        
+    def has_permission(self, request = None, obj = None):
+        if not request:
+            return False
+        try:
+            return request.user.id == settings.FOR_USER_ID
+        except:
+            False
+    
+    def permissionDenied(self, djp):
+        raise djp.http.Http404('bad link')
+    

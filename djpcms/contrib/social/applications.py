@@ -2,19 +2,17 @@ from copy import copy
 import logging
 from datetime import datetime
 
-from djpcms.conf import settings
 import djpcms
 import djpcms.contrib.social.providers
-from djpcms import http, get_site
 from djpcms.plugins import DJPplugin, get_plugin
 from djpcms.contrib import messages
 from djpcms.views import appview
 from djpcms.template import loader
 from djpcms.utils.ajax import jpopup
-from djpcms.views.apps.user import UserApplication
 from djpcms.views.decorators import deleteview
 from djpcms.contrib.social import provider_handles
 from djpcms.contrib.social.models import LinkedAccount
+from djpcms.apps.included.user import UserApplication
 
 from django.contrib.auth import authenticate, login
 
@@ -41,7 +39,7 @@ class SocialView(appview.ModelView):
         if not provider:
             p = djp.kwargs.get('provider',None)
             if p:
-                raise http.Http404('Provider {0} not available'.format(p))
+                raise djp.http.Http404('Provider {0} not available'.format(p))
             return self.render_all(djp)
         else:
             return ''
@@ -92,10 +90,12 @@ class SocialLoginView(SocialView):
 
     def _handle(self, djp):
         provider = self.provider(djp)
+        request  = djp.request
+        http     = djp.http
+        
         if not provider:
             raise http.Http404
     
-        request  = djp.request
         user     = request.user
         next     = request.GET.get('next', None)
         
@@ -141,6 +141,7 @@ class SocialLoginDoneView(SocialView):
     
     def get_response(self, djp):
         provider = self.provider(djp)
+        http = djp.http
         if provider:
             request = djp.request
             session = request.session
@@ -159,7 +160,7 @@ class SocialLoginDoneView(SocialView):
                 
                 if data.get('denied', None):
                     messages.info(request, 'Could not login. Access denied.')
-                    return http.HttpResponseRedirect(settings.USER_ACCOUNT_HOME_URL)
+                    return http.HttpResponseRedirect(djp.settings.USER_ACCOUNT_HOME_URL)
                 
                 oauth_token = data.get('oauth_token', None)
                 oauth_verifier = data.get('oauth_verifier', None)
@@ -286,8 +287,7 @@ class SocialActionPlugin(DJPplugin):
     action_name = None
     
     def get_view(self, djp):
-        site = get_site(djp.request.path)
-        return site.getapp('account-social_action')
+        return djp.site.getapp('account-social_action')
         
     def render(self, djp, wrapper, prefix, **kwargs):
         view = self.get_view(djp)

@@ -1,8 +1,8 @@
 from django.contrib.auth import logout
 from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
-from django.contrib import messages
 
+from djpcms.contrib import messages
 from djpcms.views import appview
 from djpcms.utils.html import submit
 from djpcms.utils.ajax import jredirect 
@@ -50,7 +50,7 @@ class LoginView(appview.ModelView):
     
     def preget(self, djp):
         if djp.request.user.is_authenticated():
-            return http.HttpResponseRedirect('/')
+            return djp.http.HttpResponseRedirect('/')
         
     def render(self, djp):
         if djp.request.user.is_authenticated():

@@ -4,9 +4,8 @@ from datetime import datetime
 
 from django.utils.dateformat import format
 from djpcms.contrib import messages
-from django.utils.translation import ugettext_lazy as _
+from djpcms.utils.translation import ugettext_lazy as _
 
-from djpcms import http
 from djpcms.utils.html import submit
 from djpcms.utils import force_str
 from djpcms.utils.ajax import jredirect, jremove
@@ -173,6 +172,7 @@ def saveform(djp, editing = False, force_redirect = False):
     '''Comprehensive save method for forms'''
     view       = djp.view
     request    = djp.request
+    http       = djp.http
     is_ajax    = request.is_ajax()
     POST       = request.POST
     GET        = request.GET

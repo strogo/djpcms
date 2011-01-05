@@ -200,7 +200,7 @@ No reason to change this default unless you really don't want to see the views i
         if not parent_view:
             page = app.get_page(djp)
             if page:
-                return response_from_page(page.parent)
+                return response_from_page(djp, page.parent)
         else:
             return parent_view(djp.request, **djp.kwargs)
     

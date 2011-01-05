@@ -210,7 +210,7 @@ which handle the response'''
         is_ajax   = request.is_ajax()
         ajax_key  = False
         mimetype  = None
-        site      = sites.get_site(request.path)
+        http      = djp.http
         
         if is_ajax:
             mimetype = 'application/javascript'
@@ -244,12 +244,12 @@ which handle the response'''
                 except Exception as e:
                     # we got an error. If in debug mode send a JSON response with
                     # the error message back to javascript.
-                    if sites.settings.DEBUG:
+                    if djp.settings.DEBUG:
                         res = jservererror(e, url = djp.url)
                     else:
                         raise e
             
-            return site.HttpResponse(res.dumps(),mimetype)
+            return http.HttpResponse(res.dumps(),mimetype)
         #
         # Otherwise it is the default POST response
         else:
