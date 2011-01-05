@@ -3,8 +3,9 @@ import sys
 import logging
 
 from djpcms.core.exceptions import AlreadyRegistered
+from djpcms.utils.importlib import import_module, import_modules
 from djpcms.utils.collections import OrderedDict
-from djpcms.core.urlresolvers import SiteResolver
+from djpcms.core.urlresolvers import ResolverMixin
 
 
 __all__ = ['MakeSite',
@@ -16,23 +17,18 @@ __all__ = ['MakeSite',
            'sites']
 
 
-class ApplicationSites(OrderedDict,SiteResolver):
+class ApplicationSites(OrderedDict,ResolverMixin):
     
-    def import_module(self, name):
-        from django.utils.importlib import import_module
-        return import_module(name)
+    route = None
     
-    def load(self):
+    def _load(self):
+        '''Load sites'''
+        settings = self.settings
         for site in self.values():
-            if not site.isloaded:
-                name = site.settings.APPLICATION_URL_MODULE
-                if name:
-                    app_module = self.import_module(name)
-                    appurls = app_module.appurls
-                else:
-                    appurls = ()
-                site.load(*appurls)
-            
+            site.load()
+        import_modules(settings.DJPCMS_PLUGINS)
+        import_modules(settings.DJPCMS_WRAPPERS)
+    
     def make(self, name, settings = None, url = None, clearlog = True):
         '''Initialise DjpCms from a directory or a file'''
         import djpcms
@@ -64,6 +60,10 @@ class ApplicationSites(OrderedDict,SiteResolver):
         settings.SITE_DIRECTORY = path
         settings.SITE_MODULE = name
         
+        # IF no settings available get the current one
+        if getattr(self,'settings',None) is None:
+            self.settings = settings
+        
         # Add template media directory to template directories
         path = os.path.join(djpcms.__path__[0],'media','djpcms')
         if path not in settings.TEMPLATE_DIRS:
@@ -78,7 +78,7 @@ class ApplicationSites(OrderedDict,SiteResolver):
         from djpcms.apps import appsites
         url = self.makeurl(url)
         self.logger.info('Creating new site at route "{0}"'.format(url))
-        site = self.get_site(url)
+        site = self.get(url,None)
         if site:
             raise AlreadyRegistered('Site with url {0} already avalable "{1}"'.format(url,site))
         site = appsites.ApplicationSite(self.makeurl(url),settings)
@@ -88,7 +88,7 @@ class ApplicationSites(OrderedDict,SiteResolver):
     
     def get_or_create(self, name, settings = None, route = None):
         route = self.makeurl(route)
-        site = self.get_site(route)
+        site = self.get(route,None)
         if site:
             return site
         else:
@@ -115,11 +115,12 @@ class ApplicationSites(OrderedDict,SiteResolver):
 
     def urls(self):
         urls = getattr(self,'_urls',None)
+        url = self.make_url
         if urls is None:
-            from django.conf.urls.defaults import url
             urls = ()
             for u,site in self.items():
-                urls += url(r'^{0}(.*)'.format(u[1:]), site),
+                urls += url(r'^{0}(.*)'.format(u[1:]),
+                            site),
             self._urls = urls
         return urls
         
@@ -152,8 +153,33 @@ class ApplicationSites(OrderedDict,SiteResolver):
     def clear(self):
         self._urls = None
         OrderedDict.clear(self)
-
-
+        
+    def wsgi(self, environ, start_response):
+        '''WSGI handler'''
+        cleaned_path = self.clean_path(environ)
+        if isinstance(cleaned_path,self.http.HttpResponseRedirect):
+            return cleaned_path
+        path = cleaned_path[1:]
+        site,view,kwargs = self.resolve(path)
+        request = site.http.Request(environ)
+        request.site = site
+        djp = view(request, **kwargs)
+        return djp.response()
+    
+    def request_handler(self, request, url):
+        '''Entry points for requests'''
+        cleaned_path = self.clean_path(request.environ)
+        if isinstance(cleaned_path,self.http.HttpResponseRedirect):
+            return cleaned_path
+        path = cleaned_path[1:]
+        site,view,kwargs = self.resolve(path)
+        request.site = site
+        djp = view(request, **kwargs)
+        setattr(request,'instance',djp.instance)
+        return djp.response()
+        
+        
+        
 sites = ApplicationSites()
 
 MakeSite = sites.make
@@ -162,3 +188,4 @@ get_site = sites.get_site
 get_url  = sites.get_url
 get_urls = sites.get_urls
 loadapps = sites.load
+

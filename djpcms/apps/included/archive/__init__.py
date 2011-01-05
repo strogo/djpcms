@@ -8,7 +8,7 @@ from django.utils.dates import MONTHS_3, MONTHS_3_REV, WEEKDAYS_ABBR, MONTHS
 
 from djpcms.utils import force_str
 from djpcms.views.appsite import ModelApplication
-from djpcms.views.apps.archive import views 
+from djpcms.apps.included.archive import views 
 
 __all__ = ['ArchiveApplication']
 

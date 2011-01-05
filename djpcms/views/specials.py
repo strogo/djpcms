@@ -1,4 +1,5 @@
-from djpcms import http
+from djpcms import sites
+from djpcms.http import get_http
 from djpcms.template import RequestContext, loader
 from djpcms.views.baseview import djpcmsview
 
@@ -17,7 +18,11 @@ class badview(djpcmsview):
         return self.httphandler(t.render(RequestContext(request, c)))
 
 def http404view(request, *args, **kwargs):
-    return badview('404.html',http.HttpResponseNotFound).response(request)
+    http = get_http(sites.settings.HTTP_LIBRARY)
+    return badview('404.html',
+                   http.HttpResponseNotFound).response(request)
 
 def http500view(request, *args, **kwargs):
-    return badview('500.html',http.HttpResponseServerError).response(request)
+    http = get_http(sites.settings.HTTP_LIBRARY)
+    return badview('500.html',
+                   http.HttpResponseServerError).response(request)

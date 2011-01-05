@@ -1,10 +1,12 @@
 from djpcms.core.exceptions import DjpcmsException, AlreadyRegistered
 from djpcms.views.appsite import Application, ModelApplication
+from djpcms.apps.included.contentedit import ContentSite, BlockContent
 from djpcms.utils.collections import OrderedDict
-from djpcms.core.urlresolvers import SiteResolver
+from djpcms.utils.importlib import import_module
+from djpcms.core.urlresolvers import ResolverMixin
+from djpcms.http import get_http, make_wsgi
 
-
-class ApplicationSite(SiteResolver):
+class ApplicationSite(ResolverMixin):
     '''
     Application site manager
     An instance of this class is used to handle url of
@@ -28,21 +30,30 @@ class ApplicationSite(SiteResolver):
         
     def load_initial(self):
         baseurl = self.config.CONTENT_INLINE_EDITING.get('pagecontent', '/content/')
-        from djpcms.views.apps.contentedit import ContentSite, BlockContent
         self.register(ContentSite(baseurl, BlockContent, editavailable = False))
         
     def count(self):
         return len(self._registry)
         
-    def load(self, *applications):
+    def _load(self):
         """Registers an instance of :class:`djpcms.views.appsite.Application`
 to the site. If a model is already registered, this will raise AlreadyRegistered."""
-        if self.isloaded:
-            return
+        name = self.settings.APPLICATION_URL_MODULE
+        appurls = ()
+        if name:
+            try:
+                app_module = import_module(name)
+            except ImportError:
+                name = '{0}.{1}'.format(self.settings.SITE_MODULE,name)
+                try:
+                    app_module = import_module(name)
+                except ImportError:
+                    app_module = None
+            if app_module:
+                appurls = app_module.appurls
         self.load_initial()
-        for application in applications:
+        for application in appurls:
             self.register(application)
-        self.isloaded = True
         
     def register(self, application):
         if not isinstance(application,Application):
@@ -107,16 +118,19 @@ returns the application handler. If the appname is not available, it raises a Ke
             
     def urls(self):
         urls = getattr(self,'_urls',None)
+        url = self.make_url
         if urls is None:
-            from django.conf.urls.defaults import url
             urls = ()
             # Add in each model's views.
             for app in self._nameregistry.values():
                 baseurl = app.baseurl
                 if baseurl:
-                    urls += url(regex = '^{0}(.*)'.format(baseurl[1:]),
-                                name = app.name,
-                                view = app),
+                    urls += url('^{0}(.*)'.format(baseurl[1:]),
+                                app,
+                                name = app.name),
             self._urls = urls
         return urls
-        
+    
+    def as_wsgi(self):
+        return make_wsgi(self)
+    

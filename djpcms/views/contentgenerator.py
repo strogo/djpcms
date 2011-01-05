@@ -25,11 +25,12 @@ and *b* is an integer indicating the ``block`` number in the page.'''
         Render the Content Block by looping over of the block items
         @return: HTML safe unicode for the block
         '''
-        html = [u'<div id="%s" class="djpcms-block">' % self.htmlid()]
+        html = ['<div id="%s" class="djpcms-block">' % self.htmlid()]
         for ht in self.blocks():
-            html.append(ht)
-        html.append(u'%s</div>' % self.empty())
-        return mark_safe(u'\n'.join(html))
+            if ht:
+                html.append(ht)
+        html.append('%s</div>' % self.empty())
+        return mark_safe('\n'.join(html))
     
     def __unicode__(self):
         return self.render()
@@ -44,7 +45,7 @@ and *b* is an integer indicating the ``block`` number in the page.'''
         This function produce HTML only if self.view is based on a database Page
         object. Otherwise it does nothing.
         '''
-        from djpcms.views.apps.contentedit import content_view
+        from djpcms.apps.included.contentedit import content_view
         ecv = content_view(self.page, self.b)
         if self.view.editurl:
             return ecv(self.djp)

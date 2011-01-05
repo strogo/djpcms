@@ -1,7 +1,7 @@
 from django.contrib.auth import logout
+from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib import messages
-from django import http
 
 from djpcms.views import appview
 from djpcms.utils.html import submit
@@ -27,7 +27,7 @@ class LogoutView(appview.ModelView):
         user    = request.user
         if user.is_authenticated():
             logout(request)
-        return http.HttpResponseRedirect(url)
+        return djp.http.HttpResponseRedirect(url)
 
 
 

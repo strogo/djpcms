@@ -1,8 +1,7 @@
 '''
 Base class for djpcms views.
 '''
-from djpcms.conf import settings
-from djpcms import http
+from djpcms import sites
 from djpcms.permissions import inline_editing, get_view_permission, has_permission
 from djpcms.contrib import messages
 from djpcms.utils.ajax import jservererror, jredirect
@@ -13,12 +12,20 @@ from djpcms.utils.uniforms import UniForm
 from djpcms.utils import UnicodeObject, urlbits, urlfrombits, function_module
 from djpcms.utils import htmltype
 from djpcms.utils.media import Media
-from djpcms.views.cache import pagecache
 from djpcms.views.response import DjpResponse
+from djpcms.views.cache import pagecache
 from djpcms.views.contentgenerator import BlockContentGen
 from djpcms.template import mark_safe, RequestContext, Context, loader
 from djpcms.core.exceptions import PermissionDenied
 
+
+def response_from_page(djp, page):
+    if page:
+        url = page.url.format(**djp.kwargs)
+        site, view, kwargs = djp.site.resolve(url[1:])
+        return view(djp.request)
+    else:
+        return None
 
 
 # THE DJPCMS INTERFACE CLASS for handling views
@@ -83,7 +90,7 @@ If *page* is ``None`` it returns :setting:`DEFAULT_TEMPLATE_NAME`.'''
             if page:
                 return page.get_template()
             else:
-                return settings.DEFAULT_TEMPLATE_NAME
+                return sites.settings.DEFAULT_TEMPLATE_NAME
         
     def title(self, page, **urlargs):
         '''View title.'''
@@ -100,11 +107,7 @@ If *page* is ``None`` it returns :setting:`DEFAULT_TEMPLATE_NAME`.'''
             return u'link'
     
     def parentresponse(self, djp):
-        if djp.page.parent:
-            view = pagecache.view_from_page(djp.request, djp.page.parent)
-            return view(djp.request)
-        else:
-            return None
+        return response_from_page(djp.page.parent)
     
     def specialkwargs(self, page, kwargs):
         return kwargs
@@ -133,6 +136,7 @@ Hooks:
 * *extra_response*: for more.'''
         # Get page object and template_name
         request = djp.request
+        http    = request.site.http
         page    = djp.page
         inner_template  = None
         grid    = self.grid960(page)
@@ -206,6 +210,7 @@ which handle the response'''
         is_ajax   = request.is_ajax()
         ajax_key  = False
         mimetype  = None
+        site      = sites.get_site(request.path)
         
         if is_ajax:
             mimetype = 'application/javascript'
@@ -239,12 +244,12 @@ which handle the response'''
                 except Exception as e:
                     # we got an error. If in debug mode send a JSON response with
                     # the error message back to javascript.
-                    if settings.DEBUG:
+                    if sites.settings.DEBUG:
                         res = jservererror(e, url = djp.url)
                     else:
                         raise e
             
-            return http.HttpResponse(res.dumps(), mimetype='application/javascript')
+            return site.HttpResponse(res.dumps(),mimetype)
         #
         # Otherwise it is the default POST response
         else:

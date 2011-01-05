@@ -7,10 +7,12 @@ from djpcms import sites
 from djpcms.utils.log import getLogger
     
 settings = sites.settings
+
 logger = getLogger('djpcms.urls')
+
 logger.debug("Setting up urls")
     
-from djpcms.sitemap import DjpUrl, get_site_maps
+from djpcms.apps.djangosite.sitemap import DjpUrl, get_site_maps
 from djpcms.utils.importlib import import_module, import_modules
 
 if not sites.settings.DEBUG:
@@ -92,7 +94,4 @@ if settings.CONTENT_INLINE_EDITING['available']:
     edit = settings.CONTENT_INLINE_EDITING['preurl']
     #site_urls += ((r'{0}/([\w/-]*)'.format(edit), 'djpcms.views.handlers.editHandler'),)
     site_urls.append(url(r'%s/([\w/-]*)' % edit, 'djpcms.views.handlers.editHandler'))
-
-
-
 

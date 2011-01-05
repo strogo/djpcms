@@ -8,7 +8,7 @@ from copy import deepcopy
 from djpcms import forms
 from djpcms.template import loader, Template, Context, RequestContext, mark_safe
 from djpcms.core.models import getmodel
-from djpcms.core.urlresolvers import SiteResolver
+from djpcms.core.urlresolvers import ResolverMixin
 from djpcms.core.exceptions import PermissionDenied, ApplicationUrlException
 from djpcms.utils import UnicodeObject, slugify
 from djpcms.forms import get_form
@@ -16,7 +16,7 @@ from djpcms.plugins import register_application
 from djpcms.utils.html import submit
 from djpcms.utils.uniforms import UniForm
 from djpcms.permissions import has_permission
-from djpcms.views.baseview import editview
+from djpcms.views.baseview import editview, response_from_page
 from djpcms.views.appview import View, ViewView
 from djpcms.views.cache import pagecache
 from djpcms.utils.media import MediaDefiningClass
@@ -74,7 +74,7 @@ def process_views(view,views,app):
         return view
 
 
-class Application(SiteResolver):
+class Application(ResolverMixin):
     '''Base class for djpcms applications.
     
 .. attribute:: baseurl
@@ -142,9 +142,10 @@ No reason to change this default unless you really don't want to see the views i
         
     def register(self, application_site):
         '''Register application with site'''
-        from django.conf.urls.defaults import url
+        url = self.make_url
         self.root_application = None
         self.application_site = application_site
+        self.settings = application_site.settings
         if self.editavailable is None:
             self.editavailable = application_site.settings.CONTENT_INLINE_EDITING.get('available',False)
         self.ajax             = self.application_site.settings.HTML_CLASSES
@@ -195,13 +196,12 @@ No reason to change this default unless you really don't want to see the views i
         '''Retrieve the parent :class:`djpcms.views.response.DjpResponse` instance
         '''
         parent_view = app.parent
+        kwargs = djp.kwargs
         if not parent_view:
             page = app.get_page(djp)
             if page:
-                page = page.parent
-                if page:
-                    parent_view = pagecache.view_from_page(djp.request, page)
-        if parent_view:
+                return response_from_page(page.parent)
+        else:
             return parent_view(djp.request, **djp.kwargs)
     
     def _makename(self, name):

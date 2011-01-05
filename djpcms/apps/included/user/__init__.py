@@ -1,5 +1,5 @@
 from djpcms.views import appsite, appview
-from djpcms.views.apps.user.views import *
+from djpcms.apps.included.user.views import *
 
 permission = lambda self, request, obj: False if not request else request.user.is_authenticated()
 

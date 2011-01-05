@@ -1,3 +1,1 @@
 -e git+http://github.com/lsbardel/djpcms.git/#egg=djpcms
-south
-pytz

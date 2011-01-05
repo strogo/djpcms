@@ -3,7 +3,6 @@ Application for handling inline editing of blocks
 The application derives from the base appsite.ModelApplication
 and defines several subviews 
 '''
-from djpcms.conf import settings
 from djpcms import forms, http, get_site
 from djpcms.utils.translation import ugettext_lazy as _
 from djpcms.core.exceptions import PermissionDenied
@@ -16,8 +15,9 @@ from djpcms.utils.uniforms import UniForm, FormLayout
 from djpcms.forms.cms import ContentBlockForm
 from djpcms.plugins import get_plugin
 from djpcms.plugins.extrawrappers import CollapsedWrapper
-from djpcms.views import appsite, appview, handlers
-from djpcms.views.cache import pagecache
+from djpcms.views import appsite, appview
+#from djpcms.views import handlers
+#from djpcms.views.cache import pagecache
 
 dummy_wrap = lambda d,b,x : x
 
@@ -275,8 +275,8 @@ The url is given by the ContentBlocks models
                 d = dialog(hd = unicode(f.instance),
                            bd = uni.render(djp),
                            modal  = True,
-                           width  = settings.CONTENT_INLINE_EDITING.get('width','auto'),
-                           height = settings.CONTENT_INLINE_EDITING.get('height','auto'))
+                           width  = djp.settings.CONTENT_INLINE_EDITING.get('width','auto'),
+                           height = djp.settings.CONTENT_INLINE_EDITING.get('height','auto'))
                 d.addbutton('Ok', url = djp.url, func = 'save')
                 d.addbutton('Cancel', func = 'cancel')
                 d.addbutton('Save', url = djp.url, func = 'save', close = False)

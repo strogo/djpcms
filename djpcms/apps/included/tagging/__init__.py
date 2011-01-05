@@ -1,8 +1,6 @@
-from django.utils.http import urlquote
-
 from djpcms.forms import AutocompleteManyToManyInput, set_autocomplete
 from djpcms.views import appsite, appview
-from djpcms.views.apps.archive import ArchiveApplication, views as archive
+from djpcms.apps.included.archive import ArchiveApplication, views as archive
 
 from tagging.models import Tag, TaggedItem
 from tagging.forms import TagField as TagFieldBase
@@ -28,7 +26,6 @@ def tagurl(self, request, *tags):
         kwargs = {}
         c = 1
         for tag in tags:
-            #tag = urlquote(tag)
             kwargs['tag%s' % c] = tag
             c += 1
         return view(request, **kwargs).url

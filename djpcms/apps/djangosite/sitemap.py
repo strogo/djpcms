@@ -4,8 +4,10 @@ from copy import copy
 from django.conf.urls.defaults import patterns
 from django.contrib.sitemaps import Sitemap
 
+from djpcms import sites
 from djpcms.views import appsite
 from djpcms.views.cache import pagecache
+
 
 def urliterable(urls):
     if isinstance(urls,list):
@@ -37,7 +39,7 @@ class DjpUrl(object):
         
     def all(self):
         lurl = copy(self._pre)
-        lurl.append((r'(.*)', 'djpcms.views.handlers.Handler'))
+        lurl.append((r'(.*)', sites.request_handler))
         lurl.extend(self._after)
         return tuple(lurl)
     

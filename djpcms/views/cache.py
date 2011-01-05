@@ -15,6 +15,8 @@ class PageCache(object):
         self._domain = None
         self.applications_url = None
         
+    
+        
     def clear(self, request = None):
         cache.clear()
         if request:
@@ -45,15 +47,15 @@ class PageCache(object):
             session['application-urls-built'] = 1
         return self.applications_url
     
-    def view_from_url(self, request, url):
+    def view_from_url(self, url):
         '''Get a view object given a url'''
         page = self.get_from_url(url)
         if page:
-            return self.view_from_page(request, page, False)
+            return self.view_from_page(page, False)
         else:
             return None
         
-    def view_from_page(self, request, page, docache = True):
+    def view_from_page(self, page, docache = True):
         from djpcms.views import appsite
         from djpcms.views.baseview import pageview
         force = False

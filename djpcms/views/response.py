@@ -1,14 +1,12 @@
 from copy import copy
 
-from djpcms.conf import settings
-from djpcms import http
 from djpcms.utils.ajax import jredirect, jhtmls
 from djpcms.template import loader, Template, Context, RequestContext, mark_safe
 from djpcms.utils import lazyattr
 from djpcms.utils.navigation import Navigator, Breadcrumbs
 
 
-class DjpResponse(http.HttpResponse):
+class DjpResponse(object):
     '''Djpcms Http Response class. It contains information associated with a given url.
         
         .. attribute: request
@@ -29,10 +27,13 @@ class DjpResponse(http.HttpResponse):
             It is filled during rendering of all plugins and views.
     '''
     def __init__(self, request, view, wrapper = None, prefix = None, **kwargs):
-        super(DjpResponse,self).__init__()
         self.request    = request
         self.view       = view
-        self.css        = settings.HTML_CLASSES
+        site            = request.site
+        self.site       = site
+        self.settings   = site.settings
+        self.http       = site.http
+        self.css        = self.settings.HTML_CLASSES
         self.kwargs     = kwargs
         self.wrapper    = wrapper
         self.prefix     = prefix
@@ -171,6 +172,8 @@ class DjpResponse(http.HttpResponse):
         request = self.request
         is_ajax = request.is_ajax()
         page    = self.page
+        site    = request.site
+        http    = site.http
         method  = request.method.lower()
         
         # Check for page view permissions
@@ -212,7 +215,7 @@ class DjpResponse(http.HttpResponse):
         media = self.media
         sitenav = Navigator(self,
                             classes = css.main_nav,
-                            levels = settings.SITE_NAVIGATION_LEVELS)
+                            levels = self.settings.SITE_NAVIGATION_LEVELS)
         d.update({'djp':        self,
                   'media':      media,
                   'page':       self.page,
@@ -220,16 +223,16 @@ class DjpResponse(http.HttpResponse):
                   'is_popup':   False,
                   'admin_site': False,
                   'sitenav':    sitenav})
-        if settings.ENABLE_BREADCRUMBS:
+        if self.settings.ENABLE_BREADCRUMBS:
             b = getattr(self,'breadcrumbs',None)
             if b is None:
-                 b = Breadcrumbs(self,min_length = settings.ENABLE_BREADCRUMBS)
+                 b = Breadcrumbs(self,min_length = self.settings.ENABLE_BREADCRUMBS)
             d['breadcrumbs'] = b
         template_file = template_file or self.template_file
         
         httpresponse_kwargs = {'mimetype': kwargs.pop('mimetype', None)}
         html = loader.render_to_string(template_file, context_instance=context, **kwargs)
-        return http.HttpResponse(html, **httpresponse_kwargs)
+        return self.site.http.HttpResponse(html, **httpresponse_kwargs)
         
     def redirect(self, url):
         if self.request.is_ajax():
