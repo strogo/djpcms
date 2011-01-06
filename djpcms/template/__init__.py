@@ -1,9 +1,9 @@
 import json
-from djpcms.conf import settings
+from djpcms import sites
 
 
 def handle(engine = None):
-    engine = engine or settings.TEMPLATE_ENGINE
+    engine = engine or sites.settings.TEMPLATE_ENGINE
     handle = _handlers.get(engine,None)
     if not handle:
         handle = get_engine(engine)
@@ -12,7 +12,7 @@ def handle(engine = None):
         
         
 def get_engine(engine, config = None):
-    config = config or settings
+    config = config or sites.settings
     if engine == 'django':
         from ._django import TemplateHandler
     elif engine == 'jinja2':
