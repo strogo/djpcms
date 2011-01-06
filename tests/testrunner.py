@@ -3,6 +3,11 @@ import os
 import sys
 
 import djpcms
+
+# Must be here
+site = djpcms.MakeSite('regression','conf')
+
+from djpcms.test import DjpcmsTestSuiteRunner
 import djpcms.contrib as contrib
 
 logger = logging.getLogger()
@@ -75,15 +80,12 @@ def setup_logging(verbosity):
 
         
 def run(tags = None, verbosity = 1, interactive = True, failfast = False):
-    site = djpcms.MakeSite('regression','conf')
     settings = site.settings
     setup_logging(verbosity)
     apps = settings.INSTALLED_APPS
     apptests = import_tests(tags,apps)
     
-    from django.test.utils import get_runner
-    TestRunner = get_runner(settings)
-    test_runner = TestRunner(verbosity=verbosity,
-                             interactive=interactive,
-                             failfast=failfast)
+    test_runner = DjpcmsTestSuiteRunner(verbosity=verbosity,
+                                        interactive=True,
+                                        failfast=failfast)
     test_runner.run_tests(apptests)

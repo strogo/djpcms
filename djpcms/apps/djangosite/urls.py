@@ -13,7 +13,7 @@ logger = getLogger('djpcms.urls')
 logger.debug("Setting up urls")
     
 from djpcms.apps.djangosite.sitemap import DjpUrl, get_site_maps
-from djpcms.utils.importlib import import_module, import_modules
+from djpcms.utils.importer import import_module, import_modules
 
 if not sites.settings.DEBUG:
     handler404 = 'djpcms.views.specials.http404view'

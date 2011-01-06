@@ -2,9 +2,9 @@ from djpcms.core.exceptions import DjpcmsException, AlreadyRegistered
 from djpcms.views.appsite import Application, ModelApplication
 from djpcms.apps.included.contentedit import ContentSite, BlockContent
 from djpcms.utils.collections import OrderedDict
-from djpcms.utils.importlib import import_module
+from djpcms.utils.importer import import_module
 from djpcms.core.urlresolvers import ResolverMixin
-from djpcms.http import get_http, make_wsgi
+from djpcms.http import make_wsgi
 
 class ApplicationSite(ResolverMixin):
     '''
@@ -22,7 +22,6 @@ class ApplicationSite(ResolverMixin):
         self._registry = {}
         self._nameregistry = OrderedDict()
         self.choices = [('','-----------------')]
-        self.isloaded = False
         self.ModelApplication = ModelApplication
         
     def __repr__(self):
@@ -42,19 +41,21 @@ to the site. If a model is already registered, this will raise AlreadyRegistered
         name = self.settings.APPLICATION_URL_MODULE
         appurls = ()
         if name:
-            try:
-                app_module = import_module(name)
-            except ImportError:
-                name = '{0}.{1}'.format(self.settings.SITE_MODULE,name)
-                try:
-                    app_module = import_module(name)
-                except ImportError:
-                    app_module = None
-            if app_module:
-                appurls = app_module.appurls
+            app_module = import_module(name)
+            appurls = app_module.appurls
         self.load_initial()
         for application in appurls:
             self.register(application)
+        url = self.make_url
+        urls = ()
+        # Add in each model's views.
+        for app in self._nameregistry.values():
+            baseurl = app.baseurl
+            if baseurl:
+                urls += url('^{0}(.*)'.format(baseurl[1:]),
+                            app,
+                            name = app.name),
+        return urls
         
     def register(self, application):
         if not isinstance(application,Application):
@@ -84,11 +85,10 @@ application class which has been unregistered.'''
     
     def clear(self):
         '''Clear the site from all applications'''
+        ResolverMixin.clear(self)
         del self.choices[1:]
         self._nameregistry.clear()
         self._registry.clear()
-        self._urls = None
-        self.isloaded = False
             
     def for_model(self, model):
         '''Obtain a :class:`djpcms.views.appsite.ModelApplication` for model *model*.
@@ -116,21 +116,6 @@ returns the application handler. If the appname is not available, it raises a Ke
     
     def count(self):
         return len(self._registry)
-            
-    def urls(self):
-        urls = getattr(self,'_urls',None)
-        url = self.make_url
-        if urls is None:
-            urls = ()
-            # Add in each model's views.
-            for app in self._nameregistry.values():
-                baseurl = app.baseurl
-                if baseurl:
-                    urls += url('^{0}(.*)'.format(baseurl[1:]),
-                                app,
-                                name = app.name),
-            self._urls = urls
-        return urls
     
     def as_wsgi(self):
         return make_wsgi(self)

@@ -1,11 +1,11 @@
 from django.forms.util import ErrorList
 from django.contrib.auth import forms as authforms
-from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth import authenticate, login
 
 
 from djpcms import forms
+from djpcms.apps.included.user import UserClass
 
 
 class LoginForm(forms.Form):
@@ -26,10 +26,10 @@ class LoginForm(forms.Form):
         username = data.get('username',None)
         password = data.get('password',None)
         if username and password:
-            user = authenticate(username = username, password = password)
+            user = UserClass().authenticate(username = username, password = password)
             if user is not None:
-                if user.is_active:
-                    login(request, user)
+                if user.is_active():
+                    user.login(request)
                     try:
                         request.session.delete_test_cookie()
                     except:
@@ -83,7 +83,6 @@ class UserChangeForm(forms.ModelForm):
         error_message = _("This value must contain only letters, numbers and underscores."))
     
     class Meta:
-        model = User
         fields = ['username','first_name','last_name','email']
 
 

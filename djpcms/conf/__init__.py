@@ -1,6 +1,6 @@
 import os
 import djpcms_defaults
-from djpcms.utils.importlib import import_module
+from djpcms.utils.importer import import_module
 
 
 _novalue = object()

@@ -3,7 +3,7 @@ import sys
 import logging
 
 from djpcms.core.exceptions import AlreadyRegistered
-from djpcms.utils.importlib import import_module, import_modules
+from djpcms.utils.importer import import_module, import_modules
 from djpcms.utils.collections import OrderedDict
 from djpcms.core.urlresolvers import ResolverMixin
 
@@ -28,8 +28,14 @@ class ApplicationSites(OrderedDict,ResolverMixin):
             site.load()
         import_modules(settings.DJPCMS_PLUGINS)
         import_modules(settings.DJPCMS_WRAPPERS)
+        url = self.make_url
+        urls = ()
+        for u,site in self.items():
+            urls += url(r'^{0}(.*)'.format(u[1:]),
+                        site),
+        return urls
     
-    def make(self, name, settings = None, url = None, clearlog = True):
+    def make(self, name, settings = None, route = None, clearlog = True):
         '''Initialise DjpCms from a directory or a file'''
         import djpcms
         #
@@ -72,7 +78,7 @@ class ApplicationSites(OrderedDict,ResolverMixin):
         djpcms.init_logging(clearlog)
         self.logger = logging.getLogger('ApplicationSites')
         
-        return self._create_site(url,settings)
+        return self._create_site(route,settings)
     
     def _create_site(self,url,settings):
         from djpcms.apps import appsites
@@ -112,17 +118,6 @@ class ApplicationSites(OrderedDict,ResolverMixin):
                 return None
         else:
             return site
-
-    def urls(self):
-        urls = getattr(self,'_urls',None)
-        url = self.make_url
-        if urls is None:
-            urls = ()
-            for u,site in self.items():
-                urls += url(r'^{0}(.*)'.format(u[1:]),
-                            site),
-            self._urls = urls
-        return urls
         
     def get_urls(self):
         urls = []
@@ -151,8 +146,8 @@ class ApplicationSites(OrderedDict,ResolverMixin):
         site = self.get_site(page.url)
         
     def clear(self):
-        self._urls = None
         OrderedDict.clear(self)
+        ResolverMixin.clear(self)
         
     def wsgi(self, environ, start_response):
         '''WSGI handler'''

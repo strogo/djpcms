@@ -161,9 +161,6 @@ No reason to change this default unless you really don't want to see the views i
                        name  = view_name)
             urls.append(nurl)
         self._urls = tuple(urls)
-        
-    def urls(self):
-        return self._urls
     
     def __repr__(self):
         return '%s: %s' % (self.__class__.__name__,self.baseurl)
@@ -414,8 +411,12 @@ functionality when searching for model instances.'''
     
     def __init__(self, baseurl, model, **kwargs):
         super(ModelApplication,self).__init__(baseurl, **kwargs)
-        self.model  = model
+        self._model  = model
+        
+    def register(self, application_site):
         self.opts   = getmodel(self)
+        self.model  = self.opts.model
+        return super(ModelApplication,self).register(application_site)
         
     def get_root_code(self):
         return self.root_application.code

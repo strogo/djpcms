@@ -2,12 +2,13 @@ import sys
 import logging
 
 from djpcms.conf import settings
+from djpcms.core.models import ModelInterface
 from djpcms.template import escape
 from djpcms.core.exceptions import BlockOutOfBound
 from djpcms.permissions import has_permission, get_view_permission
 
 
-class PageInterface(object):
+class PageInterface(ModelInterface):
     '''Page object interface'''
     
     def numblocks(self):

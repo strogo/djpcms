@@ -2,7 +2,7 @@ import logging
 
 INSTALLED_APPS                  = []
 ROOT_URLCONF                    = 'djpcms.core.defaults.urls'
-APPLICATION_URL_MODULE          = 'appurls'
+APPLICATION_URL_MODULE          = None
 ADMIN_URL_PREFIX                = '/admin/'
 ADMIN_MEDIA_PREFIX              = '/media/admin/'
 LANGUAGE_REDIRECT               = False
@@ -13,11 +13,12 @@ DJPCMS_IMAGE_UPLOAD_FUNCTION    = None
 SERVE_STATIC_FILES              = False
 DJPCMS_EMPTY_VALUE              = '(None)'
 
+USER_MODEL                      = 'django'
 HTTP_LIBRARY                    = 'django'
 CMS_ORM                         = 'django'
+TEMPLATE_ENGINE                 = 'django'
 
 # Template engine settings
-TEMPLATE_ENGINE                 = 'django'
 DEFAULT_TEMPLATE_NAME           = ['base.html','djpcms/base.html']
 
 #styling

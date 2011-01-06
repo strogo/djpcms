@@ -1,5 +1,6 @@
 Version 0.9.0 - Development
 =======================================
+* Added abstraction for ``User``, ``Request`` and ``Response`` classes.
 * Added ``save as new`` functionality to :class:`djpcms.views.appview.EditView`.
 * Added `rst` markup handled by sphinx_ in :mod:`djpcms.contrib.flowrepo.markups` module.
 * Added ``getdata`` function to ``DjpResponse`` as the preferred way to extract data from the response object.

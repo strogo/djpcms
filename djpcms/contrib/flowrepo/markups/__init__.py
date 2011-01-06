@@ -1,5 +1,5 @@
 import os
-from djpcms.utils.importlib import import_module
+from djpcms.utils.importer import import_module
 
 
 def add(code, name, handler):

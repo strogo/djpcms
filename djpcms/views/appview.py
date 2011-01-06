@@ -14,7 +14,6 @@ from django.db.models.query import QuerySet
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.text import smart_split
 
-from djpcms import http
 from djpcms.utils.translation import ugettext as _
 from djpcms.template import loader, RequestContext
 from djpcms.forms import saveform, deleteinstance, autocomplete
@@ -500,7 +499,7 @@ A view of this type has an embedded object available which is used to generate t
             instance = self.appmodel.get_object(djp.request, **kwargs)
         
         if not instance:
-            raise http.Http404
+            raise djp.http.Http404
         
         if djp:
             djp.instance = instance
@@ -637,7 +636,7 @@ and if your model has an AutocompleteView installed, it will work out of the box
         '''This response works only if it is an AJAX response. Otherwise it raises a ``Http404`` exception.'''
         request = djp.request
         if not request.is_ajax():
-            raise http.Http404
+            raise djp.http.Http404
         params = dict(request.GET.items())
         query = request.GET.get('q', None)
         search_fields = self.appmodel.search_fields
@@ -654,5 +653,5 @@ and if your model has an AutocompleteView installed, it will work out of the box
             data = ''.join([u'%s|%s|%s\n' % (getattr(f,rel_name),f,f.pk) for f in qs])
         else:
             data = ''
-        return http.HttpResponse(data)
+        return djp.http.HttpResponse(data)
 

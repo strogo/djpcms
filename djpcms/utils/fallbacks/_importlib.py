@@ -1,7 +1,5 @@
 # Taken from Python 2.7
-import os
 import sys
-import glob
 
 def _resolve_name(name, package, level):
     """Return the absolute name of the module to be imported."""
@@ -35,30 +33,3 @@ def import_module(name, package=None):
         name = _resolve_name(name[level:], package, level)
     __import__(name)
     return sys.modules[name]
-
-
-def expand_star(mod_name):
-    """Expand something like 'unuk.tasks.*' into a list of all the modules
-    there.
-    """
-    expanded = []
-    mod_dir  = os.path.dirname(__import__(mod_name[:-2], {}, {}, ['']).__file__)
-    for f in glob.glob1(mod_dir, "[!_]*.py"):
-        expanded.append('%s.%s' % (mod_name[:-2], f[:-3]))
-    return expanded
-
-
-def import_modules(modules):
-    '''Safely import a list of *modules*
-    '''
-    for mname in modules:
-        if mname.endswith('.*'):
-            to_load = expand_star(mname)
-        else:
-            to_load = [mname]
-        for module in to_load:
-            try:
-                __import__(module)
-            except ImportError as e:
-                pass
-            

@@ -356,7 +356,7 @@ class UniForm(UniFormBase):
         return True
     
     def __len__(self):
-        return self.len(self.forms)
+        return len(self.forms)
     
     def forms_only(self):
         for form in self.forms:

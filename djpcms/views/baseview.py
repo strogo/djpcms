@@ -107,7 +107,7 @@ If *page* is ``None`` it returns :setting:`DEFAULT_TEMPLATE_NAME`.'''
             return u'link'
     
     def parentresponse(self, djp):
-        return response_from_page(djp.page.parent)
+        return response_from_page(djp, djp.page.parent)
     
     def specialkwargs(self, page, kwargs):
         return kwargs
@@ -118,7 +118,7 @@ If *page* is ``None`` it returns :setting:`DEFAULT_TEMPLATE_NAME`.'''
         Return safe unicode
         This function is implemented by application views
         '''
-        return u''
+        return ''
     
     def preget(self, djp):
         pass

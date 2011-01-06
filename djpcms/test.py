@@ -1,21 +1,233 @@
 import json
+import unittest
+import signal
 
 import djpcms
-from djpcms import sites
+from djpcms import sites, get_site
+from djpcms.utils.importer import import_module
 from djpcms.plugins import SimpleWrap
 from djpcms.forms import fill_form_data, model_to_dict, cms
 from djpcms.views.cache import pagecache
 from djpcms.models import Page
+from djpcms.apps.included.user import UserClass
 from djpcms.core.exceptions import *
 
 from django import test
-from django.contrib.auth.models import User
+from django.db.models import get_app, get_apps
 from django.core.urlresolvers import clear_url_caches
 
-from BeautifulSoup import BeautifulSoup 
+from BeautifulSoup import BeautifulSoup
 
 
+class TestEnvironment(object):
+    '''Set up the test environment by checking which 3rd party
+package is available'''
 
+    def __init__(self, suite):
+        sites.settings.DEBUG = False
+        self.suite = suite
+        self.libs = []
+        self.check('django')
+        self.check('werkzeug')
+        self.check('sqlalchemy')
+        self.setup()
+        
+    def check(self, name):
+        try:
+            import_module(name)
+            self.libs.append(name)
+        except ImportError:
+            return None
+
+    def setup(self):
+        self._call('setup')
+        
+    def setupdb(self):
+        self._call('setupdb')
+        
+    def teardown(self):
+        self._call('teardown')
+        
+    def _call(self, funcname):
+        for lib in self.libs:
+            attname = '{0}_{1}'.format(funcname,lib)
+            attr = getattr(self,attname,None)
+            if attr:
+                attr()
+            
+    def setup_django(self):
+        from django.test.utils import setup_test_environment
+        setup_test_environment()
+        
+    def setupdb_django(self):
+        from django.db import connections
+        old_names = []
+        mirrors = []
+        suite = self.suite
+        for alias in connections:
+            connection = connections[alias]
+            # If the database is a test mirror, redirect it's connection
+            # instead of creating a test database.
+            if connection.settings_dict['TEST_MIRROR']:
+                mirrors.append((alias, connection))
+                mirror_alias = connection.settings_dict['TEST_MIRROR']
+                connections._connections[alias] = connections[mirror_alias]
+            else:
+                old_names.append((connection, connection.settings_dict['NAME']))
+                connection.creation.create_test_db(suite.verbosity, autoclobber=not suite.interactive)
+        self.django_old_config = old_names, mirrors
+        
+    def teardown_django(self):
+        from django.test.utils import teardown_test_environment
+        from django.db import connections
+        teardown_test_environment()
+        suite = self.suite
+        old_names, mirrors = self.django_old_config
+        # Point all the mirrors back to the originals
+        for alias, connection in mirrors:
+            connections._connections[alias] = connection
+        # Destroy all the non-mirror databases
+        for connection, old_name in old_names:
+            connection.creation.destroy_test_db(old_name, suite.verbosity)
+        
+        
+def build_suite(app_module):
+    '''Create a test suite for the provided application module.
+Look into the test module if it exists otherwise do nothing.'''
+    suite = unittest.TestSuite()
+    app_path = app_module.__name__.split('.')[:-1] 
+    try:
+        test_module = import_module('{0}.tests'.format('.'.join(app_path)))
+    except ImportError:
+        test_module = None
+    if test_module:
+        suite.addTest(unittest.defaultTestLoader.loadTestsFromModule(test_module))
+    return suite
+        
+
+class DjpcmsTestRunner(unittest.TextTestRunner):
+    '''Test runner adapted from django'''
+    def __init__(self, verbosity=0, failfast=False, **kwargs):
+        super(DjpcmsTestRunner, self).__init__(verbosity=verbosity, **kwargs)
+        self.failfast = failfast
+        self._keyboard_interrupt_intercepted = False
+
+    def run(self, *args, **kwargs):
+        """
+        Runs the test suite after registering a custom signal handler
+        that triggers a graceful exit when Ctrl-C is pressed.
+        """
+        self._default_keyboard_interrupt_handler = signal.signal(signal.SIGINT,
+            self._keyboard_interrupt_handler)
+        try:
+            result = super(DjpcmsTestRunner, self).run(*args, **kwargs)
+        finally:
+            signal.signal(signal.SIGINT, self._default_keyboard_interrupt_handler)
+        return result
+
+    def _keyboard_interrupt_handler(self, signal_number, stack_frame):
+        """
+        Handles Ctrl-C by setting a flag that will stop the test run when
+        the currently running test completes.
+        """
+        self._keyboard_interrupt_intercepted = True
+        sys.stderr.write(" <Test run halted by Ctrl-C> ")
+        # Set the interrupt handler back to the default handler, so that
+        # another Ctrl-C press will trigger immediate exit.
+        signal.signal(signal.SIGINT, self._default_keyboard_interrupt_handler)
+
+    def _makeResult(self):
+        result = super(DjpcmsTestRunner, self)._makeResult()
+        failfast = self.failfast
+
+        def stoptest_override(func):
+            def stoptest(test):
+                # If we were set to failfast and the unit test failed,
+                # or if the user has typed Ctrl-C, report and quit
+                if (failfast and not result.wasSuccessful()) or \
+                    self._keyboard_interrupt_intercepted:
+                    result.stop()
+                func(test)
+            return stoptest
+
+        setattr(result, 'stopTest', stoptest_override(result.stopTest))
+        return result
+
+
+class DjpcmsTestSuiteRunner(object):
+    
+    def __init__(self, verbosity=1, interactive=True, failfast=True, **kwargs):
+        self.verbosity = verbosity
+        self.interactive = interactive
+        self.failfast = failfast
+
+    def setup_test_environment(self, **kwargs):
+        self.environment = TestEnvironment(self)
+        return self.environment
+
+    def build_suite(self, test_labels, extra_tests=None, **kwargs):
+        suite = unittest.TestSuite()
+
+        if test_labels:
+            for label in test_labels:
+                if '.' in label:
+                    suite.addTest(build_test(label))
+                else:
+                    app = get_app(label)
+                    suite.addTest(build_suite(app))
+        else:
+            for app in get_apps():
+                suite.addTest(build_suite(app))
+
+        if extra_tests:
+            for test in extra_tests:
+                suite.addTest(test)
+
+        return suite
+
+    def run_suite(self, suite, **kwargs):
+        return DjpcmsTestRunner(verbosity=self.verbosity, failfast=self.failfast).run(suite)
+
+    def teardown_databases(self, old_config, **kwargs):
+        from django.db import connections
+        old_names, mirrors = old_config
+        # Point all the mirrors back to the originals
+        for alias, connection in mirrors:
+            connections._connections[alias] = connection
+        # Destroy all the non-mirror databases
+        for connection, old_name in old_names:
+            connection.creation.destroy_test_db(old_name, self.verbosity)
+
+    def suite_result(self, suite, result, **kwargs):
+        return len(result.failures) + len(result.errors)
+
+    def run_tests(self, test_labels, extra_tests=None, **kwargs):
+        """
+        Run the unit tests for all the test labels in the provided list.
+        Labels must be of the form:
+         - app.TestClass.test_method
+            Run a single specific test method
+         - app.TestClass
+            Run all the test methods in a given class
+         - app
+            Search for doctests and unittests in the named application.
+
+        When looking for tests, the test runner will look in the models and
+        tests modules for the application.
+
+        A list of 'extra' tests may also be provided; these tests
+        will be added to the test suite.
+
+        Returns the number of tests that failed.
+        """
+        env = self.setup_test_environment()
+        suite = self.build_suite(test_labels, extra_tests)
+        env.setupdb()
+        result = self.run_suite(suite)
+        env.teardown()
+        return self.suite_result(suite, result)
+    
+    
 class DjpCmsTestHandle(test.TestCase):
     '''Implements shortcut functions for testing djpcms.
 Must be used as a base class for TestCase classes'''
@@ -25,29 +237,36 @@ Must be used as a base class for TestCase classes'''
     sites = sites
     
     def _pre_setup(self):
-        self.site = get_site(self.urlbase)
+        sites.settings.TESTING = True
         super(DjpCmsTestHandle,self)._pre_setup()
         self.pagecache.clear()
-        self.site.settings.TESTING = True
         
     def _urlconf_setup(self):
+        sites.clear()
         appurls = getattr(self,'appurls',None)
-        if appurls:
-            self._old_appurl = self.site.settings.APPLICATION_URL_MODULE
-            self.site.settings.APPLICATION_URL_MODULE = appurls
-        clear_url_caches()
+        settings = sites.settings
+        self._old_appurl = settings.APPLICATION_URL_MODULE
+        settings.APPLICATION_URL_MODULE = appurls
+        sites.clear()
+        self.site = self.CreateSites()
+        
+    def CreateSites(self):
+        sett = sites.settings
+        sites.make(sett.SITE_DIRECTORY,'conf')
+        site = sites.get_site(self.urlbase)
+        sites.load() # load the site
+        return site
             
     def _urlconf_teardown(self):
-        if hasattr(self,'_old_appurl'):
-            self.site.settings.APPLICATION_URL_MODULE = self._old_appurl
-        self.site.clear()
+        sites.settings.APPLICATION_URL_MODULE = self._old_appurl
+        sites.clear()
         super(DjpCmsTestHandle,self)._urlconf_teardown()
     
     def clear(self, db = False):
         if db:
             self.Page.objects.all().delete()
         else:
-            self.pagecache.clear()
+            sites.clear()
 
     def makepage(self, view = None, model = None, bit = '', parent = None, fail = False, **kwargs):
         form = cms.PageForm()
@@ -71,27 +290,26 @@ Must be used as a base class for TestCase classes'''
             self.assertTrue(instance.pk)
             return instance
 
-    def post(self, url = '/', data = {}, status = 200):
+    def post(self, url = '/', data = {}, status = 200,
+             response = False, ajax = False):
         '''Quick function for posting some content'''
-        response = self.client.post(url,data)
-        self.assertEqual(response.status_code,status)
-        return response.context
-    
-    def get(self, url = '/', status = 200, response = False):
-        '''Quick function for getting some content'''
-        resp = self.client.get(url)
+        if ajax:
+            resp = self.client.post(url,data,HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        else:
+            resp = self.client.post(url,data)
         self.assertEqual(resp.status_code,status)
         if response:
             return resp
         else:
             return resp.context
     
-    def post(self, url = '/', data = {}, status = 200, ajax = False, response = False):
-        '''Quick function for posting some content'''
+    def get(self, url = '/', status = 200, response = False,
+            ajax = False):
+        '''Quick function for getting some content'''
         if ajax:
-            resp = self.client.post(url,data,HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+            resp = self.client.get(url,HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         else:
-            resp = self.client.post(url,data)
+            resp = self.client.get(url)
         self.assertEqual(resp.status_code,status)
         if response:
             return resp
@@ -106,11 +324,11 @@ class TestCase(DjpCmsTestHandle):
         
     def setUp(self):
         p = self.get()['page']
-        self.superuser = User.objects.create_superuser('testuser', 'test@testuser.com', 'testuser')
-        self.user = User.objects.create_user('simpleuser', 'simple@testuser.com', 'simpleuser')
+        self.superuser = UserClass().create_super('testuser', 'test@testuser.com', 'testuser')
+        self.user = UserClass().create('simpleuser', 'simple@testuser.com', 'simpleuser')
         self.assertEqual(p.url,'/')
-        if not hasattr(self,'fixtures'):
-            self.assertEqual(Page.objects.all().count(),1)
+        #if not hasattr(self,'fixtures'):
+        #    self.assertEqual(Page.objects.all().count(),1)
             
     def editurl(self, url):
         return '/{0}{1}'.format(self.site.settings.CONTENT_INLINE_EDITING['preurl'],url)

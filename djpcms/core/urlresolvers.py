@@ -34,12 +34,25 @@ class Resolver404(Exception):
 class ResolverMixin(object):
     
     def load(self):
-        if not getattr(self,'isloaded',False):
-            self._load()
-            self.isloaded = True
+        if getattr(self,'_urls',None) is None:
+            self._urls = self._load()
         
+    def __get_isloaded(self):
+        return getattr(self,'_urls',None) is not None
+    isloaded = property(__get_isloaded)
+    
+    def urls(self):
+        self.load()
+        return self._urls
+    
     def _load(self):
         pass
+    
+    def clear(self):
+        global _view_cache
+        self.resolver = None
+        self._urls = None
+        _view_cache.clear()
     
     def clean_path(self, environ):
         '''
@@ -79,8 +92,8 @@ class ResolverMixin(object):
         cached = _view_cache.get(path,None)
         if not cached:
             if not getattr(self,'resolver',None):
-                self.load()
-                self.resolver = RegexURLResolver(r'^', self.urls())
+                urls = self.urls()
+                self.resolver = RegexURLResolver(r'^', urls)
             
             if not site:
                 view = self.resolve_flat(path)

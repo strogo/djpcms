@@ -1,13 +1,10 @@
-from django.contrib.auth import logout
-from django.contrib.auth.models import User
-from django.contrib.auth.tokens import default_token_generator
-
 from djpcms.contrib import messages
 from djpcms.views import appview
 from djpcms.utils.html import submit
-from djpcms.utils.ajax import jredirect 
-
+from djpcms.utils.ajax import jredirect
 from djpcms.forms import saveform
+from djpcms.apps.included.user.user import UserClass
+
 from forms import LoginForm, PasswordChangeForm
 
 
@@ -26,7 +23,7 @@ class LogoutView(appview.ModelView):
         url     = params.get('next',None) or '/'
         user    = request.user
         if user.is_authenticated():
-            logout(request)
+            UserClass().logout(request)
         return djp.http.HttpResponseRedirect(url)
 
 

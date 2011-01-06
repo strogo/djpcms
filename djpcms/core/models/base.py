@@ -1,3 +1,4 @@
+import inspect
 from datetime import date, datetime
 
 from django.utils.dateformat import format as date_format, time_format
@@ -8,11 +9,26 @@ from djpcms.template import loader, mark_safe, escape, conditional_escape
 
 
 
-__all__ = ['ModelTypeWrapper',
+__all__ = ['ModelInterface',
+           'ModelTypeWrapper',
            'nicerepr',
            '_boolean_icon',
            'nicerepr',
            'table']
+ 
+ 
+class ModelInterface(object):
+    
+    def underlying(self):
+        return self
+    
+    def save(self):
+        raise NotImplementedError
+    
+    @classmethod
+    def modelclass(cls):
+        return self.__class__
+ 
  
 
 BOOLEAN_MAPPING = {True: {'icon':'ui-icon-check','name':'yes'},
@@ -71,15 +87,23 @@ def table(headers, queryset_or_list, djp, model = None, nd = 3):
 class ModelTypeWrapper(object):
     '''Base class for wrapping Object Relational Mapping models'''
     def __init__(self, appmodel):
+        model = self.get_model(appmodel._model)
+        self.test(model)
         self.list_display = appmodel.list_display or []
         self.object_display = appmodel.object_display or self.list_display
         self.list_display_links = appmodel.list_display_links or []
         self.search_fields = appmodel.search_fields or []
-        self.test(appmodel.model)
         self.appmodel = appmodel
-        self.model = appmodel.model
+        self.model = model
         self.setup()
-        
+    
+    def get_model(self, model):
+        if inspect.isfunction(model):
+            model = model()
+        if inspect.isclass(model) and issubclass(model,ModelInterface):
+            model = model.modelclass()
+        return model
+    
     def test(self, model):
         raise NotImplementedError
     

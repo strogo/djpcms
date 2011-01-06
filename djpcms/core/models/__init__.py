@@ -27,4 +27,4 @@ def getmodel(appmodel):
             return wrapper(appmodel)
         except:
             continue
-    raise ModelException('Model not recognised')
+    raise ModelException('Model {0} not recognised'.format(appmodel))
