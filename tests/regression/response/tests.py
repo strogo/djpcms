@@ -1,6 +1,5 @@
 from djpcms.test import TestCase
-from djpcms.conf import settings
-from djpcms.views.apps import vanilla
+from djpcms.apps.included import vanilla
 
 from regression.response.models import Strategy
 

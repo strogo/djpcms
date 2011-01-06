@@ -41,7 +41,7 @@ class ApplicationSites(OrderedDict,ResolverMixin):
             appdir = os.path.split(os.path.realpath(name))[0]
         else:
             try:
-                mod = self.import_module(name)
+                mod = import_module(name)
                 appdir = mod.__path__[0]
             except ImportError:
                 raise ValueError('Could not find directory or file {0}'.format(name))

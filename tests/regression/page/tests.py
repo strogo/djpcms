@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 
 from djpcms.test import TestCase
-from djpcms.views.apps import vanilla
+from djpcms.apps.included import vanilla
 
 from regression.page.models import Strategy
 

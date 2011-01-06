@@ -13,6 +13,7 @@ class ApplicationSite(ResolverMixin):
     registered applications.
     '''
     def __init__(self, url, config):
+        self.route = url
         self.url = url
         self.config = config
         self.settings = config
@@ -25,7 +26,7 @@ class ApplicationSite(ResolverMixin):
         self.ModelApplication = ModelApplication
         
     def __repr__(self):
-        return '{0} - {1}'.format(self.url,'loaded' if self.isloaded else 'not loaded')
+        return '{0} - {1}'.format(self.route,'loaded' if self.isloaded else 'not loaded')
     __str__ = __repr__
         
     def load_initial(self):

@@ -3,7 +3,7 @@ import os
 
 from djpcms.test import TestCase
 from djpcms.utils.pathtool import parentdir
-from djpcms.views.apps.docs import DocApplication
+from djpcms.apps.included.docs import DocApplication
 
 
 class DocTestApplication(DocApplication):

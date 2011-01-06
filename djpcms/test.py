@@ -1,7 +1,7 @@
 import json
 
 import djpcms
-from djpcms import http, get_site
+from djpcms import sites
 from djpcms.plugins import SimpleWrap
 from djpcms.forms import fill_form_data, model_to_dict, cms
 from djpcms.views.cache import pagecache
@@ -22,7 +22,7 @@ Must be used as a base class for TestCase classes'''
     urlbase   = '/'
     pagecache = pagecache
     Page = Page
-    site = get_site()
+    sites = sites
     
     def _pre_setup(self):
         self.site = get_site(self.urlbase)
