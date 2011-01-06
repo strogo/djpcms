@@ -1,12 +1,14 @@
 from copy import deepcopy
 
-from djpcms import get_site
 from django.core.cache import cache
 from django.contrib.sites.models import Site
 from django.db.models import signals
 from django.http import Http404
 
+from djpcms import get_site
 from djpcms.models import Page
+from djpcms.views import appsite
+from djpcms.views.baseview import pageview
 
 
 class PageCache(object):
@@ -14,8 +16,6 @@ class PageCache(object):
     def __init__(self):
         self._domain = None
         self.applications_url = None
-        
-    
         
     def clear(self, request = None):
         cache.clear()
@@ -55,16 +55,17 @@ class PageCache(object):
         else:
             return None
         
-    def view_from_page(self, page, docache = True):
-        from djpcms.views import appsite
-        from djpcms.views.baseview import pageview
+    def view_from_page(self, page, site = None, docache = True):
+        '''Retrive a view instance from a page instance.
+If the page is for an application view, site must be provided otherwise
+no search will be performed.'''
         force = False
+        view = None
         if docache:
             force = self._set_if_not(self.urlkey(page.url),page)
         if page.application_view:
-            site = get_site(page.url)
-            #self.build_app_urls(request, False)
-            view = site.getapp(page.application_view)
+            if site:
+                view = site.getapp(page.application_view)
             if not view:
                 raise Http404
         else:

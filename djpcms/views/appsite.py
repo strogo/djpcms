@@ -147,8 +147,8 @@ No reason to change this default unless you really don't want to see the views i
         self.application_site = application_site
         self.settings = application_site.settings
         if self.editavailable is None:
-            self.editavailable = application_site.settings.CONTENT_INLINE_EDITING.get('available',False)
-        self.ajax             = self.application_site.settings.HTML_CLASSES
+            self.editavailable = self.settings.CONTENT_INLINE_EDITING.get('available',False)
+        self.ajax             = self.settings.HTML_CLASSES
         self.description      = self._makedescription()
         self.views            = deepcopy(self.base_views)
         self.object_views     = []

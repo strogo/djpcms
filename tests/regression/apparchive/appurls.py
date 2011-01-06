@@ -1,4 +1,4 @@
-from djpcms.views.apps.archive import ArchiveApplication
+from djpcms.apps.included.archive import ArchiveApplication
 from djpcms.models import SiteContent
 
 appurls = ArchiveApplication('/content/',

@@ -17,20 +17,40 @@ __all__ = ['MakeSite',
            'sites']
 
 
-class ApplicationSites(OrderedDict,ResolverMixin):
+class editHandler(ResolverMixin):
     
-    route = None
+    def __init__(self, site):
+        self.site = site
+        
+    def _load(self):
+        return self.site.urls()
+        
+
+
+class ApplicationSites(ResolverMixin):
+    
+    def __init__(self):
+        self.route = None
+        self.sites = OrderedDict()
     
     def _load(self):
         '''Load sites'''
+        from djpcms.apps.cache import PageCache
+        self.pagecache = PageCache()
         settings = self.settings
-        for site in self.values():
+        for site in self.sites.values():
+            site.pagecache = self.pagecache
             site.load()
         import_modules(settings.DJPCMS_PLUGINS)
         import_modules(settings.DJPCMS_WRAPPERS)
         url = self.make_url
         urls = ()
-        for u,site in self.items():
+        if settings.CONTENT_INLINE_EDITING['available']:
+            edit = settings.CONTENT_INLINE_EDITING['preurl']
+            for u,site in self.sites.items():
+                urls += url(r'^{0}/{1}(.*)'.format(edit,u[1:]),
+                            editHandler(site)),
+        for u,site in self.sites.items():
             urls += url(r'^{0}(.*)'.format(u[1:]),
                         site),
         return urls
@@ -88,9 +108,12 @@ class ApplicationSites(OrderedDict,ResolverMixin):
         if site:
             raise AlreadyRegistered('Site with url {0} already avalable "{1}"'.format(url,site))
         site = appsites.ApplicationSite(self.makeurl(url),settings)
-        self[site.url] = site
+        self.sites[site.route] = site
         self._urls = None
         return site
+    
+    def get(self, name, default = None):
+        return self.sites.get(name,default)
     
     def get_or_create(self, name, settings = None, route = None):
         route = self.makeurl(route)
@@ -113,7 +136,8 @@ class ApplicationSites(OrderedDict,ResolverMixin):
         site = self.get(url,None)
         if not site:
             try:
-                return self.resolve(url)
+                res = self.resolve(url[1:])
+                return res[0]
             except:
                 return None
         else:
@@ -146,7 +170,7 @@ class ApplicationSites(OrderedDict,ResolverMixin):
         site = self.get_site(page.url)
         
     def clear(self):
-        OrderedDict.clear(self)
+        self.sites.clear()
         ResolverMixin.clear(self)
         
     def wsgi(self, environ, start_response):

@@ -1,7 +1,7 @@
 from copy import copy
 
 from djpcms.utils.ajax import jredirect, jhtmls
-from djpcms.template import loader, Template, Context, RequestContext, mark_safe
+from djpcms.template import loader, Context, RequestContext
 from djpcms.utils import lazyattr
 from djpcms.utils.navigation import Navigator, Breadcrumbs
 
@@ -31,6 +31,7 @@ class DjpResponse(object):
         self.view       = view
         site            = request.site
         self.site       = site
+        self.pagecache  = site.pagecache
         self.settings   = site.settings
         self.http       = site.http
         self.css        = self.settings.HTML_CLASSES
@@ -142,7 +143,7 @@ class DjpResponse(object):
     def _set_instance(self, instance):
         self.kwargs['instance'] = instance
     instance = property(fget = _get_instance, fset = _set_instance)
-    
+        
     def has_own_page(self):
         '''Return ``True`` if the response has its own :class:djpcms.models.Page` object.
         '''
@@ -155,7 +156,6 @@ class DjpResponse(object):
                 return page.url == self.url
         return False
             
-    
     def robots(self):
         '''
         Robots
@@ -231,7 +231,9 @@ class DjpResponse(object):
         template_file = template_file or self.template_file
         
         httpresponse_kwargs = {'mimetype': kwargs.pop('mimetype', None)}
-        html = loader.render_to_string(template_file, context_instance=context, **kwargs)
+        html = loader.render_to_string(template_file,
+                                       context_instance=context,
+                                       **kwargs)
         return self.site.http.HttpResponse(html, **httpresponse_kwargs)
         
     def redirect(self, url):
@@ -246,7 +248,7 @@ class DjpResponse(object):
         instance = self.instance
         if not instance:
             return None
-        appmodel = appsite.site.for_model(instance.__class__)
+        appmodel = self.site.for_model(instance.__class__)
         if appmodel:
             return appmodel.instancecode(self.request, instance)
         else:

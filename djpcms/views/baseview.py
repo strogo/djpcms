@@ -13,16 +13,17 @@ from djpcms.utils import UnicodeObject, urlbits, urlfrombits, function_module
 from djpcms.utils import htmltype
 from djpcms.utils.media import Media
 from djpcms.views.response import DjpResponse
-from djpcms.views.cache import pagecache
 from djpcms.views.contentgenerator import BlockContentGen
 from djpcms.template import mark_safe, RequestContext, Context, loader
 from djpcms.core.exceptions import PermissionDenied
 
 
 def response_from_page(djp, page):
+    '''Given a :class:`djpcms.views.DjpResponse` object
+and a Page instance, it calculates a new response object.'''
     if page:
         url = page.url.format(**djp.kwargs)
-        site, view, kwargs = djp.site.resolve(url[1:])
+        site, view, kwargs = sites.resolve(url[1:])
         return view(djp.request)
     else:
         return None
@@ -162,7 +163,7 @@ Hooks:
                 cb['content%s' % b] = BlockContentGen(djp, b)
             
             # Call the inner-template renderer
-            inner = page.inner_template.render(Context(cb))
+            inner = page.inner_template.render(Context(cb, autoescape=False))
         else:
             # No page or no inner_template. Get the inner content directly
             inner = self.render(djp)
@@ -329,12 +330,14 @@ If we didn't do that, test_navigation.testMultiPageApplication would fail.'''
         if not page:
             return views
         
+        site      = djp.site
+        pagecache = djp.pagecache
         pchildren = pagecache.get_children(page)
         
         for child in pchildren:
             try:
-                cview = pagecache.view_from_page(request, child)
-            except Exception as e:
+                cview = pagecache.view_from_page(child, site = site)
+            except djp.http.Http404:
                 continue
             if cview.has_permission(request, child, instance):
                 cdjp = cview(request, **cview.specialkwargs(child,kwargs))

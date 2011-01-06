@@ -2,10 +2,8 @@ import os
 
 from djpcms.views import appsite, appview
 from djpcms.utils.pathtool import parentdir
-from djpcms.views.apps import archive, vanilla
-
+from djpcms.apps.included import archive, vanilla, docs
 from djpcms.models import SiteContent
-from djpcms.views.apps.docs import DocApplication
 
 from regression.rootappnav.models import Strategy
     
@@ -25,7 +23,7 @@ class ContentArchiveApplication(archive.ArchiveApplication):
     date_code  = 'last_modified'
 
 
-class DocTestApplication(DocApplication):
+class DocTestApplication(docs.DocApplication):
     inherit    = True
     deflang    = None
     defversion = None

@@ -64,7 +64,7 @@ to the site. If a model is already registered, this will raise AlreadyRegistered
         if application.name in self._nameregistry:
             raise AlreadyRegistered('Application %s already registered as application' % application)
         self._nameregistry[application.name] = application
-        
+        application.register(self)
         model = getattr(application,'model',None)
         if model:
             if model in self._registry:
@@ -72,8 +72,6 @@ to the site. If a model is already registered, this will raise AlreadyRegistered
             self._registry[model] = application
         else:
             pass
-            #self.choices.append((app.name,app.name))
-        application.register(self)
     
     def unregister(self, model):
         '''Unregister the :class:`djpcms.views.appsite.ModelApplication registered for *model*. Return the

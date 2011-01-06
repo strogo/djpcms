@@ -27,6 +27,7 @@ from django.utils.regex_helper import normalize
 
 _view_cache = {}
 
+
 class Resolver404(Exception):
     pass
 
@@ -98,7 +99,11 @@ class ResolverMixin(object):
             if not site:
                 view = self.resolve_flat(path)
                 if view:
-                    res = (self,view,{})
+                    try:
+                        site = self.get_site()
+                    except:
+                        site = self
+                    res = (site or self,view,{})
                     _view_cache[path] = res
                     return res
             try:

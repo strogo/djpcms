@@ -1,6 +1,4 @@
-from djpcms import forms
-from djpcms.forms.formsets import formset_factory
-from djpcms.template import RequestContext, loader, mark_safe
+from djpcms.utils import force_str
 
 
 class BlockContentGen(object):
@@ -30,7 +28,7 @@ and *b* is an integer indicating the ``block`` number in the page.'''
             if ht:
                 html.append(ht)
         html.append('%s</div>' % self.empty())
-        return mark_safe('\n'.join(html))
+        return force_str('\n'.join(html))
     
     def __unicode__(self):
         return self.render()

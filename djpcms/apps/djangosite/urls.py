@@ -81,17 +81,17 @@ if settings.SERVE_STATIC_FILES and settings.MEDIA_URL:
 
 #################################################################################
 # SITEMAP
-if settings.DJPCMS_SITE_MAP:
-    site_urls.append(url(r'^sitemap.xml$',
-                         'django.contrib.sitemaps.views.sitemap',
-                         {'sitemaps': get_site_maps()}))
+#if settings.DJPCMS_SITE_MAP:
+#    site_urls.append(url(r'^sitemap.xml$',
+#                         'django.contrib.sitemaps.views.sitemap',
+#                         {'sitemaps': get_site_maps()}))
 
 
 
 #################################################################################
 # CONTENT EDITING at /edit-content/.... 
-if settings.CONTENT_INLINE_EDITING['available']:
-    edit = settings.CONTENT_INLINE_EDITING['preurl']
-    #site_urls += ((r'{0}/([\w/-]*)'.format(edit), 'djpcms.views.handlers.editHandler'),)
-    site_urls.append(url(r'%s/([\w/-]*)' % edit, 'djpcms.views.handlers.editHandler'))
+#if settings.CONTENT_INLINE_EDITING['available']:
+#    edit = settings.CONTENT_INLINE_EDITING['preurl']
+#    #site_urls += ((r'{0}/([\w/-]*)'.format(edit), 'djpcms.views.handlers.editHandler'),)
+#    site_urls.append(url(r'%s/([\w/-]*)' % edit, 'djpcms.views.handlers.editHandler'))
 
