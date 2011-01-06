@@ -6,7 +6,6 @@ from django.contrib.sitemaps import Sitemap
 
 from djpcms import sites
 from djpcms.views import appsite
-from djpcms.views.cache import pagecache
 
 
 def urliterable(urls):
@@ -55,7 +54,7 @@ class DjpPage(Sitemap):
     Create a sitemap for a djpcms managed site
     '''
     def items(self):
-        return pagecache.sitemap()
+        return sites.pagecache.sitemap()
 
     def location(self, obj):
         return obj.url

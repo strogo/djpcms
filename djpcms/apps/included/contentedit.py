@@ -3,7 +3,7 @@ Application for handling inline editing of blocks
 The application derives from the base appsite.ModelApplication
 and defines several subviews 
 '''
-from djpcms import forms, http, get_site
+from djpcms import forms
 from djpcms.utils.translation import ugettext_lazy as _
 from djpcms.core.exceptions import PermissionDenied
 from djpcms.models import BlockContent
@@ -36,7 +36,7 @@ class content_view(object):
         '''
         request  = djp.request
         url      = djp.view.page_url(request)
-        appmodel = get_site(url).for_model(BlockContent)
+        appmodel = djp.site.for_model(BlockContent)
         editview = appmodel.getview('edit')
         wrapper  = EditWrapperHandler(url)
         pos = 0
@@ -369,7 +369,7 @@ class ContentSite(appsite.ModelApplication):
             try:
                 instance = self.model.objects.get(page = page, block = blocknumber, position = position)
             except:
-                raise http.Http404('Position %s not available in content block %s' % (position,blocknumber))
+                raise request.http.Http404('Position %s not available in content block %s' % (position,blocknumber))
         
             return instance
         else:

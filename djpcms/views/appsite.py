@@ -18,7 +18,6 @@ from djpcms.utils.uniforms import UniForm
 from djpcms.permissions import has_permission
 from djpcms.views.baseview import editview, response_from_page
 from djpcms.views.appview import View, ViewView
-from djpcms.views.cache import pagecache
 from djpcms.utils.media import MediaDefiningClass
 from djpcms.utils.collections import OrderedDict
 

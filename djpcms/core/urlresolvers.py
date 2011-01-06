@@ -6,15 +6,6 @@
 #
 #
 
-"""
-This module converts requested URLs to callback view functions.
-
-RegexURLResolver is the main class here. Its resolve() method takes a URL (as
-a string) and returns a tuple in this format:
-
-    (view_function, function_args, function_kwargs)
-"""
-
 import re
 from inspect import isclass
 
@@ -33,6 +24,8 @@ class Resolver404(Exception):
 
 
 class ResolverMixin(object):
+    '''A lazy mixin class for resolving urls. The main function here is the ``resolve``
+method'''
     
     def load(self):
         if getattr(self,'_urls',None) is None:
@@ -48,6 +41,9 @@ class ResolverMixin(object):
     
     def _load(self):
         pass
+    
+    def editsite(self):
+        return False
     
     def clear(self):
         global _view_cache
@@ -87,7 +83,7 @@ class ResolverMixin(object):
     def make_url(self, regex, view, kwargs=None, name=None):
         return RegexURLPattern(regex, view, kwargs, name)
     
-    def resolve(self, path, subpath = None, site = None):
+    def resolve(self, path, subpath = None, site = None, editsite = False):
         global _view_cache
         subpath = subpath if subpath is not None else path
         cached = _view_cache.get(path,None)
@@ -112,10 +108,13 @@ class ResolverMixin(object):
                 raise self.http.Http404(str(e))
             if isinstance(view,ResolverMixin):
                 if len(rurl) == 1:
-                    return view.resolve(path, rurl[0], site or view)
+                    return view.resolve(path, rurl[0], site or view, editsite or view.editsite())
                 else:
                     raise self.http.Http404
             else:
+                if editsite:
+                    site = editsite
+                    view = self.editview(view, site)
                 res = (site,view,kwargs)
                 _view_cache[path] = res
                 return res
@@ -133,9 +132,15 @@ class ResolverMixin(object):
         if not page.application_view:
             return pageview(page)
     
+    def editview(self, view, site):
+        from djpcms.views.baseview import editview
+        return editview(view, site.settings.CONTENT_INLINE_EDITING['preurl'])
 
 class RegexURLPattern(object):
-    
+    """ORIGINAL CLASS FROM DJANGO    www.djangoproject.com
+
+Adapted for djpcms
+"""
     def __init__(self, regex, callback,
                  default_args=None,
                  name=None):
@@ -169,7 +174,15 @@ class RegexURLPattern(object):
 
 
 class RegexURLResolver(object):
+    """This class ``resolve`` method takes a URL (as
+a string) and returns a tuple in this format:
+
+    (view_function, function_args, function_kwargs)
     
+ORIGINAL CLASS FROM DJANGO    www.djangoproject.com
+
+Adapted for djpcms
+"""
     def __init__(self, regex, urlconf_name, default_kwargs=None, app_name=None, namespace=None):
         # regex is a string representing a regular expression.
         # urlconf_name is a string representing the module containing URLconfs.
@@ -283,10 +296,4 @@ class RegexURLResolver(object):
         raise NoReverseMatch("Reverse for '%s' with arguments '%s' and keyword "
                 "arguments '%s' not found." % (lookup_view_s, args, kwargs))
 
-
-def clear_url_caches():
-    global _resolver_cache
-    global _callable_cache
-    _resolver_cache.clear()
-    _callable_cache.clear()
 

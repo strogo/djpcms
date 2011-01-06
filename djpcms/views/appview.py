@@ -2,12 +2,11 @@ import operator
 from copy import copy
 from datetime import datetime
 
+# Hack for Python 2.6 -> Python 3
 try:
     from itertools import izip as zip
 except ImportError:
     import zip
-    
-from djpcms.conf import settings
 
 from django.db.models import Q
 from django.db.models.query import QuerySet
@@ -19,8 +18,7 @@ from djpcms.template import loader, RequestContext
 from djpcms.forms import saveform, deleteinstance, autocomplete
 from djpcms.utils.html import Paginator
 from djpcms.utils import construct_search, isexact
-from djpcms.views.regex import RegExUrl 
-from djpcms.views.cache import pagecache
+from djpcms.views.regex import RegExUrl
 from djpcms.views.baseview import djpcmsview
 
 
@@ -248,7 +246,7 @@ Usage::
         return False if not page else page.soft_root
         
     def get_page(self, djp):
-        pages = pagecache.get_for_application(self.code)
+        pages = djp.pagecache.get_for_application(self.code)
         if pages:
             if len(pages) == 1:
                 return pages[0]

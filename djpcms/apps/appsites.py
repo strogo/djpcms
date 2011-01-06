@@ -6,6 +6,8 @@ from djpcms.utils.importer import import_module
 from djpcms.core.urlresolvers import ResolverMixin
 from djpcms.http import make_wsgi
 
+
+
 class ApplicationSite(ResolverMixin):
     '''
     Application site manager

@@ -21,13 +21,18 @@ class editHandler(ResolverMixin):
     
     def __init__(self, site):
         self.site = site
+        self.settings = site.settings
         
     def _load(self):
         return self.site.urls()
+    
+    def editsite(self):
+        return self.site
         
 
 
 class ApplicationSites(ResolverMixin):
+    '''This class is used as a singletone and holds information of djpcms routes'''
     
     def __init__(self):
         self.route = None

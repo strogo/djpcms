@@ -8,7 +8,7 @@ import imp
 
 import djpcms
 from djpcms.conf import settings
-from djpcms.utils.importlib import import_module
+from djpcms.utils.importer import import_module
 
 from .base import BaseCommand, CommandError, handle_default_options
 

@@ -32,7 +32,7 @@ and a Page instance, it calculates a new response object.'''
 # THE DJPCMS INTERFACE CLASS for handling views
 # the response method handle all the views in djpcms
 class djpcmsview(UnicodeObject):
-    '''Base class for handling ``urls`` requests.
+    '''Base class for handling http requests.
     
     .. attribute:: _methods
 
@@ -177,13 +177,13 @@ Hooks:
     def get_ajax_response(djp):
         return None
     
-    def get_response(self, djp):
-        '''Get response handler.'''
-        return self.handle_response(djp)
-    
     def default_post(self, djp):
         '''Default post response handler.'''
         raise NotImplementedError('Default Post view not implemented')
+    
+    def get_response(self, djp):
+        '''Get response handler.'''
+        return self.handle_response(djp)
     
     def post_response(self, djp):
         '''Handle the post view. This function checks the request.POST dictionary
@@ -256,8 +256,8 @@ which handle the response'''
         else:
             return self.default_post(djp)
 
-
     def grid960(self, page = None):
+        #TODO Need to move this out of here
         if page and page.cssinfo:
             return grid960(columns = page.cssinfo.gridsize, fixed = page.cssinfo.fixed)
         else:
@@ -304,7 +304,7 @@ which handle the response'''
     
     def defaultredirect(self, request, next = None,
                         instance = None, **kwargs):
-        '''This function is used to build a redirect ``url`` for a given view.
+        '''This function is used to build a redirect ``url`` for ``self``.
 It is called by ``djpcms`` only when a redirect is needed.
 
 :parameter request: HttpRequest object.
@@ -348,14 +348,15 @@ If we didn't do that, test_navigation.testMultiPageApplication would fail.'''
                 views.append(cdjp)
         return views
     
-    def redirect(self, url):
-        '''Shortcut function for redirecting to *url*.'''
-        return http.HttpResponseRedirect(url)
+#    def redirect(self, url):
+#        '''Shortcut function for redirecting to *url*.'''
+#        return http.HttpResponseRedirect(url)
 
     def nextviewurl(self, djp):
         '''Calculate the best possible url for a possible next view.
 By default it is ``djp.url``'''
         return djp.request.path
+
 
 class pageview(djpcmsview):
     

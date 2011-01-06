@@ -7,7 +7,6 @@ from djpcms import sites, get_site
 from djpcms.utils.importer import import_module
 from djpcms.plugins import SimpleWrap
 from djpcms.forms import fill_form_data, model_to_dict, cms
-from djpcms.views.cache import pagecache
 from djpcms.models import Page
 from djpcms.apps.included.user import UserClass
 from djpcms.core.exceptions import *
@@ -232,14 +231,12 @@ class DjpCmsTestHandle(test.TestCase):
     '''Implements shortcut functions for testing djpcms.
 Must be used as a base class for TestCase classes'''
     urlbase   = '/'
-    pagecache = pagecache
     Page = Page
     sites = sites
     
     def _pre_setup(self):
         sites.settings.TESTING = True
         super(DjpCmsTestHandle,self)._pre_setup()
-        self.pagecache.clear()
         
     def _urlconf_setup(self):
         sites.clear()
@@ -247,7 +244,6 @@ Must be used as a base class for TestCase classes'''
         settings = sites.settings
         self._old_appurl = settings.APPLICATION_URL_MODULE
         settings.APPLICATION_URL_MODULE = appurls
-        sites.clear()
         self.site = self.CreateSites()
         
     def CreateSites(self):

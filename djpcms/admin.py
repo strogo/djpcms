@@ -1,20 +1,21 @@
-from django import forms, template, http
+#
+# TO USE WITH DJANGO.
+#
+# A bit outdated really but still works fine.
+#
+#
+#
+from django import template, http
 from django.forms.forms import pretty_name
 from django.contrib import admin
 from django.contrib.sites.models import Site
 from django.shortcuts import get_object_or_404, render_to_response
 from django.utils.encoding import force_unicode
-try:
-    from django.contrib import messages
-except:
-    messages = None
-#from django.views.decorators.csrf import csrf_protect
-#from django.contrib.admin.util import display_for_field, label_for_field
+from django.contrib import messages
 
-from djpcms import models
+from djpcms import models, sites
 from djpcms.forms.cms import PageForm
 from djpcms.utils.ajax import simplelem
-from djpcms.views.cache import pagecache
 
 
 class SafeModelAdmin(admin.ModelAdmin):
@@ -25,7 +26,7 @@ class SafeModelAdmin(admin.ModelAdmin):
         except Exception, e:
             if messages:
                 messages.error(request, 'Could not save: %s' % str(e))
-        pagecache.clear(request)
+        sites.pagecache.clear(request)
         return obj
 
 
