@@ -344,6 +344,15 @@ class PluginTest(TestCase):
         module = self.plugin.__module__
         self.site.settings.DJPCMS_PLUGINS = [module]
         
+    def _simplePage(self):
+        c = self.get('/')
+        p = c['page']
+        p.set_template(p.create_template('simple','{{ content0 }}','content'))
+        b = p.add_plugin(self.plugin)
+        self.assertEqual(b.plugin_name,self.plugin.name)
+        self.assertEqual(b.plugin,self.plugin())
+        return c
+        
     def request(self, user = None):
         req = http.HttpRequest()
         req.user = user
@@ -354,17 +363,11 @@ class PluginTest(TestCase):
         self.assertRaises(BlockOutOfBound, p.add_plugin, self.plugin)
         
     def testSimple(self):
-        c = self.get('/')
-        p = c['page']
-        p.set_template(p.create_template('simple','{{ content0 }}','content'))
-        b = p.add_plugin(self.plugin)
-        self.assertEqual(b.plugin_name,self.plugin.name)
-        self.assertEqual(b.plugin,self.plugin())
-        return c
+        self._simplePage()
     
     def testEdit(self):
-        c = self.testSimple()
-        self.login()
+        c = self._simplePage()
+        self.assertTrue(self.login())
         ec = self.get(self.editurl('/'))
         self.assertEqual(c['page'],ec['page'])
         inner = ec['inner']

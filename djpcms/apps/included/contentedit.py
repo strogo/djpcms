@@ -3,7 +3,7 @@ Application for handling inline editing of blocks
 The application derives from the base appsite.ModelApplication
 and defines several subviews 
 '''
-from djpcms import forms
+from djpcms import forms, sites
 from djpcms.utils.translation import ugettext_lazy as _
 from djpcms.core.exceptions import PermissionDenied
 from djpcms.models import BlockContent
@@ -16,8 +16,6 @@ from djpcms.forms.cms import ContentBlockForm
 from djpcms.plugins import get_plugin
 from djpcms.plugins.extrawrappers import CollapsedWrapper
 from djpcms.views import appsite, appview
-#from djpcms.views import handlers
-#from djpcms.views.cache import pagecache
 
 dummy_wrap = lambda d,b,x : x
 
@@ -99,7 +97,7 @@ class ChangeContentView(appview.EditView):
     
     def get_preview(self, request, instance, url, wrapped = True, plugin = None):
         try:
-            djpview = handlers.response(request, url[1:])
+            djpview = sites.djp(request, url[1:])
             preview_html = instance.render(djpview, plugin = plugin, wrapper = dummy_wrap)
         except Exception, e:
             preview_html = u'%s' % e
@@ -347,7 +345,7 @@ class ContentSite(appsite.ModelApplication):
         pageid       = int(pageid)
         blocknumber  = int(blocknumber)
         position     = int(position)
-        page         = pagecache.get_from_id(pageid)
+        page         = request.site.pagecache.get_from_id(pageid)
         blocks       = self.model.objects.filter(page = page)
         inner        = page.inner_template
         if inner:
