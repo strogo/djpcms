@@ -1,0 +1,16 @@
+{# ANCHORS #}
+{% extends "medplate/elem.css_t" %}
+
+{% block body %}
+a {
+    text-decoration: {{ anchor.decoration }};
+}
+a:link,
+a:visited {
+    color: {{ color }};
+}
+a:hover {
+    color: {{ color_hover }};{% if background_hover %}
+    background: {{ background_hover }}{% endif %}
+}
+{% endblock %}

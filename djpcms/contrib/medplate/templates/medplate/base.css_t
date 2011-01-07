@@ -65,28 +65,6 @@ body.edit {
 {% endblock %}
 
 
-
-
-{% block anchor %}
-
-/** ANCHORS
-------------------------------------------------------**/
-
-a {
-	font-weight:{{ anchor_weight }};
-	text-decoration: none;
-}
-a:link,
-a:visited {
-	color:#33789C;
-}
-a:hover {
-	color:#204C64;
-}
-
-{% endblock %}
-
-
 {% block simple-nav %}
 
 /** UL.SIMPLE-NAV
@@ -115,54 +93,6 @@ div.flat-pannel {
 	padding: 10px;
 }
 {% endblock %}
-
-
-
-/* jQuery Pagination
----------------------------------------------------------------------------*/
-{% block jquery-pagination %}
-.jquery-pagination {
-	overflow: hidden;
-	margin-bottom: 10px;
-}
-
-.jquery-pagination .navigator {
-	float: left;
-	font-size: 80%;
-}
-.jquery-pagination .information {
-	float: right;
-}
-        
-.jquery-pagination a {
-    text-decoration: none;
-    border: solid 1px #AAE;
-    color: #15B;
-}
-
-.jquery-pagination a, .jquery-pagination span {
-    display: block;
-    float: left;
-    padding: 0.3em 0.5em;
-    margin-right: 5px;
-    margin-bottom: 5px;
-}
-
-.jquery-pagination .current {
-    background: #26B;
-    color: #fff;
-    border: solid 1px #AAE;
-}
-
-.jquery-pagination .current.prev, .jquery-pagination .current.next{
-    color:#999;
-    border-color:#999;
-    background:#fff;
-}
-{% endblock %}
-
-
-
 
 
 {% block page-edit %}

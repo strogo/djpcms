@@ -1,17 +1,10 @@
-{% extends "medplate/elem.css_t" %}
+{% extends "medplate/base_navigation.css_t" %}
 
-{% block body %}
+{% block body %}{{ block.super }}
 {% block nav-container %}
 .nav-container {
 }
 {% endblock %}
-
-/* level 3+ list */
-{{ tag }} ul ul {
-	position:relative !important;
-	left: 12em;
-	top: 0;
-}
 {{ tag }} li,
 {{ tag }} li a {
 	height:{{ height }};
@@ -19,88 +12,70 @@
 	border:0;
 }
 {{ tag }} li a {
-	text-decoration:none;
+	text-decoration:none;{% if main_text_shadow %}
+	text-shadow: {{ main_text_shadow }};{% endif %}
 	display:block;
-	float:left;
+	float: left;
 	color: {{ color }};
 	font-weight: {{ font_weight }};
 	padding:{{ anchor_padding }};
 }
 {{ tag }} li {
+    cursor:pointer;
+    float:left;
+    text-align:center;
+    position:relative;
+    top:0;
+    list-style-type:none;
 	-webkit-border-radius: {{ inner_radius }};
 	-moz-border-radius: {{ inner_radius }};
 	margin: {{ list_margin }};
 }
-{{ tag }} li ul {top: {{ height }};}
-{{ tag }} li ul li,
-{{ tag }} li ul li a {
-	width: {{ secondary_width }};
-	line-height:2em;
-	height:2em;
-	text-align:left;
-}
+
 {{ tag }} li:hover {
 	background: {{ hover_background }};
 }{% if hover_color %}
+
 {{ tag }} li:hover a {
 	color: {{ hover_color }};
 }{% endif %}
+
 {% if selected_background %}
 {{ tag }} li.selected {
 	background: {{ selected_background }};
 }{% endif %}
+
 {% if selected_color %}
 {{ tag }} li.selected a {
 	color: {{ selected_color }};
 }{% endif %}
  
-/* navigation (horizontal subnavigation)
+ 
+/* Subnavigation
 ----------------------------------------------- */
-{{ tag }} li:hover > ul {
-	background: {{ hover_background }};
-	display: block;
-}
-{{ tag }} ul {
-	display: none;
-}
-{{ tag }} li {
-    cursor:pointer;
-    float:left;
-    text-align:center;
-    list-style-type:none;
-    font-weight:normal;
-}
 {{ tag }} li ul {
+    position: absolute;
+    top: {{ height }};
 	cursor: default;
-	position: absolute;
 	width: auto;
 	height: auto;
 }
 {{ tag }} li ul li {
 	padding:0;
+	margin:0;
 	border:none;
 	width:auto;
 	max-width:none;
 }
-{{ tag }} li ul li a {
-	cursor:pointer !important;
-	white-space:nowrap;
-	font-weight:normal;
-	/*background-position:0 50% !important;*/
-}
-/*
-{{ tag }} li:hover ul {left:0;z-index:10} 
-{{ tag }} li.current a {cursor:default; font-weight:bold;}
-{{ tag }} li.current ul {left:0;z-index:5}
-{{ tag }} li.current ul li a {font-weight:normal;}*/
 
-/* navigation (vertical subnavigation)
------------------------------------------------ */
-{{ tag }} li {
-  	position:relative;
-  	top:0;
-  	left:0;
+/*   level 3+ list
+--------------------------------------------- */
+{{ tag }} ul ul {
+    position: absolute;
+    left: {{ left3plus }};
+    top: {{ top3plus }};
 }
+
 /* secondary list
 ----------------------------------------------- */
 {{ tag }} li.secondary {

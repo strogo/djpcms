@@ -1,0 +1,17 @@
+{# TEMPLATE FOR A SIMPLE TABLE #}
+{% extends "medplate/elem.css_t" %}
+
+{% block body %}
+{{ tag }} td,
+{{ tag }} th {
+    padding: {{ cell_padding }};
+	text-align: left;
+}
+{{ tag }} th {
+    font-weight: {{ header_font_weight }};
+}
+{% if first_column_font_weight %}
+{{ tag }} tbody tr td.first {
+    font-weight: {{ first_column_font_weight }};
+}{% endif %}
+{% endblock %}

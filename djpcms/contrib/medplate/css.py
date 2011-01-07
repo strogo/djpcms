@@ -11,9 +11,10 @@ class CssContext(object):
     def __init__(self, name, tag = None, template = None,
                  description = '', elems= None,
                  data = None, ineritable_tag = True,
-                 defaults = None):
+                 defaults = None, process = None):
         self.name = name
         self._tag = tag
+        self.process = process
         self._ineritable_tag = ineritable_tag
         self.template = template or 'medplate/elem.css_t'
         self.parent = None
@@ -47,7 +48,11 @@ class CssContext(object):
     
     def render(self, template_engine = None):
         loader = template.handle(template_engine)
-        return loader.render(self.template,self)
+        if self.process:
+            data = self.clone(self.process(self.data))
+        else:
+            data = self
+        return loader.render(self.template,data)
     
     def update(self, data):
         self.data.update(data)
@@ -103,13 +108,17 @@ class CssContext(object):
             raise KeyError
         
     def __copy__(self):
+        return self.clone(self.data)
+    
+    def clone(self, data):
         obj = self.__class__(self.name,
                              self._tag,
                              self.template,
                              self.description,
-                             data=self.data,
+                             data=data,
                              ineritable_tag = self._ineritable_tag,
-                             defaults = self.defaults)
+                             defaults = self.defaults,
+                             process = self.process)
         for elem in self.elems:
             obj.add(copy(elem))
         return obj

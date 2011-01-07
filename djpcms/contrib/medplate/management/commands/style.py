@@ -3,7 +3,7 @@ from optparse import make_option
 
 from djpcms.conf import settings
 from djpcms import template
-from djpcms.utils.importlib import import_module
+from djpcms.utils.importer import import_module
 from djpcms.apps.management.base import BaseCommand
 
 

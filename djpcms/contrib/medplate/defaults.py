@@ -1,4 +1,5 @@
 from djpcms.contrib.medplate.css import CssContext
+from djpcms.contrib.medplate import elements
 
 defaults = { 
     'background': '#fff',
@@ -12,9 +13,7 @@ defaults = {
     'font_weight': 'normal',
     'font_style': 'normal',
     'line_height': '1.3em',
-    'text_align': 'left',
-    #
-    'anchor_weight':'normal',
+    'text_align': 'left'
     }
    
     
@@ -26,6 +25,24 @@ base_context = CssContext('body',
 context = base_context
 
 
+#________________________________________ ANCHOR
+context.add(
+            CssContext('anchor',
+                       tag = 'a',
+                       template = 'medplate/anchor.css_t',
+                       data = {
+                               'decoration': 'none',
+                               'weight':'normal',
+                               'color':'#33789C',
+                               'background': 'transparent',
+                               'color_hover':'#204C64',
+                               'background_hover':None
+                               }
+                       )
+            )
+
+
+#________________________________________ BREADCRUMBS
 context.add(
             CssContext('breadcrumbs',
                        tag = 'div.breadcrumbs',
@@ -37,17 +54,35 @@ context.add(
             )
                     
 
+#___________________________________ MAIN NAVIGATION
 context.add(
             CssContext('nav',
                        tag='ul.main-nav',
                        template='medplate/horizontal_navigation.css_t',
+                       process = elements.horizontal_navigation,
                        data = {
+                               'anchor_horizontal_padding': 20,
+                               'secondary_anchor_width': 100,
+                               'secondary_border_with': 1,
                                'hover_background':'transparent',
                                'height': '2.5em',
-                               'padding': 0,
                                'inner_height': '2.5em',
                                'list_margin': '0',
-                               'secondary_width': '100px'}
+                               'secondary_radius':0}
+                       )
+            )
+
+
+#________________________________________ PAGINATION
+context.add(
+            CssContext('paginator',
+                       tag = 'div.jquery-pagination',
+                       template = 'medplate/pagination.css_t',
+                       data = {
+                               'navigator_float':'left',
+                               'information_float':'right',
+                               'margin':'0 0 0 10px'
+                               }
                        )
             )
 
@@ -107,6 +142,17 @@ context.add(
                        )
             )
 
+context.add(
+            CssContext('table',
+                       template='medplate/table.css_t',
+                       tag='table.plain',
+                       data = {'margin':'10px 0 15px',
+                               'cell_padding': '3px 15px 3px 0',
+                               'header_font_weight': 'bold',
+                               'first_column_font_weight':'bold'}
+                       )
+            )
+
 # SEARCH BOX
 context.add(
             CssContext('search',
@@ -121,6 +167,7 @@ context.add(
             CssContext('messagelist',
                        tag='ul.messagelist li',
                        data = {
+                               'background':'#FFFFE5',
                                'margin':'0 0 3px',
                                'padding':'4px 5px 4px 25px'}
                        )

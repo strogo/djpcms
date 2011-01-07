@@ -2,7 +2,6 @@ import unittest
 from djpcms.contrib.medplate import CssContext, defaults, base_context
 
 
-
 class TestCss(unittest.TestCase):
         
     def testTemplate(self):

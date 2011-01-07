@@ -1,0 +1,37 @@
+{# PAGINATION #}
+{% extends "medplate/elem.css_t" %}
+
+{% block body %}
+{{ tag }} .navigator {
+    float: {{ navigator_float }};
+}
+.jquery-pagination .information {
+    float: {{ information_float }};
+}
+        
+.jquery-pagination a {
+    text-decoration: none;
+    border: solid 1px #AAE;
+    color: #15B;
+}
+
+.jquery-pagination a, .jquery-pagination span {
+    display: block;
+    float: left;
+    padding: 0.3em 0.5em;
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+
+.jquery-pagination .current {
+    background: #26B;
+    color: #fff;
+    border: solid 1px #AAE;
+}
+
+.jquery-pagination .current.prev, .jquery-pagination .current.next{
+    color:#999;
+    border-color:#999;
+    background:#fff;
+}
+{% endblock %}

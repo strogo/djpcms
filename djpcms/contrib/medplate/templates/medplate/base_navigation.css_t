@@ -1,0 +1,44 @@
+{% extends "medplate/elem.css_t" %}
+
+{% block body %}
+{{ tag }} ul {
+	display: none;
+	z-index:9999;
+}
+
+/* level 2 list */
+{{ tag }} ul {
+    background: {{ hover_background }};{% if secondary_border %}
+    border: {{ secondary_border }};{% endif %}{% if drop_down_shadow %}
+    -webkit-box-shadow: {{ drop_down_shadow }};
+    -moz-box-shadow: {{ drop_down_shadow }};
+    box-shadow: {{ drop_down_shadow }};{% endif %}
+}
+{{ tag }} li:hover > ul {
+    display: block;
+}
+
+{{ tag }} ul li:hover {{% if secondary_hover_background %}
+    background: {{ secondary_hover_background }};{% endif %}
+}
+
+{{ tag }} li ul li {
+    line-height:2em;
+    height:2em;
+     -webkit-border-radius: {{ secondary_radius }};
+    -moz-border-radius: {{ secondary_radius }};
+    border-radius: {{ secondary_radius }};
+}
+
+{{ tag }} li ul li a {
+    line-height:2em;
+    height:2em;
+    text-align:left;
+    width: {{ secondary_width }};
+    cursor:pointer !important;
+    white-space:nowrap;
+    font-weight:normal;{% if secondary_text_shadow %}
+    text-shadow: {{ secondary_text_shadow }};{% endif %}
+    /*background-position:0 50% !important;*/
+}
+{% endblock %}

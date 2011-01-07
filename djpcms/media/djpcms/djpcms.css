@@ -1,14 +1,3 @@
-/**	TABLE PLAIN
------------------------------------------------------------*/
-table.plain {
-	margin:10px 0 15px;
-}
-table.plain td,
-table.plain th {padding: 3px 15px 3px 0; text-align: left;}
-.djpcms-block td {padding: 2px 5px;}
-.djpcms-block td.original, 
-td.original {padding: 0;}
-table.plain td.first {font-weight: bold;}
 
 /*		BOX and CONTENT BLOCKS
 -------------------------------------------------*/

@@ -38,7 +38,8 @@
 	border-bottom-right-radius: {{ radius_bottom_right }};{% endif %}{% if radius_bottom_right %}
 	-webkit-border-bottom-right-radius: {{ radius_bottom_right }};
 	-moz-border-radius-bottomright: {{ radius_bottom_right }};
-	border-bottom-right-radius: {{ radius_bottom_right }};{% endif %}
+	border-bottom-right-radius: {{ radius_bottom_right }};{% endif %}{% if text_shadow %}
+	text-shadow: {{ text_shadow }};{% endif %}
 }
 
 {% block body %}

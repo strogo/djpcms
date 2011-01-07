@@ -354,7 +354,7 @@ class PluginTest(TestCase):
         return c
         
     def request(self, user = None):
-        req = http.HttpRequest()
+        req = sites.http.HttpRequest()
         req.user = user
         return req
         
