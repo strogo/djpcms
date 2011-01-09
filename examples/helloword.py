@@ -1,3 +1,5 @@
+'''Just an Hello world
+'''
 import djpcms
 
 site = djpcms.MakeSite(__file__)
@@ -8,7 +10,4 @@ class TinySite(appsite.Application):
     
 appurls = TinySite('/'),
 
-
-if __name__ == '__main__':
-    djpcms.UnukServe(port = 9011)
     

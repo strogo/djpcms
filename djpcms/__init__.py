@@ -32,17 +32,20 @@ def install_lib(basepath, dirname, module_name):
     except ImportError:
         dir = os.path.join(basepath,dirname)
         sys.path.insert(0,dir)
-        module = __import__(module_name)
-        libs.append(module)
+        try:
+            module = __import__(module_name)
+            libs.append(module)
+        except ImportError:
+            pass
     
     
 def install_libs():
     if path_dir not in sys.path:
         sys.path.insert(0,path_dir)
-    libs = os.path.join(this_dir,'libs')
-    install_lib(libs, 'django-tagging', 'tagging')
-    install_lib(libs, 'djpadmin', 'djpadmin')
-    #install_lib(libs, 'BeautifulSoup', 'BeautifulSoup')
+    dlibs = os.path.join(this_dir,'libs')
+    install_lib(dlibs, 'django-tagging', 'tagging')
+    install_lib(dlibs, 'djpadmin', 'djpadmin')
+    install_lib(dlibs, 'BeautifulSoup', 'BeautifulSoup')
     
     
 def init_logging(clear_all = False):
