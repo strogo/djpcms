@@ -4,7 +4,7 @@ import copy
 import logging
 
 from djpcms.conf import get_settings
-from djpcms.core.exceptions import AlreadyRegistered
+from djpcms.core.exceptions import AlreadyRegistered, PermissionDenied
 from djpcms.utils.importer import import_module, import_modules
 from djpcms.utils.collections import OrderedDict
 from djpcms.core.urlresolvers import ResolverMixin
@@ -216,11 +216,19 @@ class ApplicationSites(ResolverMixin):
         
     def request_handler(self, request, url):
         '''Entry points for requests'''
-        djp = self.djp(request,url)
-        if isinstance(djp,self.http.HttpResponse):
-            return djp
-        else:
-            return djp.response()
+        try:
+            djp = self.djp(request,url)
+            if isinstance(djp,self.http.HttpResponse):
+                return djp
+            else:
+                return djp.response()
+        except PermissionDenied as e:
+            settings = request.site.settings
+            if settings.HTTP_LIBRARY == 'django':
+                from django.core import exceptions
+                raise exceptions.PermissionDenied(e)
+            else:
+                raise           
         
         
         

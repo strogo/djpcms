@@ -1,4 +1,3 @@
-from django.core.exceptions import *
 
 
 class DjpcmsException(Exception):
@@ -9,6 +8,17 @@ class DjpcmsException(Exception):
 class ImproperlyConfigured(DjpcmsException):
     '''A :class:`DjpcmsException` raised when djpcms has inconsistent configuration.'''
     pass
+
+
+class ViewDoesNotExist(DjpcmsException):
+    '''A :class:`DjpcmsException` raised when a view instance does not exist.'''
+    pass
+
+
+class PermissionDenied(DjpcmsException):
+    '''A :class:`DjpcmsException` raised when permission is not met.'''
+    pass
+
 
 class CommandError(ImproperlyConfigured):
     '''A :class:`DjpcmsException` raised when a management command throws an error.'''
