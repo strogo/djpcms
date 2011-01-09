@@ -5,11 +5,12 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.admin import site
 from django.contrib.admin.util import label_for_field, display_for_field, lookup_field
 
+from djpcms import sites
 from djpcms.permissions import has_permission
 from djpcms.utils import force_str
 from djpcms.template import mark_safe, escape, conditional_escape
 
-from .base import ModelTypeWrapper, _boolean_icon, EMPTY_VALUE, nicerepr
+from .base import ModelTypeWrapper, _boolean_icon, nicerepr
 
 
 class ModelType(ModelTypeWrapper):
@@ -81,7 +82,7 @@ class ModelType(ModelTypeWrapper):
         try:
             f, attr, value = lookup_field(name, instance, self.model_admin)
         except (AttributeError, ObjectDoesNotExist):
-            result_repr = self.get_value(instance, name, EMPTY_VALUE)
+            result_repr = self.get_value(instance, name, sites.settings.DJPCMS_EMPTY_VALUE)
         else:
             if f is None:
                 allow_tags = getattr(attr, 'allow_tags', False)
@@ -99,7 +100,7 @@ class ModelType(ModelTypeWrapper):
                     result_repr = mark_safe(result_repr)
             else:
                 if value is None:
-                    result_repr = EMPTY_VALUE
+                    result_repr = sites.settings.DJPCMS_EMPTY_VALUE
                 if isinstance(f.rel, models.ManyToOneRel):
                     result_repr = escape(getattr(instance, f.name))
                 else:

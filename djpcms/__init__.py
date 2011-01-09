@@ -41,20 +41,20 @@ def install_libs():
         sys.path.insert(0,path_dir)
     libs = os.path.join(this_dir,'libs')
     install_lib(libs, 'django-tagging', 'tagging')
+    install_lib(libs, 'djpadmin', 'djpadmin')
     #install_lib(libs, 'BeautifulSoup', 'BeautifulSoup')
     
     
 def init_logging(clear_all = False):
     '''Initialise logging'''
     from djpcms.utils.log import dictConfig
-    from djpcms.conf import settings
     
     if clear_all:
         import logging
         logging.Logger.manager.loggerDict.clear()
 
-    if settings.LOGGING:
-        dictConfig(settings.LOGGING)
+    if sites.settings.LOGGING:
+        dictConfig(sites.settings.LOGGING)
         
     
 install_libs()

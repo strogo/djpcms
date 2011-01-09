@@ -3,9 +3,9 @@
 # Adapted from http://github.com/pydanny/django-uni-form
 #
 #
-from djpcms.conf import settings
 from django.forms.formsets import all_valid
 
+from djpcms import sites
 from djpcms.forms import BoundField, fill_form_data, MediaDefiningClass, BaseForm
 from djpcms.contrib import messages
 from djpcms.template import loader, RequestContext, mark_safe
@@ -38,7 +38,8 @@ inlineFormsets = 'blockLabels2'
 nolabel        = 'nolabel'
 default_style  = inlineLabels
 
-default_csrf = 'django.middleware.csrf.CsrfViewMiddleware' in settings.MIDDLEWARE_CLASSES
+def default_csrf():
+    return 'django.middleware.csrf.CsrfViewMiddleware' in sites.settings.MIDDLEWARE_CLASSES
 
 #_required_tag = mark_safe('<em>*</em>')
 _required_tag = mark_safe('')
@@ -319,10 +320,10 @@ class UniForm(UniFormBase):
                  action = '.',
                  inputs = None,
                  tag = True,
-                 csrf = default_csrf,
+                 csrf = True,
                  save_as_new  = False,
                  is_ajax = False):
-        self.use_csrf_protection = csrf
+        self.use_csrf_protection = csrf and default_csrf()
         self.attr = {}
         self.attr['method']  = method
         self.attr['action']  = ''

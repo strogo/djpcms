@@ -1,10 +1,10 @@
-from djpcms.conf import settings
+from djpcms import sites
 
-if settings.CMS_ORM == 'django':
+if sites.settings.CMS_ORM == 'django':
     
     from djpcms.core.cmsmodels._django import *
     
-elif settings.CMS_ORM == 'stdnet':
+elif sites.settings.CMS_ORM == 'stdnet':
     
     from djpcms.core.cmsmodels._stdnet import *
     

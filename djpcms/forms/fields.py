@@ -1,4 +1,4 @@
-from djpcms.conf import settings
+from djpcms import sites
 
 from django import forms
 from django.forms.forms import BoundField
@@ -57,7 +57,7 @@ class LazyAjaxChoice(ChoiceField):
         super(LazyAjaxChoice,self).__init__(*args, **kwargs)
         
     def widget_attrs(self, widget):
-        return {'class': settings.HTML_CLASSES.ajax}
+        return {'class': sites.settings.HTML_CLASSES.ajax}
     
 
 class ModelCharField(CharField):

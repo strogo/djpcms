@@ -19,7 +19,6 @@ from djpcms.contrib.flowrepo import markups
 from djpcms.contrib.flowrepo.managers import FlowManager, SlugManager, RepoManager 
 from djpcms.contrib.flowrepo.managers import source_interactive
 from djpcms.contrib.flowrepo.utils import encrypt, decrypt, nicetimedelta
-from djpcms.contrib.flowrepo import settings
 
 
 logger = logging.getLogger('flowrepo')
@@ -83,7 +82,6 @@ class FlowItem(FlowItemBase):
     markup      = models.CharField(max_length=3,
                                    choices=markups.choices(),
                                    default=markups.default(),
-                                   editable=settings.FLOWREPO_SHOW_MARKUP_CHOICE,
                                    blank=True)
     
     objects      = FlowManager()

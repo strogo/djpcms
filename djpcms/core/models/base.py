@@ -3,10 +3,9 @@ from datetime import date, datetime
 
 from django.utils.dateformat import format as date_format, time_format
 
-from djpcms.conf import settings
+from djpcms import sites
 from djpcms.utils import force_str, significant_format
 from djpcms.template import loader, mark_safe, escape, conditional_escape
-
 
 
 __all__ = ['ModelInterface',
@@ -18,12 +17,17 @@ __all__ = ['ModelInterface',
  
  
 class ModelInterface(object):
+    '''An interface class for models'''
     
     def underlying(self):
         return self
     
     def save(self):
         raise NotImplementedError
+    
+    @classmethod
+    def miid(cls):
+        return cls.__miid__
     
     @classmethod
     def modelclass(cls):
@@ -33,7 +37,6 @@ class ModelInterface(object):
 
 BOOLEAN_MAPPING = {True: {'icon':'ui-icon-check','name':'yes'},
                    False: {'icon':'ui-icon-close','name':'no'}}
-EMPTY_VALUE = settings.DJPCMS_EMPTY_VALUE
 
 
 def _boolean_icon(val):
@@ -45,11 +48,11 @@ def nicerepr(val, nd = 3):
     if isinstance(val,datetime):
         time = val.time()
         if not time:
-            return date_format(val.date(),settings.DATE_FORMAT)
+            return date_format(val.date(),sites.settings.DATE_FORMAT)
         else:
-            return date_format(val,settings.DATETIME_FORMAT)
+            return date_format(val,sites.settings.DATETIME_FORMAT)
     elif isinstance(val,date):
-        return date_format(val,settings.DATE_FORMAT)
+        return date_format(val,sites.settings.DATE_FORMAT)
     elif isinstance(val,bool):
         return _boolean_icon(val)
     else:
@@ -113,7 +116,7 @@ class ModelTypeWrapper(object):
     def appfuncname(self, name):
         return 'objectfunction__%s' % name
     
-    def get_value(self, instance, name, default = EMPTY_VALUE):
+    def get_value(self, instance, name, default = sites.settings.DJPCMS_EMPTY_VALUE):
         func = getattr(self.appmodel,self.appfuncname(name),None)
         if func:
             return func(instance)

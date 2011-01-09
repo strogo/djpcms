@@ -1,5 +1,3 @@
-from djpcms.conf import settings
-
 from django import forms
 from django.forms import models 
 from django.forms.forms import get_declared_fields

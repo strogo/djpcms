@@ -1,7 +1,9 @@
 import os
 import sys
+import copy
 import logging
 
+from djpcms.conf import get_settings
 from djpcms.core.exceptions import AlreadyRegistered
 from djpcms.utils.importer import import_module, import_modules
 from djpcms.utils.collections import OrderedDict
@@ -35,8 +37,14 @@ class ApplicationSites(ResolverMixin):
     '''This class is used as a singletone and holds information of djpcms routes'''
     
     def __init__(self):
+        self._default_config = get_settings()
+        self._settings = None
         self.route = None
         self.sites = OrderedDict()
+        
+    def __get_settings(self):
+        return self._settings or self._default_config
+    settings = property(__get_settings)
     
     def _load(self):
         '''Load sites'''
@@ -60,11 +68,10 @@ class ApplicationSites(ResolverMixin):
                         site),
         return urls
     
-    def make(self, name, settings = None, route = None, clearlog = True):
+    def make(self, name, settings = None, route = None, clearlog = True, **kwargs):
         '''Initialise DjpCms from a directory or a file'''
         import djpcms
         #
-        settings = settings or 'settings'
         # if not a directory it may be a file
         if os.path.isdir(name):
             appdir = name
@@ -81,19 +88,24 @@ class ApplicationSites(ResolverMixin):
         if base not in sys.path:
             sys.path.insert(0, base)
         
-        if settings:
-            sett = '{0}.py'.format(os.path.join(path,settings))
-            if os.path.isfile(sett):
-                os.environ['DJANGO_SETTINGS_MODULE'] = '{0}.{1}'.format(name,settings)
+        # Import settings
+        settings = settings or 'settings'
+        sett = '{0}.py'.format(os.path.join(path,settings))
+        if os.path.isfile(sett):
+            settings_module_name = '{0}.{1}'.format(name,settings)
+            os.environ['DJANGO_SETTINGS_MODULE'] = settings_module_name
+        else:
+            settings_module_name = None
         
         # IMPORTANT! NEED TO IMPORT HERE TO PREVENT DJANGO TO IMPORT FIRST
-        from djpcms.conf import settings
-        settings.SITE_DIRECTORY = path
-        settings.SITE_MODULE = name
+        settings = get_settings(settings_module_name,
+                                SITE_DIRECTORY = path,
+                                SITE_MODULE = name,
+                                **kwargs)
         
-        # IF no settings available get the current one
-        if getattr(self,'settings',None) is None:
-            self.settings = settings
+        # If no settings available get the current one
+        if self._settings is None:
+            self._settings = settings
         
         # Add template media directory to template directories
         path = os.path.join(djpcms.__path__[0],'media','djpcms')
@@ -193,7 +205,7 @@ class ApplicationSites(ResolverMixin):
     def djp(self, request, url):
         '''Entry points for requests'''
         cleaned_path = self.clean_path(request.environ)
-        if isinstance(cleaned_path,self.http.HttpResponseRedirect):
+        if isinstance(cleaned_path,self.http.HttpResponse):
             return cleaned_path
         path = cleaned_path[1:]
         site,view,kwargs = self.resolve(path)
@@ -204,7 +216,11 @@ class ApplicationSites(ResolverMixin):
         
     def request_handler(self, request, url):
         '''Entry points for requests'''
-        return self.djp(request,url).response()
+        djp = self.djp(request,url)
+        if isinstance(djp,self.http.HttpResponse):
+            return djp
+        else:
+            return djp.response()
         
         
         

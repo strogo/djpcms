@@ -1,5 +1,6 @@
 import os
-from djpcms.conf import settings
+
+settings = object()
 
 FLOWREPO_DATE_FORMAT = getattr(settings, 'FLOWREPO_DATE_FORMAT', '%a %d %b %Y')
 FLOWREPO_TIME_FORMAT = getattr(settings, 'FLOWREPO_TIME_FORMAT', '%H:%M')

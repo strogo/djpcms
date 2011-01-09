@@ -1,5 +1,4 @@
 from djpcms.test import TestCase
-from djpcms.conf import settings
 from djpcms.contrib.social.defaults import User
 from djpcms.contrib.social import OAuthProvider
 from djpcms.contrib.social.applications import SocialUserApplication

@@ -1,7 +1,6 @@
 import json
 from flickrapi import FlickrAPI
 
-from djpcms.conf import settings
 from djpcms.contrib.social import OAuthProvider
 
 
@@ -12,7 +11,7 @@ class Flickr(OAuthProvider):
     AUTHORIZATION_URL = 'http://www.flickr.com/services/auth/'
     
     def extra_request_parameters(self):
-        perms = getattr(settings,'FLICKR_PERMISSION',DEFAULT_FLICKR_PERMISSION)
+        perms = getattr(self.settings,'FLICKR_PERMISSION',DEFAULT_FLICKR_PERMISSION)
         return {'perms':perms}
     
     def fetch_request_token(self, callback, **kwargs):

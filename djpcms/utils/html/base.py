@@ -1,4 +1,4 @@
-from djpcms.conf import settings
+from djpcms import sites
 from djpcms.template import loader, mark_safe, conditional_escape
 from djpcms.utils.collections import OrderedDict
 from djpcms.forms import Media
@@ -16,7 +16,6 @@ def flatatt(attrs):
 
 
 class htmlbase(UnicodeObject):
-    ajax = settings.HTML_CLASSES
     
     def get_template(self):
         template = getattr(self,'template',None)
@@ -30,7 +29,7 @@ class htmlbase(UnicodeObject):
     
     def get_content(self):
         return {'html': self,
-                'css':  self.ajax}
+                'css':  sites.settings.HTML_CLASSES}
     
     def getplugins(self, ftype):
         return None

@@ -1,8 +1,9 @@
-from djpcms.conf import settings
+from djpcms import sites
 from django import template
 
 from djpcms.template import mark_safe
 from djpcms.plugins import get_plugin
+
 
 register = template.Library()
 
@@ -21,7 +22,7 @@ def compress_if_you_can(parser, token):
     '''
     nodelist = parser.parse(('endcompress',))
     parser.delete_first_token()
-    if 'djpcms.contrib.compressor' in settings.INSTALLED_APPS:
+    if 'djpcms.contrib.compressor' in sites.settings.INSTALLED_APPS:
         from djpcms.contrib.compressor.templatetags.compress import CompressorNode
 
         args = token.split_contents()
@@ -40,7 +41,7 @@ def compress_if_you_can(parser, token):
 @register.filter
 def cleanjs(media):
     try:
-        media._js.remove('%sjs/jquery.min.js' % settings.ADMIN_MEDIA_PREFIX)
+        media._js.remove('%sjs/jquery.min.js' % sites.settings.ADMIN_MEDIA_PREFIX)
     except Exception, e:
         pass
     jss = media.render_js()
@@ -59,7 +60,7 @@ def cleanjs(media):
 
 
 def google_analytics():
-    if settings.GOOGLE_ANALYTICS_ID:
+    if sites.settings.GOOGLE_ANALYTICS_ID:
         an = """
     <script type="text/javascript">
         var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
@@ -70,21 +71,21 @@ def google_analytics():
         pageTracker._initData();
         pageTracker._trackPageview();
     </script>
-        """ % settings.GOOGLE_ANALYTICS_ID
+        """ % sites.settings.GOOGLE_ANALYTICS_ID
         return mark_safe(an)
     else:
         return u''
 register.simple_tag(google_analytics)
 
 def lloogg_analytics():
-    if settings.LLOOGG_ANALYTICS_ID:
+    if sites.settings.LLOOGG_ANALYTICS_ID:
         an = """
     <script type="text/javascript">
         lloogg_clientid = "%s";
     </script>
     <script type="text/javascript" src="http://lloogg.com/l.js?c=%s">
     </script>
-        """ % (settings.LLOOGG_ANALYTICS_ID,settings.LLOOGG_ANALYTICS_ID)
+        """ % (sites.settings.LLOOGG_ANALYTICS_ID,sites.settings.LLOOGG_ANALYTICS_ID)
         return mark_safe(an)
     else:
         return ''
@@ -109,7 +110,7 @@ def blue_css_validator(level = 2):
 register.simple_tag(blue_css_validator)
 
 def styling():
-    murl = settings.MEDIA_URL
+    murl = sites.settings.MEDIA_URL
     css = ['<link rel="stylesheet" type="text/css" href="%sdjpcms/jquery-ui-css/%s.css"/>' % (murl,DJPCMS_SITE_STYLE),
            '<link rel="stylesheet" type="text/css" href="%sdjpcms/djpcms.css"/>' % murl,
            '<link rel="stylesheet" type="text/css" href="%sdjpcms/jquery-ui-css/%s/jquery-ui-1.7.2.custom.css"/>' % (murl,DJPCMS_SITE_STYLE),

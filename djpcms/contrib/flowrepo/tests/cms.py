@@ -1,5 +1,3 @@
-from django.contrib.auth.models import User
-
 from djpcms.test import TestCase
 from djpcms.contrib.flowrepo.models import Report, FlowItem
 from djpcms.contrib.flowrepo.cms import NiceReportForm
@@ -100,4 +98,5 @@ class CmsTest(TestCase):
         self.login()
         context = self.get('/upload/')
         
+    
     

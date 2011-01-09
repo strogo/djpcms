@@ -1,15 +1,15 @@
 #
 #    Utility for managing grid 960 css templates
 #
-from djpcms.conf import settings
+from djpcms import sites
 from djpcms.template import mark_safe
 
 __all__ = ['grid960']
 
 def grid960(columns = None, fixed = None):
     if fixed is None:
-        fixed = settings.GRID960_DEFAULT_FIXED
-    columns = columns or settings.GRID960_DEFAULT_COLUMNS
+        fixed = sites.settings.GRID960_DEFAULT_FIXED
+    columns = columns or sites.settings.GRID960_DEFAULT_COLUMNS
         
     if columns == 16:
         return grid960_16(fixed)

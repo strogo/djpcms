@@ -3,7 +3,7 @@ Image upload function
 '''
 import os
 
-from djpcms.conf import settings
+from djpcms import sites
 
 from django.utils.functional import LazyObject
 from django.core.files.storage import get_storage_class
@@ -27,7 +27,7 @@ class uploader(object):
     def __call__(self, obj, name):
         if not self._func:
             model = self.model.upper()
-            sname =  getattr(settings,'ULOADER_FUNCTION_{0}'.format(model),None)
+            sname =  getattr(sites.settings,'ULOADER_FUNCTION_{0}'.format(model),None)
             if sname:
                 func = function_module(sname,_default_uploads)
             else:
@@ -45,7 +45,7 @@ class storage_manager(LazyObject):
     def _setup(self):
         model = self.model.upper()
         SETMOD = 'STORAGE_MANAGER_{0}'.format(model)
-        self._wrapped = get_storage_class(getattr(settings,SETMOD,None))()
+        self._wrapped = get_storage_class(getattr(sites.settings,SETMOD,None))()
         
 
 

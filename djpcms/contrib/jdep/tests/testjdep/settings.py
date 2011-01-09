@@ -1,1 +1,1 @@
-from djpcms.testsettings import *
+from regression.conf import *

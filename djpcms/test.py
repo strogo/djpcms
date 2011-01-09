@@ -94,7 +94,7 @@ def build_suite(app_module):
     '''Create a test suite for the provided application module.
 Look into the test module if it exists otherwise do nothing.'''
     suite = unittest.TestSuite()
-    app_path = app_module.__name__.split('.')[:-1] 
+    app_path = app_module.__name__.split('.')[:-1]
     try:
         test_module = import_module('{0}.tests'.format('.'.join(app_path)))
     except ImportError:
@@ -240,25 +240,21 @@ Must be used as a base class for TestCase classes'''
         
     def _urlconf_setup(self):
         sites.clear()
-        appurls = getattr(self,'appurls',None)
-        settings = sites.settings
-        self._old_appurl = settings.APPLICATION_URL_MODULE
-        settings.APPLICATION_URL_MODULE = appurls
-        self.site = self.CreateSites()
-        
-    def CreateSites(self):
         sett = sites.settings
-        sites.make(sett.SITE_DIRECTORY,'conf')
-        site = sites.get_site(self.urlbase)
-        sites.load() # load the site
-        return site
+        appurls = getattr(self,'appurls',None)
+        self.site = sites.make(sett.SITE_DIRECTORY,
+                               'conf',
+                               route = self.urlbase,
+                               APPLICATION_URL_MODULE = appurls)
+        self.settings = self.site.settings
+        sites.load()
             
     def _urlconf_teardown(self):
-        sites.settings.APPLICATION_URL_MODULE = self._old_appurl
         sites.clear()
         super(DjpCmsTestHandle,self)._urlconf_teardown()
     
     def clear(self, db = False):
+        '''If db is set to True it clears the database pages'''
         if db:
             self.Page.objects.all().delete()
         else:

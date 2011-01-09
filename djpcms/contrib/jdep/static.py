@@ -1,8 +1,8 @@
 import os
-from django.template import loader
 from django.utils._os import safe_join
 
-from djpcms.utils.importlib import import_module
+from djpcms.template import loader
+from djpcms.utils.importer import import_module
 
     
 class pathHandler(object):

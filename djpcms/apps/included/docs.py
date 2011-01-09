@@ -1,7 +1,6 @@
 import datetime
 import json
 
-from djpcms.conf import settings 
 from djpcms.template import loader, mark_safe
 from djpcms.utils.unipath import FSPath as Path
 from djpcms.views.appsite import Application
@@ -102,7 +101,7 @@ class DocView(View):
             if not title:
                 title = doc.get('indextitle','')
             b.append({'name': title})
-        for p in range(settings.ENABLE_BREADCRUMBS):
+        for p in range(djp.settings.ENABLE_BREADCRUMBS):
             b.pop(0)
         if b:
             b[-1].pop('url',None)

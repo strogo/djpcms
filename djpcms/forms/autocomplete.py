@@ -1,5 +1,5 @@
-from djpcms.conf import settings
-from djpcms.template import loader, mark_safe
+from djpcms import sites
+from djpcms.template import loader
 
 from django import forms
 from django.utils.datastructures import MultiValueDict, MergeDict
@@ -74,7 +74,7 @@ class AutocompleteForeignKeyInput(BaseAutocompleteInput):
                'url': self.get_url(),
                'id': attrs.get('id',''),
                'widget_class': self.attrs.pop('class',''),
-               'css': settings.HTML_CLASSES}
+               'css': sites.settings.HTML_CLASSES}
         
         return loader.render_to_string('djpcms/autocomplete/single.html',ctx)  
 
@@ -110,7 +110,7 @@ class AutocompleteManyToManyInput(BaseAutocompleteInput):
                'url': self.get_url(),
                'id': attrs.get('id',''),
                'widget_class': self.attrs.pop('class',''),
-               'css': settings.HTML_CLASSES}
+               'css': sites.settings.HTML_CLASSES}
         
         if isinstance(value,list):
             key = self.search_fields[0].split('__')[0]

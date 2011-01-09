@@ -35,8 +35,9 @@ def get_tests():
                 yield (loc,d)
 
 
-def import_tests(tags,apps):
+def import_tests(tags, settings):
     from django.db.models.loading import get_apps, load_app
+    apps = settings.INSTALLED_APPS
     apptests = []
     for loc,app in get_tests():
         model_label = '{0}.{1}'.format(loc,app)
@@ -64,8 +65,7 @@ def import_tests(tags,apps):
     return apptests
 
 
-def setup_logging(verbosity):
-    from djpcms.conf import settings
+def setup_logging(verbosity, settings):
     LOGGING = settings.LOGGING
     LOGGING['loggers'] = {}
     root = {}
@@ -80,10 +80,8 @@ def setup_logging(verbosity):
 
         
 def run(tags = None, verbosity = 1, interactive = True, failfast = False):
-    settings = site.settings
-    setup_logging(verbosity)
-    apps = settings.INSTALLED_APPS
-    apptests = import_tests(tags,apps)
+    setup_logging(verbosity, site.settings)
+    apptests = import_tests(tags, site.settings)
     
     test_runner = DjpcmsTestSuiteRunner(verbosity=verbosity,
                                         interactive=True,

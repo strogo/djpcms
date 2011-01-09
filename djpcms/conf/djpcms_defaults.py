@@ -1,7 +1,7 @@
 import logging
 
 INSTALLED_APPS                  = []
-ROOT_URLCONF                    = 'djpcms.core.defaults.urls'
+ROOT_URLCONF                    = 'djpcms.apps.djangosite.defaults.urls' # default value for django
 APPLICATION_URL_MODULE          = None
 ADMIN_URL_PREFIX                = '/admin/'
 ADMIN_MEDIA_PREFIX              = '/media/admin/'

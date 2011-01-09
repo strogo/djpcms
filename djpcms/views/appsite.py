@@ -129,7 +129,8 @@ No reason to change this default unless you really don't want to see the views i
     _submit_as_new   = None
     '''Set to a value if you want to include a save as new submit input when editing an instance.'''
     
-    def __init__(self, baseurl, editavailable = None, name = None):
+    def __init__(self, baseurl, editavailable = None, name = None,
+                 list_per_page = None, form = None):
         self.application_site = None
         self.editavailable    = editavailable
         if not baseurl.endswith('/'):
@@ -137,6 +138,8 @@ No reason to change this default unless you really don't want to see the views i
         if not baseurl.startswith('/'):
             baseurl = '/%s' % baseurl
         self.__baseurl        = baseurl
+        self.list_per_page    = list_per_page or self.list_per_page
+        self.form             = form or self.form
         self.name             = self._makename(name)
         
     def register(self, application_site):

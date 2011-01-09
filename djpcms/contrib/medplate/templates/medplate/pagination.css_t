@@ -3,10 +3,12 @@
 
 {% block body %}
 {{ tag }} .navigator {
-    float: {{ navigator_float }};
+    text-align: {{ navigator_float }};
+    overflow: hidden;
 }
 .jquery-pagination .information {
-    float: {{ information_float }};
+    text-align: {{ information_float }};
+    overflow: hidden;
 }
         
 .jquery-pagination a {

@@ -2,12 +2,11 @@ import os
 import sys
 import datetime
 
-from django.test import TestCase
+from djpcms import test
+
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.core import management
-
-from djpcms.conf import settings
 
 try:
     from djpcms.contrib.jdep.fabtools import *
@@ -19,7 +18,9 @@ except ImportError:
 from StringIO import StringIO
 from django.core.management.base import CommandError
 
-class CommandDeploy(TestCase):
+
+
+class CommandDeploy(test.TestCase):
     
     def setUp(self):
         User.objects.create_superuser('pinco', 'pinco@pinco.com', 'pallino')
@@ -45,17 +46,18 @@ class CommandDeploy(TestCase):
 if fabric_available:
     split = os.path.split
 
-    class Deployment(TestCase):
+    class Deployment(test.TestCase):
         
         def setUp(self):
             self.curdir = os.getcwd()
+            self.clear()
             path = os.path.split(os.path.abspath(__file__))[0]
             os.chdir(path)
             if path not in sys.path:
                 sys.path.insert(0,path)
             env.host_string = 'localhost'
             utils.project('testjdep','testjdep.com', redirect_port = 103)
-            settings.INSTALLED_APPS.append('djpcms.contrib.flowrepo')
+            self.settings.INSTALLED_APPS.append('djpcms.contrib.flowrepo')
         
         def testPath(self):
             upload(False)
@@ -95,5 +97,5 @@ if fabric_available:
             
         def tearDown(self):
             os.chdir(self.curdir)
-            settings.INSTALLED_APPS.pop()
+            self.settings.INSTALLED_APPS.pop()
             

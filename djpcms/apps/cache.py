@@ -5,7 +5,7 @@ from django.contrib.sites.models import Site
 from django.db.models import signals
 from django.http import Http404
 
-from djpcms import get_site
+from djpcms import sites
 from djpcms.models import Page
 from djpcms.views import appsite
 from djpcms.views.baseview import pageview
@@ -172,10 +172,11 @@ no search will be performed.'''
             cache.set(key,map)
         return map
 
-pagecache = PageCache()
+
 
 def clearcache(*args, **kwargs):
-    pagecache.clear()
+    sites.clearcache()
+    
     
 signals.post_save.connect(clearcache, sender=Page)
 signals.post_delete.connect(clearcache, sender=Page)

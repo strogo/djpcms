@@ -1,7 +1,7 @@
 import datetime
-from djpcms.conf import settings
 
 def djpcms(request):
+    settings = request.site.settings
     return {'jsdebug': 'true' if settings.DEBUG else 'false',
             'request': request,
             'debug': settings.DEBUG,

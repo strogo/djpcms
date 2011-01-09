@@ -2,7 +2,7 @@ import creole
 import creole2html
 import macros
 
-from djpcms.contrib.flowrepo import settings
+from djpcms import sites
 
 # Try to import pygments. If available, use it to render code
 try:
@@ -115,7 +115,8 @@ def HandleCode(code):
         code  = '\n'.join(codes[1:])
     except:
         lexer = guess_lexer(code)
-    formatter = HtmlFormatter(linenos=settings.FLOWREPO_CODE_LINENO, cssclass="source")
+    formatter = HtmlFormatter(linenos=getattr(sites.settings,'FLOWREPO_CODE_LINENO',False),
+                              cssclass="source")
     result = highlight(code, lexer, formatter)
     return result
 

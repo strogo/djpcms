@@ -66,11 +66,17 @@ method'''
     def editsite(self):
         return False
     
-    def clear(self):
+    def clearcache(self):
         global _view_cache
         self.resolver = None
         self._urls = None
         _view_cache.clear()
+        pagecache = getattr(self,'pagecache',None)
+        if pagecache:
+            pagecache.clear()
+        
+    def clear(self):
+        self.clearcache()
     
     def clean_path(self, environ):
         '''

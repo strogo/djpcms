@@ -20,6 +20,7 @@ except:
 def register(name,wrapper):
     _models[name] = wrapper
 
+
 def getmodel(appmodel):
     global _models
     for wrapper in _models.itervalues():

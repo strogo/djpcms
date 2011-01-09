@@ -1,5 +1,4 @@
 import oauth
-from djpcms.conf import settings
 from djpcms.contrib.social import OAuthProvider
 
 
@@ -13,7 +12,7 @@ class Google(OAuthProvider):
     ACCESS_TOKEN_URL  = 'https://www.google.com/accounts/OAuthGetAccessToken'
     
     def extra_request_parameters(self):
-        scopes = getattr(settings,'GOOGLE_SCOPE_SERVICES',DEFAULT_GOOGLE_SCOPE_SERVICES)
+        scopes = getattr(self.settings,'GOOGLE_SCOPE_SERVICES',DEFAULT_GOOGLE_SCOPE_SERVICES)
         scopes_string = ' '.join((str(scope) for scope in scopes))
         return {'scope':scopes_string}
         

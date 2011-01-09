@@ -101,6 +101,7 @@ class FlowItemApplication(ArchiveTaggedApplication):
         
     def __init__(self, *args, **kwargs):
         content_models = {}
+        self.content_names  = kwargs.pop('content_names',self.content_names)
         for cn,model in FlowItem.objects.models_by_name.items():
             cname = self.content_names.get(model,cn)
             self.content_names[model] = cname
@@ -264,7 +265,7 @@ class WebAccountApplication(TagApplication):
         if not request:
             return False
         try:
-            return request.user.id == settings.FOR_USER_ID
+            return request.user.id == getattr(request.site.settings,'FOR_USER_ID',None)
         except:
             False
     

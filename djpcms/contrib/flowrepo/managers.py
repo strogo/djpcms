@@ -5,7 +5,6 @@ import re
 import unicodedata
 from datetime import datetime
 
-from django.utils.safestring import mark_safe
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 from django.db import models
@@ -13,18 +12,7 @@ from django.utils.dates import MONTHS_3
 from django.utils.encoding import force_unicode
 from django.db.models import signals
 
-from djpcms.contrib.flowrepo.settings import FLOWREPO_DIGIT_MONTH, FLOWREPO_UPLOAD_FUNCTION
-
 source_interactive = 'INTERACTIVE'
-
-def slugify(value, rtx = '-'):
-    """
-    Normalizes string, converts to lowercase, removes non-alpha characters,
-    and converts spaces to hyphens.
-    """
-    value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
-    value = unicode(re.sub('[^\w\s-]', '', value).strip())
-    return mark_safe(re.sub('[-\s]+', rtx, value))
 
 
 class FlowManager(models.Manager):

@@ -4,6 +4,7 @@ from datetime import datetime
 
 from django.utils.dateformat import format
 
+from djpcms import sites
 from djpcms.contrib import messages
 from djpcms.utils.translation import ugettext_lazy as _
 from djpcms.utils.html import submit
@@ -77,9 +78,8 @@ def add_hidden_field(form, name, required = False):
 
 
 def success_message(instance, mch):
-    from djpcms.conf import settings
     dt = datetime.now()
-    c = {'dt': format(dt,settings.DATETIME_FORMAT),
+    c = {'dt': format(dt,sites.settings.DATETIME_FORMAT),
          'mch': mch,
          'obj': instance}
     if instance:

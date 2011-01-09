@@ -81,7 +81,7 @@ context.add(
                        data = {
                                'navigator_float':'left',
                                'information_float':'right',
-                               'margin':'0 0 0 10px'
+                               'margin':'0 0 10px 0'
                                }
                        )
             )

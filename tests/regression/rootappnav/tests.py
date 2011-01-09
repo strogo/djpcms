@@ -1,7 +1,6 @@
 import datetime
 
 from djpcms.test import TestCase
-from djpcms.conf import settings
 from djpcms.utils import navigation
 
 from regression.rootappnav.models import Strategy

@@ -10,3 +10,12 @@ class TestSites(test.TestCase):
         self.assertRaises(AlreadyRegistered,djpcms.MakeSite,__file__)
         site = djpcms.MakeSite(__file__, route = '/extra/')
         self.assertEqual(site.route,'/extra/')
+        
+    def testClenUrl(self):
+        p = self.makepage(bit = 'test')
+        self.assertEqual(p.url,'/test/')
+        res = self.get('/test', status = 302, response = True)
+        self.assertEqual(res['location'],'http://testserver/test/')
+        res = self.get('/test////', status = 302, response = True)
+        self.assertEqual(res['location'],'http://testserver/test/')
+        

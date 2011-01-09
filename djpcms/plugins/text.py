@@ -1,9 +1,8 @@
 import json
 
-from djpcms.conf import settings
+from djpcms import sites, forms
 from djpcms.template import RequestContext, mark_safe
 from djpcms.core.exceptions import PermissionDenied
-from djpcms import forms
 from djpcms.forms import form_kwargs
 from djpcms.forms.cms import EditingForm
 from djpcms.models import SiteContent
@@ -29,7 +28,7 @@ class NewContentCode(forms.SlugField):
 class SiteContentField(forms.ModelChoiceField):
     
     def widget_attrs(self, widget):
-        return {'class': settings.HTML_CLASSES.ajax}
+        return {'class': sites.settings.HTML_CLASSES.ajax}
 
 
 class ChangeTextContent(forms.Form):
@@ -125,7 +124,7 @@ You can use several different markup languages or simply raw HTML.'''
                                             site_content.htmlbody(),
                                             '</div>']))
             except Exception, e:
-                if settings.DEBUG:
+                if djp.settings.DEBUG:
                     return u'%s' % e 
                 else:
                     return u''

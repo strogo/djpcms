@@ -4,7 +4,7 @@ import oauth2 as oauth
 #from oauth import oauth
 
 import djpcms
-from djpcms import http
+from djpcms import http, sites
 from djpcms.contrib import messages
 
 provider_handles = {}
@@ -52,11 +52,13 @@ class Provider(object):
     __metaclass__ = SocialProviderType
     client_class  = httplib2.Http
     
+    def __get_settings(self):
+        return sites.settings
+    settings = property(__get_settings)
+    
     def __init__(self):
         self.name = self.__class__.__name__.lower()
-        from djpcms.conf import settings
-        self.settings = settings
-        consumers = getattr(settings,'SOCIAL_OAUTH_CONSUMERS',None)
+        consumers = getattr(self.settings,'SOCIAL_OAUTH_CONSUMERS',None)
         if consumers:
             consumers = consumers.get(self.name,None)
         if consumers:

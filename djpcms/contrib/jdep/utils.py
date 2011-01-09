@@ -2,6 +2,7 @@ import os
 
 from fabric.api import env, run, put, local, sudo
 
+from djpcms import MakeSite
 from djpcms.contrib.jdep.static import vrun
 
 after_deploy_hook = []
@@ -34,6 +35,9 @@ def project(module, domain_name, deploy_root_dir = 'deployment',
 * *domain_name* the site domain name (for configuring web servers).
 * *setting_name* optional settings file name (default is "settings").
 * *deploy_root_dir* optional root directory where file will be installed (Default is "deployment").'''
+    dir = os.path.join(os.getcwd(),module)
+    site = MakeSite(dir, setting_module)
+    
     env.project = module
     env.domain_name = domain_name
     if deploy_root_dir:

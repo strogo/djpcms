@@ -3,9 +3,6 @@ import re
 import sys
 import logging
 
-from djpcms.conf import settings
-
-from django.http import Http404
 from django.utils.dateformat import DateFormat
 from django.db import models
 from django.utils import html, translation
@@ -196,17 +193,6 @@ If not specified the :setting:`DEFAULT_TEMPLATE_NAME` is used.'''
     def save(self, **kwargs):
         self.level = self.get_level()
         super(Page,self).save(**kwargs)
-        
-    def get_template(self):
-        '''Returns the name of the ``HTML`` template file for the page.
-If not specified we get the template of the :attr:`parent` page.'''
-        if not self.template:
-            if self.parent:
-                return self.parent.get_template()
-            else:
-                return settings.DEFAULT_TEMPLATE_NAME
-        else:
-            return self.template
 
     def get_level(self):
         try:

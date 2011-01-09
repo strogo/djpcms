@@ -7,7 +7,7 @@ from optparse import OptionParser, NO_DEFAULT
 import imp
 
 import djpcms
-from djpcms.conf import settings
+from djpcms import sites
 from djpcms.utils.importer import import_module
 
 from .base import BaseCommand, CommandError, handle_default_options
@@ -72,10 +72,10 @@ def load_command_class(app_name, name):
 
 
 def get_commands():
-    global _commands, settings
+    global _commands
     if _commands is None:
         _commands = dict([(name, 'djpcms.apps') for name in find_commands(__path__[0])])
-        apps = settings.INSTALLED_APPS
+        apps = sites.settings.INSTALLED_APPS
 
         # Find and load the management module for each installed app.
         for app_name in apps:
