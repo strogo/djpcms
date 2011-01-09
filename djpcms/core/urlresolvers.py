@@ -11,12 +11,13 @@ from inspect import isclass
 
 from djpcms.core.exceptions import ImproperlyConfigured, ViewDoesNotExist
 from djpcms.http import get_http
-from django.utils.datastructures import MultiValueDict
-from django.utils.encoding import iri_to_uri, force_unicode, smart_str
-from django.utils.functional import memoize
-from django.utils.regex_helper import normalize
+from djpcms.utils import force_str
 
 _view_cache = {}
+
+
+class Resolver404(Exception):
+    pass
 
     
 def cachevalue(path, view, site, editsite, kwargs):
@@ -38,10 +39,6 @@ The parameters are:
     cached = (site,view,kwargs)
     _view_cache[path] = cached
     return cached
-
-
-class Resolver404(Exception):
-    pass
 
 
 class ResolverMixin(object):
@@ -245,10 +242,10 @@ Adapted for djpcms
                         tried.append(pattern.regex.pattern)
                 else:
                     if sub_match:
-                        sub_match_dict = dict([(smart_str(k), v) for k, v in match.groupdict().items()])
+                        sub_match_dict = dict([(force_str(k), v) for k, v in match.groupdict().items()])
                         sub_match_dict.update(self.default_kwargs)
                         for k, v in sub_match[2].iteritems():
-                            sub_match_dict[smart_str(k)] = v
+                            sub_match_dict[force_str(k)] = v
                         return sub_match[0], sub_match[1], sub_match_dict
                     tried.append(pattern.regex.pattern)
             raise Resolver404({'tried': tried, 'path': new_path})
@@ -284,38 +281,5 @@ Adapted for djpcms
     def resolve500(self):
         return self._resolve_special('500')
 
-    def reverse(self, lookup_view, *args, **kwargs):
-        if args and kwargs:
-            raise ValueError("Don't mix *args and **kwargs in call to reverse()!")
-        try:
-            lookup_view = get_callable(lookup_view, True)
-        except (ImportError, AttributeError), e:
-            raise NoReverseMatch("Error importing '%s': %s." % (lookup_view, e))
-        possibilities = self.reverse_dict.getlist(lookup_view)
-        for possibility, pattern in possibilities:
-            for result, params in possibility:
-                if args:
-                    if len(args) != len(params):
-                        continue
-                    unicode_args = [force_unicode(val) for val in args]
-                    candidate =  result % dict(zip(params, unicode_args))
-                else:
-                    if set(kwargs.keys()) != set(params):
-                        continue
-                    unicode_kwargs = dict([(k, force_unicode(v)) for (k, v) in kwargs.items()])
-                    candidate = result % unicode_kwargs
-                if re.search(u'^%s' % pattern, candidate, re.UNICODE):
-                    return candidate
-        # lookup_view can be URL label, or dotted path, or callable, Any of
-        # these can be passed in at the top, but callables are not friendly in
-        # error messages.
-        m = getattr(lookup_view, '__module__', None)
-        n = getattr(lookup_view, '__name__', None)
-        if m is not None and n is not None:
-            lookup_view_s = "%s.%s" % (m, n)
-        else:
-            lookup_view_s = lookup_view
-        raise NoReverseMatch("Reverse for '%s' with arguments '%s' and keyword "
-                "arguments '%s' not found." % (lookup_view_s, args, kwargs))
 
 
