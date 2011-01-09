@@ -25,7 +25,6 @@ INSTALLED_APPS = (
     'djpcms.contrib.messages',
     #
     'djpcms',
-    #'vinoweb.vino'
 )
 
 # The settings changed by the application

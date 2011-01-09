@@ -37,14 +37,9 @@ class ApplicationSites(ResolverMixin):
     '''This class is used as a singletone and holds information of djpcms routes'''
     
     def __init__(self):
-        self._default_config = get_settings()
-        self._settings = None
+        self.settings = None
         self.route = None
         self.sites = OrderedDict()
-        
-    def __get_settings(self):
-        return self._settings or self._default_config
-    settings = property(__get_settings)
     
     def _load(self):
         '''Load sites'''
@@ -104,8 +99,8 @@ class ApplicationSites(ResolverMixin):
                                 **kwargs)
         
         # If no settings available get the current one
-        if self._settings is None:
-            self._settings = settings
+        if self.settings is None:
+            self.settings = settings
         
         # Add template media directory to template directories
         path = os.path.join(djpcms.__path__[0],'media','djpcms')
