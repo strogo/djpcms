@@ -1,8 +1,9 @@
-import unittest
+from djpcms import test
 from djpcms.contrib.medplate import CssContext, defaults, base_context
+from djpcms.contrib.medplate.management.commands.style import Command
 
 
-class TestCss(unittest.TestCase):
+class TestCss(test.TestCase):
         
     def testTemplate(self):
         c = CssContext('test',tag='div.test',data={'color':'#333'},defaults=defaults)
@@ -15,3 +16,4 @@ class TestCss(unittest.TestCase):
         box = base_context.box
         html = box.render()
         self.assertTrue('div.djpcms-html-box div.hd' in html)
+        

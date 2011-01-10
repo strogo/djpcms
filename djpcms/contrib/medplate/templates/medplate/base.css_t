@@ -51,20 +51,6 @@ blockquote div.body-quote {
 }
 {% endblock %}
 
-
-
-{% block body-edit %}
-
-/** BLOCK BODY EDIT
--------------------------------------------------------**/
-
-body.edit {
-	background: {{ edit_background }};
-	color: {{ edit_color }};
-}
-{% endblock %}
-
-
 {% block simple-nav %}
 
 /** UL.SIMPLE-NAV
@@ -82,76 +68,12 @@ ul.simple-nav.right li {
 
 
 {% block djpcms-block-element %} 
-div.djpcms-block-element,
-div.edit-block {
-	overflow: hidden;
-	margin-bottom: 20px;
-}
 div.flat-element,
 div.flat-pannel {
 	overflow:hidden;
 	padding: 10px;
 }
 {% endblock %}
-
-
-{% block page-edit %}
-
-/*  PAGE EDITING
----------------------------------------------------------------*/
-
-.edit-page {
-	padding: 0;
-}
-.edit-page .formColumn {
-	display: inline;
-	float: left;
-}
-.edit-page h1 {
-	font-size: 150%;
-	text-align: center;
-	margin-top: 10px;
-	margin-botton: 15px;
-}
-{% endblock %}
-
-
-
-{% block content-editing %}
-
-/** INLINE CONTENT EDITING
------------------------------------------------------------*/
-.edit-contentblock .djpcms-block-element {
-	margin-bottom: 0;
-}	
-.edit-contentblock .hd {
-	padding: 5px 10px;
-	margin: 0;
-}
-.edit-contentblock {
-	margin-bottom: 20px;
-}
-.edit-contentblock .hd textarea {
-	width: 100%;
-}
-.edit-contentblock .actions  {
-	padding:6px 12px;
-	overflow:hidden;
-	min-height:16px;
-}
-.edit form.editing ,
-.edit fieldset.editing .ctrlHolder {height: 100%;}
-.edit fieldset.editing {height: 80%;}
-.edit fieldset.editing label {display: none;}
-.edit .editing #id_body {
-	font-family:Monaco,"Courier New","DejaVu Sans Mono","Bitstream Vera Sans Mono",monospace;
-	font-size: 12px;
-	width: 100%;
-	min-height: 98%;
-	height: 98%;
-}
-{% endblock %}
-
 
 
 {% block action %}

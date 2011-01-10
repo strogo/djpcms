@@ -46,6 +46,10 @@ class UserInterface(ModelInterface):
     @classmethod
     def logout(cls, **kwargs):
         raise NotImplementedError
+    
+    @classmethod
+    def get(cls, **kwargs):
+        raise NotImplementedError
 
 
 class AnonymousUser(UserInterface):

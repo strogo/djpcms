@@ -15,7 +15,10 @@ of different scales in a uniform way.'''
 def significant_format(number, decimal_sep = '.', thousand_sep=',', n = 3):
     """Format a number according to a given number of significant figures.
 """
+    sn1 = str(number)
     str_number = significant(number, n)
+    if len(sn1) < len(str_number):
+        str_number = sn1
     
     # sign
     if float(number) < 0:

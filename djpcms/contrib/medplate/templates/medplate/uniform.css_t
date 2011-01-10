@@ -1,0 +1,14 @@
+{% extends "medplate/elem.css_t" %}
+
+{% block body %}
+{{ tag }} input,
+{{ tag }} textarea,
+{{ tag }} select {{% if input_border %}
+    border: {{ input_border }};{% endif %}
+    padding: {{ input_padding }};
+}
+
+{{ tag }} table td {
+    padding: {{ table_padding }};
+}
+{% endblock %}

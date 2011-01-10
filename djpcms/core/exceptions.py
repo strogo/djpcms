@@ -35,6 +35,11 @@ class ModelException(DjpcmsException):
     pass
 
 
+class ObjectDoesNotExist(ModelException):
+    '''A :class:`ModelException` raised when an instance of a required model class
+does not exists.'''
+    pass
+
 class UsernameAlreadyAvailable(Exception):
     pass
 

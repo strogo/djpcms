@@ -5,11 +5,14 @@
 	<div id="{{ field.auto_id }}-errors">
        {{ field.errors }}
     </div>{% if field|is_checkbox %}
-       {{ field|with_class }}{% endif %}{% if label %}
+    <label for="{{ field.auto_id }}">
+     {{ field|with_class }}{% if label %}
+      {{ label }}{% endif %}
+    </label>{% else %}{% if label %}
     <label for="{{ field.auto_id }}">
       {{ label }}
-    </label>{% endif %}{% if not field|is_checkbox %}
-      {{ field|with_class }}{% endif %}{% if field.help_text %}
-    <p id="hint_{{ field.auto_id }}" class="formHint">{{ field.help_text|safe }}</p>{% endif %}
+    </label>{% endif %}
+      {{ field|with_class }}{% if field.help_text %}
+    <p id="hint_{{ field.auto_id }}" class="formHint">{{ field.help_text|safe }}</p>{% endif %}{% endif %}
 </div>
 {% endif %}

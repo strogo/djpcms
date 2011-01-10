@@ -93,8 +93,9 @@ If *page* is ``None`` it returns :setting:`DEFAULT_TEMPLATE_NAME`.'''
             else:
                 return sites.settings.DEFAULT_TEMPLATE_NAME
         
-    def title(self, page, **urlargs):
+    def title(self, djp):
         '''View title.'''
+        page = djp.page
         if page:
             return page.title
         else:

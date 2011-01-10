@@ -1,6 +1,6 @@
 from copy import copy
 
-from djpcms import template
+from djpcms import template, sites
 
 class NoValue:
     pass
@@ -12,6 +12,7 @@ class CssContext(object):
                  description = '', elems= None,
                  data = None, ineritable_tag = True,
                  defaults = None, process = None):
+        self.mediaurl = sites.settings.MEDIA_URL
         self.name = name
         self._tag = tag
         self.process = process

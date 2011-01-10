@@ -26,7 +26,7 @@ class UserApplication(appsite.ModelApplication):
     def get_object(self, request, *args, **kwargs):
         if self.userpage:
             try:
-                id = int(kwargs.get('username',None))
+                username = kwargs.get('username',None)
                 return self.model.objects.get(username = username)
             except:
                 return None

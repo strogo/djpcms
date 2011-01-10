@@ -4,8 +4,6 @@ from djpcms.contrib.medplate import elements
 defaults = { 
     'background': '#fff',
     'color': '#000',
-    'edit_background': '#f5f5f5',
-    'edit_color': '#000',
     #
     #
     'font_family': "Helvetica,Arial,'Liberation Sans',FreeSans,sans-serif",
@@ -48,13 +46,13 @@ context.add(
                        tag = 'div.breadcrumbs',
                        template = 'medplate/breadcrumbs.css_t',
                        data = {
+                               'background': 'transparent',
                                'font_size': '130%',
                                'padding': '10px 0'}
                        )
             )
                     
-
-#___________________________________ MAIN NAVIGATION
+#________________________________________ MAIN NAVIGATION
 context.add(
             CssContext('nav',
                        tag='ul.main-nav',
@@ -87,6 +85,34 @@ context.add(
             )
 
 
+#________________________________________ UNIFORM
+context.add(
+            CssContext('uniform',
+                       tag = 'form.uniForm',
+                       template = 'medplate/uniform.css_t',
+                       data = {
+                               'background':'transparent',
+                               'input_border':'1px solid #ccc',
+                               'input_padding': '3px 0',
+                               'table_padding': '2px 5px 2px 0'
+                               }
+                       )
+            )
+
+
+#________________________________________ SUBMITS AND BUTTONS
+context.add(
+            CssContext('submit',
+                       tag = 'input[type="submit"]',
+                       template = 'medplate/submit.css_t',
+                       data = {
+                               'background':'#FFFFFF',
+                               'border':'1px solid #aaa',
+                               'padding': '3px 5px'
+                               }
+                       )
+            )
+
 context.add(
             CssContext('tags',
                        tag='div.tagindex',
@@ -96,14 +122,20 @@ context.add(
                        )
             )
 
+
+#________________________________________ OBJECT DEFINITIONS
 context.add(
             CssContext('object_definitions',
                        tag='div.object-definition',
-                       template='medplate/object-definition.css_t'
+                       template='medplate/object-definition.css_t',
+                       data = {
+                               'background': 'transparent'
+                               }
                        )
             )
 
 
+#________________________________________ BOX
 context.add(
             CssContext('box',
                        tag='div.djpcms-html-box',
@@ -125,6 +157,20 @@ context.add(
                        )
             )
 
+
+#________________________________________ EDITING
+context.add(
+            CssContext('editing',
+                       tag = 'body.edit',
+                       template='medplate/editing.css_t',
+                       data = {
+                               'background': '#f5f5f5',
+                               'color': '#000',
+                               'block_spacing': '20px',
+                               'placeholder_border': '2px dashed #666'
+                               }
+                       )
+            )
 
 context.add(
             CssContext('element',
@@ -153,7 +199,7 @@ context.add(
                        )
             )
 
-# SEARCH BOX
+#________________________________________ SEARCH BOX
 context.add(
             CssContext('search',
                        tag='div.cx-search-bar',
@@ -162,12 +208,13 @@ context.add(
             )
 
 
-# Message List
+#________________________________________ MESSAGE LIST & ERROR LIST
 context.add(
             CssContext('messagelist',
                        tag='ul.messagelist li',
                        data = {
                                'background':'#FFFFE5',
+                               'color':'#666',
                                'margin':'0 0 3px',
                                'padding':'4px 5px 4px 25px'}
                        )

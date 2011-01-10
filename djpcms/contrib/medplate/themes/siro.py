@@ -2,9 +2,10 @@ from djpcms.contrib.medplate.themes.allwhite import context as base_context
 
 context = base_context.copy()
 
+border_color = '#e0e0e0'
 
 context.update({'font_size': '13px',
-                'line_height': '17px',
+                'line_height': '18px',
                 'font_family': "'Lucida Grande',Arial,sans-serif"})
 
 context.anchor.update({'color':'#36566B',
@@ -37,6 +38,8 @@ context.breadcrumbs.update({'font_size': '120%',
                             'padding': '15px 0',
                             'text_align':'center'})
 
+context.panel.update({'background':'#fafafa',
+                      'border':'2px solid {0}'.format(border_color)})
 
 # Style box
 context.box.update({'background':'#ccc',
@@ -48,3 +51,12 @@ context.box.ft.update({'background':'#fff',
                        'radius_top_right':'0px',
                        'radius_top_left':'0px'})
 context.box.hd.update({'background':'#ccc'})
+
+# Uniforms
+context.uniform.update({'input_border':'2px solid #dfdfdf'})
+
+# Submits
+context.submit.update({'background':'url("{0}djpcms/img/nav-bg.gif") repeat-x scroll center bottom #fff'.format(context.mediaurl),
+                       'color': '#666',
+                       'hover_border': '2px solid #aaa'})
+

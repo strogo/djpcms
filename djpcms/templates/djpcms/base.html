@@ -19,12 +19,12 @@
     <div id="page-messages" class="{{ grid.column1 }}">{% if messages %}
      <ul class="messagelist">{% for message in messages %}
      <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>{% endfor %}</ul>{% endif %}
-    </div>{{ grid.clear }}{% endblock %}
-   <div id="content"{% block contentbits %}{{ djp.contentbits }}{% endblock %}>{% if edit_page %}
+    </div>{{ grid.clear }}{% endblock %}{% if edit_page %}
    <div class="edit-block {{ grid.column1 }}">
    {{ edit_page }}
    </div>
-   {{ grid.clear }}{% endif %}{% block page-body %}
+   {{ grid.clear }}{% endif %}
+   <div id="content"{% block contentbits %}{{ djp.contentbits }}{% endblock %}>{% block page-body %}
    {{ inner }}{% endblock %}
    </div>
    {% block page-postbody %}{% endblock %}

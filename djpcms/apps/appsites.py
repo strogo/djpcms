@@ -101,7 +101,6 @@ If the application is not available, it returns ``None``. Never fails.'''
     def getapp(self, appname):
         '''Given a *appname* in the form of appname-appview
 returns the application handler. If the appname is not available, it raises a KeyError'''
-        from django.db import models
         names = appname.split('-')
         if len(names) == 2:
             name     = names[0]

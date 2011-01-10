@@ -45,7 +45,9 @@ def _boolean_icon(val):
 
 
 def nicerepr(val, nd = 3):
-    if isinstance(val,datetime):
+    if val is None:
+        return sites.settings.DJPCMS_EMPTY_VALUE
+    elif isinstance(val,datetime):
         time = val.time()
         if not time:
             return date_format(val.date(),sites.settings.DATE_FORMAT)
@@ -58,7 +60,7 @@ def nicerepr(val, nd = 3):
     else:
         try:
             return significant_format(val, n = nd)
-        except:
+        except TypeError:
             return val
 
 

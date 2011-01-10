@@ -1,8 +1,7 @@
 import os
 from optparse import make_option
 
-from djpcms.conf import settings
-from djpcms import template
+from djpcms import sites, template
 from djpcms.utils.importer import import_module
 from djpcms.apps.management.base import BaseCommand
 
@@ -15,7 +14,7 @@ def render(style, target, template_engine = None):
     
     if not style:
         #try style file in project directory
-        modname = '{0}.style'.format(settings.SITE_MODULE)
+        modname = '{0}.style'.format(sites.settings.SITE_MODULE)
         try:
             module = import_module(modname)
         except ImportError:
@@ -34,7 +33,7 @@ def render(style, target, template_engine = None):
             raise ValueError('Style {0} not available'.format(style))
     
     context = module.context.copy()
-    context.update({'MEDIA_URL': settings.MEDIA_URL})
+    context.update({'MEDIA_URL': sites.settings.MEDIA_URL})
     data = context.render(template_engine)
     f = open(target,'w')
     f.write(data)
@@ -61,7 +60,7 @@ class Command(BaseCommand):
         style = options['style']
         target = options['target']
         if not target:
-            target = os.path.join(settings.MEDIA_ROOT,'site','site.css')
+            target = os.path.join(sites.settings.MEDIA_ROOT,'site','site.css')
         render(style,target)
         
         

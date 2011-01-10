@@ -51,3 +51,7 @@ class DjangoUser(UserInterface):
     def logout(cls, request):
         return logout(request)
     
+    @classmethod
+    def get(cls, **kwargs):
+        return User.objects.get(**kwargs)
+    

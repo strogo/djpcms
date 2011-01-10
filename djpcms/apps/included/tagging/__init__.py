@@ -6,6 +6,10 @@ from tagging.models import Tag, TaggedItem
 from tagging.forms import TagField as TagFieldBase
 
 
+# REGEX FOR A TAG
+tag_regex = '[-\.\+\#\'\:\w]+'
+
+
 def add_tags(self, c, djp, obj):
     request = djp.request
     tagurls = []
@@ -29,10 +33,6 @@ def tagurl(self, request, *tags):
             kwargs['tag%s' % c] = tag
             c += 1
         return view(request, **kwargs).url
-    
-    
-# REGEX FOR A TAG
-tag_regex = '[-\.\+\#\'\:\w]+'
 
 
 class TagView(appview.SearchView):

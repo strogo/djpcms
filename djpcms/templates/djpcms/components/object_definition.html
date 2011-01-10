@@ -1,4 +1,4 @@
 {# Model object table template, Used by djpcms.core.models.ModelTypeWrapper.totable #}
-<div{% if id %} id="{{ id }}"{% endif %} class="object-definition {{ module_name }}">{% for row in data %}
+<div{% if id %} id="{{ id }}"{% endif %} class="object-definition{% if module_name %} {{ module_name }}{% endif %}">{% for row in data %}
 <dl><dt>{{ row.name }}</dt><dd>{{ row.value }}</dd></dl>{% endfor %}
 </div>

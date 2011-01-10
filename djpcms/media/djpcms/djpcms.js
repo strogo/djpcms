@@ -671,6 +671,75 @@
 			});
 		}
 	});
+	
+	
+	
+	$.djpcms.addDecorator({
+		id: "rearrange",
+		description: "Drag and drop functionalities in editing mode",
+		decorate: function($this,config) {
+			var columns = 'div.sortable-block';
+			var sortableItems = $('div.edit-block');
+			
+			sortableItems.mousedown(function (e) {
+	            sortableItems.css({width:''});
+	            $(this).parent().css({
+	                width: $(this).parent().width() + 'px'
+	            });
+	        }).mouseup(function () {
+	            if(!$(this).parent().hasClass('dragging')) {
+	                $(this).parent().css({width:''});
+	            } else {
+	                $(columns).sortable('disable');
+	            }
+	        });
+			
+			function moveblock(block, elem, callback) {
+				var data = $.djpcms.postparam('rearrange');
+				var form = $('form.djpcms-blockcontent',elem);
+				if(form) {
+					var url = form.attr('action');
+					data.target = block.id;
+					data.previous = elem[0].previous_block;
+					$.post(url,
+						   data,
+						   callback,
+						   'json');
+				}
+			}
+			
+			$(columns).sortable({
+				items: sortableItems,
+				handle: 'div.hd',
+	            forcePlaceholderSize: true,
+				revert: 300,
+	            delay: 100,
+	            opacity: 0.8,
+	            containment: 'div#content',
+	            placeholder: 'djpcms-placeholder',
+	            start: function (e,ui) {
+	                $(ui.helper).addClass('dragging');
+	            },
+	            beforeStop: function(e,ui) {
+	            	var parent = ui.helper.prev();
+	            	if(parent) {
+	            		parent = parent.attr('id');
+	            		ui.item[0].previous_block = parent;
+	            	}
+	            	else {
+	            		ui.item[0].previous_block = null;
+	            	}
+	            },
+	            stop: function (e,ui) {
+	                $(ui.item).css({width:''}).removeClass('dragging');
+	                function updatedone() {
+	                	$(columns).sortable('enable');
+	                }
+	                moveblock(this,ui.item,updatedone);
+	            }
+			});
+		}
+	});
 		
 })(jQuery);
 

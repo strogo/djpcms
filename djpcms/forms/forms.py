@@ -21,19 +21,26 @@ Media = forms.Media
 MediaDefiningClass = forms.MediaDefiningClass
 
 
+def form_preprocess(self, kwargs):
+    self.request = kwargs.pop('request',None)
+    self.user = kwargs.pop('user',None)
+    if not self.user and self.request:
+        self.user = getattr(self.request,'user',None)
+
+
 class Form(forms.Form):
     '''A slight modification on django Form'''
     def __init__(self, *args, **kwargs):
+        form_preprocess(self,kwargs)
         kwargs.pop('instance',None)
         kwargs.pop('save_as_new',None)
-        self.request = kwargs.pop('request',None)
         super(Form,self).__init__(*args, **kwargs)
 
 
 class ModelForm(forms.ModelForm):
     '''A slight modification on django Form'''
     def __init__(self, *args, **kwargs):
-        self.request = kwargs.pop('request',None)
+        form_preprocess(self,kwargs)
         save_as_new = kwargs.pop('save_as_new',False)
         super(ModelForm,self).__init__(*args, **kwargs)
         if save_as_new:

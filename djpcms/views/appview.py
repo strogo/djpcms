@@ -36,6 +36,17 @@ def selfmethod(self, f):
     return _
 
 
+def model_defaultredirect(self, request, next = None, instance = None, **kwargs):
+    '''Default redirect for a model view is the View url for that model
+if an instance is available'''
+    if instance:
+        next = self.appmodel.viewurl(request,instance) or next
+    return super(ModelView,self).defaultredirect(request,
+                                                 next = next,
+                                                 instance = instance,
+                                                 **kwargs)
+    
+
 class View(djpcmsview):
     '''This is a specialised view class derived from :class:`djpcms.views.baseview.djpcmsview`
 and used for handling views which belongs to
@@ -137,6 +148,7 @@ Usage::
                  methods       = None,
                  plugin_form   = None,
                  renderer      = None,
+                 title         = None,
                  permission    = None,
                  in_navigation = 0,
                  template_name = None,
@@ -165,6 +177,8 @@ Usage::
         self.editurl   = None
         self.headers   = headers
         self.astable   = astable
+        if title:
+           self.title = title 
         if table_generator:
             self.table_generator = table_generator
         if renderer:
@@ -194,7 +208,7 @@ Usage::
     
     def get_url(self, djp, **kwargs):
         purl = self.regex.get_url(**kwargs)
-        return '%s%s' % (self.baseurl,purl)
+        return self.baseurl + purl
     
     def names(self):
         return self.regex.names
@@ -219,10 +233,6 @@ Usage::
         if not link:
             link = self.appmodel.name
         return link
-        
-    def title(self, page, **kwargs):
-        title = None if not page else page.title
-        return title or self.appmodel.name
     
     def isroot(self):
         '''True if this application view represents the root view of the application.'''
@@ -394,16 +404,7 @@ By default it calls the :func:`djpcms.views.appsite.ModelApplication.basequery` 
     
     def defaultredirect(self, request, **kwargs):
         return model_defaultredirect(self, request, **kwargs)
-    
-    
-def model_defaultredirect(self, request, next = None, instance = None, **kwargs):
-    if instance:
-        next = self.appmodel.viewurl(request,instance)
-    if not next:
-        next = self.appmodel.baseurl
-    return super(ModelView,self).defaultredirect(request, next = next,
-                                                 instance = instance, **kwargs)
-    
+
     
 class SearchView(ModelView):
     '''A :class:`ModelView` class for searching objects in model.
@@ -503,8 +504,8 @@ A view of this type has an embedded object available which is used to generate t
             djp.instance = instance
         return super(ObjectView,self).get_url(djp, **kwargs)
     
-    def title(self, page, instance = None, **kwargs):
-        return self.appmodel.title_object(instance)
+    def title(self, djp):
+        return self.appmodel.title_object(djp.instance)
 
     def defaultredirect(self, request, next = None, instance = None, **kwargs):
         return model_defaultredirect(self, request, next = next,
@@ -568,8 +569,8 @@ class EditView(ObjectView):
     def _has_permission(self, request, obj):
         return self.appmodel.has_edit_permission(request, obj)
     
-    def title(self, page, instance = None, **kwargs):
-        return 'Edit %s' % self.appmodel.title_object(instance)
+    def title(self, djp):
+        return 'Edit %s' % self.appmodel.title_object(djp.instance)
     
     def render(self, djp):
         return self.get_form(djp).render(djp)

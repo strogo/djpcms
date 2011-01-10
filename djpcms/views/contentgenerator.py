@@ -23,7 +23,8 @@ and *b* is an integer indicating the ``block`` number in the page.'''
         Render the Content Block by looping over of the block items
         @return: HTML safe unicode for the block
         '''
-        html = ['<div id="%s" class="djpcms-block">' % self.htmlid()]
+        edit = '' if not self.view.editurl else 'sortable-block '
+        html = ['<div id="{0}" class="{1}djpcms-block">'.format(self.htmlid(),edit)]
         for ht in self.blocks():
             if ht:
                 html.append(ht)

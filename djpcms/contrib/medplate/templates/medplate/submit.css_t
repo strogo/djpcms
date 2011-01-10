@@ -1,0 +1,8 @@
+{% extends "medplate/elem.css_t" %}
+
+{% block body %}
+{{ tag }}:hover {{% if hover_background %}
+    background: {{ hover_background }};{% endif %}{% if hover_border %}
+    border: {{ hover_border }};{% endif %}
+}
+{% endblock %}

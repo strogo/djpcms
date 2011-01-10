@@ -40,7 +40,7 @@ GOOGLE_ANALYTICS_ID             = None
 LLOOGG_ANALYTICS_ID             = None
 
 SITE_NAVIGATION_LEVELS          = 2
-ENABLE_BREADCRUMBS              = 2
+ENABLE_BREADCRUMBS              = 1
 
 DJPCMS_PLUGINS                  = ['djpcms.plugins.*']
 DJPCMS_WRAPPERS                 = ['djpcms.plugins.extrawrappers']

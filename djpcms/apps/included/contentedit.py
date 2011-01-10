@@ -186,6 +186,21 @@ class ChangeContentView(appview.EditView):
     def ajax__container_type(self, djp):
         return self.ajax__plugin_name(djp)
     
+    def ajax__rearrange(self, djp):
+        '''Move the content block to a new position'''
+        block = djp.instance
+        page  = block.page
+        data  = dict(djp.request.POST.items())
+        try:
+            target = data.get('target',None)
+            previous = data.get('previous',None)
+            pageid, block = (target.split('-')[-2:])
+            blocks = self.model.filter(page = block.page, block = int(block))
+            block = self.model(page = page)
+        except Exception as e:
+            return jerror('Could not find target block. {0}'.format(e))
+        
+    
     def default_post(self, djp):
         '''
         View called when changing the content plugin values.
@@ -306,9 +321,6 @@ class ContentSite(appsite.ModelApplication):
     edit        = ChangeContentView()
     delete      = appview.DeleteView(parent = 'edit')
     plugin      = EditPluginView(regex = 'plugin', parent = 'edit')
-    
-    class Media:
-        js = ['djpcms/iNettuts.js']
     
     def submit(self, *args, **kwargs):
         return [submit(value = "save", name = '_save')]

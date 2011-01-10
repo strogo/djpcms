@@ -4,6 +4,7 @@
 ----------------------------------------------- */
 {% block include-media %}{% endblock %}
 
+{% block main-properties %}
 {{ tag }} {
 	background: {{ background }};
 	color: {{ color }};
@@ -15,6 +16,7 @@
 	font-style:{{ font_style }};
 	font-variant:normal;
 	font-weight:{{ font_weight }};
+	line-height: {{ line_height }};
 	text-align: {{ text_align }};{% if overflow %}
 	overflow: {{ overflow }};{% endif %}{% if display %}
 	display: {{ display }};{% endif %}{% if height %}
@@ -23,7 +25,8 @@
 	padding: {{ padding }};{% endif %}{% if float %}
 	float: {{ float }};{% endif %}{% if margin %}
 	margin: {{ margin }};{% endif %}{% if position %}
-	position: {{ position }};{% endif %}{% if radius %}
+	position: {{ position }};{% endif %}{% if border %}
+	border: {{ border }}{% endif %}{% if radius %}
 	-webkit-border-radius: {{ radius }};
 	-moz-border-radius: {{ radius }};
 	border-radius: {{ radius }};{% endif %}{% if radius_top_left %}
@@ -41,6 +44,7 @@
 	border-bottom-right-radius: {{ radius_bottom_right }};{% endif %}{% if text_shadow %}
 	text-shadow: {{ text_shadow }};{% endif %}
 }
+{% endblock %}
 
 {% block body %}
 {% endblock %}

@@ -65,7 +65,7 @@ class DjpResponse(object):
     linkname = property(get_linkname)
         
     def get_title(self):
-        return self.view.title(self.page, **self.kwargs)
+        return self.view.title(self)
     title = property(get_title)
     
     def bodybits(self):
