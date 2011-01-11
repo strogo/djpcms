@@ -5,9 +5,10 @@
  * Language:     Javascript
  * License:      new BSD licence
  * Contact:      luca.sbardella@gmail.com
+ * web:			 https://github.com/lsbardel/djpcms
  * @requires:	 jQuery
  * 
- * Copyright (c) 2009, Luca Sbardella
+ * Copyright (c) 2009-2011, Luca Sbardella
  * New BSD License 
  * http://www.opensource.org/licenses/bsd-license.php
  *
@@ -28,6 +29,8 @@
 		
 			var decorators = {};
 			var jsonCallBacks = {};
+			
+			this.inrequest = false;
 	
 			this.options = {
 				media_url:		   "/media-site/",
@@ -38,6 +41,8 @@
 				errorlist:		   "errorlist",
 				formmessages:	   "form-messages",
 				date_format: 	   "d M yy",
+				box_effect:		   {type:"blind",duration:500},
+				remove_effect:	   {type:"drop",duration:500},
 				bitly_key:		   null,
 				twitter_user:	   null,
 				fadetime:		   200,
@@ -97,11 +102,21 @@
 			 */
 			this.jsonCallBack = function(data, status, elem) {
 				if(status == "success") {
-					var id  = data.header;
-					var jcb = jsonCallBacks[id];
-					if(jcb) {
-						return jcb.handle(data.body, elem) & data.error;
-					}
+					v = this.jsonParse(data,elem);
+				}
+				else {
+					v = false;
+				}
+				this.inrequest = false;
+				return v;
+			};
+			
+			
+			this.jsonParse = function(data, elem) {
+				var id  = data.header;
+				var jcb = jsonCallBacks[id];
+				if(jcb) {
+					return jcb.handle(data.body, elem) & data.error;
 				}
 			};
 	
@@ -134,14 +149,14 @@
 	/**
 	 * ERROR and SERVER ERROR callback
 	 */
-	dj.addJsonCallBack({
+	$.djpcms.addJsonCallBack({
 		id: "error",
 		handle: function(data, elem) {
 			var el = $('<div title="Something did not work."></div>').html('<p>'+data+'</p>');
 			el.dialog({modal:true});
 		}
 	});
-	dj.addJsonCallBack({
+	$.djpcms.addJsonCallBack({
 		id: "servererror",
 		handle: function(data, elem) {
 			var el = $('<div title="Unhandled Server Error"></div>').html('<p>'+data+'</p>');
@@ -150,9 +165,22 @@
 	});
 	
 	/**
+	 * collection callback
+	 */
+	$.djpcms.addJsonCallBack({
+		id: "collection",
+		handle: function(data, elem) {
+			$.each(data, function(i,component) {
+				$.djpcms.jsonParse(component,elem);
+			});
+			return true;
+		}
+	});
+	
+	/**
 	 * html JSON callback
 	 */
-	dj.addJsonCallBack({
+	$.djpcms.addJsonCallBack({
 		id: "htmls",
 		handle: function(data, elem) {
 			$.each(data, function(i,b) {
@@ -170,14 +198,12 @@
 					else if(b.type == 'value') {
 						el.val(b.html);
 					}
-					else if(typeof(b.type) == 'object') {
-						var attribute = b.type.attribute;
-						if(attribute) {
-							el.attr(attribute,b.html);
-						}
+					else if(b.type == 'append') {
+						var nel = $(b.html).appendTo(el);
+						nel.djpcms();
 					}
 					else {
-						if(b.type == 'append') {
+						if(b.type == 'addto') {
 							el.html(el.html() + b.html);
 						}
 						else if(b.type == 'replacewith') {
@@ -196,7 +222,34 @@
 	});
 	
 	/**
-	 * Remove html tags
+	 * attribute JSON callback
+	 */
+	dj.addJsonCallBack({
+		id: "attribute",
+		handle: function(data, elem) {
+			var selected = []
+			$.each(data, function(i,b) {
+				var el;
+				if(b.alldocument) {
+					el = $(b.selector);
+				}
+				else {
+					el = $(b.selector,elem);
+				}
+				if(el.length) {
+					b.elem = el;
+				}
+			});
+			$.each(data, function(i,b) {
+				if(b.elem) {
+					b.elem.attr(b.attr,b.value);
+				}
+			});
+		}
+	});
+	
+	/**
+	 * Remove html elements
 	 */
 	dj.addJsonCallBack({
 		id: "remove",
@@ -207,7 +260,8 @@
 					el = $(b.identifier);
 				}
 				if(el) {
-					el.fadeOut($.djpcms.options.fadetime,el.remove());
+					var be = $.djpcms.options.remove_effect;
+					el.hide(be.type,{},be.duration,function() {el.remove()});
 				}
 			});
 			return true;
@@ -293,15 +347,26 @@
 			var ajaxclass = config.ajaxclass ? config.ajaxclass : 'ajax';
 			var confirm = config.confirm_actions;
 			
+			function callback(o,s,e) {
+				$.djpcms.jsonCallBack(o,s,e);
+			}
+			
 			function sendrequest(elem,name) {
 				var url = elem.attr('href');
 				if(url) {
 					var p = $.djpcms.postparam(name);
-					$.post(url,$.param(p),$.djpcms.jsonCallBack,"json");
+					$.post(url,
+							$.param(p),
+							callback,
+							"json");
 				}
 			}
 			function deco(event,elem) {
 				event.preventDefault();
+				if($.djpcms.inrequest) {
+					return
+				}
+				$.djpcms.inrequest = true;
 				var a = $(elem);
 				var name = a.attr('name');
 				var conf = confirm[name]
@@ -317,6 +382,7 @@
 								   },
 								   Cancel: function() {
 									   $(this).dialog( "close" );
+									   $.djpcms.inrequest = false;
 								   }
 						}});
 				}
@@ -345,7 +411,7 @@
 					var opts = {
 							url:       _url,
 							type:      'post',
-							success:   $.djpcms.jsonCallBack,
+							success:   callback,
 							submitkey: config.post_view_key,
 							dataType: "json",
 							};
@@ -389,6 +455,7 @@
 		id:"autocomplete_off",
 		decorate: function($this,config) {
 			$('.autocomplete-off',$this).each(function() {
+				$(this).val('');
 				$(this).attr('autocomplete','off');
 			});
 			$('input:password',$this).each(function() {
@@ -423,14 +490,22 @@
 	
 	/**
 	 * box decorator
-	 * 
+	 * Collappsable boxes
 	 */
 	dj.addDecorator({
 		id:"djpcms_box",
+		description:"Decorate a DJPCMS box element",
 		decorate: function($this,config) {
-			var cname = '.djpcms-html-box';
+			var cname = 'djpcms-html-box';
 			var bname = '.hd';
-			$(cname,$this).each(function() {
+			var elems;
+			if($this && $this.hasClass(cname)) {
+				elems = $this;
+			}
+			else {
+				elems = $('.'+cname,$this);
+			}
+			elems.each(function() {
 				var el = $(this);
 				if(el.hasClass('collapsable')) {
 					var container = $(bname,el);
@@ -439,11 +514,20 @@
 						if(link.length) {
 							link.mousedown(function (e) {
 								e.stopPropagation();    
-							}).toggle(function() {
-								$(this).parents(cname).toggleClass('collapsed');
-								return false;
-							},function() {
-								$(this).parents(cname).toggleClass('collapsed');
+							}).click(function() {
+								var cp = $(this).parents('.'+cname);
+								var be = config.box_effect;
+								if(cp.hasClass('collapsed')) {
+									$('.ft',cp).show(be.type,{},be.duration);
+									$('.bd',cp).show(be.type,{},be.duration);
+									cp.removeClass('collapsed');
+								}
+								else {
+									$('.ft',cp).hide(be.type,{},be.duration);
+									$('.bd',cp).hide(be.type,{},be.duration);
+									cp.addClass('collapsed');
+								}
+								//cp.toggleClass('collapsed');
 								return false;
 							});
 						}
@@ -684,11 +768,14 @@
 		id: "rearrange",
 		description: "Drag and drop functionalities in editing mode",
 		decorate: function($this,config) {
+			// The selectors
 			var columns = 'div.sortable-block';
 			var editblock = 'div.edit-block'
 			var divpaceholder = 'djpcms-placeholder';
+			var holderelem = 'div#content';
 			var sortableItems = $(editblock+'.movable');
 			
+			// Start the code
 			sortableItems.mousedown(function (e) {
 	            sortableItems.css({width:''});
 	            $(this).parent().css({
@@ -704,6 +791,16 @@
 			
 			function moveblock(elem, callback) {
 				var data = $.djpcms.postparam('rearrange');
+				var neighbour = elem.prev(editblock);
+				if(neighbour.length) {
+					data.previous = neighbour.attr('id');
+				}
+				else {
+					neighbour = elem.next(editblock);
+					if(neighbour.length) {
+						data.next = neighbour.attr('id');
+					}
+				}
 				var form = $('form.djpcms-blockcontent',elem);
 				function movedone(e,s) {
 					$.djpcms.jsonCallBack(e,s);
@@ -711,12 +808,6 @@
 				}
 				if(form) {
 					var url = form.attr('action');
-					if(elem[0].previous_block) {
-						data.previous = elem[0].previous_block;
-					}
-					else if(elem[0].next_block) {
-						data.next = elem[0].next_block;
-					}
 					$.post(url,
 						   data,
 						   movedone,
@@ -731,25 +822,10 @@
 				revert: 300,
 	            delay: 100,
 	            opacity: 0.8,
-	            containment: 'div#content',
-	            helper: 'elemclone',
+	            containment: holderelem,
 	            placeholder: divpaceholder,
 	            start: function (e,ui) {
 	                $(ui.helper).addClass('dragging');
-	            },
-	            beforeStop: function(e,ui) {
-	            	var parent = ui.helper.prev(editblock);
-	            	if(parent.length) {
-	            		parent = parent.attr('id');
-	            		ui.item[0].previous_block = parent;
-	            	}
-	            	else {
-	            		parent = ui.placeholder.next(editblock);
-	            		if(parent.length) {
-	            			parent = parent.attr('id');
-	            			ui.item[0].next_block = parent;
-	            		}
-	            	}
 	            },
 	            stop: function (e,ui) {
 	                $(ui.item).css({width:''}).removeClass('dragging');

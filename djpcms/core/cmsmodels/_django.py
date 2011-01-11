@@ -228,7 +228,7 @@ If not specified the :setting:`DEFAULT_TEMPLATE_NAME` is used.'''
         t.save()
         return t
     
-    def _get_block(self, block, plugin, position = None):
+    def _get_block(self, block, position = None):
         blocks = BlockContent.objects.filter(page = self, block = block)
         N = blocks.count()
         if position == None:

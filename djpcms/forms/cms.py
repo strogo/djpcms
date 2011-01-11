@@ -237,8 +237,7 @@ class ContentBlockForm(EditingForm):
     for a given BlockContent instance.
     '''
     plugin_name     = PluginChoice(label = _('Plugin'),
-                                   choices = plugingenerator,
-                                   required = False)
+                                   choices = plugingenerator)
     container_type  = forms.ChoiceField(label=_('Container'), choices = wrappergenerator)
     view_permission = forms.ModelMultipleChoiceField(queryset = Group.objects.all(), required = False)
     layout = FormLayout(Fieldset('plugin_name','container_type','title','view_permission'),

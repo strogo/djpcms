@@ -9,15 +9,16 @@ from djpcms.utils.html import grid960, submit, box
 from djpcms.forms import saveform, get_form
 from djpcms.forms.cms import ShortPageForm, NewChildForm
 from djpcms.utils.uniforms import UniForm
-from djpcms.utils import UnicodeObject, urlbits, urlfrombits, function_module
-from djpcms.utils import htmltype
+from djpcms.utils import UnicodeObject, function_module, htmltype
 from djpcms.utils.media import Media
 from djpcms.views.response import DjpResponse
 from djpcms.views.contentgenerator import BlockContentGen
 from djpcms.template import mark_safe, RequestContext, Context, loader
 from djpcms.core.exceptions import PermissionDenied
 
+from .utils import view_edited_url
 
+    
 def response_from_page(djp, page):
     '''Given a :class:`djpcms.views.DjpResponse` object
 and a Page instance, it calculates a new response object.'''
@@ -457,4 +458,4 @@ This view is never in navigation and it provides a hook for adding the edit page
         return saveform(djp)
     
     def page_url(self, request):
-        return urlfrombits(urlbits(request.path)[1:])
+        return view_edited_url(request.path)

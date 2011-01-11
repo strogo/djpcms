@@ -1,4 +1,6 @@
 from djpcms.utils import force_str
+from djpcms.core.page import block_htmlid
+from djpcms.models import BlockContent
 
 
 class BlockContentGen(object):
@@ -19,12 +21,11 @@ and *b* is an integer indicating the ``block`` number in the page.'''
         self.b       = b
         
     def render(self):
-        '''
-        Render the Content Block by looping over of the block items
-        @return: HTML safe unicode for the block
+        '''Render the Block by looping over all the content block items
         '''
         edit = '' if not self.view.editurl else 'sortable-block '
-        html = ['<div id="{0}" class="{1}djpcms-block">'.format(self.htmlid(),edit)]
+        id   = block_htmlid(self.page.id,self.b)
+        html = ['<div id="{0}" class="{1}djpcms-block">'.format(id,edit)]
         for ht in self.blocks():
             if ht:
                 html.append(ht)
@@ -34,9 +35,6 @@ and *b* is an integer indicating the ``block`` number in the page.'''
     def __unicode__(self):
         return self.render()
     
-    def htmlid(self):
-        return 'djpcms-block-%s-%s' % (self.page.id,self.b)
-    
     def blocks(self):
         '''
         Function called within a template for generating all contents
@@ -44,12 +42,12 @@ and *b* is an integer indicating the ``block`` number in the page.'''
         This function produce HTML only if self.view is based on a database Page
         object. Otherwise it does nothing.
         '''
-        from djpcms.apps.included.contentedit import content_view
-        ecv = content_view(self.page, self.b)
         if self.view.editurl:
-            return ecv(self.djp)
+            appmodel = self.djp.site.for_model(BlockContent)
+            return appmodel.blocks(self.djp, self.page, self.b)
         else:
-            return self._blocks(ecv.blockcontents)
+            blockcontents = BlockContent.objects.for_page_block(self.page, self.b)
+            return self._blocks(blockcontents)
         
     def _blocks(self, blockcontents):
         '''

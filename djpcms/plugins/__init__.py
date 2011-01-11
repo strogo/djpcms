@@ -83,13 +83,13 @@ class DJPpluginMetaBase(forms.MediaDefiningClass):
         if attrs.pop('virtual',None) or not attrs.pop('auto_register',True):
             return new_class(cls, name, bases, attrs)
         pname = attrs.get('name',None)
-        if not pname:
+        if pname is None:
             pname = name
         pname = pname.lower()
         descr = attrs.get('description',None)
         if not descr:
             descr = pname
-        if pname != 'empty':
+        if pname != '':
             descr = nicename(descr) 
         attrs['name'] = pname
         attrs['description'] = descr
@@ -250,7 +250,7 @@ class EmptyPlugin(DJPplugin):
     '''
     This is the empty plugin. It render nothing
     '''
-    name         = 'empty'
+    name         = ''
     description  = '--------------------'
     
 

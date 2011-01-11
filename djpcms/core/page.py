@@ -8,6 +8,11 @@ from djpcms.core.exceptions import BlockOutOfBound
 from djpcms.permissions import has_permission, get_view_permission
 
 
+def block_htmlid(pageid, block):
+    '''HTML id for a block container. Used throughout the library.'''
+    return 'djpcms-block-{0}-{1}'.format(pageid,block)
+
+
 class PageInterface(ModelInterface):
     '''Page object interface'''
     
@@ -35,7 +40,7 @@ If not specified we get the template of the :attr:`parent` page.'''
     
     def add_plugin(self, p, block = 0):
         '''Add a plugin to a block'''
-        b = self.get_block(0)
+        b = self.get_block(block)
         try:
             name = p.name
         except:
@@ -100,3 +105,4 @@ with the wrapper callable.'''
             
     def __unicode__(self):
         return u'%s-%s-%s' % (self.page.id,self.block,self.position)
+    

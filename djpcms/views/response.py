@@ -240,7 +240,7 @@ class DjpResponse(object):
         if self.request.is_ajax():
             return jredirect(url = url)
         else:
-            return http.HttpResponseRedirect(url)
+            return self.http.HttpResponseRedirect(url)
         
     def instancecode(self):
         '''If an instance is available, return a unique code for it. Otherwise return None.'''

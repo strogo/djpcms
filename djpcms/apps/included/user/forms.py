@@ -1,8 +1,8 @@
+
 from django.forms.util import ErrorList
 from django.contrib.auth import forms as authforms
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth import authenticate, login
-
 
 from djpcms import forms
 from djpcms.apps.included.user import UserClass
@@ -11,7 +11,8 @@ from djpcms.apps.included.user import UserClass
 class LoginForm(forms.Form):
     '''The login form
     '''
-    username   = forms.CharField(min_length=1,max_length=30)
+    username   = forms.CharField(min_length=1,max_length=30,
+                                 widget=forms.TextInput(attrs={'class':'autocomplete-off'}))
     password   = forms.CharField(min_length=1,max_length=20,widget=forms.PasswordInput)
     next       = forms.CharField(widget=forms.HiddenInput, required = False)
 
