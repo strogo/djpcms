@@ -58,6 +58,7 @@ If not specified we get the template of the :attr:`parent` page.'''
     
 
 class BlockInterface(object):
+    '''Content Block Interface'''
     logger  = logging.getLogger('BlockContent')
     
     def render(self, djp, plugin = None, wrapper = None):
@@ -87,3 +88,15 @@ with the wrapper callable.'''
             return wrapper(djp, self, html)
         else:
             return html
+        
+    def htmlid(self):
+        return 'blockcontent-{0}'.format(self)
+    
+    def pluginid(self, extra = ''):
+        p = 'plugin-{0}'.format(self)
+        if extra:
+            p = '{0}-{1}'.format(p,extra)
+        return p
+            
+    def __unicode__(self):
+        return u'%s-%s-%s' % (self.page.id,self.block,self.position)

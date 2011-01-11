@@ -1,4 +1,4 @@
-from djpcms.core.exceptions import DjpcmsException, AlreadyRegistered
+from djpcms.core.exceptions import DjpcmsException, AlreadyRegistered, ApplicationNotAvailable
 from djpcms.views.appsite import Application, ModelApplication
 from djpcms.apps.included.contentedit import ContentSite, BlockContent
 from djpcms.utils.collections import OrderedDict
@@ -110,7 +110,7 @@ returns the application handler. If the appname is not available, it raises a Ke
                 return appmodel.getview(app_code)
         appmodel = self._nameregistry.get(appname,None)
         if appmodel is None:
-            raise KeyError('Application %s not available.' % appname)
+            raise ApplicationNotAvailable('Application {0} not available.'.format(appname))
         return appmodel.root_application
     
     def count(self):

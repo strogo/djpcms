@@ -1,7 +1,7 @@
 '''
 Application for handling inline editing of blocks
 The application derives from the base appsite.ModelApplication
-and defines several subviews 
+and defines several ajax enabled sub-views 
 '''
 from djpcms import forms, sites
 from djpcms.utils.translation import ugettext_lazy as _
@@ -64,7 +64,10 @@ class EditWrapperHandler(CollapsedWrapper):
         return 'bd_%s' % instance.pluginid()
     
     def _wrap(self, djp, cblock, html):
-        return ['edit-block'],djp.view.appmodel.deleteurl(djp.request, djp.instance)
+        cl = ['edit-block']
+        if cblock.plugin_name:
+            cl.append('movable')
+        return cl,djp.view.appmodel.deleteurl(djp.request, djp.instance)
     
     def footer(self, djp, cblock, html):
         return djp.view.get_preview(djp.request, djp.instance, self.url)
@@ -85,13 +88,6 @@ class ChangeContentView(appview.EditView):
                                                parent = None,
                                                isapp = False)
         
-    def plugin_form_id(self, instance):
-        return '%s-options' % instance.pluginid()
-    def plugin_preview_id(self, instance):
-        return '%s-preview' % instance.pluginid()
-    def plugin_edit_id(self, instance):
-        return '%s-edid' % instance.pluginid()
-    
     def render(self, djp, url = None):
         return self.get_form(djp, url = url).render(djp)
     
@@ -102,7 +98,7 @@ class ChangeContentView(appview.EditView):
         except Exception, e:
             preview_html = u'%s' % e
         if wrapped:
-            return mark_safe('<div id="%s">%s</div>' % (self.plugin_preview_id(instance),preview_html))
+            return mark_safe('<div id="%s">%s</div>' % (instance.pluginid('preview'),preview_html))
         else:
             return preview_html
     
@@ -120,7 +116,7 @@ class ChangeContentView(appview.EditView):
         if all:
             instance = djp.instance
             pform,purl = self.get_plugin_form(djp, instance.plugin)
-            id = self.plugin_form_id(instance)
+            id = instance.pluginid('options')
             if pform:
                 layout = getattr(pform,'layout',None) or FormLayout()
                 layout.id = id
@@ -130,7 +126,7 @@ class ChangeContentView(appview.EditView):
                 # No plugin
                 uni.add('<div id="%s"></div>' % id)
             sub = str(submit(value = "edit", name = 'edit_content'))
-            id = self.plugin_edit_id(instance)
+            id = instance.pluginid('edit')
             cl = '' if purl else ' class="djphide"'
             uni.inputs.append(mark_safe('<span id="%s"%s>%s</span>' % (id,cl,sub)))
         return uni
@@ -167,10 +163,10 @@ class ChangeContentView(appview.EditView):
                 html = UniForm(pform,tag=False).render(djp)
             else:
                 html = u''
-            data = jhtmls(identifier = '#%s' % self.plugin_form_id(djp.instance), html = html)
+            data = jhtmls(identifier = '#%s' % instance.pluginid('options'), html = html)
             preview = self.get_preview(djp.request, instance, url, plugin = new_plugin, wrapped = False)
-            data.add('#%s' % self.plugin_preview_id(djp.instance), preview)
-            id = self.plugin_edit_id(instance)
+            data.add('#%s' % instance.pluginid('preview'), preview)
+            id = instance.pluginid('edit')
             if callable(new_plugin.edit_form):
                 data.add('#%s' % id, type = 'show')
             else:
@@ -186,17 +182,65 @@ class ChangeContentView(appview.EditView):
     def ajax__container_type(self, djp):
         return self.ajax__plugin_name(djp)
     
+    def update_contentblock(self, djp, cblock, block, pos, jattr):
+        '''Update a contentblock position'''
+        attid = {'attribute':'id'}
+        oldid = cblock.htmlid()
+        plgid1 = cblock.pluginid('options')
+        plgid2 = cblock.pluginid('preview')
+        plgid3 = cblock.pluginid('edit')
+        cblock.block = block
+        cblock.position = pos
+        cblock.save()
+        cdjp = self(djp.request, instance = cblock)
+        jattr.add('div#{0} form.djpcms-blockcontent'.format(oldid),cdjp.url,{'attribute':'action'})
+        durl = self.appmodel.deleteurl(djp.request, cblock)
+        jattr.add('div#{0} div.hd a.deletable'.format(oldid),durl,{'attribute':'href'})
+        jattr.add('#'+oldid,cblock.htmlid(),attid)
+        jattr.add('#'+plgid1,cblock.pluginid('options'),attid)
+        jattr.add('#'+plgid2,cblock.pluginid('preview'),attid)
+        jattr.add('#'+plgid3,cblock.pluginid('edit'),attid)
+        
     def ajax__rearrange(self, djp):
-        '''Move the content block to a new position'''
-        block = djp.instance
-        page  = block.page
-        data  = dict(djp.request.POST.items())
-        try:
-            target = data.get('target',None)
+        '''Move the content block to a new position and updates all html attributes'''
+        contentblock = djp.instance
+        page   = contentblock.page
+        data   = dict(djp.request.POST.items())
+        try:            
             previous = data.get('previous',None)
-            pageid, block = (target.split('-')[-2:])
-            blocks = self.model.filter(page = block.page, block = int(block))
-            block = self.model(page = page)
+            if previous:
+                pageid, block, pos = (previous.split('-')[-3:])
+                newposition = int(pos) + 1
+            else:
+                nextv = data.get('next',None)
+                if nextv:
+                    pageid, block, pos = (nextv.split('-')[-3:])
+                else:
+                    return jempty()
+                newposition = int(pos)
+            
+            block = int(block)
+            if block == contentblock.block and contentblock.position == newposition:
+                # Nothing to do
+                return jempty()
+            else:
+                cmp = lambda x,y : 1 if y.position > x.position else -1
+                filter = self.model.objects.filter
+                jattr = jhtmls()
+                for cblock in sorted(filter(page = page, block = block),cmp):
+                    if cblock.position >= newposition:
+                        self.update_contentblock(djp,cblock,cblock.block,cblock.position+1,jattr)
+
+                oldblock = contentblock.block
+                self.update_contentblock(djp,contentblock,block,newposition,jattr)
+                if oldblock != contentblock.block:
+                    pos = 0
+                    for cblock in filter(page = page, block = oldblock):
+                        if cblock.position != pos:
+                            self.update_contentblock(djp,cblock,cblock.block,pos,jattr)
+                        pos += 1
+                
+                return jattr
         except Exception as e:
             return jerror('Could not find target block. {0}'.format(e))
         
@@ -236,7 +280,7 @@ class ChangeContentView(appview.EditView):
             # We now serialize the argument form
             if is_ajax:
                 preview = self.get_preview(request, instance, url,  wrapped = False)
-                ret = jhtmls(identifier = '#%s' % self.plugin_preview_id(instance), html = preview)
+                ret = jhtmls(identifier = '#%s' % instance.pluginid('preview'), html = preview)
                 form.add_message(request, "Plugin changed to %s" % instance.plugin.description)
                 ret.update(form.json_message())
                 return ret
@@ -251,7 +295,7 @@ class ChangeContentView(appview.EditView):
     def get_preview_response(self, djp, url):
         instance = djp.instance
         preview = self.get_preview(djp.request, instance, url,  wrapped = False)
-        return jhtmls(identifier = '#%s' % self.plugin_preview_id(instance), html = preview)
+        return jhtmls(identifier = '#%s' % instance.pluginid('preview'), html = preview)
         
 
 class EditPluginView(appview.EditView):

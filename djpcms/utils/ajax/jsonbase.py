@@ -1,7 +1,8 @@
-from django.utils import simplejson
-from django.utils.safestring import mark_safe
-from django.utils.encoding import force_unicode
-from django.template import loader
+import json
+from djpcms.template import loader, mark_safe
+from djpcms.utils import force_str
+from djpcms.utils.collections import OrderedDict
+
    
 class jsonbase(object):
 
@@ -16,19 +17,19 @@ class jsonbase(object):
         '''
         Use JSON to serialize elem
         '''
-        return simplejson.dumps(elem)
+        return json.dumps(elem)
     
     def dumps(self):
         return self._dump(self.dict())
     
     def tojson(self):
         try:
-            return mark_safe(force_unicode('%s' % self.dumps()))
+            return mark_safe(force_str('%s' % self.dumps()))
         except Exception, e:
             return self.handleError(e)
     
     def handleError(self, e):
-        return mark_safe(force_unicode(e))
+        return mark_safe(force_str(e))
     
     def error(self):
         return False
@@ -73,7 +74,7 @@ class HeaderBody(jsonbase):
         
     def handleError(self, e):
         js = self._dump(self._dict('server-error', e))
-        return mark_safe(force_unicode(js))
+        return mark_safe(force_str(js))
 
 
 class jempty(HeaderBody):
@@ -116,7 +117,7 @@ class jhtmls(HeaderBody):
         {identifier, html and type}
     '''
     def __init__(self, html = None, identifier = None, alldocument = True, type = 'replace'):
-        self.html = {}
+        self.html = OrderedDict()
         if html != None:
             self.add(identifier, html, type, alldocument)
     
@@ -127,7 +128,7 @@ class jhtmls(HeaderBody):
         html = self.html
         key  = obj.get('identifier')
         objr = html.get(key,None)
-        if objr == None:
+        if objr is None:
             html[key] = obj
         else:
             objr['html'] += obj['html']
@@ -148,6 +149,7 @@ class jhtmls(HeaderBody):
     def body(self):
         return list(self.html.values())
 
+    
 
 class jerrors(jhtmls):
     

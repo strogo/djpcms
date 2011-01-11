@@ -54,20 +54,20 @@ class ArchiveView(SearchView):
 class DayArchiveView(ArchiveView):
     def __init__(self, *args, **kwargs):
         super(DayArchiveView,self).__init__(*args,**kwargs)
-    def title(self, page, **urlargs):
-        return urlargs.get('day',None)
+    def title(self, djp):
+        return djp.getdata('day')
     
     
 class MonthArchiveView(ArchiveView):
     def __init__(self, *args, **kwargs):
         super(MonthArchiveView,self).__init__(*args,**kwargs)
-    def title(self, page, **urlargs):
-        m = self.appmodel.get_month_number(urlargs.get('month',None))
+    def title(self, djp):
+        m = self.appmodel.get_month_number(djp.getdata('month'))
         return force_str(MONTHS[m])
                                           
     
 class YearArchiveView(ArchiveView):
     def __init__(self, *args, **kwargs):
         super(YearArchiveView,self).__init__(*args,**kwargs)
-    def title(self, page, **urlargs):
-        return urlargs.get('year',None)
+    def title(self, djp):
+        return djp.getdata('year')

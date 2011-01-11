@@ -280,20 +280,10 @@ and for maintaining their position in a :class:`djpcms.models.Page`.
         permissions = (
             ("view_blockcontent", "Can view block content"),
         )
-        
-    def __unicode__(self):
-        return '%s-%s-%s' % (self.page.id,self.block,self.position)
-    
-    def htmlid(self):
-        return u'blockcontent-%s' % self
-    
-    def pluginid(self):
-        return u'plugin-%s' % self
     
     def __get_plugin(self):
         return get_plugin(self.plugin_name)
     plugin = property(__get_plugin)
-        
         
     def _get_wrapper(self):
         return get_wrapper(self.container_type,default_content_wrapper)

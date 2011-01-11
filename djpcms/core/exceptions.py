@@ -50,6 +50,10 @@ related to urls configuration'''
     pass
 
 
+class ApplicationNotAvailable(DjpcmsException):
+    '''A :class:`DjpcmsException` raised when a requested application is not available.'''
+    pass
+
 class PageException(DjpcmsException):
     '''A :class:`DjpcmsException` for pages.'''
     pass

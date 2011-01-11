@@ -1,5 +1,6 @@
 import datetime
 from djpcms import sites
+from djpcms.core.exceptions import ApplicationNotAvailable
 
 
 def djpcms(request):
@@ -15,12 +16,14 @@ def djpcms(request):
            'logout_url': settings.LOGOUT_URL}
     site = getattr(request,'site',None)
     if site:
-        userapp = site.getapp('account')
-        if userapp:
+        try:
+            userapp = site.getapp('account')
             userapp = userapp.appmodel
             if getattr(userapp,'userpage',False):
                 url = userapp.viewurl(request, request.user)
             else:
                 url = userapp.baseurl
             ctx.update({'user_url': url})
+        except ApplicationNotAvailable:
+            pass
     return ctx

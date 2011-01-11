@@ -12,7 +12,7 @@ div.edit-block {
     margin-bottom: {{ block_spacing }};
 }
 
-div.edit-block div.hd {
+div.edit-block.movable div.hd {
     cursor: move;
 }
 div.edit-block div.ft {

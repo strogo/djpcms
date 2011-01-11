@@ -170,6 +170,12 @@
 					else if(b.type == 'value') {
 						el.val(b.html);
 					}
+					else if(typeof(b.type) == 'object') {
+						var attribute = b.type.attribute;
+						if(attribute) {
+							el.attr(attribute,b.html);
+						}
+					}
 					else {
 						if(b.type == 'append') {
 							el.html(el.html() + b.html);
@@ -679,7 +685,9 @@
 		description: "Drag and drop functionalities in editing mode",
 		decorate: function($this,config) {
 			var columns = 'div.sortable-block';
-			var sortableItems = $('div.edit-block');
+			var editblock = 'div.edit-block'
+			var divpaceholder = 'djpcms-placeholder';
+			var sortableItems = $(editblock+'.movable');
 			
 			sortableItems.mousedown(function (e) {
 	            sortableItems.css({width:''});
@@ -694,16 +702,24 @@
 	            }
 	        });
 			
-			function moveblock(block, elem, callback) {
+			function moveblock(elem, callback) {
 				var data = $.djpcms.postparam('rearrange');
 				var form = $('form.djpcms-blockcontent',elem);
+				function movedone(e,s) {
+					$.djpcms.jsonCallBack(e,s);
+					callback();
+				}
 				if(form) {
 					var url = form.attr('action');
-					data.target = block.id;
-					data.previous = elem[0].previous_block;
+					if(elem[0].previous_block) {
+						data.previous = elem[0].previous_block;
+					}
+					else if(elem[0].next_block) {
+						data.next = elem[0].next_block;
+					}
 					$.post(url,
 						   data,
-						   callback,
+						   movedone,
 						   'json');
 				}
 			}
@@ -716,18 +732,23 @@
 	            delay: 100,
 	            opacity: 0.8,
 	            containment: 'div#content',
-	            placeholder: 'djpcms-placeholder',
+	            helper: 'elemclone',
+	            placeholder: divpaceholder,
 	            start: function (e,ui) {
 	                $(ui.helper).addClass('dragging');
 	            },
 	            beforeStop: function(e,ui) {
-	            	var parent = ui.helper.prev();
-	            	if(parent) {
+	            	var parent = ui.helper.prev(editblock);
+	            	if(parent.length) {
 	            		parent = parent.attr('id');
 	            		ui.item[0].previous_block = parent;
 	            	}
 	            	else {
-	            		ui.item[0].previous_block = null;
+	            		parent = ui.placeholder.next(editblock);
+	            		if(parent.length) {
+	            			parent = parent.attr('id');
+	            			ui.item[0].next_block = parent;
+	            		}
 	            	}
 	            },
 	            stop: function (e,ui) {
@@ -735,7 +756,7 @@
 	                function updatedone() {
 	                	$(columns).sortable('enable');
 	                }
-	                moveblock(this,ui.item,updatedone);
+	                moveblock(ui.item,updatedone);
 	            }
 			});
 		}
