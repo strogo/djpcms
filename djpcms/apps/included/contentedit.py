@@ -11,7 +11,7 @@ from djpcms.models import BlockContent
 from djpcms.template import RequestContext, loader, mark_safe
 from djpcms.utils.func import isforminstance
 from djpcms.utils.ajax import jhtmls, jremove, dialog, jempty, jerror, jattribute, jcollection
-from djpcms.utils.html import submit, htmlcomp
+from djpcms.utils.html import input, htmlcomp
 from djpcms.utils.uniforms import UniForm, FormLayout
 from djpcms.forms.cms import ContentBlockForm
 from djpcms.plugins import get_plugin
@@ -30,9 +30,11 @@ class EditWrapperHandler(CollapsedWrapper):
     def __init__(self, url):
         self.url = url
         
-    def prefix(self, instance):
-        '''prefix for given block'''
-        return 'bd_%s' % instance.pluginid()
+    def __call__(self, djp, cblock, html):
+        return self.wrap(djp, cblock, html)
+    
+    def id(self, cblock):
+        return cblock.htmlid()
     
     def _wrap(self, djp, cblock, html):
         cl = ['edit-block']
@@ -96,17 +98,20 @@ class ChangeContentView(appview.EditView):
         else:
             return preview_html
     
-    def get_form(self, djp, all = True, url = None, **kwargs):
+    def get_form(self, djp, all = True, url = None, initial = None, **kwargs):
         '''Get the contentblock editing form
         This form is composed of two parts,
         one for choosing the plugin type,
         and one for setting the plugin options
         '''
         if url:
-            initial = {'url':url}
+            initial = initial if initial is not None else {}
+            initial['url'] = url
         else:
             initial = None
-        uni = super(ChangeContentView,self).get_form(djp, initial = initial)
+        uni = super(ChangeContentView,self).get_form(djp,
+                                                     initial = initial,
+                                                     **kwargs)
         if all:
             instance = djp.instance
             pform,purl = self.get_plugin_form(djp, instance.plugin)
@@ -119,10 +124,10 @@ class ChangeContentView(appview.EditView):
             else:
                 # No plugin
                 uni.add('<div id="%s"></div>' % id)
-            sub = str(submit(value = "edit", name = 'edit_content'))
+            sub = input(value = "edit", name = 'edit_content').render()
             id = instance.pluginid('edit')
             cl = '' if purl else ' class="djphide"'
-            uni.inputs.append(mark_safe('<span id="%s"%s>%s</span>' % (id,cl,sub)))
+            uni.inputs.append('<span id="{0}"{1}>{2}</span>'.format(id,cl,sub))
         return uni
         
     def get_plugin_form(self, djp, plugin, withdata = True):
@@ -281,7 +286,7 @@ The instance.plugin object is maintained but its fields may change.'''
                     editdjp = self(request, instance = b)
                     html = self.render(editdjp, url = url)
                     wrapper  = EditWrapperHandler(url)
-                    html = wrapper.wrap(editdjp,b,html)
+                    html = wrapper(editdjp,b,html)
                     jquery.add('#'+block_htmlid(page.id,block),html,'append')
                 return jquery
             else:
@@ -396,7 +401,7 @@ class ContentSite(appsite.ModelApplication):
     plugin      = EditPluginView(regex = 'plugin', parent = 'edit')
     
     def submit(self, *args, **kwargs):
-        return [submit(value = "save", name = '_save')]
+        return [input(value = "save", name = '_save')]
     
     def objectbits(self, obj):
         return {'pageid': obj.page.id,
@@ -480,4 +485,4 @@ class ContentSite(appsite.ModelApplication):
             djp.media += editdjp.media
             editdjp.media = djp.media
             html = editview.render(editdjp, url = url)
-            yield wrapper.wrap(editdjp,b,html)
+            yield wrapper(editdjp,b,html)

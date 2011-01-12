@@ -1,8 +1,8 @@
 from djpcms import sites
-from djpcms.template import loader, mark_safe, conditional_escape
+from djpcms.utils import force_str
 from djpcms.utils.collections import OrderedDict
+from djpcms.template import loader, mark_safe, conditional_escape
 from djpcms.forms import Media
-from djpcms.utils import UnicodeObject
 
 
 def flatatt(attrs):
@@ -12,10 +12,10 @@ def flatatt(attrs):
     XML-style pairs.  It is assumed that the keys do not need to be XML-escaped.
     If the passed dictionary is empty, then return an empty string.
     """
-    return u''.join([u' %s="%s"' % (k, conditional_escape(v)) for k, v in attrs.items()])
+    return ''.join([' {0}="{1}"'.format(k, conditional_escape(v)) for k, v in attrs.items()])
 
 
-class htmlbase(UnicodeObject):
+class htmlbase(object):
     
     def get_template(self):
         template = getattr(self,'template',None)
@@ -24,8 +24,9 @@ class htmlbase(UnicodeObject):
         else:
             raise NotImplementedError
     
-    def __unicode__(self):
+    def __repr__(self):
         return self.render()
+    __str__ = __repr__
     
     def get_content(self):
         return {'html': self,
@@ -51,9 +52,7 @@ class htmlbase(UnicodeObject):
     
     def flatatt(self):
         attrs = self.attrs()
-        if attrs:
-            return mark_safe(u'%s' % flatatt(attrs))
-        return u''
+        return '' if not attrs else flatatt(attrs)
         
     def render(self):
         return loader.render_to_string(self.get_template(),
@@ -64,14 +63,8 @@ class htmlattr(htmlbase):
     '''
     HTML utility with attributes a la jQuery
     '''
-    def __init__(self, id = None, cn = None, name = None, value = None):
-        self._attrs = {}
-        if id:
-            self._attrs['id'] = id
-        if name:
-            self._attrs['name'] = name
-        if value:
-            self._attrs['value'] = value
+    def __init__(self, cn = None, **attrs):
+        self._attrs = attrs
         self.addClass(cn)
     
     def attrs(self):
@@ -127,7 +120,8 @@ class htmltiny(htmltag):
         super(htmltiny,self).__init__(tag, **attrs)
     
     def render(self):
-        return mark_safe(u'<%s%s/>' % (self.tag,self.flatatt()))
+        return '<{0}{1}/>'.format(self.tag,self.flatatt())
+    
     
 class htmlwrap(htmltag):
     '''
@@ -198,9 +192,9 @@ class htmlcomp(htmltag):
                 'djpcms/components/htmlcomp.html']
         
     
-class submit(htmltiny):
+class input(htmltiny):
     
-    def __init__(self, name = 'submit', value = 'submit', **attrs):
-        super(submit,self).__init__('input', name = name, value = value, **attrs)
-        self._attrs['type'] = 'submit'
+    def __init__(self, name = 'submit', value = 'submit', type = 'submit', **attrs):
+        super(input,self).__init__('input', name = name, value = value,
+                                    type = type, **attrs)
 

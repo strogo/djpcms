@@ -2,45 +2,27 @@ import os
 import logging
 import json
 
-from django import http
-from django.utils.text import capfirst
-
 from djpcms import forms
 from djpcms.forms import form_kwargs
-from djpcms.utils import UnicodeObject, force_str
+from djpcms.utils import force_str
+from djpcms.utils.text import capfirst, nicename
 from djpcms.utils.formjson import form2json
-from djpcms.utils.deco import response_wrap
-from djpcms.template import mark_safe
 
 _plugin_dictionary = {}
 _wrapper_dictionary = {}
 
-nicename = lambda name : force_str(capfirst(name.replace('-',' ').replace('_',' ')))
 
 def ordered_generator(di):
-    def cmp(x,y):
-        if x.description > y.description:
-            return 1
-        else:
-            return -1
-    ordered = sorted(di.values(),cmp)
-    for c in ordered:
-        yield (c.name,c.description)
-
-def plugingenerator():
-    return ordered_generator(_plugin_dictionary)
-      
-        
-def wrappergenerator():
-    return ordered_generator(_wrapper_dictionary)
-      
-        
-def get_plugin(name, default = None):
-    return _plugin_dictionary.get(name,default)
+    cmp = lambda x,y : 1 if x.description > y.description else -1
+    def _():
+        return ((c.name,c.description) for c in sorted(di.values(),cmp))
+    return _
 
 
-def get_wrapper(name, default = None):
-    return _wrapper_dictionary.get(name,default)
+plugingenerator  = ordered_generator(_plugin_dictionary)
+wrappergenerator = ordered_generator(_wrapper_dictionary)
+get_plugin = lambda name, default = None:  _plugin_dictionary.get(name,default)
+get_wrapper = lambda name, default = None: _wrapper_dictionary.get(name,default)
 
 
 def register_application(app, name = None, description = None):
@@ -56,23 +38,6 @@ def register_application(app, name = None, description = None):
     #p.__class__.media = media
     #p.register()
 
-
-@response_wrap
-def generic_plugin_response(request, url):
-    '''
-    Handle plugin response
-    '''
-    url  = url.rstrip('/')
-    bits = url.split('/')
-    name = bits.pop(0)
-    plugin = _plugin_dictionary.get(name,None)
-    if not plugin:
-        raise http.Http404
-    else:
-        return plugin.response(request, *tuple(bits))
-
-
-####    IMPLEMENTATION
 
 class DJPpluginMetaBase(forms.MediaDefiningClass):
     '''
@@ -109,12 +74,15 @@ class DJPwrapperMeta(DJPpluginMetaBase):
     '''
 
 
-class DJPwrapper(UnicodeObject):
+class DJPwrapper(object):
     '''Class responsible for wrapping :ref:`djpcms plugins <plugins-index>`.
     '''
+    __metaclass__ = DJPwrapperMeta
+    
+    virtual       = True
+    
     name          = None
     '''Unique name. If not provided the class name will be used. Default ``None``.'''
-    __metaclass__ = DJPwrapperMeta
     form_layout   = None
 
     def wrap(self, djp, cblock, html):
@@ -124,24 +92,21 @@ This function should be implemented by derived classes.
 * *djp* instance of :class:`djpcms.views.response.DjpResponse`.
 * *cblock* instance of :class:'djpcms.models.BlockContent`.
 * *html* safe unicode string of inner HTML.'''
-        if html:
-            return html
-        else:
-            return u''
+        return html if html else ''
     
     def __call__(self, djp, cblock, html):
-        name = cblock.plugin_name
-        head = '<div class="djpcms-block-element plugin-{0}">'.format(name)
-        return mark_safe(u'\n'.join([head,
-                                     self.wrap(djp, cblock, html),
-                                     '</div>']))
+        name  = cblock.plugin_name
+        id    = cblock.htmlid()
+        head  = '<div id="{0}" class="djpcms-block-element plugin-{1}">\n'.format(id,name)
+        inner = self.wrap(djp, cblock, html)
+        return head + inner + '\n</div>'
     
     def _register(self):
         global _wrapper_dictionary
         _wrapper_dictionary[self.name] = self
 
 
-class DJPplugin(UnicodeObject):
+class DJPplugin(object):
     '''Base class for Plugins. These classes are used to display contents on a ``djpcms`` powered site.
 The basics:
     

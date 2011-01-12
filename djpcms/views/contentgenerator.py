@@ -1,4 +1,5 @@
 from djpcms.utils import force_str
+from djpcms.template import mark_safe
 from djpcms.core.page import block_htmlid
 from djpcms.models import BlockContent
 
@@ -30,7 +31,7 @@ and *b* is an integer indicating the ``block`` number in the page.'''
             if ht:
                 html.append(ht)
         html.append('%s</div>' % self.empty())
-        return force_str('\n'.join(html))
+        return mark_safe(force_str('\n'.join(html)))
     
     def __unicode__(self):
         return self.render()

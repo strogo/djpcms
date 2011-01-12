@@ -1,15 +1,8 @@
 {% extends "medplate/elem.css_t" %}
 
 {% block body %}
-div.djpcms-block-element,
-div.edit-block {
-    overflow: hidden;
-    margin-bottom: {{ block_spacing }};
-}
-
 .djpcms-placeholder {{% if placeholder_border %}
     border: {{ placeholder_border }};{% endif %}
-    margin-bottom: {{ block_spacing }};
 }
 
 div.edit-block.movable div.hd {

@@ -5,7 +5,7 @@ from djpcms import sites
 from djpcms.permissions import inline_editing, get_view_permission, has_permission
 from djpcms.contrib import messages
 from djpcms.utils.ajax import jservererror, jredirect
-from djpcms.utils.html import grid960, submit, box
+from djpcms.utils.html import grid960, box
 from djpcms.forms import saveform, get_form
 from djpcms.forms.cms import ShortPageForm, NewChildForm
 from djpcms.utils.uniforms import UniForm
@@ -218,8 +218,11 @@ which handle the response'''
         if is_ajax:
             mimetype = 'application/javascript'
             params   = dict(post.items())
+            prefix   = params.get('_prefixed',None)
             ajax_key = params.get(djp.css.post_view_key, None)
             if ajax_key:
+                if prefix and prefix in ajax_key:
+                    ajax_key = ajax_key[len(prefix)+1:]
                 ajax_key = ajax_key.replace('-','_').lower()
             
         # If ajax_key is defined, it means this is a AJAX-JSON request

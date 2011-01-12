@@ -503,8 +503,8 @@ available.
         
     def render_inputs(self):
         if self.inputs:
-            return loader.render_to_string('djpcms/uniforms/inputs.html',
-                                           {'inputs': self.inputs})
+            c = {'inputs':(mark_safe(s) for s in self.inputs)}
+            return loader.render_to_string('djpcms/uniforms/inputs.html',c)
         else:
             return ''
     

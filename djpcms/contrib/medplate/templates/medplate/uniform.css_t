@@ -11,4 +11,8 @@
 {{ tag }} table td {
     padding: {{ table_padding }};
 }
+
+{{ tag }} div.djp-autocomplete .textInput {
+    width: 98%;
+}
 {% endblock %}

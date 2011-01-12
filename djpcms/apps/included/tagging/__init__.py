@@ -36,12 +36,12 @@ def tagurl(self, request, *tags):
 
 
 class TagView(appview.SearchView):
-    
+    '''A specialised search view which handles tags'''
     def __init__(self, *args, **kwargs):
         super(TagView,self).__init__(*args, **kwargs)
     
-    def title(self, page, **urlargs):
-        return urlargs.get('tag1','')
+    def title(self, djp):
+        return self.appmodel.tag(djp)
     
     def tags(self, djp):
         tags = []
@@ -65,8 +65,8 @@ class TagArchiveView(archive.ArchiveView):
     def __init__(self, *args, **kwargs):
         super(TagArchiveView,self).__init__(*args, **kwargs)
     
-    def title(self, page, **urlargs):
-        return urlargs.get('tag1','')
+    def title(self, djp):
+        return self.appmodel.tag(djp)
     
     def linkname(self, djp):
         urlargs = djp.kwargs
@@ -86,7 +86,13 @@ class TagsApplication(appsite.ModelApplication):
     complete = appview.AutocompleteView()
 
 
-class TagApplication(appsite.ModelApplication):
+class TagMixedIn(object):
+    
+    def tag(self, djp, n = 1):
+        return djp.getdata('tag{0}'.format(n))
+
+
+class TagApplication(appsite.ModelApplication,TagMixedIn):
     search   = appview.SearchView(in_navigation = True)
     cloud    = appview.SearchView(regex = 'tags', parent = 'search', in_navigation = True)
     tag1     = TagView(regex = '(?P<tag1>%s)' % tag_regex, parent = 'cloud')
@@ -99,7 +105,7 @@ class TagApplication(appsite.ModelApplication):
         return add_tags(self, c, djp, obj)
 
 
-class ArchiveTaggedApplication(ArchiveApplication):
+class ArchiveTaggedApplication(ArchiveApplication,TagMixedIn):
     '''
     Comprehensive Tagged Archive Application urls.
     '''

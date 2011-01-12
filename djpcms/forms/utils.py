@@ -3,12 +3,13 @@ import logging
 from datetime import datetime
 
 from django.utils.dateformat import format
+from django import forms
 
 from djpcms import sites
 from djpcms.contrib import messages
 from djpcms.utils.translation import ugettext_lazy as _
-from djpcms.utils.html import submit
-from djpcms.utils import force_str
+from djpcms.utils.html import input
+from djpcms.utils import force_str, gen_unique_id
 from djpcms.utils.ajax import jredirect, jremove
 
 
@@ -73,7 +74,6 @@ def add_extra_fields(form, name, field):
 
 
 def add_hidden_field(form, name, required = False):
-    from django import forms
     return add_extra_fields(form,name,forms.CharField(widget=forms.HiddenInput, required = required))
 
 
@@ -124,23 +124,31 @@ def get_form(djp,
 :parameter method: optional string indicating submit method. Default ``POST``.
 :parameter initial: If not none, a dictionary of initial values.
 :parameter prefix: Optional prefix string to use in the form.
-:parameter addinputs: An optional function for creating submit inputs.
+:parameter addinputs: An optional function for creating inputs.
                       If available, it is called if the
-                      available form class as no submit inputs associated with it.
+                      available form class as no inputs associated with it.
                       Default ``None``.
 '''
     from djpcms.utils.uniforms import UniForm
     request  = djp.request
     own_view = djp.own_view()
-    save_as_new = request.POST.has_key('_save_as_new')
+    
+    data = request.POST if request.method == 'POST' else request.GET
+    prefix = data.get('_prefixed',None)
+    
+    save_as_new = data.has_key('_save_as_new')
     initial  = update_initial(request, form_class, initial,
                               own_view = own_view)
     
     inputs = getattr(form_class,'submits',None)
     if inputs:
-        inputs = [submit(value = val, name = nam) for val,nam in inputs]
+        inputs = [input(value = val, name = nam) for val,nam in inputs]
     elif addinputs:
         inputs = addinputs(instance, own_view)
+        
+    if not prefix:
+        prefix = gen_unique_id()
+        inputs.append(input(value = prefix, name = '_prefixed', type = 'hidden'))
                 
     f     = form_class(**form_kwargs(request     = request,
                                      initial     = initial,

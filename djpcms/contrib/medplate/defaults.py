@@ -11,7 +11,9 @@ defaults = {
     'font_weight': 'normal',
     'font_style': 'normal',
     'line_height': '1.3em',
-    'text_align': 'left'
+    'text_align': 'left',
+    #
+    'block_spacing': '10px'
     }
    
     
@@ -108,7 +110,9 @@ context.add(
                        data = {
                                'background':'#FFFFFF',
                                'border':'1px solid #aaa',
-                               'padding': '3px 5px'
+                               'text_align':'center',
+                               'padding': '3px 5px',
+                               'min_width': '50px'
                                }
                        )
             )
@@ -142,10 +146,15 @@ context.add(
             CssContext('box',
                        tag='div.djpcms-html-box',
                        template='medplate/box/box.css_t',
+                       data = {'padding':'2px'},
                        elems = [CssContext('hd',
                                            tag='div.hd',
+                                           template='medplate/box/header.css_t',
                                            data={'background':'transparent',
-                                                 'padding':'5px 5px',
+                                                 'padding':'6px 12px',
+                                                 'text_transform':'uppercase',
+                                                 'title_size':'110%',
+                                                 'font_weight':'normal',
                                                  'overflow':'hidden'}),
                                 CssContext('bd',
                                            tag='div.bd',
@@ -168,7 +177,6 @@ context.add(
                        data = {
                                'background': '#f5f5f5',
                                'color': '#000',
-                               'block_spacing': '20px',
                                'placeholder_border': '2px dashed #666'
                                }
                        )
@@ -182,14 +190,44 @@ context.add(
                        )
             )
 
+
+#________________________________________ PANEL
 context.add(
             CssContext('panel',
                        tag='div.flat-panel',
                        data = {'overflow':'hidden',
+                               'margin':0,
                                'padding':'7px 7px'}
                        )
             )
 
+
+#________________________________________ FLAT BOX
+context.add(
+            CssContext('flatbox',
+                       tag='div.flat-box',
+                       template='medplate/box/box.css_t',
+                       data = {'overflow':'hidden',
+                               'margin':0,
+                               'padding':0},
+                       elems = [CssContext('hd',
+                                           tag='div.hd',
+                                           template='medplate/box/header.css_t',
+                                           data={'background':'transparent',
+                                                 'font_weight': 'bold',
+                                                 'title_size':'110%',
+                                                 'padding':'5px 5px',
+                                                 'overflow':'hidden'}),
+                                CssContext('bd',
+                                           tag='div.bd',
+                                           data={'background':'transparent',
+                                                 'padding':0})
+                                ]
+                       )
+            )
+
+
+#________________________________________ PLAIN TABLE
 context.add(
             CssContext('table',
                        template='medplate/table.css_t',
@@ -206,6 +244,15 @@ context.add(
             CssContext('search',
                        tag='div.cx-search-bar',
                        template='medplate/search-box.css_t'
+                       )
+            )
+
+
+#________________________________________ JQUERY UI-TABS
+context.add(
+            CssContext('tabs',
+                       tag='.ui-tabs',
+                       template='medplate/tabs.css_t'
                        )
             )
 

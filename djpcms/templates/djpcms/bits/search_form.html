@@ -1,10 +1,11 @@
 <form method="{{ method }}" action="{{ url }}">
 <div class="cx-search-bar">
   <div class="cx-submit">
-    <input type="submit" title="Search" value="" class="cx-search-btn">
+    <input type="submit" title="Search" value="" class="cx-search-btn"/>
   </div>
   <div class="cx-input">{% for field in html %}
     {{ field }}{% endfor %}
   </div>
-</div>
+</div>{% if prefix %}
+<input name="_prefixed" value="{{ prefix }}" type="hidden"/>{% endif %}
 </form>

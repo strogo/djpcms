@@ -3,8 +3,9 @@ from django.contrib.contenttypes.models import ContentType
 from djpcms import forms, get_site
 from djpcms.template import loader
 from djpcms.plugins import DJPplugin
+from djpcms.utils import gen_unique_id
 from djpcms.utils.uniforms import UniForm, FormLayout, Fieldset
-from djpcms.utils.html import submit
+from djpcms.utils.html import input
 
 
 def registered_models(url = None):
@@ -94,7 +95,7 @@ class SearchBox(DJPplugin):
     form = SearchModelForm
     
     def render(self, djp, wrapper, prefix,
-               for_model = None, method = 'post',
+               for_model = None, method = 'get',
                title = None, **kwargs):
         if for_model:
             site = get_site()
@@ -103,20 +104,27 @@ class SearchBox(DJPplugin):
             except:
                 raise ValueError('Content type %s not available' % for_model)
             model = ct.model_class()
+            request  = djp.request
             appmodel = site.for_model(model)
             if appmodel:
-                search_url = appmodel.searchurl(djp.request)
+                search_url = appmodel.searchurl(request)
                 if search_url:
-                    f = SearchForm(data = djp.request.GET)
+                    data = request.GET if method == 'get' else request.POST
+                    #prefix = data.get("_prefixed",None)
+                    #if not prefix:
+                    #    prefix = gen_unique_id()
+                    prefix = None
+                    f = SearchForm(data = data, prefix = prefix)
                     if title:
                         f.fields['q'].widget.attrs['title'] = title
                     return loader.render_to_string(['search_form.html',
                                                     'bits/search_form.html',
                                                     'djpcms/bits/search_form.html'],
                                                     {'html':  f,
+                                                     'prefix': prefix,
                                                      'title': title or 'Enter your search term',
                                                      'url':   search_url,
-                                                     'method':'get'})
+                                                     'method':method})
         else:
             raise ValueError('Content type not available')
 
@@ -148,7 +156,7 @@ class ModelFilter(DJPplugin):
                     action = search_url)
         if ajax:
             f.addClass(djp.css.ajax)
-        f.inputs.append(submit(value = 'filter', name = '_filter'))
+        f.inputs.append(input(value = 'filter', name = '_filter'))
         return f.render()
     
     

@@ -451,7 +451,7 @@
 	/**
 	 * Autocomplete Off
 	 */
-	dj.addDecorator({
+	$.djpcms.addDecorator({
 		id:"autocomplete_off",
 		decorate: function($this,config) {
 			$('.autocomplete-off',$this).each(function() {
@@ -467,7 +467,7 @@
 	/**
 	 * Classy Search
 	 */
-	dj.addDecorator({
+	$.djpcms.addDecorator({
 		id:"classy-search",
 		decorate: function($this,config) {
 			$('.classy-search',$this).each(function() {
@@ -492,7 +492,7 @@
 	 * box decorator
 	 * Collappsable boxes
 	 */
-	dj.addDecorator({
+	$.djpcms.addDecorator({
 		id:"djpcms_box",
 		description:"Decorate a DJPCMS box element",
 		decorate: function($this,config) {
@@ -518,14 +518,10 @@
 								var cp = $(this).parents('.'+cname);
 								var be = config.box_effect;
 								if(cp.hasClass('collapsed')) {
-									$('.ft',cp).show(be.type,{},be.duration);
-									$('.bd',cp).show(be.type,{},be.duration);
-									cp.removeClass('collapsed');
+									$('.bd',cp).show(be.type,{},be.duration,function(){cp.removeClass('collapsed');});
 								}
 								else {
-									$('.ft',cp).hide(be.type,{},be.duration);
-									$('.bd',cp).hide(be.type,{},be.duration);
-									cp.addClass('collapsed');
+									$('.bd',cp).hide(be.type,{},be.duration, function(){cp.addClass('collapsed');});
 								}
 								//cp.toggleClass('collapsed');
 								return false;
@@ -541,7 +537,7 @@
 	/**
 	 * Accordion menu
 	 */
-	dj.addDecorator({
+	$.djpcms.addDecorator({
 		id:"accordion_menu",
 		decorate: function($this,config) {
 			$('ul.accordionmenu',$this).each(function() {
@@ -564,7 +560,7 @@
 	 * decorate tables with jquery.tablesorter plugin
 	 * Plugin can be found at http://tablesorter.com/
 	 */
-	dj.addDecorator({
+	$.djpcms.addDecorator({
 		id:"tablesorter",
 		decorate: function($this,config) {
 			$('table.tablesorter',$this).each(function() {
@@ -575,7 +571,7 @@
 	
 	
 	// Calendar Date Picker Decorator
-	dj.addDecorator({
+	$.djpcms.addDecorator({
 		id:"Date_Picker",
 		decorate: function($this, config) {
 			var ajaxclass = config.calendar_class ? config.calendar_class : 'dateinput';
@@ -599,7 +595,7 @@
 	 * Cycle jQuery Plugin decorator, from django-flowrepo
 	 * 
 	 */ 
-	dj.addDecorator({
+	$.djpcms.addDecorator({
 		id:"image_cycle",
 		decorate: function($this, config) {
 			if(!$.cycle) {
@@ -636,9 +632,12 @@
 		}
 	});
 	
-	dj.addDecorator({
+	$.djpcms.addDecorator({
 		id:"color_picker",
 		decorate: function($this, config) {
+			if(!$.fn.ColorPickerSetColor) {
+				return;
+			}
 			$('input.color-picker', $this).each(function() {
 				var div = $('<div class="color-picker"></div>');
 				var iel = $(this).hide().after(div);

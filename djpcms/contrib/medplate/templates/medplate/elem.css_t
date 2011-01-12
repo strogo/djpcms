@@ -17,11 +17,13 @@
 	font-variant:normal;
 	font-weight:{{ font_weight }};
 	line-height: {{ line_height }};
-	text-align: {{ text_align }};{% if overflow %}
+	text-align: {{ text_align }};{% if text_transform %}
+	text-transform: {{ text_transform }};{% endif %}{% if overflow %}
 	overflow: {{ overflow }};{% endif %}{% if display %}
 	display: {{ display }};{% endif %}{% if height %}
 	height: {{ height }};{% endif %}{% if width %}
-	width: {{ width }};{% endif %}{% if padding %}
+	width: {{ width }};{% endif %}{% if min_width %}
+    min-width: {{ min_width }};{% endif %}{% if padding %}
 	padding: {{ padding }};{% endif %}{% if float %}
 	float: {{ float }};{% endif %}{% if margin %}
 	margin: {{ margin }};{% endif %}{% if position %}

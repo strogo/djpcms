@@ -115,7 +115,6 @@ def urlfrombits(bits):
         return '/'
     
 
-
 class UnicodeObject(object):
     
     def __repr__(self):
@@ -134,7 +133,7 @@ class UnicodeObject(object):
 def slugify(value, rtx = '-'):
     '''Normalizes string, removes non-alpha characters,
 and converts spaces to hyphens *rtx* character'''
-    value = unicodedata.normalize('NFKD', unicode(value)).encode('ascii', 'ignore')
-    value = unicode(re.sub('[^\w\s-]', '', value).strip())
+    value = unicodedata.normalize('NFKD', force_str(value)).encode('ascii', 'ignore')
+    value = force_str(re.sub('[^\w\s-]', '', value).strip())
     return re.sub('[-\s]+', rtx, value)
 

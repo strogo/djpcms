@@ -13,7 +13,7 @@ from djpcms.core.exceptions import PermissionDenied, ApplicationUrlException
 from djpcms.utils import UnicodeObject, slugify
 from djpcms.forms import get_form
 from djpcms.plugins import register_application
-from djpcms.utils.html import submit
+from djpcms.utils.html import input
 from djpcms.utils.uniforms import UniForm
 from djpcms.permissions import has_permission
 from djpcms.views.baseview import editview, response_from_page
@@ -319,16 +319,16 @@ It can be overridden to twick its behaviour.
         '''Generate the submits elements to be added to the model form.
         '''
         if instance:
-            sb = [submit(value = self._form_save, name = '_save')]
+            sb = [input(value = self._form_save, name = '_save')]
             if self._submit_as_new:
-                sb.append(submit(value = self._submit_as_new, name = '_save_as_new'))
+                sb.append(input(value = self._submit_as_new, name = '_save_as_new'))
         else:
-            sb = [submit(value = self._form_add, name = '_save')]
+            sb = [input(value = self._form_add, name = '_save')]
         if own_view:
             if self._form_continue:
-                sb.append(submit(value = self._form_continue, name = '_save_and_continue'))
+                sb.append(input(value = self._form_continue, name = '_save_and_continue'))
             if self._submit_cancel:
-                sb.append(submit(value = self._submit_cancel, name = '_cancel'))
+                sb.append(input(value = self._submit_cancel, name = '_cancel'))
         return sb
 
     def get_label_for_field(self, name):

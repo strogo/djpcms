@@ -207,12 +207,8 @@ class ApplicationSites(ResolverMixin):
         djp = view(request, **kwargs)
         return djp.response()
     
-    def djp(self, request, url):
+    def djp(self, request, path):
         '''Entry points for requests'''
-        cleaned_path = self.clean_path(request.environ)
-        if isinstance(cleaned_path,self.http.HttpResponse):
-            return cleaned_path
-        path = cleaned_path[1:]
         site,view,kwargs = self.resolve(path)
         request.site = site
         djp = view(request, **kwargs)
@@ -221,6 +217,9 @@ class ApplicationSites(ResolverMixin):
         
     def request_handler(self, request, url):
         '''Entry points for requests'''
+        cleaned_path = self.clean_path(request.environ)
+        if isinstance(cleaned_path,self.http.HttpResponse):
+            return cleaned_path
         try:
             djp = self.djp(request,url)
             if isinstance(djp,self.http.HttpResponse):

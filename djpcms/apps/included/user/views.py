@@ -1,6 +1,5 @@
 from djpcms.contrib import messages
 from djpcms.views import appview
-from djpcms.utils.html import submit
 from djpcms.utils.ajax import jredirect
 from djpcms.forms import saveform
 from djpcms.apps.included.user.user import UserClass
