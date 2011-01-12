@@ -28,9 +28,10 @@ Features
 ===============================
 
  * Dynamic pages based on database models.
- * Application based on database model or not.
+ * Applications based on database model or not.
  * Extendible using ``plugins``.
  * Inline editing of ``plugins`` and ``pages``.
+ * Move ``plugins`` in page using drag-and-drop functionalities.
  * ``Autocomplete`` for models when the autocomplete view is added to the model application.
  * Extendible AJAX decorators.
  * Tagging with django-tagging_, included in distribution.
@@ -79,7 +80,7 @@ On the top level directory type::
 	
 To access coverage of tests you need to install the coverage_ package and run the tests using::
 
-	coverage run --source=djpcms runtests.py
+	coverage run runtests.py
 	
 and to check out the coverage report::
 

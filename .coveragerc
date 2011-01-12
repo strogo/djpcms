@@ -1,2 +1,2 @@
 [run]
-source = djpcms/conf,djpcms/contrib,djpcms/core,djpcms/forms,djpcms/http,djpcms/middleware,djpcms/plugins,djpcms/template,djpcms/templatetags,djpcms/utils,djpcms/views
+source = djpcms/apps,djpcms/conf,djpcms/contrib,djpcms/core,djpcms/forms,djpcms/http,djpcms/middleware,djpcms/plugins,djpcms/template,djpcms/templatetags,djpcms/utils,djpcms/views
