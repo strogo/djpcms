@@ -10,9 +10,9 @@ class lazycounter(object):
     '''
     def __new__(cls, djp, **kwargs):
         obj = super(lazycounter, cls).__new__(cls)
-        obj.djp     = djp
+        obj.djp = djp.underlying()
         obj.classes = kwargs.pop('classes',None)
-        obj.kwargs  = kwargs
+        obj.kwargs = kwargs
         return obj
 
     def __len__(self):

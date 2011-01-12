@@ -10,4 +10,14 @@
 {{ tag }} a.size-4 {font-size:150%;}
 {{ tag }} a.size-5 {font-size:180%;}
 {{ tag }} a.size-6 {font-size:210%;}
+
+{% if tag_color %}
+div.tags a:link,
+div.tags a:visited {
+	color: {{ tag_color }}
+}
+div.tags a:hover {
+	color: {{ tag_hover_color }}
+}
+{% endif %}
 {% endblock %}

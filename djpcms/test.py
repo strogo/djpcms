@@ -362,28 +362,46 @@ class PluginTest(TestCase):
         self._simplePage()
     
     def testEdit(self):
+        '''Test the editing view by getting a the view and the editing form
+and sending AJAX requests.'''
         c = self._simplePage()
+        # we need to login to perform editing
         self.assertTrue(self.login())
+        # get the editing page for '/'
         ec = self.get(self.editurl('/'))
+        # '/' and editing page '/' are the same
         self.assertEqual(c['page'],ec['page'])
+        # inner editing page
         inner = ec['inner']
+        # beautiful soup the block content
         bs = self.bs(inner).find('div', {'id': 'blockcontent-1-0-0'})
         self.assertTrue(bs)
         f  = bs.find('form')
         self.assertTrue(f)
         action = dict(f.attrs)['action']
+        # get the prefix
+        prefix = bs.find('input', attrs = {'name':'_prefixed'})
+        self.assertTrue(prefix)
+        prefix = dict(prefix.attrs)['value']
+        self.assertTrue(prefix)
         
-        # Send bad post request
+        # Send bad post request (no data)
         res = self.post(action, {}, ajax = True, response = True)
         self.assertEqual(res['content-type'],'application/javascript')
         body = json.loads(res.content)
         self.assertFalse(body['error'])
         self.assertEqual(body['header'],'htmls')
         
+        for msg in body['body']:
+            if msg['identifier'] != '.form-messages':
+                self.assertEqual(msg['html'][:26],'<ul class="errorlist"><li>')
+        
         data = {'plugin_name': self.plugin.name,
                 'container_type': SimpleWrap.name}
         data.update(self.get_plugindata(f))
-        res = self.post(action, data, ajax = True, response = True)
+        pdata = dict(((prefix+'-'+k,v) for k,v in data.items()))
+        pdata['_prefixed'] = prefix
+        res = self.post(action, pdata, ajax = True, response = True)
         self.assertEqual(res['content-type'],'application/javascript')
         body = json.loads(res.content)
         self.assertFalse(body['error'])

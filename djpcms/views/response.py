@@ -60,6 +60,14 @@ class DjpResponse(object):
     def own_view(self):
         return self.url == self.request.path
     
+    def underlying(self):
+        '''If the current wapper has an editing view,
+return the wrapper with the underlying view.'''
+        if self.view.editurl:
+            return self.view._view(self.request, **self.kwargs)
+        else:
+            return self
+    
     def get_linkname(self):
         return self.view.linkname(self) or self.url
     linkname = property(get_linkname)

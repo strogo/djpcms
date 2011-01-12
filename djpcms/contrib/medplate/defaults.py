@@ -117,14 +117,15 @@ context.add(
                        )
             )
 
-#________________________________________ TAG INDEX
+#________________________________________ TAGS
 context.add(
             CssContext('tags',
                        tag='div.tagindex',
                        template='medplate/tags.css_t',
                        data = {
                                'background': 'transparent',
-                               'text_align': 'justify'}
+                               'text_align': 'justify',
+                               'tag_opacity': 0.7}
                        )
             )
 
