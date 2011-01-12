@@ -1,0 +1,14 @@
+{# UI-TABS OVERRIDE #}
+
+
+div.ui-tabs.whole-page {
+    padding: 0;
+}
+
+.ui-tabs.whole-page .ui-tabs-panel {
+    padding: 1em 0;
+}
+
+div.ui-tabs.whole-page.ui-widget-content {
+    border: none;
+}
