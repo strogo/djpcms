@@ -6,7 +6,8 @@ border_color = '#e0e0e0'
 
 context.update({'font_size': '13px',
                 'line_height': '18px',
-                'font_family': "'Lucida Grande',Arial,sans-serif"})
+                'font_family': "'Lucida Grande',Arial,sans-serif",
+                'block_spacing': '15px'})
 
 context.anchor.update({'color':'#36566B',
                        'color_hover':'#e17009',
@@ -42,7 +43,8 @@ context.panel.update({'background':'#fafafa',
                       'border':'2px solid {0}'.format(border_color)})
 
 # Style box
-context.box.update({'background':'#ccc',
+boxcolor = 'rgba(143,172,191,1)'
+context.box.update({'background':boxcolor,
                     'radius':'7px'})
 context.box.bd.update({'background':'#fff',
                        'radius_top_right':'0px',
@@ -50,7 +52,15 @@ context.box.bd.update({'background':'#fff',
 context.box.ft.update({'background':'#fff',
                        'radius_top_right':'0px',
                        'radius_top_left':'0px'})
-context.box.hd.update({'background':'#ccc'})
+context.box.hd.update({'background':boxcolor,
+                       'text_shadow':'1px 1px 3px #fff'})
+
+#tablesorter
+context.tablesorter.update({
+                            'font_size': '11px',
+                            'head_border': '1px solid #fff',
+                            'head_background':boxcolor,
+                            })
 
 # Uniforms
 context.uniform.update({'input_border':'2px solid #dfdfdf'})

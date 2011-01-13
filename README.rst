@@ -105,14 +105,20 @@ Optional requirements:
 
 Kudos
 =====================
-Djpcms includes several open-source libraries and plugins developed by other authors and communities:
+Djpcms includes several open-source libraries and plugins developed
+by other authors and communities:
 
-* jQuery_ the building block of the browser side of djpcms.
-  The latest ``jquery`` and ``jquery-ui`` minified files are shipped with the library. 
+Python
+---------
 * django-tagging_ for tag management. Shipped with the library in the ``libs`` module but a library in its own.
-* jQuery tablesorter_ plugin. Thanks to Christian Bach.
-* jQuery cycle_ plugin. 
-* jQuery Sparklines_ plugin.
+
+JavaScript
+------------
+* jQuery_ core and UI are the building block of the browser side of djpcms. 
+* jQuery tablesorter_ plugin for managing dynamic tables.
+* jQuery jstree_ plugin for managing tree components. 
+* jQuery cycle_ plugin for photo galleries. 
+* jQuery Sparklines_ plugin for inline plotting.
 * Modernizr_, a small JavaScript library that detects the availability of native implementations for next-generation web technologies.
 
 .. _pypi: http://pypi.python.org/pypi?:action=display&name=djpcms
@@ -127,6 +133,7 @@ Djpcms includes several open-source libraries and plugins developed by other aut
 .. _stdnet: http://code.google.com/p/python-stdnet/
 .. _tablesorter: http://tablesorter.com/
 .. _Modernizr: http://www.modernizr.com/
+.. _jstree: http://www.jstree.com/
 .. _cycle: http://jquery.malsup.com/cycle/
 .. _Sparklines: http://www.omnipotent.net/jquery.sparkline/
 .. _coverage: http://nedbatchelder.com/code/coverage/

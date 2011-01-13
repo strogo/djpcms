@@ -114,7 +114,7 @@ class ArchiveTaggedApplication(ArchiveApplication,TagMixedIn):
     month_archive = archive.MonthArchiveView(regex = '(?P<month>\w{3})', parent = 'year_archive')
     day_archive   = archive.DayArchiveView(regex = '(?P<day>\d{2})',   parent = 'month_archive')
     
-    tagc0          = appview.ModelView(regex = 'tags', in_navigation = True)
+    cloud          = appview.ModelView(regex = 'tags', in_navigation = True)
     tag1           = TagArchiveView(regex = '(?P<tag1>%s)' % tag_regex, parent = 'tagc0')
     year_archive1  = TagArchiveView(regex = '(?P<year>\d{4})',  parent = 'tag1')
     month_archive1 = TagArchiveView(regex = '(?P<month>\w{3})', parent = 'year_archive1')

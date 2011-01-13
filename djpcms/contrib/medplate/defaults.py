@@ -13,7 +13,7 @@ defaults = {
     'line_height': '1.3em',
     'text_align': 'left',
     #
-    'block_spacing': '10px'
+    'block_spacing': '15px'
     }
    
     
@@ -137,6 +137,24 @@ context.add(
                        template='medplate/object-definition.css_t',
                        data = {
                                'background': 'transparent'
+                               }
+                       )
+            )
+
+
+#________________________________________ TABLESORTER
+context.add(
+            CssContext('tablesorter',
+                       tag='table.tablesorter',
+                       template='medplate/tablesorter.css_t',
+                       data = {
+                               'width':'100%',
+                               'margin': '10px 0 15px',
+                               'background': 'transparent',
+                               # head/tail
+                               'head_background': 'transparent',
+                               'head_border': 'none',
+                               'head_padding': '4px',
                                }
                        )
             )

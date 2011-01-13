@@ -3,7 +3,6 @@
 {% block include-media %}
 {% include "uni-form.css" %}
 {% include "jquery-ui-css/smooth/jquery-ui.css" %}
-{% include "tablesorter/themes/smooth/style.css" %}
 {% endblock %}
 
 {% block body %}
