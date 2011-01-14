@@ -94,8 +94,8 @@ class TagMixedIn(object):
 
 class TagApplication(appsite.ModelApplication,TagMixedIn):
     search   = appview.SearchView(in_navigation = True)
-    cloud    = appview.SearchView(regex = 'tags', parent = 'search', in_navigation = True)
-    tag1     = TagView(regex = '(?P<tag1>%s)' % tag_regex, parent = 'cloud')
+    tag0     = appview.SearchView(regex = 'tags', parent = 'search', in_navigation = True)
+    tag1     = TagView(regex = '(?P<tag1>%s)' % tag_regex, parent = 'tag0')
     
     def tagurl(self, request, *tags):
         return tagurl(self, request, *tags)
@@ -114,8 +114,8 @@ class ArchiveTaggedApplication(ArchiveApplication,TagMixedIn):
     month_archive = archive.MonthArchiveView(regex = '(?P<month>\w{3})', parent = 'year_archive')
     day_archive   = archive.DayArchiveView(regex = '(?P<day>\d{2})',   parent = 'month_archive')
     
-    cloud          = appview.ModelView(regex = 'tags', in_navigation = True)
-    tag1           = TagArchiveView(regex = '(?P<tag1>%s)' % tag_regex, parent = 'tagc0')
+    tag0           = appview.ModelView(regex = 'tags', in_navigation = True)
+    tag1           = TagArchiveView(regex = '(?P<tag1>%s)' % tag_regex, parent = 'tag0')
     year_archive1  = TagArchiveView(regex = '(?P<year>\d{4})',  parent = 'tag1')
     month_archive1 = TagArchiveView(regex = '(?P<month>\w{3})', parent = 'year_archive1')
     day_archive1   = TagArchiveView(regex = '(?P<day>\d{2})',   parent = 'month_archive1')
