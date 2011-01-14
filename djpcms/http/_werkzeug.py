@@ -9,3 +9,5 @@ Http404 = exceptions.NotFound
 
 
 
+def is_authenticated(request):
+    return request.user.is_authenticated()
