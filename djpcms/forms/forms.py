@@ -30,6 +30,7 @@ def form_preprocess(self, kwargs):
 
 class Form(forms.Form):
     '''A slight modification on django Form'''
+    ValidationError = ValidationError
     def __init__(self, *args, **kwargs):
         form_preprocess(self,kwargs)
         kwargs.pop('instance',None)
@@ -39,6 +40,7 @@ class Form(forms.Form):
 
 class ModelForm(forms.ModelForm):
     '''A slight modification on django Form'''
+    ValidationError = ValidationError
     def __init__(self, *args, **kwargs):
         form_preprocess(self,kwargs)
         save_as_new = kwargs.pop('save_as_new',False)

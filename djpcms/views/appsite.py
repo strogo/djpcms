@@ -478,7 +478,7 @@ Re-implement for custom arguments.'''
     def editurl(self, request, obj):
         return self.appviewurl(request,'edit',obj,self.has_edit_permission,objrequired=True)
     
-    def viewurl(self, request, obj):
+    def viewurl(self, request, obj, field_name = None):
         return self.appviewurl(request,'view',obj,objrequired=True)
     
     def searchurl(self, request):

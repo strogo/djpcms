@@ -135,6 +135,8 @@ Usage::
     plugin_form    = None
     view_template  = 'djpcms/components/pagination.html'
     force_redirect = False
+    headers        = None
+    astable        = False
     _form          = None
     _form_ajax     = None
     
@@ -159,7 +161,7 @@ Usage::
                  form_withrequest = None,
                  form_ajax     = None,
                  headers       = None,
-                 astable        = False,
+                 astable        = None,
                  table_generator = None,
                  success_message = None):
         self.name        = None
@@ -175,8 +177,8 @@ Usage::
         self.func      = None
         self.code      = None
         self.editurl   = None
-        self.headers   = headers
-        self.astable   = astable
+        self.headers   = headers or self.headers
+        self.astable   = astable if astable is not None else self.astable
         if title:
            self.title = title 
         if table_generator:
@@ -340,6 +342,8 @@ replaced during initialization.
         return self.appmodel.parentresponse(djp, self)
     
     def table_generator(self, djp, qs):
+        '''Generator of a table view. This function is invoked by :meth:`View.render_query`
+when :attr:`View.astable` attribute is set to ``True``.'''
         return self.appmodel.table_generator(djp, qs)
     
     def data_generator(self, djp, qs):

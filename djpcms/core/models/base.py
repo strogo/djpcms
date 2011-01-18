@@ -155,7 +155,7 @@ class ModelTypeWrapper(object):
                     result_repr = mark_safe('&nbsp;')
                 if (first and not self.list_display_links) or field_name in self.list_display_links:
                     first = False
-                    url = self.url_for_result(request, result)
+                    url = self.url_for_result(request, result, field_name)
                 else:
                     url = None
                 
@@ -175,9 +175,9 @@ class ModelTypeWrapper(object):
     def _getrepr(self, name, instance):
         raise NotImplementedError
     
-    def url_for_result(self, request, instance):
+    def url_for_result(self, request, instance, field_name):
         if self.appmodel:
-            return self.appmodel.viewurl(request, instance)
+            return self.appmodel.viewurl(request, instance, field_name)
         else:
             return None
         

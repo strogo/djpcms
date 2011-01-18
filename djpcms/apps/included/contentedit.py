@@ -352,9 +352,11 @@ The url is given by the ContentBlocks models
     
     def default_post(self, djp):
         data = dict(djp.request.POST.items())
+        prefix = data['_prefixed']
         is_ajax = djp.request.is_ajax()
         try:
-            f = self.get_form(djp, initial = {'url':data['url']}, withdata = False)
+            initial = {'url':data['{0}-url'.format(prefix)]}
+            f = self.get_form(djp, initial = initial, withdata = False)
         except PermissionDenied, e:
             return jerror(str(e))
         

@@ -113,6 +113,18 @@ returns the application handler. If the appname is not available, it raises a Ke
             raise ApplicationNotAvailable('Application {0} not available.'.format(appname))
         return appmodel.root_application
     
+    def get_instanceurl(self, instance, view_name = 'view', **kwargs):
+        '''Calculate a url given a instance'''
+        app = self.for_model(instance.__class__)
+        if app:
+            view = app.getview(view_name)
+            if view:
+                try:
+                    return view.get_url(None, instance = instance, **kwargs)
+                except:
+                    return None
+        return None
+        
     def count(self):
         return len(self._registry)
     
