@@ -1,0 +1,48 @@
+{# EXAMPLE OF A JQUERY-UI TABS TEMPLATE #}
+<div class="ui-tabs whole-page">
+<div  class="{{ grid.column1 }}">
+  <ul>
+    <li><a href="#tabs-1">Overview</a></li>
+    <li><a href="#tabs-2">Statistics</a></li>
+    <li><a href="#tabs-3">Trade</a></li>
+  </ul>
+</div>
+  {{ grid.clear }}
+<div id="tabs-1">
+<div class="{{ grid.column_3_4 }}">
+{{ content0 }}
+</div>
+<div class="{{ grid.column_1_4 }}">
+{{ content1 }}
+</div>
+{{ grid.clear }}
+<div class="{{ grid.column_1_2 }}">
+{{ content2 }}
+</div>
+<div class="{{ grid.column_1_2 }}">
+{{ content3 }}
+</div>
+{{ grid.clear }}
+</div>
+
+<div id="tabs-2">
+<div class="{{ grid.column_1_2 }}">
+{{ content4 }}
+</div>
+<div class="{{ grid.column_1_2 }}">
+{{ content5 }}
+</div>
+{{ grid.clear }}
+</div>
+
+<div id="tabs-3">
+<div class="{{ grid.column_2_3 }}">
+{{ content6 }}
+</div>
+<div class="{{ grid.column_1_3 }}">
+{{ content7 }}
+</div>
+{{ grid.clear }}
+</div>
+
+</div>
