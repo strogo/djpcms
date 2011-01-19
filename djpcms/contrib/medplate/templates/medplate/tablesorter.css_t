@@ -1,0 +1,48 @@
+{# TABLESORTER #}
+{% extends "medplate/elem.css_t" %}
+
+{% block body %}
+{{ tag }} thead tr th,
+{{ tag }} tfoot tr th {
+    background-color: {{ head_background }};
+    border: {{ head_border }};{% if head_font_size %}
+    font-size: {{ head_font_size }};{% endif %}
+    padding: {{ head_padding }};
+}
+{{ tag }} thead tr .header {
+    background-image: url({{ MEDIA_URL }}djpcms/tablesorter/themes/smooth/bg.gif);
+    background-repeat: no-repeat;
+    background-position: center right;
+    cursor: pointer;
+}
+{{ tag }} tbody tr {
+    border: 1px solid #fff;
+    border-top: none;
+    border-bottom: none;
+}
+{{ tag }} tbody tr:last-child {
+    border-bottom: 1px solid #fff;
+}
+{{ tag }} tbody td {
+    color: #3D3D3D;
+    padding: 4px;
+    background-color: #FFF;
+    vertical-align: top;
+}
+{{ tag }} tbody tr.odd td {
+    background-color:#F0F0F6;
+}
+{{ tag }} thead tr .headerSortUp {
+    background-image: url(asc.gif);
+}
+{{ tag }} thead tr .headerSortDown {
+    background-image: url(desc.gif);
+}
+{{ tag }} thead tr .headerSortDown, {{ tag }} thead tr .headerSortUp {
+background-color: #8dbdd8;
+}
+{{ tag }} tbody tr.hover td {
+    background-color:#BEDAD7;
+}
+{% endblock %}
+

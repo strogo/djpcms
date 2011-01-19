@@ -7,7 +7,7 @@
             "name": "flat", 
             "created": "2009-11-18 19:29:24", 
             "image": "", 
-            "last_modified": "2009-12-10 17:29:00", 
+            "last_modified": "2009-11-18 19:29:24", 
             "template": "{{ content0 }}"
         }
     }, 
@@ -16,10 +16,10 @@
         "model": "djpcms.innertemplate", 
         "fields": {
             "blocks": "left,right", 
-            "name": "2 columns 50-50", 
+            "name": "HH", 
             "created": "2009-11-18 21:37:35", 
             "image": "", 
-            "last_modified": "2009-12-10 17:28:53", 
+            "last_modified": "2009-11-18 21:37:35", 
             "template": "<div class=\"{{ grid.column_1_2 }}\">\r\n{{ content0 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_2 }}\">\r\n{{ content1 }}\r\n</div>\r\n{{ grid.clear }}"
         }
     }, 
@@ -28,10 +28,10 @@
         "model": "djpcms.innertemplate", 
         "fields": {
             "blocks": "left,center,right", 
-            "name": "3 columns 33-33-33", 
+            "name": "TTT", 
             "created": "2009-11-18 21:40:58", 
             "image": "", 
-            "last_modified": "2009-12-10 17:28:36", 
+            "last_modified": "2009-11-18 21:40:58", 
             "template": "<div class=\"{{ grid.column_1_3 }}\">\r\n{{ content0 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_3 }}\">\r\n{{ content1 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_3 }}\">\r\n{{ content2 }}\r\n</div>\r\n{{ grid.clear }}"
         }
     }, 
@@ -40,11 +40,11 @@
         "model": "djpcms.innertemplate", 
         "fields": {
             "blocks": "left,center,right,bleft,bright", 
-            "name": "3 columns 33-33-33 2 columns 50-50", 
+            "name": "TTT_HH", 
             "created": "2009-11-18 21:42:17", 
             "image": "", 
-            "last_modified": "2009-12-10 17:28:18", 
-            "template": "<div class=\"{{ grid.column_1_3 }}\">\r\n{{ content0 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_3 }}\">\r\n{{ content1 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_3 }}\">\r\n{{ content2 }}\r\n</div>\r\n{{ grid.clear }}\r\n<div class=\"{{ grid.column_1_2 }}\">\r\n{{ content3 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_2 }}\">\r\n{{ content4 }}\r\n</div>\r\n{{ grid.clear }}"
+            "last_modified": "2009-11-18 21:42:17", 
+            "template": "<div class=\"{{ grid.column_1_3 }}\">\r\n{{ content0 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_3 }}\">\r\n{{ content1 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_3 }}\">\r\n{{ content2 }}\r\n</div>\r\n{{ grid.clear }}\r\n<div class=\"{{ grid.column_1_2 }}\">\r\n{{ content1 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_2 }}\">\r\n{{ content2 }}\r\n</div>\r\n{{ grid.clear }}"
         }
     }, 
     {
@@ -52,10 +52,10 @@
         "model": "djpcms.innertemplate", 
         "fields": {
             "blocks": "side,main", 
-            "name": "2 columns 33-66", 
+            "name": "T1T2", 
             "created": "2009-11-18 21:43:45", 
             "image": "", 
-            "last_modified": "2009-12-10 17:27:36", 
+            "last_modified": "2009-11-18 21:43:45", 
             "template": "<div class=\"{{ grid.column_1_3 }}\">\r\n{{ content0 }}\r\n</div>\r\n<div class=\"{{ grid.column_2_3 }}\">\r\n{{ content1 }}\r\n</div>\r\n{{ grid.clear }}"
         }
     }, 
@@ -64,95 +64,11 @@
         "model": "djpcms.innertemplate", 
         "fields": {
             "blocks": "main,right", 
-            "name": "2 columns 66-33", 
+            "name": "T2T1", 
             "created": "2009-11-18 21:44:15", 
             "image": "", 
-            "last_modified": "2009-12-10 17:27:42", 
+            "last_modified": "2009-11-18 21:44:15", 
             "template": "<div class=\"{{ grid.column_2_3 }}\">\r\n{{ content0 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_3 }}\">\r\n{{ content1 }}\r\n</div>\r\n{{ grid.clear }}"
-        }
-    }, 
-    {
-        "pk": 7, 
-        "model": "djpcms.innertemplate", 
-        "fields": {
-            "blocks": "left,cleft,cright,right", 
-            "name": "4 columns - 25 each", 
-            "created": "2009-12-07 21:36:12", 
-            "image": "", 
-            "last_modified": "2009-12-10 17:27:47", 
-            "template": "<div class=\"{{ grid.column_1_4 }}\">\r\n{{ content0 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_4 }}\">\r\n{{ content1 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_4 }}\">\r\n{{ content2 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_4 }}\">\r\n{{ content3 }}\r\n</div>\r\n{{ grid.clear }}"
-        }
-    }, 
-    {
-        "pk": 8, 
-        "model": "djpcms.innertemplate", 
-        "fields": {
-            "blocks": "left,center,right", 
-            "name": "3 columns - 25-50-25", 
-            "created": "2009-12-08 12:18:19", 
-            "image": "", 
-            "last_modified": "2009-12-10 17:27:51", 
-            "template": "<div class=\"{{ grid.column_1_4 }}\">\r\n{{ content0 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_2 }}\">\r\n{{ content1 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_4 }}\">\r\n{{ content2 }}\r\n</div>\r\n{{ grid.clear }}"
-        }
-    }, 
-    {
-        "pk": 9, 
-        "model": "djpcms.innertemplate", 
-        "fields": {
-            "blocks": "content", 
-            "name": "1 column", 
-            "created": "2009-12-10 17:15:23", 
-            "image": "", 
-            "last_modified": "2009-12-10 17:27:56", 
-            "template": "<div class=\"{{ grid.column1 }}\">\r\n{{ content0 }}\r\n</div>\r\n{{ grid.clear }}"
-        }
-    }, 
-    {
-        "pk": 10, 
-        "model": "djpcms.innertemplate", 
-        "fields": {
-            "blocks": "left,center,right", 
-            "name": "3 columns 50 25 25", 
-            "created": "2009-12-24 10:35:27", 
-            "image": "", 
-            "last_modified": "2009-12-24 10:35:27", 
-            "template": "<div class=\"{{ grid.column_1_2 }}\">\r\n{{ content0 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_4 }}\">\r\n{{ content1 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_4 }}\">\r\n{{ content2 }}\r\n</div>\r\n{{ grid.clear }}"
-        }
-    }, 
-    {
-        "pk": 11, 
-        "model": "djpcms.innertemplate", 
-        "fields": {
-            "blocks": "left,center,right", 
-            "name": "3 columns 25 25 50", 
-            "created": "2009-12-24 10:36:04", 
-            "image": "", 
-            "last_modified": "2009-12-24 10:45:25", 
-            "template": "<div class=\"{{ grid.column_1_4 }}\">\r\n{{ content0 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_4 }}\">\r\n{{ content1 }}\r\n</div>\r\n<div class=\"{{ grid.column_1_2 }}\">\r\n{{ content2 }}\r\n</div>\r\n{{ grid.clear }}"
-        }
-    }, 
-    {
-        "pk": 1, 
-        "model": "djpcms.csspageinfo", 
-        "fields": {
-            "gridsize": 12, 
-            "created": "2009-11-18 21:45:00", 
-            "body_class_name": "", 
-            "container_class_name": "", 
-            "last_modified": "2009-11-18 21:45:00", 
-            "fixed": true
-        }
-    }, 
-    {
-        "pk": 2, 
-        "model": "djpcms.csspageinfo", 
-        "fields": {
-            "gridsize": 12, 
-            "created": "2009-12-06 09:07:06", 
-            "body_class_name": "documentation", 
-            "container_class_name": "", 
-            "last_modified": "2009-12-06 09:07:06", 
-            "fixed": true
         }
     }
 ]
