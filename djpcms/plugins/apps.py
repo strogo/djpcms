@@ -86,6 +86,9 @@ class FilterModelForm(FormModelForm):
     pass
 
 
+#
+#______________________________________________ PLUGINS
+
 class SearchBox(DJPplugin):
     '''
     A search box for a model
@@ -201,38 +204,56 @@ class ModelLinks(DJPplugin):
                                             links)
         except:
             return u''
-            
+        
 
 class LatestItems(DJPplugin):
+    '''Display the latest items for a Model.'''
     name = 'latest-items'
-    description   = 'Latest items for a model'
-    form          = LatestItemForm
-    template_name = ['bits/object_list.html',
-                     'djpcms/bits/object_list.html']
+    description    = 'Latest items for a model'
+    form           = LatestItemForm
+    template_names = {
+                      'list': (
+                               'plugins/latestitems/list.html',
+                               'djpcms/plugins/latestitems/list.html',
+                               ),
+                      'item': (
+                               'plugins/latestitems/item.html',
+                               'djpcms/plugins/latestitems/item.html',
+                               )
+                       }       
     
+    def get_templates(self, opts, name):
+        template = '{0}/{1}/latestitems/{2}.html'.format(opts.app_label,
+                                                         opts.module_name,
+                                                         name)
+        return (template,) + self.template_names[name]
+        
     def datagen(self, appmodel, djp, wrapper, items):
+        templates = self.get_templates(appmodel.opts,'item')
         for obj in items:
             content = appmodel.object_content(djp, obj)
-            yield loader.render_to_string(appmodel.get_item_template(obj, wrapper),
-                                          content)
+            yield loader.render_to_string(templates,content)
             
     def render(self, djp, wrapper, prefix,
                for_model = None, max_display = 5,
                pagination = False, **kwargs):
         try:
-            site = get_site()
+            site = djp.site
             ct = ContentType.objects.get(id = for_model)
             model = ct.model_class()
             appmodel = site.for_model(model)
             if not appmodel:
-                return u''
+                return ''
         except:
-            return u''
+            return ''
         data = appmodel.basequery(djp)
         max_display = max(max_display,1)
         items = data[0:max_display]
         if not items:
-            return u''
+            return ''
+        templates = self.get_templates(appmodel.opts,'list')
         content = {'items': self.datagen(appmodel, djp, wrapper, items)}
-        return loader.render_to_string(self.template_name, content)
+        return loader.render_to_string(templates,
+                                       content)
+
     

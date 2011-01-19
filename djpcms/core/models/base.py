@@ -144,7 +144,7 @@ class ModelTypeWrapper(object):
     def result_for_item(self, headers, result, djp, nd = 3):
         if isinstance(result, self.model):
             request = djp.request
-            path  = request.path
+            path  = djp.http.path_with_query(request)
             first = True
             id    = ('%s-%s') % (self.module_name,result.id)
             display = []
@@ -159,10 +159,12 @@ class ModelTypeWrapper(object):
                 else:
                     url = None
                 
-                if url and url != path:
-                    var = mark_safe(u'<a href="%s">%s</a>' % (url, conditional_escape(result_repr)))
-                else:
-                    var = conditional_escape(result_repr)
+                var = conditional_escape(result_repr)
+                if url:
+                    if url != path:
+                        var = mark_safe('<a href="{0}" alt="{1}">{1}</a>'.format(url, var))
+                    else:
+                        var = mark_safe('<a alt="{0}">{0}</a>'.format(var))
                 display.append(var)
             return item
         else:

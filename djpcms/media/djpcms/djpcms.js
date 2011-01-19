@@ -47,6 +47,7 @@
 				twitter_user:	   null,
 				fadetime:		   200,
 				ajaxtimeout:	   30,
+				//tabs:			   {cookie: {expiry: 7}},
 				tablesorter:	   {widgets:['zebra','hovering']},
 				debug:			   false
 			};
@@ -587,7 +588,7 @@
 	dj.addDecorator({
 		id:"ui_tabs",
 		decorate: function($this, config) {
-			$('.ui-tabs',$this).tabs();
+			$('.ui-tabs',$this).tabs(config.tabs);
 		}
 	});
 	

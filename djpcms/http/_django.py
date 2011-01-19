@@ -14,3 +14,14 @@ def is_authenticated(request):
 
 def delete_test_cookie(request):
     request.delete_test_cookie()
+    
+    
+def path_with_query(request):
+    path = request.path
+    if request.method == 'GET':
+        qs =  request.environ['QUERY_STRING']
+        if qs:
+            return path + '?' + qs
+    return path
+        
+   

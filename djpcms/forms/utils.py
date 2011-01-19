@@ -262,7 +262,7 @@ def deleteinstance(djp, force_redirect = False):
     next = next or curr
         
     bid     = view.appmodel.remove_object(instance)
-    msg     = 'Successfully deleted %s' % bid
+    msg     = 'Successfully deleted %s' % instance
     if request.is_ajax():
         if next == curr and bid and not force_redirect:
             return jremove('#%s' % bid)

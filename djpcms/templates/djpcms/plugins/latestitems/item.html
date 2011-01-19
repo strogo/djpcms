@@ -1,0 +1,8 @@
+{% block pre %}{% endblock %}
+<div id = "{{ item.id }}" class="list-item">{% block inner %}{% if viewurl %}
+<a href="{{ viewurl }}" alt="{{ item }}">{{ item }}</a>{% else %}
+{{ item }}{% endif %}{% block links %}
+{% if editurl %}<a href="{{ editurl }}" title="edit">edit</a>{% endif %}{% if deleteurl %}
+<a href="{{ deleteurl }}" title="remove {{ item }}">delete</a>{% endif %}{% endblock %}{% endblock %}
+</div>
+{% block after %}{% endblock %}
