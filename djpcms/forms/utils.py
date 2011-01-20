@@ -41,7 +41,7 @@ Usage::
 
 '''
     if request and withdata and request.method == method and own_view:
-        data = getattr(request,method)
+        data = dict(getattr(request,method).items())
         if inputs:
             bind = False
             for input in inputs:
@@ -178,14 +178,15 @@ def get_form(djp,
     
 def saveform(djp, editing = False, force_redirect = False):
     '''Comprehensive save method for forms'''
-    view       = djp.view
-    request    = djp.request
-    http       = djp.http
-    is_ajax    = request.is_ajax()
-    POST       = request.POST
-    GET        = request.GET
-    curr       = request.environ.get('HTTP_REFERER')
-    next       = get_next(request)
+    view = djp.view
+    request = djp.request
+    http = djp.http
+    is_ajax = request.is_ajax()
+    POST = request.POST
+    GET = request.GET
+    curr = request.environ.get('HTTP_REFERER')
+    next = get_next(request)
+    f = view.get_form(djp)
     
     if POST.has_key("_cancel"):
         redirect_url = next
@@ -196,11 +197,10 @@ def saveform(djp, editing = False, force_redirect = False):
                 redirect_url = view.appmodel.searchurl(request) or '/'
 
         if is_ajax:
-            return jredirect(url = redirect_url)                
+            return jredirect(url = redirect_url)
         else:
             return http.HttpResponseRedirect(redirect_url)
     
-    f  = view.get_form(djp)
     if f.is_valid():
         try:
             editing  = editing if not POST.has_key('_save_as_new') else False
@@ -221,7 +221,7 @@ def saveform(djp, editing = False, force_redirect = False):
             else:
                 return view.handle_response(djp)
         
-        if POST.has_key('_continue'):
+        if POST.has_key('_save_and_continue'):
             if is_ajax:
                 return f.json_message()
             else:

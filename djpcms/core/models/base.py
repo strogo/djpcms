@@ -162,9 +162,9 @@ class ModelTypeWrapper(object):
                 var = conditional_escape(result_repr)
                 if url:
                     if url != path:
-                        var = mark_safe('<a href="{0}" alt="{1}">{1}</a>'.format(url, var))
+                        var = mark_safe('<a href="{0}" title="{1}">{1}</a>'.format(url, var))
                     else:
-                        var = mark_safe('<a alt="{0}">{0}</a>'.format(var))
+                        var = mark_safe('<a>{0}</a>'.format(var))
                 display.append(var)
             return item
         else:

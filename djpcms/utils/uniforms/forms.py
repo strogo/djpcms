@@ -338,6 +338,7 @@ class UniForm(UniFormBase):
         self._messages       = []
         self._errors         = []
         self.save_as_new     = save_as_new
+        self.prefix          = form.prefix
         self.is_ajax         = is_ajax
         self.error_message   = error_message if error_message is not None else self.default_error_msg
         self.template        = template or self.default_template
@@ -520,11 +521,14 @@ available.
         '''Build formsets related to ``instance`` model'''
         formsets = self.formsets
         prefixes = {}
+        fp = self.prefix
+        if fp:
+            fp += '-'
         for inline in form.layout.inlines:
-            prefix  = inline.get_default_prefix()
-            prefixes[prefix] = prefixes.get(prefix, 0) + 1
-            if prefixes[prefix] != 1:
-                prefix = "%s-%s" % (prefix, prefixes[prefix])
+            prefix  = fp + inline.get_default_prefix()
+            prefixes[prefix] = p = prefixes.get(prefix, 0) + 1
+            if p != 1:
+                prefix = "%s-%s" % (prefix, p)
             formset = inline.get_formset(request = request,
                                          data     = form.data,
                                          instance = instance,

@@ -1,6 +1,6 @@
 <div class="djp-autocomplete">
  <input type="text" id="{{ id }}"class="{% if widget_class %}{{ widget_class }} {% endif %}lookup" value="{{ label }}"/>
- <input type="text" name="{{ name }}" value="{{ value }}" style="display:none">
+ <input type="text" name="{{ name }}"{% if value %} value="{{ value }}"{% endif %} style="display:none"/>
  <div class="options" style="display:none">
   <a href="{{ url }}"></a>
  </div>
