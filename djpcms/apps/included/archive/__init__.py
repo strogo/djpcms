@@ -28,6 +28,9 @@ class ArchiveApplication(ModelApplication):
     def __init__(self, *args, **kwargs):
         self.date_code = kwargs.pop('date_code',self.date_code)
         super(ArchiveApplication,self).__init__(*args, **kwargs)
+    
+    def orderquery(self, qs):
+        return qs.order_by('-'+self.date_code)
         
     def get_month_value(self, month):
         return force_str(MONTHS_3.get(month))

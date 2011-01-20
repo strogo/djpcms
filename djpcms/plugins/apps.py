@@ -246,7 +246,7 @@ class LatestItems(DJPplugin):
                 return ''
         except:
             return ''
-        data = appmodel.basequery(djp)
+        data = appmodel.orderquery(appmodel.basequery(djp))
         max_display = max(max_display,1)
         items = data[0:max_display]
         if not items:

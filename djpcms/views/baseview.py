@@ -1,6 +1,10 @@
 '''
 Base class for djpcms views.
 '''
+import logging
+import sys
+import traceback
+
 from djpcms import sites
 from djpcms.permissions import inline_editing, get_view_permission, has_permission
 from djpcms.contrib import messages
@@ -9,7 +13,7 @@ from djpcms.utils.html import grid960, box
 from djpcms.forms import saveform, get_form
 from djpcms.forms.cms import ShortPageForm, NewChildForm
 from djpcms.utils.uniforms import UniForm
-from djpcms.utils import UnicodeObject, function_module, htmltype
+from djpcms.utils import UnicodeObject, function_module, htmltype, logerror
 from djpcms.utils.media import Media
 from djpcms.views.response import DjpResponse
 from djpcms.views.contentgenerator import BlockContentGen
@@ -41,6 +45,8 @@ class djpcmsview(UnicodeObject):
         
             _methods = ('get','post')
     '''
+    logger = logging.getLogger('djpcmsview')
+    
     template_name = None
     '''Used to override the template name in the :class:`djpcms.models.Page` model instance (if it exists).
 Not used very often but here just in case.'''
@@ -251,7 +257,10 @@ which handle the response'''
                     # we got an error. If in debug mode send a JSON response with
                     # the error message back to javascript.
                     if djp.settings.DEBUG:
-                        res = jservererror(e, url = djp.url)
+                        exc_info = sys.exc_info()
+                        stack_trace = '\n'.join(traceback.format_exception(*exc_info))
+                        logerror(self.logger, request, exc_info)
+                        res = jservererror(stack_trace, url = djp.url)
                     else:
                         raise e
             

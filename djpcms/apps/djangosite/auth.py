@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.auth import authenticate, login, logout
 
 from djpcms.apps.included.user import UserInterface
@@ -45,6 +45,8 @@ class DjangoUser(UserInterface):
     @classmethod
     def authenticate(cls, *args, **kwargs):
         user = authenticate(*args, **kwargs)
+        if not user:
+            user = AnonymousUser()
         return cls(userobj = user)
     
     @classmethod

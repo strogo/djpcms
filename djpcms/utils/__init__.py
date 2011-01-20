@@ -137,3 +137,12 @@ and converts spaces to hyphens *rtx* character'''
     value = force_str(re.sub('[^\w\s-]', '', value).strip())
     return re.sub('[-\s]+', rtx, value)
 
+
+def logerror(logger, request, exc_info):
+    logger.error('Internal Server Error: %s' % request.path,
+                 exc_info=exc_info,
+                 extra={
+                        'status_code': 500,
+                        'request':request
+                        }
+                 )

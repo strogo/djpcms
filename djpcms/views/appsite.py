@@ -533,6 +533,9 @@ Re-implement for custom arguments.'''
         '''
         return self.model.objects.all()
     
+    def orderquery(self, qs):
+        return qs
+    
     def object_id(self, djp):
         obj = djp.instance
         if obj:

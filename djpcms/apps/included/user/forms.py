@@ -28,7 +28,7 @@ class LoginForm(forms.Form):
         password = data.get('password',None)
         if username and password:
             user = UserClass().authenticate(username = username, password = password)
-            if user is not None:
+            if user is not None and user.is_authenticated():
                 if user.is_active():
                     user.login(request)
                     try:
