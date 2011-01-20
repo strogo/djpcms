@@ -1,16 +1,10 @@
-from djpcms.utils.collection import OrderedDict
-from djpcms.utils.py2py3 import iteritems
+from djpcms.utils.collections import OrderedDict
 
-__all__ = ['Form','FormFactory']
+from .globals import *
 
 
-class NoData(object):
-    def __repr__(self):
-        return '<NoData>'
-    __str__ = __repr__
-
-nodata = NoData()
- 
+__all__ = ['Form','Factory']
+    
 
 class Form(object):
     '''base class for forms. This class is created by instances
@@ -81,7 +75,7 @@ of a :class:`FormFactory`'''
             return self.is_bound and not self.errors
             
 
-class FormFactory(object):
+class Factory(object):
     '''Form factory Creator'''
     prefix_input = '_prefixed'
     
