@@ -16,9 +16,7 @@ from django.db.models import get_app, get_apps
 
 from BeautifulSoup import BeautifulSoup
 
-        
 
-    
 class DjpCmsTestHandle(test.TestCase):
     '''Implements shortcut functions for testing djpcms.
 Must be used as a base class for TestCase classes'''

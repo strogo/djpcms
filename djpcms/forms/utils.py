@@ -8,9 +8,10 @@ from django import forms
 from djpcms import sites
 from djpcms.contrib import messages
 from djpcms.utils.translation import ugettext_lazy as _
-from djpcms.utils.html import input
 from djpcms.utils import force_str, gen_unique_id
 from djpcms.utils.ajax import jredirect, jremove
+
+from .html import input
 
 
 logger = logging.getLogger('djpcms.forms')

@@ -226,7 +226,7 @@ class PluginChoice(forms.LazyAjaxChoice):
     
     
 class EditingForm(forms.ModelForm):
-    url  = forms.CharField(widget=forms.HiddenInput, required = False)
+    url  = forms.OldCharField(widget=forms.HiddenInput, required = False)
     
     
 
@@ -299,7 +299,7 @@ class ShortPageForm(forms.ModelForm):
 
 
 class NewChildForm(forms.ModelForm):
-    url_pattern = forms.CharField(label = 'New child page url', required = True)
+    url_pattern = forms.OldCharField(label = 'New child page url', required = True)
     
     layout = FormLayout(Fieldset('url_pattern', css_class = inlineLabels))
     

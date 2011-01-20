@@ -11,10 +11,10 @@ from djpcms.apps.included.user import UserClass
 class LoginForm(forms.Form):
     '''The login form
     '''
-    username   = forms.CharField(min_length=1,max_length=30,
+    username   = forms.OldCharField(min_length=1,max_length=30,
                                  widget=forms.TextInput(attrs={'class':'autocomplete-off'}))
-    password   = forms.CharField(min_length=1,max_length=20,widget=forms.PasswordInput)
-    next       = forms.CharField(widget=forms.HiddenInput, required = False)
+    password   = forms.OldCharField(min_length=1,max_length=20,widget=forms.PasswordInput)
+    next       = forms.OldCharField(widget=forms.HiddenInput, required = False)
 
     submits = (('Sign in','login_user'),)
     
@@ -47,18 +47,18 @@ class LoginForm(forms.Form):
     
 
 class RegisterForm(forms.Form):
-    username = forms.CharField(min_length=5,
+    username = forms.OldCharField(min_length=5,
                                max_length=32,
                                help_text="Minimum of 6 characters in length")
     #username = NewUserName(min_length=5,
     #                       max_length=32,
     #                       help_text="Minimum of 6 characters in length")
-    password = forms.CharField(min_length=5,
+    password = forms.OldCharField(min_length=5,
                                max_length=32,
                                widget=forms.PasswordInput,
                                label=_("Choose a password"),
                                help_text="Minimum of 6 characters in length")
-    re_type  = forms.CharField(min_length=6,max_length=32,widget=forms.PasswordInput,label="Re-enter password")
+    re_type  = forms.OldCharField(min_length=6,max_length=32,widget=forms.PasswordInput,label="Re-enter password")
     #email_address = UniqueEmail(help_text="This will be used for confirmation only.")
     
     def clean(self):

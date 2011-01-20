@@ -10,8 +10,7 @@ from djpcms.permissions import inline_editing, get_view_permission, has_permissi
 from djpcms.contrib import messages
 from djpcms.utils.ajax import jservererror, jredirect
 from djpcms.utils.html import grid960, box
-from djpcms.forms import saveform, get_form
-from djpcms.forms.cms import ShortPageForm, NewChildForm
+from djpcms.forms import saveform, get_form, cms
 from djpcms.utils.uniforms import UniForm
 from djpcms.utils import UnicodeObject, function_module, htmltype, logerror
 from djpcms.utils.media import Media
@@ -445,8 +444,8 @@ This view is never in navigation and it provides a hook for adding the edit page
         request = djp.request
         page_url = self.page_url(djp.request)
         ed = {
-             'page_form': get_form(djp, ShortPageForm, instance = page, withinputs=True).render(djp,validate=True),
-             'new_child_form': get_form(djp, NewChildForm, instance = page, withinputs=True).render(djp,validate=True),
+             'page_form': get_form(djp, cms.ShortPageForm, instance = page, withinputs=True).render(djp,validate=True),
+             'new_child_form': get_form(djp, cms.NewChildForm, instance = page, withinputs=True).render(djp,validate=True),
              'page_url': self.page_url(djp.request)}
         bd = loader.render_to_string(self.edit_template,ed)
         c.update({'page_url':page_url,
@@ -459,9 +458,9 @@ This view is never in navigation and it provides a hook for adding the edit page
         page    = djp.page
         data = dict(request.POST.items())
         if data.get('_child',None) == 'create':
-            return get_form(djp, NewChildForm, instance = djp.page)
+            return get_form(djp, cms.NewChildForm, instance = djp.page)
         else:
-            return get_form(djp, ShortPageForm, instance = djp.page)
+            return get_form(djp, cms.ShortPageForm, instance = djp.page)
         
     def save(self, request, f):
         return f.save()

@@ -48,7 +48,7 @@ class SearchForm(forms.Form):
     A simple search form used by plugins.apps.SearchBox.
     The search_text name will be used by SearchViews to handle text search
     '''
-    q = forms.CharField(required = False,
+    q = forms.OldCharField(required = False,
                         widget = forms.TextInput(attrs = {'class': 'classy-search autocomplete-off',
                                                           'title': 'Enter your search text'}))
 
@@ -68,18 +68,18 @@ class ForModelForm(forms.Form):
 
 
 class LatestItemForm(ForModelForm):
-    max_display = forms.IntegerField(initial = 10)
-    pagination  = forms.BooleanField(initial = False, required = False)
+    max_display = forms.OldIntegerField(initial = 10)
+    pagination  = forms.OldBooleanField(initial = False, required = False)
 
 
 class FormModelForm(ForModelForm):
-    method      = forms.ChoiceField(choices = (('get','get'),('post','post')),
+    method      = forms.OldChoiceField(choices = (('get','get'),('post','post')),
                                     initial = 'get')
-    ajax        = forms.BooleanField(initial = False, required = False)
+    ajax        = forms.OldBooleanField(initial = False, required = False)
 
 
 class SearchModelForm(FormModelForm):
-    title       = forms.CharField(required = False, max_length = 50)
+    title       = forms.OldCharField(required = False, max_length = 50)
 
 
 class FilterModelForm(FormModelForm):
