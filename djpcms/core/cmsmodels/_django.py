@@ -17,11 +17,9 @@ from djpcms.template import Template, mark_safe
 from djpcms.core.page import PageInterface, BlockInterface
 from djpcms.permissions import has_permission, get_view_permission
 from djpcms.fields import SlugCode
-from djpcms.plugins import get_wrapper, default_content_wrapper, get_plugin
 from djpcms.utils import lazyattr, function_module, force_str, htmltype
 from djpcms.utils.func import PathList
 from djpcms.uploads import uploader, storage_manager
-import djpcms.contrib.flowrepo.markups as markuplib
 
 from .djmanagers import PageManager, BlockContentManager, SiteContentManager, PermissionManager
 
@@ -340,17 +338,6 @@ class SiteContent(models.Model):
     class Meta:
         app_label = 'djpcms'
         ordering  = ('code',)
-    
-    def htmlbody(self):
-        text = self.body
-        if not text:
-            return ''
-        mkp = markuplib.get(self.markup)
-        if mkp:
-            handler = mkp.get('handler')
-            text = handler(text)
-            text = mark_safe(force_str(text))
-        return text
     
     def update(self, user = None, body = ''):
         self.body = body

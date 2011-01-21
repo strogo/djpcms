@@ -82,9 +82,9 @@ class ChangeTextContent(forms.Form):
 
 
 class EditContentForm(EditingForm):
-    markup       = forms.ChoiceField(choices = markuplib.choices,
-                                     initial = markuplib.default,
-                                     required = False)
+    markup       = forms.OldChoiceField(choices = markuplib.choices,
+                                        initial = markuplib.default,
+                                        required = False)
     
     layout = FormLayout(Fieldset('markup',css_class=inlineLabels),
                         Fieldset('body',css_class='%s editing' % blockLabels2))

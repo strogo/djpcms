@@ -12,14 +12,10 @@ def gen_unique_id():
     return str(uuid4())
 
 
-def flatatt(attrs):
-    """
-    Convert a dictionary of attributes to a single string.
-    The returned string will contain a leading space followed by key="value",
-    XML-style pairs.  It is assumed that the keys do not need to be XML-escaped.
-    If the passed dictionary is empty, then return an empty string.
-    """
-    return u''.join([u' %s="%s"' % (k, conditional_escape(v)) for k, v in attrs.items()])
+def merge_dict(d1,d2):
+    d = d1.copy()
+    d.update(d2)
+    return d
 
 
 def construct_search(field_name):

@@ -1,13 +1,7 @@
-from django.contrib.auth.models import Group
-from django.contrib.sites.models import Site
-from django.utils.translation import ugettext_lazy as _
-
 from djpcms import get_site, forms
 from djpcms.utils import force_str, slugify
-from djpcms.models import Page, BlockContent, SiteContent, ObjectPermission
-from djpcms.utils.uniforms import FormLayout, Fieldset, Columns, Row, Html, inlineLabels, inlineLabels3
+from djpcms.models import Page, BlockContent, ObjectPermission, Site
 from djpcms.plugins import get_plugin, plugingenerator, wrappergenerator
-
 
 
 def siteapp_choices():
@@ -80,42 +74,14 @@ def CalculatePageUrl(data, page):
         url = '/%s' % url
     return url
     
-    
 
-# Form for a Page
-class PageForm(forms.ModelForm):
-    '''
-    Page form
-    This specialized form takes care of all the possible permutation
-    in input values. These are the possibilities
-        
-        1) parent = None
-            a) the unique root page
-            b) an application page (application field must be available)
-        2) 
-    '''
-    site             = forms.ModelChoiceField(queryset = Site.objects.all(), required = False)
-    application_view = forms.OldChoiceField(choices = siteapp_choices,
-                                         required = False,
-                                         label = _('application view'))
+
+class PageFormCls(forms.Form):
     
-    class Meta:
-        model = Page
-        exclude = ['application']
-        
-    def get_parent(self):
-        pid = self.data.get('parent',None)
-        if pid:
-            return Page.objects.get(id = int(pid))
-        else:
-            return None
-    
-    def clean_application_view(self):
+    def clean_application_view(self, app):
         '''If application type is specified, than it must be unique
         '''
         site = get_site()
-        data = self.data
-        app = data.get('application_view',None)
         if app:
             try:
                 application_view = site.getapp(app)
@@ -154,6 +120,14 @@ class PageForm(forms.ModelForm):
                     self.data['parent'] = root.id
                     #raise forms.ValidationError('Page root already avaiable')
         return app
+
+    def get_parent(self):
+        pid = self.data.get('parent',None)
+        if pid:
+            return Page.objects.get(id = int(pid))
+        else:
+            return None
+    
     
     def clean_site(self):
         '''
@@ -207,9 +181,9 @@ class PageForm(forms.ModelForm):
                 raise forms.ValidationError('Page with url %s already in stitemap for site %s.' % (url,site))
         self.instance.url = url
         return cd
-        
 
-class PluginChoice(forms.LazyAjaxChoice):
+
+class PluginChoice(forms.ChoiceField):
     
     def __init__(self, *args, **kwargs):
         super(PluginChoice,self).__init__(*args, **kwargs)
@@ -223,25 +197,10 @@ class PluginChoice(forms.LazyAjaxChoice):
         if not value:
             raise forms.ValidationError('%s not a plugin object' % name)
         return value
-    
-    
-class EditingForm(forms.ModelForm):
-    url  = forms.OldCharField(widget=forms.HiddenInput, required = False)
-    
-    
 
-class ContentBlockForm(EditingForm):
-    '''Content Block Change form
+
     
-    This Model form is used to change the plug-in within
-    for a given BlockContent instance.
-    '''
-    plugin_name     = PluginChoice(label = _('Plugin'),
-                                   choices = plugingenerator)
-    container_type  = forms.OldChoiceField(label=_('Container'), choices = wrappergenerator)
-    view_permission = forms.ModelMultipleChoiceField(queryset = Group.objects.all(), required = False)
-    layout = FormLayout(Fieldset('plugin_name','container_type','title','view_permission'),
-                        Columns(('for_not_authenticated',),('requires_login',), css_class=inlineLabels3))
+class ContentBlockForm(object):
     
     class Meta:
         model = BlockContent
@@ -265,24 +224,24 @@ class ContentBlockForm(EditingForm):
     def clean_requires_login(self):
         rl = self.cleaned_data['requires_login']
         if rl and self.cleaned_data['for_not_authenticated']:
-            raise ValidationError("Select this or for not authenticated or neither. Cannot select both.")
+            raise forms.ValidationError("Select this or for not authenticated or neither. Cannot select both.")
         return rl
     
     def clean_view_permission(self):
         vp = self.cleaned_data['view_permission']
         if vp and self.cleaned_data['for_not_authenticated']:
-            raise ValidationError("Select this or for not authenticated or neither. Cannot select both.")
+            raise forms.ValidationError("Select this or for not authenticated or neither. Cannot select both.")
         return vp
 
 
 # Short Form for a Page. Used only for editing an existing page
-class ShortPageForm(forms.ModelForm):
+class ShortPageForm(forms.Form):
     '''Form to used to edit inline a page'''
-    view_permission = forms.ModelMultipleChoiceField(queryset = Group.objects.all(), required = False)
+    #view_permission = forms.ModelMultipleChoiceField(queryset = Group.objects.all(), required = False)
     
-    layout = FormLayout(Columns(('title','inner_template','in_navigation','requires_login'),
-                                ('link','cssinfo','soft_root','view_permission'))
-                        )
+    #layout = FormLayout(Columns(('title','inner_template','in_navigation','requires_login'),
+    #                            ('link','cssinfo','soft_root','view_permission'))
+    #                    )
     def save(self, commit = True):
         pe = self.cleaned_data.pop('view_permission')
         page = super(ShortPageForm,self).save(commit)
@@ -298,10 +257,10 @@ class ShortPageForm(forms.ModelForm):
     submits = (('change', '_save'),)
 
 
-class NewChildForm(forms.ModelForm):
-    url_pattern = forms.OldCharField(label = 'New child page url', required = True)
-    
-    layout = FormLayout(Fieldset('url_pattern', css_class = inlineLabels))
+class NewChildForm(forms.Form):
+    #url_pattern = forms.CharField(label = 'New child page url', required = True)
+   # 
+    #layout = FormLayout(Fieldset('url_pattern', css_class = inlineLabels))
     
     submits = (('create', '_child'),)
     
@@ -367,4 +326,36 @@ def create_page(parent = None, user = None, inner_template = None, commit = True
     else:
         err = ' '.join(ferrors(f._errors))
         raise forms.ValidationError(err)
+    
+    
+
+
+# Forms factories
+PageForm = forms.Factory(
+#                         site = forms.ModelChoiceField(queryset = Site.objects,
+#                                                       required = False),
+#                         application_view = ApplicationViewField(
+#                                                                 choices = siteapp_choices,
+#                                                                 required = False,
+#                                                                 label = 'application view'
+#                                                                 ),
+                         model = Page,
+                         form_class = PageFormCls,
+                         )
+
+        
+
+ContentBlockForm = forms.Factory(
+    forms.CharField('url', widget=forms.HiddenInput, required = False),
+    PluginChoice('plugin_name', label = 'Plugin', choices = plugingenerator),
+    forms.ChoiceField('container_type',label = 'Container', choices = wrappergenerator),
+    #view_permission = forms.ModelMultipleChoiceField(queryset = Group.objects,
+    #                                                 required = False),
+    layout = forms.UniForm(
+                           forms.Fieldset('plugin_name','container_type','title','view_permission'),
+                           forms.Columns(('for_not_authenticated',),
+                                         ('requires_login',),
+                                         css_class=forms.UniForm.inlineLabels3)
+                           )
+    )
     

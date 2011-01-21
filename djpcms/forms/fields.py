@@ -4,11 +4,13 @@ from djpcms import sites
 from .globals import *
 
 __all__ = ['Field',
-           'CharField']
+           'CharField',
+           'DateField',
+           'ChoiceField']
 
 
 def standard_validation_error(field,value):
-    if value == novalue:
+    if value == nodata:
         return 'Field {0} is required'.format(field.name)
     else:
         return str(value)
@@ -24,6 +26,7 @@ class Field(object):
                  validation_error = None,
                  help_text = None,
                  label = None,
+                 widget = None,
                  **kwargs):
         self.name = name
         self.default = default or self.default
@@ -31,6 +34,7 @@ class Field(object):
         self.validation_error = validation_error or standard_validation_error
         self.help_text = help_text
         self.label = label or self.name
+        self.widget = widget
         self._handle_params(**kwargs)
         
     def _handle_params(self, **kwargs):
@@ -50,8 +54,8 @@ class Field(object):
             self.value = novalue
         return f
     
-    def validate(self, value):
-        if value == novalue or not value:
+    def clean(self, value):
+        if value == nodata or not value:
             if not required:
                 default = self.default
                 if hasattr(default,'__call__'):
@@ -59,15 +63,15 @@ class Field(object):
                 return default
             else:
                 raise ValidationError(self.validation_error(self,novalue))
-        return self._validate(value)
+        return self._clean(value)
     
-    def _validate(self, value):
+    def _clean(self, value):
         return value
         
         
 class CharField(Field):
     
-    def _handle_params(self, max_length = None, **kwargs):
+    def _handle_params(self, max_length = 30, **kwargs):
         if not max_length:
             raise ValueError('max_length must be provided for {0}'.format(self.__class__.__name__))
         self.max_length = int(max_length)
@@ -75,17 +79,49 @@ class CharField(Field):
             raise ValueError('max_length must be positive')
         self._raise_error(kwargs)
         
-    def _validate(self, value):
+    def _clean(self, value):
         try:
             return str(value)
         except:
             raise ValidationError
 
 
+class IntegerField(Field):
+    
+    def _handle_params(self, validator = None, **kwargs):
+        self.validator = validator
+        self._raise_error(kwargs)
+        
+    def _clean(self, value):
+        try:
+            value = int(value)
+            if self.validator:
+                return self.validator(value)
+            return value
+        except:
+            raise ValidationError
+        
+        
+class DateField(Field):
+    
+    def _clean(self, value):
+        try:
+            value = int(value)
+            if self.validator:
+                return self.validator(value)
+            return value
+        except:
+            raise ValidationError
+    
+    
+class ChoiceField(Field):
+    
+    def _handle_params(self, choices = None, **kwargs):
+        self.choices = choices
+        self._raise_error(kwargs)
+    
 
-to_implement = ['IntegerField',
-           'FloatField',
-           'DateField',
+to_implement = ['FloatField',
            'DateTimeField',
            'BooleanField',
            'CharField',
@@ -95,6 +131,5 @@ to_implement = ['IntegerField',
            'ChoiceField',
            'LazyAjaxChoice',
            'ModelCharField',
-           'SlugField',
-           'BoundField']
+           'SlugField']
 

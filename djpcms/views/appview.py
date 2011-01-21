@@ -15,7 +15,8 @@ from django.utils.text import smart_split
 
 from djpcms.utils.translation import ugettext as _
 from djpcms.template import loader, RequestContext
-from djpcms.forms import saveform, deleteinstance, autocomplete
+from djpcms.forms import autocomplete
+from djpcms.forms.utils import saveform, deleteinstance
 from djpcms.utils.html import Paginator
 from djpcms.utils import construct_search, isexact
 from djpcms.views.regex import RegExUrl

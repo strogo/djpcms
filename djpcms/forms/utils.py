@@ -2,16 +2,14 @@ import sys
 import logging
 from datetime import datetime
 
-from django.utils.dateformat import format
-from django import forms
-
-from djpcms import sites
+from djpcms import sites, forms
 from djpcms.contrib import messages
 from djpcms.utils.translation import ugettext_lazy as _
 from djpcms.utils import force_str, gen_unique_id
+from djpcms.utils.dateformat import format
 from djpcms.utils.ajax import jredirect, jremove
 
-from .html import input
+from .htmlold import input
 
 
 logger = logging.getLogger('djpcms.forms')

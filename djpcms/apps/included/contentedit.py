@@ -12,7 +12,7 @@ from djpcms.template import RequestContext, loader, mark_safe
 from djpcms.utils.func import isforminstance
 from djpcms.utils.ajax import jhtmls, jremove, dialog, jempty, jerror, jattribute, jcollection
 from djpcms.utils.html import input, htmlcomp
-from djpcms.utils.uniforms import UniForm, FormLayout
+#from djpcms.utils.uniforms import UniForm, FormLayout
 from djpcms.forms.cms import ContentBlockForm
 from djpcms.plugins import get_plugin
 from djpcms.plugins.extrawrappers import CollapsedWrapper

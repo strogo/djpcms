@@ -6,15 +6,14 @@ The main object handle several subviews used for searching, adding and manipulat
 from copy import deepcopy
 
 from djpcms import forms
-from djpcms.template import loader, Template, Context, RequestContext, mark_safe
+from djpcms.template import loader, mark_safe
 from djpcms.core.models import getmodel
 from djpcms.core.urlresolvers import ResolverMixin
 from djpcms.core.exceptions import PermissionDenied, ApplicationUrlException
-from djpcms.utils import UnicodeObject, slugify
-from djpcms.forms import get_form
+from djpcms.utils import slugify
+from djpcms.forms.utils import get_form
 from djpcms.plugins import register_application
 from djpcms.utils.html import input
-from djpcms.utils.uniforms import UniForm
 from djpcms.permissions import has_permission
 from djpcms.views.baseview import editview, response_from_page
 from djpcms.views.appview import View, ViewView

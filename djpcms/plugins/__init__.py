@@ -3,7 +3,7 @@ import logging
 import json
 
 from djpcms import forms
-from djpcms.forms import form_kwargs
+from djpcms.forms.utils import form_kwargs
 from djpcms.utils import force_str
 from djpcms.utils.text import capfirst, nicename
 from djpcms.utils.formjson import form2json
