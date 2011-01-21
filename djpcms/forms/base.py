@@ -8,7 +8,7 @@ __all__ = ['Form','Factory']
 
 class Form(object):
     '''base class for forms. This class is created by instances
-of a :class:`FormFactory`'''
+of a :class:`Factory`'''
     def __init__(self,factory,data,files,initial,prefix):
         self.is_bound = data is not None or files is not None
         self.factory = factory
@@ -16,7 +16,6 @@ of a :class:`FormFactory`'''
         self._files = files
         self.initial = initial
         self.prefix = prefix or ''
-        self.data = data
     
     @property
     def data(self):
@@ -39,10 +38,10 @@ of a :class:`FormFactory`'''
         return self._fields
     
     def _validate(self):
-        if hasattr(self,'_cleaned_data'):
+        if hasattr(self,'_data'):
             return
         self._data = data = {}
-        self._cleaned_data = cleaned = {}
+        cleaned = {}
         self._errors = errors = {}
         tempdata = self.rawdata.copy()
         self._fields = fields = OrderedDict()
@@ -61,6 +60,8 @@ of a :class:`FormFactory`'''
                 except ValidationError:
                     errors.append(field)
                 data[name] = value
+            if not errors:
+                self._cleaned_data = cleaned
         else:
             initial = self.initial
             for field in self.factory.fields:
@@ -71,8 +72,15 @@ of a :class:`FormFactory`'''
                     bfield = field(self)
                 fields[name] = bfield
             
-        def is_valid():
-            return self.is_bound and not self.errors
+    def is_valid(self):
+        return self.is_bound and not self.errors
+    
+    def render(self):
+        layout = self.factory.layout
+        if not layout:
+            layout = DefaultLayout()
+            self.factory.layout = layout
+        return layout.render(self)
             
 
 class Factory(object):
@@ -81,10 +89,15 @@ class Factory(object):
     
     def __init__(self, *fields, **kwargs):
         self.fields = fields
-        self.form_class = kwargs.get('form_class',Form)
+        self.setup(**kwargs)
+        
+    def setup(self, form_class = None, layout = None, model = None, **kwargs):
+        self.form_class = form_class or Form
+        self.model = model
+        self.layout = layout
         
     def get_prefix(self, prefix, data):
-        if self.prefix_input in data:
+        if data and self.prefix_input in data:
             return data[self.prefix_input]
         elif prefix:
             if hasattr(prefix,'__call__'):
@@ -96,8 +109,6 @@ class Factory(object):
     def __call__(self, data = None, files = None, 
                  initial = None, instance = None,
                  prefix = None):
-        data = data if data is not None else {}
-        files = files if files is not None else {}
         prefix = self.get_prefix(prefix,data)
         return self.form_class(self,data,files,initial,prefix)
 

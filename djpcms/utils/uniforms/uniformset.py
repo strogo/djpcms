@@ -1,5 +1,5 @@
 from djpcms.utils import force_str
-from djpcms.forms import form_kwargs, BoundField
+from djpcms.forms.utils import form_kwargs, BoundField
 from djpcms.forms.formsets import inlineformset_factory
 from djpcms.template import mark_safe
 

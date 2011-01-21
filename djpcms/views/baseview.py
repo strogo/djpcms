@@ -7,16 +7,15 @@ import traceback
 
 from djpcms import sites
 from djpcms.permissions import inline_editing, get_view_permission, has_permission
-from djpcms.contrib import messages
 from djpcms.utils.ajax import jservererror, jredirect
 from djpcms.utils.html import grid960, box
-from djpcms.forms import saveform, get_form, cms
-from djpcms.utils.uniforms import UniForm
-from djpcms.utils import UnicodeObject, function_module, htmltype, logerror
+from djpcms.forms.utils import saveform, get_form
+from djpcms.forms import cms
+from djpcms.utils import UnicodeObject, htmltype, logerror
 from djpcms.utils.media import Media
 from djpcms.views.response import DjpResponse
 from djpcms.views.contentgenerator import BlockContentGen
-from djpcms.template import mark_safe, RequestContext, Context, loader
+from djpcms.template import mark_safe, Context, loader
 from djpcms.core.exceptions import PermissionDenied
 
 from .utils import view_edited_url

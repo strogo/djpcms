@@ -1,5 +1,5 @@
-
 from djpcms.apps.included import tagging
+from .models import Issue
 
 
 class IssueTraker(tagging.ArchiveTaggedApplication):
@@ -15,6 +15,10 @@ class IssueTraker(tagging.ArchiveTaggedApplication):
                       (4, 'Medimu'),
                       (5, 'Low'),
                       )
+    
+    
+appurls = (
+           IssueTraker('/',))
     
 
     

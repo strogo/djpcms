@@ -6,6 +6,8 @@ from djpcms.core.models import ModelInterface
 from djpcms.template import escape
 from djpcms.core.exceptions import BlockOutOfBound
 from djpcms.permissions import has_permission, get_view_permission
+from djpcms.plugins import get_wrapper, default_content_wrapper, get_plugin
+import djpcms.contrib.flowrepo.markups as markuplib
 
 
 def block_htmlid(pageid, block):
@@ -60,6 +62,21 @@ If not specified we get the template of the :attr:`parent` page.'''
     def _get_block(self, block, position):
         raise NotImplementedError
     
+    def get_level(self):
+        try:
+            url = self.url
+            if url.startswith('/'):
+                url = url[1:]
+            if url.endswith('/'):
+                url = url[:-1]
+            if url:
+                bits  = url.split('/')
+                level = len(bits)
+            else:
+                level = 0
+        except:
+            level = 1
+        return level
     
 
 class BlockInterface(object):
@@ -106,3 +123,35 @@ with the wrapper callable.'''
     def __unicode__(self):
         return u'%s-%s-%s' % (self.page.id,self.block,self.position)
     
+    def __get_plugin(self):
+        return get_plugin(self.plugin_name)
+    plugin = property(__get_plugin)
+        
+    def _get_wrapper(self):
+        return get_wrapper(self.container_type,default_content_wrapper)
+    wrapper = property(_get_wrapper)
+    
+    def plugin_class(self):
+        '''
+        utility functions.
+        Return the class of the embedded plugin (if available)
+        otherwise it returns Null
+        '''
+        if self.plugin:
+            return self.plugin.__class__
+        else:
+            return None
+    
+    
+class MarkupMixin(object):
+    
+    def htmlbody(self):
+        text = self.body
+        if not text:
+            return ''
+        mkp = markuplib.get(self.markup)
+        if mkp:
+            handler = mkp.get('handler')
+            text = handler(text)
+            text = mark_safe(force_str(text))
+        return text
