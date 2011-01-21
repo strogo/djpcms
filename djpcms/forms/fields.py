@@ -22,11 +22,15 @@ class Field(object):
                  required = True,
                  default = None,
                  validation_error = None,
+                 help_text = None,
+                 label = None,
                  **kwargs):
         self.name = name
         self.default = default or self.default
         self.required = required
         self.validation_error = validation_error or standard_validation_error
+        self.help_text = help_text
+        self.label = label or self.name
         self._handle_params(**kwargs)
         
     def _handle_params(self, **kwargs):

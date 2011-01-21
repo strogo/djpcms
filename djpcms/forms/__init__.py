@@ -30,7 +30,7 @@ This allows for dynamic choices generation every time an instance of a Form is c
 '''
     def __init__(self, *args, **kwargs):
         self._lazy_choices = kwargs.pop('choices',())
-        super(ChoiceField,self).__init__(*args, **kwargs)
+        super(OldChoiceField,self).__init__(*args, **kwargs)
         
     def __deepcopy__(self, memo):
         result = super(ChoiceField,self).__deepcopy__(memo)
@@ -41,7 +41,7 @@ This allows for dynamic choices generation every time an instance of a Form is c
         return result
    
     
-class LazyAjaxChoice(ChoiceField):
+class LazyAjaxChoice(OldChoiceField):
     
     def __init__(self, *args, **kwargs):
         super(LazyAjaxChoice,self).__init__(*args, **kwargs)

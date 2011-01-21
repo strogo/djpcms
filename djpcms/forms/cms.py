@@ -95,7 +95,7 @@ class PageForm(forms.ModelForm):
         2) 
     '''
     site             = forms.ModelChoiceField(queryset = Site.objects.all(), required = False)
-    application_view = forms.ChoiceField(choices = siteapp_choices,
+    application_view = forms.OldChoiceField(choices = siteapp_choices,
                                          required = False,
                                          label = _('application view'))
     
@@ -238,7 +238,7 @@ class ContentBlockForm(EditingForm):
     '''
     plugin_name     = PluginChoice(label = _('Plugin'),
                                    choices = plugingenerator)
-    container_type  = forms.ChoiceField(label=_('Container'), choices = wrappergenerator)
+    container_type  = forms.OldChoiceField(label=_('Container'), choices = wrappergenerator)
     view_permission = forms.ModelMultipleChoiceField(queryset = Group.objects.all(), required = False)
     layout = FormLayout(Fieldset('plugin_name','container_type','title','view_permission'),
                         Columns(('for_not_authenticated',),('requires_login',), css_class=inlineLabels3))

@@ -164,9 +164,9 @@ class ModelFilter(DJPplugin):
     
     
 class ModelLinksForm(forms.Form):
-    asbuttons = forms.BooleanField(initial = True, required = False, label = 'as buttons')
-    layout = forms.ChoiceField(choices = (('horizontal','horizontal'),('vertical','vertical')))
-    exclude = forms.CharField(max_length=600,required=False)
+    asbuttons = forms.OldBooleanField(initial = True, required = False, label = 'as buttons')
+    layout = forms.OldChoiceField(choices = (('horizontal','horizontal'),('vertical','vertical')))
+    exclude = forms.OldCharField(max_length=600,required=False)
     
     
 class ObjectLinks(DJPplugin):
