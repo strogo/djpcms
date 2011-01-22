@@ -8,11 +8,7 @@ try:
 except ImportError:
     import zip
 
-from django.db.models import Q
-from django.db.models.query import QuerySet
-from django.core.exceptions import ObjectDoesNotExist
-from django.utils.text import smart_split
-
+from djpcms import models as CMS
 from djpcms.utils.translation import ugettext as _
 from djpcms.template import loader, RequestContext
 from djpcms.forms import autocomplete
@@ -259,7 +255,7 @@ Usage::
         return False if not page else page.soft_root
         
     def get_page(self, djp):
-        pages = djp.pagecache.get_for_application(self.code)
+        pages = CMS.get_for_application(djp,self.code)
         if pages:
             if len(pages) == 1:
                 return pages[0]
@@ -438,11 +434,7 @@ It returns a queryset.
         qs = super(SearchView,self).appquery(djp)
         request = djp.request
         slist = self.appmodel.opts.search_fields
-        if request.method == 'GET':
-            data = dict(request.GET.items())
-        else:
-            data = dict(request.POST.items())
-        search_string = data.get(self.search_text,None)
+        search_string = request.data_dict.get(self.search_text,None)
         if slist and search_string:
             bits  = smart_split(search_string)
             #bits  = search_string.split(' ')

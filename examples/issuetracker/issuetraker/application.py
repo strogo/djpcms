@@ -1,8 +1,10 @@
-from djpcms.apps.included import tagging
+from djpcms.apps.included import archive
 from .models import Issue
 
 
-class IssueTraker(tagging.ArchiveTaggedApplication):
+class IssueTraker(archive.ArchiveApplication):
+    inherit = True
+    date_code = 'timestamp'
     STATUS_CODES = (
                     (1, 'Open'),
                     (2, 'Working'),
@@ -18,7 +20,8 @@ class IssueTraker(tagging.ArchiveTaggedApplication):
     
     
 appurls = (
-           IssueTraker('/',))
+           IssueTraker('/',Issue),
+           )
     
 
     

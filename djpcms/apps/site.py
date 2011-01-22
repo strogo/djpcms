@@ -53,11 +53,11 @@ class ApplicationSites(ResolverMixin):
     
     def _load(self):
         '''Load sites'''
-        from djpcms.apps.cache import PageCache
-        self.pagecache = PageCache()
+        #from djpcms.apps.cache import PageCache
+        #self.pagecache = PageCache()
         settings = self.settings
         for site in self.sites.values():
-            site.pagecache = self.pagecache
+            #site.pagecache = self.pagecache
             site.load()
         import_modules(settings.DJPCMS_PLUGINS)
         import_modules(settings.DJPCMS_WRAPPERS)
@@ -116,6 +116,9 @@ class ApplicationSites(ResolverMixin):
         # If no settings available get the current one
         if self._settings is None:
             self._settings = settings
+            sk = getattr(settings,'SECRET_KEY',None)
+            if not sk:
+                settings.SECRET_KEY = 'djpcms'
         
         # Add template media directory to template directories
         path = os.path.join(djpcms.__path__[0],'media','djpcms')
@@ -201,16 +204,26 @@ class ApplicationSites(ResolverMixin):
         ResolverMixin.clear(self)
         
     def wsgi(self, environ, start_response):
-        '''WSGI handler'''
+        '''DJPCMS WSGI handler'''
+        http = self.http
         cleaned_path = self.clean_path(environ)
-        if isinstance(cleaned_path,self.http.HttpResponseRedirect):
-            return cleaned_path
+        if isinstance(cleaned_path,http.HttpResponse):
+            return http.response(cleaned_path, environ, start_response)
         path = cleaned_path[1:]
         site,view,kwargs = self.resolve(path)
-        request = site.http.Request(environ)
+        request = http.make_request(environ)
         request.site = site
+        request.data_dict = dict(request.args.items())
+        for middleware_method in site.request_middleware():
+            response = middleware_method(request)
+            if response:
+                http.response(response, environ, start_response)
+        #signals.request_started.send(sender=self.__class__)
         djp = view(request, **kwargs)
-        return djp.response()
+        response = djp.response()
+        for middleware_method in site.response_middleware():
+            middleware_method(request,response)
+        return http.finish_response(response, environ, start_response)
     
     def djp(self, request, path):
         '''Entry points for requests'''

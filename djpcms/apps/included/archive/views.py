@@ -28,13 +28,12 @@ class ArchiveView(SearchView):
     def appquery(self, djp, **kwargs):
         qs       = super(ArchiveView,self).appquery(djp, **kwargs)
         kwargs   = djp.kwargs
-        year     = kwargs.get('year',None)
         month    = kwargs.get('month',None)
         day      = kwargs.get('day',None)
         dt       = self._date_code()
         dateargs = {}
-        if year:
-            dateargs['%s__year' % dt] = int(year)
+        if 'year' in kwargs:
+            dateargs['%s__year' % dt] = int(kwargs['year'])
         
         if month:
             month = self.appmodel.get_month_number(month)

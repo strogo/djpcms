@@ -1,5 +1,3 @@
-'''Permission for inline editing'''
-from django.contrib.auth.backends import ModelBackend
 
 
 def get_view_permission(obj):
@@ -11,6 +9,7 @@ def get_change_permission(obj):
 
 
 def has_permission(user, permission_codename, obj=None, canedit = False):
+    return True
     from djpcms.models import Page, BlockContent, ObjectPermission
     if not obj:
         back = ModelBackend()
@@ -66,11 +65,5 @@ def inline_editing(request, page, obj = None):
     return False
     
     
-class Backend(ModelBackend):
-    '''Permission backend which complement the standard django backend.'''
-    supports_object_permissions = True
-    supports_anonymous_user = True
 
-    def has_perm(self, user, permission_codename, obj=None):
-        return has_permission(user, permission_codename, obj)
         

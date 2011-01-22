@@ -40,22 +40,6 @@ def isexact(bit):
         return bit[1:Nn]
     else:
         return bit
-
-
-def function_module(dotpath, default = None):
-    '''
-    Load a function from a module.
-    If the module or the function is not available, return the default argument
-    '''
-    if dotpath:
-        bits = str(dotpath).split('.')
-        try:
-            module = __import__('.'.join(bits[:-1]),globals(),locals(),[''])
-            return getattr(module,bits[-1],default)
-        except Exception as e:
-            return default
-    else:
-        return default
     
     
 def lazyattr(f):

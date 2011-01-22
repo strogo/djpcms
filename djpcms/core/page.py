@@ -5,7 +5,7 @@ from djpcms import sites
 from djpcms.core.models import ModelInterface
 from djpcms.template import escape
 from djpcms.core.exceptions import BlockOutOfBound
-from djpcms.permissions import has_permission, get_view_permission
+from djpcms.core.permissions import has_permission, get_view_permission
 from djpcms.plugins import get_wrapper, default_content_wrapper, get_plugin
 import djpcms.contrib.flowrepo.markups as markuplib
 
@@ -155,3 +155,5 @@ class MarkupMixin(object):
             text = handler(text)
             text = mark_safe(force_str(text))
         return text
+    
+    

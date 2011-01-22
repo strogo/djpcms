@@ -44,14 +44,13 @@ class Paginator(object):
         Get page information form request
         The page should be stored in the request dictionary
         '''
-        if request.method == 'GET':
-            self._datadict = dict(request.GET.items())
-        else:
-            self._datadict = dict(request.POST.items())
-        try:
-            page = int(self._datadict.pop('page',1))
-        except:
-            page = 1
+        self._datadict = d = request.data_dict
+        page = 1
+        if 'page' in d:
+            try:
+                page = int(d['page'])
+            except:
+                pass
         return max(min(page,self.pages),1)
     
     def datadict(self):

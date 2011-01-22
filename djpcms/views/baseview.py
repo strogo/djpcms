@@ -6,7 +6,7 @@ import sys
 import traceback
 
 from djpcms import sites
-from djpcms.permissions import inline_editing, get_view_permission, has_permission
+from djpcms.core.permissions import inline_editing, get_view_permission, has_permission
 from djpcms.utils.ajax import jservererror, jredirect
 from djpcms.utils.html import grid960, box
 from djpcms.forms.utils import saveform, get_form
