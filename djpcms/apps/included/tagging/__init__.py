@@ -1,5 +1,5 @@
-from djpcms.forms import AutocompleteManyToManyInput, set_autocomplete
 from djpcms.views import appsite, appview
+from djpcms.forms import AutocompleteManyToManyInput, set_autocomplete
 from djpcms.apps.included.archive import ArchiveApplication, views as archive
 
 from tagging.models import Tag, TaggedItem

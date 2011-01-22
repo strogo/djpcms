@@ -20,6 +20,7 @@ __docformat__ = "restructuredtext"
 import os
 import sys
 from .apps import *
+from .http import serve
 
 parent = lambda x : os.path.split(x)[0]
 this_dir = parent(os.path.abspath(__file__))

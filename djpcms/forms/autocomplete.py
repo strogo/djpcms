@@ -1,9 +1,9 @@
 from djpcms import sites
+from djpcms.utils import merge_dict
 from djpcms.template import loader
 
-from django import forms
-from django.utils.datastructures import MultiValueDict, MergeDict
-from django.db import models
+from .html import TextInput
+from .fields import ChoiceField
 
 
 __all__ = ['autocomplete',
@@ -36,8 +36,8 @@ class Autocomplete(object):
 autocomplete = Autocomplete()
 
 
-class BaseAutocompleteInput(forms.TextInput):
-    class_for_form = forms.TextInput
+class BaseAutocompleteInput(TextInput):
+    attributes = merge_dict(TextInput.attributes,{'model':None,'separator':',','inline':False})
     
     def __init__(self, model, separator = ',', inline = False, attrs = None):
         self.separator = separator
@@ -142,13 +142,14 @@ def set_autocomplete(field):
     return field
 
 
-class ModelChoiceField(forms.ModelChoiceField):
+class ModelChoiceField(ChoiceField):
     auto_class = AutocompleteForeignKeyInput
     
-    def __init__(self, *args, **kwargs):
-        self.separator = kwargs.pop('separator',' ')
-        self.inline = kwargs.pop('inline',True)
-        super(ModelChoiceField,self).__init__(*args, **kwargs)
+    def _handle_params(self, query = None, separator = ' ', inline = True, **kwargs):
+        self.query = query
+        self.separator = separator
+        self.inline = inline
+        self._raise_error(kwargs)
         
     def __deepcopy__(self, memo):
         result = super(ModelChoiceField,self).__deepcopy__(memo)
@@ -158,13 +159,8 @@ class ModelChoiceField(forms.ModelChoiceField):
         return set_autocomplete(result)
 
             
-class ModelMultipleChoiceField(forms.ModelMultipleChoiceField):
+class ModelMultipleChoiceField(ModelChoiceField):
     auto_class = AutocompleteManyToManyInput
-    
-    def __init__(self, *args, **kwargs):
-        self.separator = kwargs.pop('separator',', ')
-        self.inline = kwargs.pop('inline',False)
-        super(ModelMultipleChoiceField,self).__init__(*args, **kwargs)
         
     def __deepcopy__(self, memo):
         result = super(ModelMultipleChoiceField,self).__deepcopy__(memo)

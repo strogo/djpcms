@@ -82,11 +82,17 @@ class Site(ModelBase):
     domain = field.SymbolField(unique = True)
     name = field.SymbolField(unique = True)
     
+    class Meta:
+        app_label = 'djpcms'
+        
+    def __str__(self):
+        return self.name
+    
     
 class Page(TimeStamp, PageInterface):
     '''The page model holds several information regarding pages in the sitemap.'''
     site        = field.ForeignKey(Site)
-    application_view = field.CharField()
+    application_view = field.SymbolField(required = False)
     redirect_to = field.ForeignKey('self',
                                    required  = False,
                                    related_name = 'redirected_from')
@@ -221,3 +227,8 @@ class AdditionalPageData(ModelBase):
         
 class ObjectPermission(ModelBase):
     permission = field.IntegerField(default = 0)
+    
+    class Meta:
+        app_label = 'djpcms'
+    
+

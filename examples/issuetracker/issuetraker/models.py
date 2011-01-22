@@ -1,22 +1,12 @@
+from datetime import datetime
+
 from stdnet import orm
-
-
-class User(orm.StdModel):
-    username = orm.SymbolField(unique = True)
-    password = orm.CharField(required = True)
-    
-    def is_authenticated(self):
-        return True
-    
-    
-class AnonymousUser(object):
-    
-    def is_authenticated(self):
-        return False
+from stdnet.contrib.sessions.models import User
 
 
 class Issue(orm.StdModel):
-    user = orm.ForeignKey(User)
+    timestamp = orm.DateTimeField(default = datetime.now)
+    user = orm.ForeignKey(User, required = False)
     description = orm.CharField(required = True)
     body = orm.CharField()
     

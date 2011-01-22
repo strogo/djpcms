@@ -5,6 +5,10 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.admin import site
 from django.contrib.admin.util import label_for_field, display_for_field, lookup_field
 
+from django.db.models import Q
+from django.db.models.query import QuerySet
+from django.utils.text import smart_split
+
 from djpcms import sites
 from djpcms.permissions import has_permission
 from djpcms.utils import force_str

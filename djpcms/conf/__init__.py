@@ -72,10 +72,13 @@ class SettingImporter(object):
     def get_settings(self, settings_module_name = None, **kwargs):
         '''Get settings module for a site.'''
         config = DjpcmsConfig(settings_module_name, **kwargs)
-
-        framework_name = getattr(config,'DJPCMS_WEB_FRAMEWORK','django')
-        
-        if framework_name == 'django':
+        self.setup_django(config)
+        return config
+    
+    def setup_django(self, config):
+        '''Set up django if needed'''
+        if config.DJPCMS_WEB_FRAMEWORK == 'django' or config.HTTP_LIBRARY == 'django' or \
+                config.CMS_ORM == 'django' or config.TEMPLATE_ENGINE == 'django':
             ENVIRONMENT_VARIABLE = "DJANGO_SETTINGS_MODULE"
             settings_file = os.environ.get(ENVIRONMENT_VARIABLE,None)
             if not settings_file:
@@ -84,8 +87,6 @@ class SettingImporter(object):
             
             from django.conf import settings as framework_settings
             config.addsetting(framework_settings)
-                     
-        return config
 
 
 _importer = SettingImporter()

@@ -12,7 +12,12 @@ CACHE_VIEW_OBJECTS              = True
 DJPCMS_IMAGE_UPLOAD_FUNCTION    = None
 SERVE_STATIC_FILES              = False
 DJPCMS_EMPTY_VALUE              = '(None)'
+SITE_ID = 1
+MIDDLEWARE_CLASSES = ()
+TEMPLATE_CONTEXT_PROCESSORS     = ("djpcms.core.context_processors.djpcms",)
 
+DJPCMS_WEB_FRAMEWORK            = None
+TEMPLATE_DIRS                   = ()
 USER_MODEL                      = 'django'
 HTTP_LIBRARY                    = 'django'
 CMS_ORM                         = 'django'

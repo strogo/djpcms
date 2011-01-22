@@ -120,6 +120,14 @@ class ChoiceField(Field):
         self.choices = choices
         self._raise_error(kwargs)
     
+    
+class ModelChoiceField(ChoiceField):
+    
+    def _handle_params(self, query = None, **kwargs):
+        self.query = query
+        self._raise_error(kwargs)
+
+
 
 to_implement = ['FloatField',
            'DateTimeField',

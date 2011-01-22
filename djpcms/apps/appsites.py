@@ -1,8 +1,10 @@
+from threading import Lock
+
 from djpcms.core.exceptions import DjpcmsException, AlreadyRegistered, ApplicationNotAvailable
 from djpcms.views.appsite import Application, ModelApplication
 from djpcms.apps.included.contentedit import ContentSite, BlockContent
 from djpcms.utils.collections import OrderedDict
-from djpcms.utils.importer import import_module
+from djpcms.utils.importer import import_module, module_attribute
 from djpcms.core.urlresolvers import ResolverMixin
 from djpcms.http import make_wsgi
 
@@ -15,6 +17,7 @@ class ApplicationSite(ResolverMixin):
     registered applications.
     '''
     def __init__(self, url, config):
+        self.lock = Lock()
         self.route = url
         self.url = url
         self.config = config
@@ -24,6 +27,8 @@ class ApplicationSite(ResolverMixin):
         self._registry = {}
         self._nameregistry = OrderedDict()
         self.choices = [('','-----------------')]
+        self._request_middleware = None
+        self._response_middleware = None
         self.ModelApplication = ModelApplication
         
     def __repr__(self):
@@ -131,3 +136,27 @@ returns the application handler. If the appname is not available, it raises a Ke
     def as_wsgi(self):
         return make_wsgi(self)
     
+    def _load_middleware(self):
+        if self._request_middleware is None:
+            self._request_middleware = mw = []
+            self._response_middleware = rw = []
+            self.lock.acquire()
+            try:
+                for middleware_path in self.settings.MIDDLEWARE_CLASSES:
+                    mwcls = module_attribute(middleware_path)
+                    if mwcls:
+                        mwobj = mwcls()
+                        if hasattr(mwobj,'process_request'):
+                            mw.append(mwobj.process_request)
+                        if hasattr(mwobj,'process_response'):
+                            rw.append(mwobj.process_response)
+            finally:
+                self.lock.release()
+    
+    def request_middleware(self):
+        self._load_middleware()
+        return self._request_middleware
+    
+    def response_middleware(self):
+        self._load_middleware()
+        return self._response_middleware

@@ -6,7 +6,7 @@ from djpcms import forms
 from djpcms.forms.utils import form_kwargs
 from djpcms.utils import force_str
 from djpcms.utils.text import capfirst, nicename
-from djpcms.utils.formjson import form2json
+#from djpcms.utils.formjson import form2json
 
 _plugin_dictionary = {}
 _wrapper_dictionary = {}
@@ -183,7 +183,8 @@ This is the function plugins need to implement.
     
     def save(self, pform):
         '''Save the form plugin'''
-        return form2json(pform)
+        return json.dumps(pform.data)
+        #return form2json(pform)
     
     def get_form(self, djp, args = None, withdata = True):
         '''Return an instance of a :attr:`form` or `None`. Used to edit the plugin when in editing mode.

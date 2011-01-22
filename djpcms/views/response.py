@@ -31,7 +31,6 @@ class DjpResponse(object):
         self.view       = view
         site            = request.site
         self.site       = site
-        self.pagecache  = site.pagecache
         self.settings   = site.settings
         self.http       = site.http
         self.css        = self.settings.HTML_CLASSES
@@ -178,7 +177,7 @@ return the wrapper with the underlying view.'''
         '''
         view    = self.view
         request = self.request
-        is_ajax = request.is_ajax()
+        is_ajax = request.is_xhr
         page    = self.page
         site    = request.site
         http    = site.http
@@ -193,7 +192,7 @@ return the wrapper with the underlying view.'''
             if isinstance(re,http.HttpResponse):
                 return re
             # If user not authenticated set a test cookie  
-            if not request.user.is_authenticated() and method == 'get':
+            if not http.is_authenticated(request) and method == 'get':
                 request.session.set_test_cookie()
 
         if method not in (m.lower() for m in view.methods(request)):
@@ -242,7 +241,7 @@ return the wrapper with the underlying view.'''
         html = loader.render_to_string(template_file,
                                        context_instance=context,
                                        **kwargs)
-        return self.site.http.HttpResponse(html, **httpresponse_kwargs)
+        return self.http.HttpResponse(html, **httpresponse_kwargs)
         
     def redirect(self, url):
         if self.request.is_ajax():

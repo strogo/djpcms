@@ -14,11 +14,11 @@ from djpcms.utils import slugify
 from djpcms.forms.utils import get_form
 from djpcms.plugins import register_application
 from djpcms.utils.html import input
-from djpcms.permissions import has_permission
 from djpcms.views.baseview import editview, response_from_page
 from djpcms.views.appview import View, ViewView
 from djpcms.utils.media import MediaDefiningClass
 from djpcms.utils.collections import OrderedDict
+from djpcms.utils.py2py3 import iteritems
 
 render_to_string = loader.render_to_string
 
@@ -103,7 +103,7 @@ class Application(ResolverMixin):
     hidden           = False
     '''If ``True`` the application is only used internally. Default ``False``.'''
     form             = None
-    '''A form class used in the application. Default ``None``.'''
+    '''A form factory used in the application. Default ``None``.'''
     form_method      ='post'
     '''Form submit method, ``get`` or ``post``. Default ``post``.'''
     form_withrequest = False
@@ -222,12 +222,15 @@ No reason to change this default unless you really don't want to see the views i
         #Build views for this application
         roots = []
         
+        if not self.views:
+            raise ApplicationUrlException("There are no views in {0} application. Try setting inherit equal to True.".format(self))
+        
         # Find the root view
-        for name,view in self.views.iteritems():
+        for name,view in iteritems(self.views):
             if view.object_view:
                 self.object_views.append(view)
             view.name = name
-            view.code = u'%s-%s' % (self.name,view.name)
+            view.code = self.name + '-' + view.name
             if not view.parent:
                 if not view.urlbit:
                     if self.root_application:
@@ -250,7 +253,7 @@ No reason to change this default unless you really don't want to see the views i
             view = process_views(views[0],views,self)
             view.processurlbits(self)
             if view.isapp:
-                name = u'%s %s' % (self.name,view.name.replace('_',' '))
+                name = self.name + ' ' + view.name.replace('_',' ')
                 self.application_site.choices.append((view.code,name))
             if view.isplugin:
                 register_application(view)
