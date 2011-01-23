@@ -1,7 +1,7 @@
 from djpcms.contrib import messages
 from djpcms.views import appview
 from djpcms.utils.ajax import jredirect
-from djpcms.forms import saveform
+from djpcms.forms.utils import saveform
 from djpcms.apps.included.user.user import UserClass
 
 from forms import LoginForm, PasswordChangeForm
@@ -62,3 +62,6 @@ class LoginView(appview.ModelView):
     
     def success_message(self, instance, mch):
         return ''
+
+
+            

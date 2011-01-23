@@ -1,11 +1,11 @@
 from djpcms.test import TestCase
+from djpcms.apps.included.user import LoginForm
 
-from .forms import *
 
 class SimpleForm(TestCase):
     
     def testSimpleFactory(self):
-        self.assertTrue(len(LoginForm.fields),2)
+        self.assertTrue(len(LoginForm.base_fields),2)
         form = LoginForm()
         self.assertFalse(form.is_bound)
         self.assertFalse(form.is_valid())

@@ -76,7 +76,7 @@ def CalculatePageUrl(data, page):
     
 
 
-class PageFormCls(forms.Form):
+class PageForm(forms.Form):
     
     def clean_application_view(self, app):
         '''If application type is specified, than it must be unique
@@ -200,11 +200,12 @@ class PluginChoice(forms.ChoiceField):
 
 
     
-class ContentBlockForm(object):
-    
-    class Meta:
-        model = BlockContent
-        fields = ['plugin_name','container_type','title','for_not_authenticated','requires_login']
+class ContentBlockForm(forms.Form):
+    url = forms.CharField(widget=forms.HiddenInput, required = False),
+    plugin_name = PluginChoice(label = 'Plugin', choices = plugingenerator),
+    container_type = forms.ChoiceField(label = 'Container', choices = wrappergenerator)
+    for_not_authenticated = forms.BooleanField(default = False)
+    requires_login = forms.BooleanField(default = False)
         
     def save(self, commit = True):
         pt = self.cleaned_data.pop('plugin_name')
@@ -326,31 +327,11 @@ def create_page(parent = None, user = None, inner_template = None, commit = True
     else:
         err = ' '.join(ferrors(f._errors))
         raise forms.ValidationError(err)
-    
-    
-
-
-# Forms factories
-PageForm = forms.Factory(
-#                         site = forms.ModelChoiceField(queryset = Site.objects,
-#                                                       required = False),
-#                         application_view = ApplicationViewField(
-#                                                                 choices = siteapp_choices,
-#                                                                 required = False,
-#                                                                 label = 'application view'
-#                                                                 ),
-                         model = Page,
-                         form_class = PageFormCls,
-                         )
-
         
 
-ContentBlockForm = forms.Factory(
-    forms.CharField('url', widget=forms.HiddenInput, required = False),
-    PluginChoice('plugin_name', label = 'Plugin', choices = plugingenerator),
-    forms.ChoiceField('container_type',label = 'Container', choices = wrappergenerator),
-    #view_permission = forms.ModelMultipleChoiceField(queryset = Group.objects,
-    #                                                 required = False),
+ContentBlockHtmlForm = forms.FormFactory(
+    ContentBlockForm,
+    model = BlockContent,
     layout = forms.UniForm(
                            forms.Fieldset('plugin_name','container_type','title','view_permission'),
                            forms.Columns(('for_not_authenticated',),

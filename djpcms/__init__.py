@@ -57,8 +57,14 @@ def init_logging(clear_all = False):
         import logging
         logging.Logger.manager.loggerDict.clear()
 
-    if sites.settings.LOGGING:
-        dictConfig(sites.settings.LOGGING)
+    settings = sites.settings
+    if settings:
+        if settings.DEBUG:
+            settings.LOGGING['root'] = {
+                                        'handlers': ['console'],
+                                        'level': 'DEBUG',
+                                        }
+        dictConfig(settings.LOGGING)
         
     
 install_libs()

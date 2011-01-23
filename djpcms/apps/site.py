@@ -6,6 +6,7 @@ import logging
 from djpcms.conf import get_settings
 from djpcms.core.exceptions import AlreadyRegistered, PermissionDenied
 from djpcms.utils.importer import import_module, import_modules
+from djpcms.utils import logerror
 from djpcms.utils.collections import OrderedDict
 from djpcms.core.urlresolvers import ResolverMixin
 
@@ -17,6 +18,9 @@ __all__ = ['MakeSite',
            'get_urls',
            'loadapps',
            'sites']
+
+logger = logging.getLogger('sites')
+
 
 
 class editHandler(ResolverMixin):
@@ -114,13 +118,13 @@ class ApplicationSites(ResolverMixin):
             sk = getattr(settings,'SECRET_KEY',None)
             if not sk:
                 settings.SECRET_KEY = 'djpcms'
+            djpcms.init_logging(clearlog)
         
         # Add template media directory to template directories
         path = os.path.join(djpcms.__path__[0],'media','djpcms')
         if path not in settings.TEMPLATE_DIRS:
             settings.TEMPLATE_DIRS += path,
         
-        djpcms.init_logging(clearlog)
         self.logger = logging.getLogger('ApplicationSites')
         
         return self._create_site(route,settings)
@@ -202,13 +206,16 @@ class ApplicationSites(ResolverMixin):
         '''DJPCMS WSGI handler'''
         http = self.http
         HttpResponse = http.HttpResponse
+        response = None
+        site = None
         try:
             cleaned_path = self.clean_path(environ)
             if isinstance(cleaned_path,HttpResponse):
                 return http.finish_response(cleaned_path, environ, start_response)
             path = cleaned_path[1:]
-            site,view,kwargs = self.resolve(path)
             request = http.make_request(environ)
+            request.site = self
+            site,view,kwargs = self.resolve(path)
             request.site = site
             djp = view(request, **kwargs)
             if not isinstance(djp,HttpResponse):
@@ -229,8 +236,15 @@ class ApplicationSites(ResolverMixin):
             response = http.HttpResponse(status = 403)
         except http.Http404 as e:
             response = http.HttpResponse(status = 404)
-        except Exception:
-            response = http.HttpResponse(status = 500)
+        except Exception as e:
+            logerror(logger, request, sys.exc_info())
+            if site:
+                for middleware_method in site.exception_middleware():
+                    response = middleware_method(request, e)
+                    if response:
+                        break
+            if not response:
+                response = http.HttpResponse(status = 500)
         return http.finish_response(response, environ, start_response)
     
     def djp(self, request, path):

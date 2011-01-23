@@ -13,8 +13,8 @@ else:
     raise NotImplementedError('Objecr Relational Mapper {0} not available for CMS models'.format(settings.CMS_ORM))
 
 
-def get_current_site(djp):
-    site_id = djp.site.settings.SITE_ID
+def get_current_site(request):
+    site_id = request.site.settings.SITE_ID
     try:
         return Site.objects.get(id = site_id)
     except:
@@ -22,6 +22,13 @@ def get_current_site(djp):
             site = Site(name = 'example.com', domain = 'example.com')
             site.save()
         return site
+    
+    
+def get_root(request):
+    site = get_current_site(request)
+    pages = Page.objects.filter(site = site, parent = None)
+    if not pages:
+        return pages[0]
 
 
 def get_for_application(djp, code):

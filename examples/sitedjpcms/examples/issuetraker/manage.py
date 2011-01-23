@@ -10,7 +10,9 @@ site = djpcms.MakeSite(__file__,
                        INSTALLED_APPS = ('djpcms',
                                          'issuetraker',
                                          'stdnet.contrib.sessions'),
-                       MIDDLEWARE_CLASSES = ('stdnet.contrib.sessions.middleware.SessionMiddleware',)
+                       MIDDLEWARE_CLASSES = ('djpcms.middleware.CreateRootPage',
+                                             'stdnet.contrib.sessions.middleware.SessionMiddleware',),
+                       DEBUG = True,
                        )
 
 

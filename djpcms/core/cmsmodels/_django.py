@@ -15,9 +15,9 @@ from django.utils.translation import ugettext_lazy as _
 
 from djpcms.template import Template, mark_safe
 from djpcms.core.page import PageInterface, BlockInterface
-from djpcms.permissions import has_permission, get_view_permission
+from djpcms.core.permissions import has_permission, get_view_permission
 from djpcms.fields import SlugCode
-from djpcms.utils import lazyattr, function_module, force_str, htmltype
+from djpcms.utils import lazyattr, force_str, htmltype
 from djpcms.utils.func import PathList
 from djpcms.uploads import uploader, storage_manager
 

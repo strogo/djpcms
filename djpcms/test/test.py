@@ -6,18 +6,16 @@ import djpcms
 from djpcms import sites, get_site
 from djpcms.utils.importer import import_module
 from djpcms.plugins import SimpleWrap
-from djpcms.forms import fill_form_data, model_to_dict, cms
+from djpcms.forms import cms
+from djpcms.forms.utils import fill_form_data
 from djpcms.models import Page
 from djpcms.apps.included.user import UserClass
 from djpcms.core.exceptions import *
 
-from django import test
-from django.db.models import get_app, get_apps
-
 from BeautifulSoup import BeautifulSoup
 
 
-class DjpCmsTestHandle(test.TestCase):
+class TestCase(unittest.TestCase):
     '''Implements shortcut functions for testing djpcms.
 Must be used as a base class for TestCase classes'''
     urlbase   = '/'
@@ -52,7 +50,8 @@ Must be used as a base class for TestCase classes'''
 
     def makepage(self, view = None, model = None, bit = '', parent = None, fail = False, **kwargs):
         form = cms.PageForm()
-        data = model_to_dict(form.instance, form._meta.fields, form._meta.exclude)
+        #data = model_to_dict(form.instance, form._meta.fields, form._meta.exclude)
+        data = {}
         data.update(**kwargs)
         data.update({'url_pattern': bit,
                      'parent': None if not parent else parent.id})
@@ -102,7 +101,7 @@ Must be used as a base class for TestCase classes'''
         return BeautifulSoup(doc)
         
         
-class TestCase(DjpCmsTestHandle):
+class TestCaseWithUser(TestCase):
         
     def setUp(self):
         p = self.get()['page']
