@@ -160,7 +160,8 @@ Usage::
                  headers       = None,
                  astable        = None,
                  table_generator = None,
-                 success_message = None):
+                 success_message = None,
+                 append_slash = True):
         self.name        = None
         self.description = description
         self.parent    = parent
@@ -169,7 +170,7 @@ Usage::
         self.in_nav    = in_navigation
         self.appmodel  = None
         self.insitemap = insitemap
-        self.urlbit    = RegExUrl(regex,splitregex)
+        self.urlbit    = RegExUrl(regex,splitregex,append_slash)
         self.regex     = None
         self.func      = None
         self.code      = None

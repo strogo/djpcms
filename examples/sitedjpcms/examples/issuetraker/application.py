@@ -1,4 +1,6 @@
+from djpcms import sites
 from djpcms.apps.included import archive
+from djpcms.apps.included.static import Static
 from .models import Issue
 
 
@@ -20,6 +22,7 @@ class IssueTraker(archive.ArchiveApplication):
     
     
 appurls = (
+           Static(sites.settings.MEDIA_URL, show_indexes=True),
            IssueTraker('/',Issue),
            )
     

@@ -59,7 +59,7 @@ def inline_editing(request, page, obj = None):
     settings = request.site.settings
     editing  = settings.CONTENT_INLINE_EDITING
     canedit  = settings.DJPCMS_USER_CAN_EDIT_PAGES
-    if editing.get('available',False):
+    if page and editing.get('available',False):
         if has_permission(request.user, get_change_permission(page), page, canedit):
             return '/%s%s' % (editing.get('preurl','edit'),request.path)
     return False

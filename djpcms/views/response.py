@@ -30,6 +30,7 @@ class DjpResponse(object):
         self.request    = request
         self.view       = view
         site            = request.site
+        self.is_xhr     = request.is_xhr
         self.site       = site
         self.settings   = site.settings
         self.http       = site.http
@@ -60,7 +61,7 @@ class DjpResponse(object):
         return self.url == self.request.path
     
     def underlying(self):
-        '''If the current wapper has an editing view,
+        '''If the current wrapper is for an editing view,
 return the wrapper with the underlying view.'''
         if self.view.editurl:
             return self.view._view(self.request, **self.kwargs)
@@ -244,14 +245,13 @@ return the wrapper with the underlying view.'''
         return self.http.HttpResponse(html, **httpresponse_kwargs)
         
     def redirect(self, url):
-        if self.request.is_ajax():
+        if self.is_xhr:
             return jredirect(url = url)
         else:
             return self.http.HttpResponseRedirect(url)
         
     def instancecode(self):
-        '''If an instance is available, return a unique code for it. Otherwise return None.'''
-        from djpcms.views import appsite 
+        '''If an instance is available, return a unique code for it. Otherwise return None.''' 
         instance = self.instance
         if not instance:
             return None

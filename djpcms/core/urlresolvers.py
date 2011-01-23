@@ -76,8 +76,7 @@ method'''
         self.clearcache()
     
     def clean_path(self, environ):
-        '''
-        Clean url and redirect if needed
+        '''Clean url and redirect if needed
         '''
         path = environ['PATH_INFO']
         url = path
@@ -87,9 +86,9 @@ method'''
                 url = re.sub("/+" , "/", url)
                 modified = True
         
-            if not url.endswith('/'):
-                modified = True
-                url = '%s/' % url
+            #if not url.endswith('/'):
+            #    modified = True
+            #    url = '%s/' % url
                 
             if modified:
                 if not url.startswith('/'):

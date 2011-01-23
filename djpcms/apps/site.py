@@ -201,23 +201,36 @@ class ApplicationSites(ResolverMixin):
     def wsgi(self, environ, start_response):
         '''DJPCMS WSGI handler'''
         http = self.http
-        cleaned_path = self.clean_path(environ)
-        if isinstance(cleaned_path,http.HttpResponse):
-            return http.response(cleaned_path, environ, start_response)
-        path = cleaned_path[1:]
-        site,view,kwargs = self.resolve(path)
-        request = http.make_request(environ)
-        request.site = site
-        request.data_dict = dict(request.args.items())
-        for middleware_method in site.request_middleware():
-            response = middleware_method(request)
-            if response:
-                http.response(response, environ, start_response)
-        #signals.request_started.send(sender=self.__class__)
-        djp = view(request, **kwargs)
-        response = djp.response()
-        for middleware_method in site.response_middleware():
-            middleware_method(request,response)
+        HttpResponse = http.HttpResponse
+        try:
+            cleaned_path = self.clean_path(environ)
+            if isinstance(cleaned_path,HttpResponse):
+                return http.finish_response(cleaned_path, environ, start_response)
+            path = cleaned_path[1:]
+            site,view,kwargs = self.resolve(path)
+            request = http.make_request(environ)
+            request.site = site
+            djp = view(request, **kwargs)
+            if not isinstance(djp,HttpResponse):
+                request.data_dict = dict(request.args.items())
+                #signals.request_started.send(sender=self.__class__)
+                # Request middleware
+                for middleware_method in site.request_middleware():
+                    response = middleware_method(request)
+                    if response:
+                        http.finish_response(response, environ, start_response)
+                response = djp.response()
+                # Response middleware
+                for middleware_method in site.response_middleware():
+                    middleware_method(request,response)
+            else:
+                response = djp
+        except PermissionDenied:
+            response = http.HttpResponse(status = 403)
+        except http.Http404 as e:
+            response = http.HttpResponse(status = 404)
+        except Exception:
+            response = http.HttpResponse(status = 500)
         return http.finish_response(response, environ, start_response)
     
     def djp(self, request, path):
