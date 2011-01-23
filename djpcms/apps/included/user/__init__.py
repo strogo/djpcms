@@ -16,6 +16,9 @@ class UserApplication(appsite.ModelApplication):
     change = appview.EditView(regex = 'change',
                               isplugin = True,
                               parent = 'home')
+    #create = CreateAccountView(regex = 'create',
+    #                           isplugin = True,
+    #                           parent = 'home')
     
     def objectbits(self, obj):
         if self.userpage:

@@ -140,6 +140,7 @@ returns the application handler. If the appname is not available, it raises a Ke
         if self._request_middleware is None:
             self._request_middleware = mw = []
             self._response_middleware = rw = []
+            self._exception_middleware = ew = []
             self.lock.acquire()
             try:
                 for middleware_path in self.settings.MIDDLEWARE_CLASSES:
@@ -150,6 +151,8 @@ returns the application handler. If the appname is not available, it raises a Ke
                             mw.append(mwobj.process_request)
                         if hasattr(mwobj,'process_response'):
                             rw.append(mwobj.process_response)
+                        if hasattr(mwobj,'process_exception'):
+                            ew.append(mwobj.process_exception)
             finally:
                 self.lock.release()
     
@@ -160,3 +163,8 @@ returns the application handler. If the appname is not available, it raises a Ke
     def response_middleware(self):
         self._load_middleware()
         return self._response_middleware
+    
+    def exception_middleware(self):
+        self._load_middleware()
+        return self._exception_middleware
+    

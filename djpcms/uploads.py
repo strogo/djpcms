@@ -8,7 +8,8 @@ from djpcms import sites
 from django.utils.functional import LazyObject
 from django.core.files.storage import get_storage_class
 
-from djpcms.utils import function_module, safepath
+from djpcms.utils import safepath
+from djpcms.utils.importer import module_attribute
 
 
 def _default_uploads(obj, name, model):
@@ -29,7 +30,7 @@ class uploader(object):
             model = self.model.upper()
             sname =  getattr(sites.settings,'ULOADER_FUNCTION_{0}'.format(model),None)
             if sname:
-                func = function_module(sname,_default_uploads)
+                func = module_attribute(sname,_default_uploads)
             else:
                 func = _default_uploads
             self._func = func

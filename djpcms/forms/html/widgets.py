@@ -5,7 +5,8 @@ from .base import HtmlWidget
 
 __all__ = ['TextInput',
            'SubmitInput',
-           'HiddenInput']
+           'HiddenInput',
+           'PasswordInput']
 
 class TextInput(HtmlWidget):
     attributes = merge_dict(HtmlWidget.attributes, {
@@ -21,3 +22,6 @@ class SubmitInput(TextInput):
 class HiddenInput(TextInput):
     attributes = merge_dict(TextInput.attributes, {'type':'hidden'})
     
+    
+class PasswordInput(TextInput):
+    attributes = merge_dict(TextInput.attributes, {'type':'password'})

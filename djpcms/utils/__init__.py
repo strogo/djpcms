@@ -118,11 +118,11 @@ and converts spaces to hyphens *rtx* character'''
     return re.sub('[-\s]+', rtx, value)
 
 
-def logerror(logger, request, exc_info):
+def logerror(logger, request, exc_info, status_code = 500):
     logger.error('Internal Server Error: %s' % request.path,
                  exc_info=exc_info,
                  extra={
-                        'status_code': 500,
+                        'status_code': status_code,
                         'request':request
                         }
                  )

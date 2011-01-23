@@ -5,6 +5,7 @@ from .globals import *
 
 __all__ = ['Field',
            'CharField',
+           'BooleanField',
            'DateField',
            'ChoiceField']
 
@@ -18,9 +19,9 @@ def standard_validation_error(field,value):
 
 class Field(object):
     default = None
+    creation_counter = 0
     
     def __init__(self,
-                 name,
                  required = True,
                  default = None,
                  validation_error = None,
@@ -28,14 +29,22 @@ class Field(object):
                  label = None,
                  widget = None,
                  **kwargs):
-        self.name = name
+        self.name = None
         self.default = default or self.default
         self.required = required
         self.validation_error = validation_error or standard_validation_error
         self.help_text = help_text
-        self.label = label or self.name
+        self.label = label
         self.widget = widget
         self._handle_params(**kwargs)
+        # Increase the creation counter, and save our local copy.
+        self.creation_counter = Field.creation_counter
+        Field.creation_counter += 1
+        
+    def set_name(self, name):
+        self.name = name
+        if not self.label:
+            self.label = name
         
     def _handle_params(self, **kwargs):
         self._raise_error(kwargs)
@@ -119,6 +128,17 @@ class ChoiceField(Field):
     def _handle_params(self, choices = None, **kwargs):
         self.choices = choices
         self._raise_error(kwargs)
+    
+    
+class BooleanField(Field):
+
+    def _clean(self, value):
+        """Returns a Python boolean object."""
+        if value in ('False', '0'):
+            value = False
+        else:
+            value = bool(value)
+        return value
     
     
 class ModelChoiceField(ChoiceField):

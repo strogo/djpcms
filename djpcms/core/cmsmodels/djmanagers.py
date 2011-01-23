@@ -5,7 +5,7 @@ from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 
 from djpcms.utils import force_str
-from djpcms.permissions import get_view_permission
+from djpcms.core.permissions import get_view_permission
 
 
 class ContentBlockError(Exception):
