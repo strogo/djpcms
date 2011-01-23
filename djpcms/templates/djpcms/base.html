@@ -11,10 +11,10 @@
 <div id="page-body">
  <div id="site-content"{% block site-content-class %} class="{{ grid.container_class }}"{% endblock %}>{% block page-prebody %}
    <div class="{{ grid.column1 }}">{% block breadcrumbs %}{% if page.level %}
-    {% include "djpcms/bits/breadcrumbs.html" %}{% else %}
+    {% include "djpcms/bits/breadcrumbs.html" %}{% else %}{% if djp.title %}
     <div class="breadcrumbs">
     {{ djp.title }}
-    </div>{% endif %}{% endblock %}
+    </div>{% endif %}{% endif %}{% endblock %}
    </div>{{ grid.clear }}{% endblock %}{% block page-messages %}
     <div id="page-messages" class="{{ grid.column1 }}">{% if messages %}
      <ul class="messagelist">{% for message in messages %}

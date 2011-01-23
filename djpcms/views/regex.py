@@ -16,7 +16,7 @@ class RegExUrl(object):
         
         if True the url will be split using '/' as separator  
     '''
-    def __init__(self, url = None, split = True):
+    def __init__(self, url = None, split = True, append_slash = True):
         self.url    = str(url or '')
         self.purl   = ''
         self.targs  = 0
@@ -24,9 +24,11 @@ class RegExUrl(object):
         self._split = split
         self.breadcrumbs = []
         self.names = []
+        self.append_slash = append_slash
         if self.url:
             self.__process()
-            self.url  = '%s/' % self.url
+            if self.append_slash:
+                self.url  = '%s/' % self.url
         
     def __len__(self):
         return len(self.url)
@@ -44,7 +46,10 @@ class RegExUrl(object):
             return ['%s' % self.url]
         
     def __str__(self):
-        return '^%s$' % self.url
+        if self.append_slash:
+            return '^%s$' % self.url
+        else:
+            return self.url
 
     def get_url(self, **kwargs):
         if kwargs:
