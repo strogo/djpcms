@@ -1,3 +1,7 @@
+'''Lightweight form library
+
+Several parts are originally from django
+'''
 from djpcms.utils.collections import OrderedDict
 
 from .globals import *
