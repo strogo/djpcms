@@ -7,7 +7,7 @@ from copy import deepcopy
 
 from djpcms import forms
 from djpcms.template import loader, mark_safe
-from djpcms.core.orms import getmodel
+from djpcms.core.orms import mapper
 from djpcms.core.urlresolvers import ResolverMixin
 from djpcms.core.exceptions import PermissionDenied, ApplicationUrlException
 from djpcms.utils import slugify
@@ -419,11 +419,11 @@ functionality when searching for model instances.'''
     
     def __init__(self, baseurl, model, **kwargs):
         super(ModelApplication,self).__init__(baseurl, **kwargs)
-        self._model  = model
+        self.model  = model
         
     def register(self, application_site):
-        self.opts   = getmodel(self)
-        self.model  = self.opts.model
+        self.opts = mapper(self.model)
+        self.opts.set_application(self)
         return super(ModelApplication,self).register(application_site)
         
     def get_root_code(self):

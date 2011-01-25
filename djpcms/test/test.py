@@ -1,6 +1,5 @@
 import json
 import unittest
-import signal
 
 import djpcms
 from djpcms import sites, get_site
@@ -8,8 +7,7 @@ from djpcms.utils.importer import import_module
 from djpcms.plugins import SimpleWrap
 from djpcms.forms import cms
 from djpcms.forms.utils import fill_form_data
-from djpcms.models import Page
-from djpcms.apps.included.user import UserClass
+from djpcms.core import api
 from djpcms.core.exceptions import *
 
 from BeautifulSoup import BeautifulSoup
@@ -19,14 +17,11 @@ class TestCase(unittest.TestCase):
     '''Implements shortcut functions for testing djpcms.
 Must be used as a base class for TestCase classes'''
     urlbase   = '/'
-    Page = Page
+    api = api
     sites = sites
     
     def _pre_setup(self):
         sites.settings.TESTING = True
-        super(DjpCmsTestHandle,self)._pre_setup()
-        
-    def _urlconf_setup(self):
         sites.clear()
         sett = sites.settings
         appurls = getattr(self,'appurls',None)
@@ -36,15 +31,25 @@ Must be used as a base class for TestCase classes'''
                                APPLICATION_URL_MODULE = appurls)
         self.settings = self.site.settings
         sites.load()
+        
+    def __call__(self, result=None):
+        """
+        Wrapper around default __call__ method to perform common Django test
+        set up. This means that user-defined Test Cases aren't required to
+        include a call to super().setUp().
+        """
+        #self.client = Client()
+        self._pre_setup()
+        super(TestCase, self).__call__(result)
+        self._post_teardown()
             
-    def _urlconf_teardown(self):
+    def _post_teardown(self):
         sites.clear()
-        super(DjpCmsTestHandle,self)._urlconf_teardown()
     
     def clear(self, db = False):
         '''If db is set to True it clears the database pages'''
         if db:
-            self.Page.objects.all().delete()
+            self.api.all().delete()
         else:
             sites.clear()
 
@@ -103,13 +108,17 @@ Must be used as a base class for TestCase classes'''
         
 class TestCaseWithUser(TestCase):
         
-    def setUp(self):
+    def _pre_setup(self):
+        super(TestCaseWithUser,self)._pre_setup()
         p = self.get()['page']
-        self.superuser = UserClass().create_super('testuser', 'test@testuser.com', 'testuser')
-        self.user = UserClass().create('simpleuser', 'simple@testuser.com', 'simpleuser')
         self.assertEqual(p.url,'/')
-        #if not hasattr(self,'fixtures'):
-        #    self.assertEqual(Page.objects.all().count(),1)
+        User = self.site.User
+        if User:
+            self.superuser = User.create_super('testuser', 'test@testuser.com', 'testuser')
+            self.user = User.create('simpleuser', 'simple@testuser.com', 'simpleuser')
+        else:
+            self.superuser = None
+            self.user = None
             
     def editurl(self, url):
         return '/{0}{1}'.format(self.site.settings.CONTENT_INLINE_EDITING['preurl'],url)

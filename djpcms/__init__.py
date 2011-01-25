@@ -6,7 +6,8 @@ def get_version():
     return '.'.join(map(str,VERSION))
 
 # This list is updated by the views.appsite.appsite handler
-siteapp_choices = [('','-----------------')]
+empty_choice = ('','-----------------')
+siteapp_choices = [empty_choice]
 
 
 __version__   = get_version()

@@ -3,6 +3,7 @@
 Several parts are originally from django
 '''
 from djpcms.utils.collections import OrderedDict
+from djpcms.core.orms import mapper
 from djpcms.utils.py2py3 import iteritems
 
 from .globals import *
@@ -59,19 +60,22 @@ of a :class:`Factory`'''
     
     def __init__(self, data = None, files = None,
                  initial = None, prefix = None,
-                 factory = None):
+                 factory = None, model = None,
+                 instance = None):
         self.is_bound = data is not None or files is not None
         self.factory = factory
         self.rawdata = data
         self._files = files
         self.initial = initial
         self.prefix = prefix or ''
+        self.model = model
+        self.instance = instance
     
     @property
     def data(self):
         self._validate()
         return self._data
-
+    
     @property
     def cleaned_data(self):
         self._validate()
@@ -96,6 +100,9 @@ of a :class:`Factory`'''
             return prefix
         else:
             return ''
+    
+    def additional_data(self):
+        return None
         
     def _validate(self):
         if hasattr(self,'_data'):
@@ -103,12 +110,16 @@ of a :class:`Factory`'''
         self._data = data = {}
         cleaned = {}
         self._errors = errors = {}
-        tempdata = self.rawdata.copy()
+        rawdata = self.additional_data()
+        if rawdata:
+            rawdata.update(self.rawdata)
+        else:
+            rawdata = self.rawdata
         self._fields = fields = []
         
         prefix = self.prefix
-        np = len(prefix) 
         initial = self.initial
+        is_bound = self.is_bound
         
         for name,field in iteritems(self.base_fields):
             key = name
@@ -116,19 +127,33 @@ of a :class:`Factory`'''
                 key = prefix+name
             fields.append(BoundField(self,field,name,key))
             
-            if self.is_bound:
+            if is_bound:
+                if key in rawdata:
+                    value = rawdata[key]
+                else:
+                    value = nodata
                 try:
-                    value = field.clean(tempdata.pop(key,nodata))
+                    value = field.clean(value, self)
                     cleaned[name] = value
-                except ValidationError:
-                    errors.append(field)
+                except ValidationError as e:
+                    errors[name] = (field,e)
                 data[name] = value
             
             elif name in initial:
                 data[name] = initial[name]
+                
+        if is_bound and not errors:
+            self._cleaned_data = cleaned
+        
+        # Invoke the form clean method. Usefull for last minute
+        # checking or cross field checking
+        self.clean()
             
     def is_valid(self):
         return self.is_bound and not self.errors
+    
+    def clean(self):
+        pass
     
     def render(self):
         layout = self.factory.layout
@@ -136,8 +161,16 @@ of a :class:`Factory`'''
             layout = DefaultLayout()
             self.factory.layout = layout
         return layout.render(self)
-
-
+    
+    def save(self, commit = True):
+        '''Save the form. This method works if an instance or a model is available'''
+        if self.instance or self.model:
+            if self.instance:
+                model = self.instance.__class__
+            else:
+                model = self.model
+            mapper(model).save(self.cleaned_data, self.instance)
+                
 
 class HtmlForm(object):
     
@@ -145,7 +178,6 @@ class HtmlForm(object):
         self.form_class = form_class
         self.layout = layout
         self.model = model
-        
     
         
 class BoundField(object):

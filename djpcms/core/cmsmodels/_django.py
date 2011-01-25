@@ -16,7 +16,7 @@ from django.utils.translation import ugettext_lazy as _
 from djpcms.template import Template, mark_safe
 from djpcms.core.page import PageInterface, BlockInterface
 from djpcms.core.permissions import has_permission, get_view_permission
-from djpcms.fields import SlugCode
+from djpcms.apps.djangosite.fields import SlugCode
 from djpcms.utils import lazyattr, force_str, htmltype
 from djpcms.utils.func import PathList
 from djpcms.uploads import uploader, storage_manager
@@ -95,7 +95,7 @@ class CssPageInfo(TimeStamp):
     
 class Page(TimeStamp, PageInterface):
     '''The page model holds several information regarding pages in the sitemap.'''
-    site        = models.ForeignKey(Site)
+    site        = models.ForeignKey(Site, null = True, blank = True)
     '''Site to which the page belongs.'''
     application_view = models.CharField(max_length = 200, blank = True)
     '''Name of the :class:`djpcms.views.appview.AppViewBase` owner of the page. It can be empty, in which case the page is a ``flat`` page (not part of an application).'''

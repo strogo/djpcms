@@ -13,28 +13,28 @@ from djpcms.core.permissions import has_permission
 from djpcms.utils import force_str
 from djpcms.template import mark_safe, escape, conditional_escape
 
-from .base import ModelTypeWrapper, _boolean_icon, nicerepr, BaseOrmWrapper
+from .base import _boolean_icon, nicerepr, BaseOrmWrapper
 
 
 class OrmWrapper(BaseOrmWrapper):
     
-    def setup(self):
-        self.model_to_dict = model_to_dict
-        
-    def test(self):
-        if not isinstance(self.model,ModelBase):
-            raise ValueError
-
-
-class ModelType(ModelTypeWrapper):
-    '''Wrapper for django models'''
     def setup(self):
         model_admin = site._registry.get(self.model,None)
         self.model_admin = model_admin
         self.meta = self.model._meta
         self.module_name = self.meta.module_name
         self.app_label   = self.meta.app_label
-        appmodel = self.appmodel
+        #
+        self.model_to_dict = model_to_dict
+        self._label_for_field = lambda name: label_for_field(name, self.model, self.model_admin)
+        
+    def test(self):
+        if not isinstance(self.model,ModelBase):
+            raise ValueError
+        
+    def set_application(self, appmodel):
+        super(OrmWrapper,self).set_application(appmodel)
+        model_admin = self.model_admin
         list_display = appmodel.list_display
         list_display_links = appmodel.list_display_links
         search_fields = appmodel.search_fields
@@ -83,14 +83,7 @@ class ModelType(ModelTypeWrapper):
     def get_delete_permission(self):
         opts = self.meta
         return opts.app_label + '.' + opts.get_delete_permission()
-        
-    def _label_for_field(self, name):
-        return label_for_field(name, self.model, self.model_admin)
 
-    def test(self, model):
-        if not isinstance(model,ModelBase):
-            raise ValueError
-        
     def _getrepr(self, name, instance):
         try:
             f, attr, value = lookup_field(name, instance, self.model_admin)
@@ -119,40 +112,3 @@ class ModelType(ModelTypeWrapper):
                 else:
                     result_repr = display_for_field(value, f)
         return result_repr
-    
-    
-    def model_to_dict(instance, fields=None, exclude=None):
-        """
-        Returns a dict containing the data in ``instance`` suitable for passing as
-        a Form's ``initial`` keyword argument.
-        
-        ``fields`` is an optional list of field names. If provided, only the named
-        fields will be included in the returned dict.
-        
-        ``exclude`` is an optional list of field names. If provided, the named
-        fields will be excluded from the returned dict, even if they are listed in
-        the ``fields`` argument.
-        """
-        # avoid a circular import
-        from django.db.models.fields.related import ManyToManyField
-        opts = instance._meta
-        data = {}
-        for f in opts.fields + opts.many_to_many:
-            if not f.editable:
-                continue
-            if fields and not f.name in fields:
-                continue
-            if exclude and f.name in exclude:
-                continue
-            if isinstance(f, ManyToManyField):
-                # If the object doesn't have a primry key yet, just use an empty
-                # list for its m2m fields. Calling f.value_from_object will raise
-                # an exception.
-                if instance.pk is None:
-                    data[f.name] = []
-                else:
-                    # MultipleChoiceWidget needs a list of pks, not object instances.
-                    data[f.name] = [obj.pk for obj in f.value_from_object(instance)]
-            else:
-                data[f.name] = f.value_from_object(instance)
-        return data
