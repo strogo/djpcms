@@ -1,28 +1,27 @@
 from stdnet.orm import StdNetType, model_to_dict
 
+from djpcms.utils.py2py3 import iteritems
 
-from .base import BaseOrmWrapper, ModelTypeWrapper
+from .base import BaseOrmWrapper
 
 
 class OrmWrapper(BaseOrmWrapper):
     
     def setup(self):
+        self.meta = self.model._meta
+        self.objects     = self.model.objects
+        self.module_name = self.meta.name
+        self.app_label   = self.meta.app_label
+        #
         self.model_to_dict = model_to_dict
+        self.get = self.objects.get
+        self.all = self.objects.all
+        self.filter = self.objects.filter
         
     def test(self):
         if not isinstance(self.model,StdNetType):
             raise ValueError
-        
-
-
-class ModelType(ModelTypeWrapper):
-    '''Wrapper for stdnet models.'''
-    def setup(self):
-        self.meta = self.model._meta
-        appmodel = self.appmodel
-        self.module_name = self.meta.name
-        self.app_label   = self.meta.app_label
-        
+            
     def get_view_permission(self):
         return '%s_view' % self.meta.basekey()
     
@@ -34,18 +33,12 @@ class ModelType(ModelTypeWrapper):
     
     def get_delete_permission(self):
         return '%s_delete' % self.meta.basekey()
-    
-    def _label_for_field(self, name):
-        return name
-    
-    def test(self, model):
-        if not isinstance(model,StdNetType):
-            raise ValueError
         
-    def _getrepr(self, name, instance):
-        attr = getattr(instance,name,None)
-        if callable(attr):
-            return attr()
+    def save(self, data, instance = None, commit = True):
+        if not instance:
+            instance = self.model(**data)
         else:
-            return attr
+            for name,value in iteritems(data):
+                setattr(instance,name,value)
+        return instance.save(commit)
     

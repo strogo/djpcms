@@ -91,7 +91,7 @@ class Site(ModelBase):
     
 class Page(TimeStamp, PageInterface):
     '''The page model holds several information regarding pages in the sitemap.'''
-    site        = field.ForeignKey(Site)
+    site        = field.ForeignKey(Site, required = False)
     application_view = field.SymbolField(required = False)
     redirect_to = field.ForeignKey('self',
                                    required  = False,

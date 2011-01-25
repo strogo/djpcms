@@ -1,27 +1,10 @@
 from djpcms.core.exceptions import ModelException
+from djpcms.utils.py2py3 import itervalues
  
 from .base import *
 
-_models = {}
-_modelwrappers = {}
-
-try:
-    from ._django import ModelType, OrmWrapper
-    _modelwrappers['django'] = OrmWrapper
-    _models['django'] = ModelType
-except:
-    pass
-
-try:
-    from ._stdnet import ModelType, OrmWrapper
-    _modelwrappers['stdnet'] = OrmWrapper
-    _models['stdnet'] = ModelType
-except:
-    pass
-
-
-def register(name,wrapper):
-    _models[name] = wrapper
+register_wrapper('django')
+register_wrapper('stdnet')
 
 
 def getmodel(appmodel):
@@ -34,33 +17,33 @@ def getmodel(appmodel):
     raise ModelException('Model {0} not recognised'.format(appmodel))
 
 
-def orm_wrapper(model):
-    for wrapper in _modelwrappers.itervalues():
-        try:
-            return wrapper(model)
-        except:
-            continue
-        
-        
-class orm_method(object):
-    
-    def __init__(self, name):
-        self.method_name = name
-    
-    def __call__(self, model, *args, **kwargs):
-        if not isinstance(model,type):
-            instance = model
-            model = instance.__class__
-        wrapper = getattr(model,'_djpcms_orm_wrapper',None)
+def mapper(model):
+    '''Return an instance of a ORM djpcms wrapper'''
+    if not isinstance(model,type):
+        instance = model
+        model = instance.__class__
+    wrapper = getattr(model,'_djpcms_orm_wrapper',None)
+    if not wrapper:
+        for wrapper in itervalues(modelwrappers):
+            try:
+                wrapper = wrapper(model)
+                break
+            except ValueError:
+                continue
         if not wrapper:
-            wrapper = orm_wrapper(model)
-            if not wrapper:
-                raise AttributeError
-            else:
-                setattr(model,'_djpcms_orm_wrapper',wrapper)
-        return getattr(wrapper,self.method_name)(model, *args, **kwargs)
-
-        
-            
-model_to_dict = orm_method('model_to_dict')
+            raise AttributeError
+        else:
+            setattr(model,'_djpcms_orm_wrapper',wrapper)
+    return wrapper
+    
+    
+def getid(obj):
+    '''If ``obj`` is an instance of a ORM it returns its id'''
+    if obj:
+        try:
+            return obj.id
+        except AttributeError, SyntaxError:
+            return obj
+    else:
+        return obj
         

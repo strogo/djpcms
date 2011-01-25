@@ -7,8 +7,7 @@ from djpcms.utils.importer import import_module
 from djpcms.plugins import SimpleWrap
 from djpcms.forms import cms
 from djpcms.forms.utils import fill_form_data
-from djpcms.models import Page
-from djpcms.apps.included.user import UserClass
+from djpcms.core import api
 from djpcms.core.exceptions import *
 
 from BeautifulSoup import BeautifulSoup
@@ -21,7 +20,7 @@ class TestCase(unittest.TestCase):
 Must be used as a base class for TestCase classes'''
     client_class = Client
     urlbase   = '/'
-    Page = Page
+    api = api
     sites = sites
     _env = None
     
@@ -61,7 +60,7 @@ Must be used as a base class for TestCase classes'''
     def clear(self, db = False):
         '''If db is set to True it clears the database pages'''
         if db:
-            self.Page.objects.all().delete()
+            self.api.all().delete()
         else:
             sites.clear()
 
@@ -123,11 +122,14 @@ class TestCaseWithUser(TestCase):
     def _pre_setup(self):
         super(TestCaseWithUser,self)._pre_setup()
         p = self.get()['page']
-        self.superuser = UserClass().create_super('testuser', 'test@testuser.com', 'testuser')
-        self.user = UserClass().create('simpleuser', 'simple@testuser.com', 'simpleuser')
         self.assertEqual(p.url,'/')
-        #if not hasattr(self,'fixtures'):
-        #    self.assertEqual(Page.objects.all().count(),1)
+        User = self.site.User
+        if User:
+            self.superuser = User.create_super('testuser', 'test@testuser.com', 'testuser')
+            self.user = User.create('simpleuser', 'simple@testuser.com', 'simpleuser')
+        else:
+            self.superuser = None
+            self.user = None
             
     def editurl(self, url):
         return '/{0}{1}'.format(self.site.settings.CONTENT_INLINE_EDITING['preurl'],url)

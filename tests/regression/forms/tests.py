@@ -21,5 +21,3 @@ class SimpleForm(TestCase):
         self.assertEqual(form.data['username'],'pinco')
         self.assertEqual(form.data['password'],'blabla')
         
-    def testvalidPageForm(self):
-        

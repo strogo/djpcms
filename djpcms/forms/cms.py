@@ -1,4 +1,4 @@
-from djpcms import get_site, forms
+from djpcms import sites, get_site, forms, empty_choice
 from djpcms.utils import force_str, slugify
 from djpcms.models import Page, BlockContent, ObjectPermission, Site
 from djpcms.plugins import get_plugin, plugingenerator, wrappergenerator
@@ -72,14 +72,38 @@ def CalculatePageUrl(data, page):
         url += '/'
     if not url.startswith('/'):
         url = '/%s' % url
-    return url
-    
+    return url    
+
+
+def application_view_for_parent(form):
+    yield empty_choice
+    parent = form.parent
+    if parent:
+        yield empty_choice
+    else:
+        # No parent, must be root page
+        app = sites.resolve('/')
+        if app:
+            yield (app.name,app.name)
+        else:
+            yield empty_choice
 
 
 class PageForm(forms.Form):
+    site = forms.ModelChoiceField(widget = forms.HiddenInput, required = False)
     link = forms.CharField(required = False)
+    url_pattern = forms.CharField(required = False)
+    application_view = forms.ChoiceField(choices = application_view_for_parent,
+                                         required = False)
     
+    def __init__(self, **kwargs):
+        self.parent = kwargs.pop('parent',None)
+        super(PageForm,self).__init__(**kwargs)
     
+    def additional_data(self):
+        if self.parent:
+            return {'parent': self.parent.id}
+        
     def clean_application_view(self, app):
         '''If application type is specified, than it must be unique
         '''
@@ -174,9 +198,11 @@ class PageForm(forms.Form):
         
     def clean(self):
         cd = self.cleaned_data
-        site = cd['site']
-        url = CalculatePageUrl(cd,self.instance)
-        pages = Page.objects.filter(url = url, site = site)
+        if not self.parent:
+            url = '/'
+            pages = self.mapper.filter(url = '/')
+        else:
+            pages = Page.objects.filter(url = url, site = site)
         if pages:
             page = pages[0]
             if self.instance != page:
@@ -289,11 +315,11 @@ class NewChildForm(forms.Form):
     def save(self, commit = True):
         return self.page_form.save()
 
+
 def ferrors(errdict):
     for el in errdict.itervalues():
         for e in el:
             yield e
-
 
 
 def _getid(obj):
@@ -304,31 +330,6 @@ def _getid(obj):
             return obj
     else:
         return obj
-        
-
-def create_page(parent = None, user = None, inner_template = None, commit = True, **kwargs):
-    '''Shortcut function for creating pages'''
-    form = PageForm()
-    data = forms.model_to_dict(form.instance, form._meta.fields, form._meta.exclude)
-    data.update(**kwargs)
-    user = _getid(user)
-    if parent:
-        if not user:
-            user = parent.user
-        if not inner_template:
-            inner_template = parent.inner_template
-        parent = parent.id
-    inner_template = _getid(inner_template)
-    data.update({'parent':parent,'user':user, 'inner_template': inner_template})
-    f = PageForm(data = data)
-    if f.is_valid():
-        if commit:
-            return f.save(commit = commit)
-        else:
-            return f
-    else:
-        err = ' '.join(ferrors(f._errors))
-        raise forms.ValidationError(err)
         
 
 ContentBlockHtmlForm = forms.HtmlForm(

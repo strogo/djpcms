@@ -1,55 +1,39 @@
-import inspect
 from datetime import date, datetime
 
-from django.utils.dateformat import format as date_format, time_format
-
 from djpcms import sites
+from djpcms.utils.dateformat import format as date_format, time_format
 from djpcms.utils import force_str, significant_format
-from djpcms.template import loader, mark_safe, escape, conditional_escape
+from djpcms.utils.importer import import_module
+from djpcms.template import loader, mark_safe, conditional_escape
 
 
 __all__ = ['BaseOrmWrapper',
-           'ModelInterface',
-           'ModelTypeWrapper',
            'nicerepr',
            '_boolean_icon',
+           'register_wrapper',
+           'modelwrappers',
            'nicerepr',
            'table']
 
 
+modelwrappers = {}
 
-class BaseOrmWrapper(object):
-    
-    def __init__(self, model):
-        self.model = model
-        self.test()
-        self.setup()
-        
-    def setup(self):
-        pass
-    
-    def test(self):
-        raise NotImplementedError
- 
- 
-class ModelInterface(object):
-    '''An interface class for models'''
-    
-    def underlying(self):
-        return self
-    
-    def save(self):
-        raise NotImplementedError
-    
-    @classmethod
-    def miid(cls):
-        return cls.__miid__
-    
-    @classmethod
-    def modelclass(cls):
-        return self.__class__
- 
- 
+
+def register_wrapper(name):
+    '''Register a new Object Relational Mapper to Djpcms. ``name`` is the
+dotted path to a python module containing a class named ``OrmWrapper``
+derived from :class:`BaseOrmWrapper`.'''
+    names = name.split('.')
+    if len(names) == 1:
+        mod_name = 'djpcms.core.orms._' + name
+    else:
+        mod_name = name
+    try:
+        mod = import_module(mod_name)
+    except ImportError:
+        return
+    modelwrappers[name] = mod.OrmWrapper
+
 
 BOOLEAN_MAPPING = {True: {'icon':'ui-icon-check','name':'yes'},
                    False: {'icon':'ui-icon-close','name':'no'}}
@@ -80,7 +64,6 @@ def nicerepr(val, nd = 3):
             return val
 
 
-
 def nice_items_id(items, id = None, nd = 3):
     return {'id': id,
             'display': (nicerepr(c,nd) for c in items)}
@@ -105,29 +88,51 @@ def table(headers, queryset_or_list, djp, model = None, nd = 3):
             'items': items}
 
 
-
-
-class ModelTypeWrapper(object):
-    '''Base class for wrapping Object Relational Mapping models'''
-    def __init__(self, appmodel):
-        model = self.get_model(appmodel._model)
-        self.test(model)
+class BaseOrmWrapper(object):
+    
+    def __init__(self, model):
+        self.model = model
+        self.appmodel = None
+        self.test()
+        self.setup()
+        
+    def setup(self):
+        pass
+    
+    def test(self):
+        raise NotImplementedError
+    
+    def set_application(self, appmodel):
+        self.appmodel = appmodel
         self.list_display = appmodel.list_display or []
         self.object_display = appmodel.object_display or self.list_display
         self.list_display_links = appmodel.list_display_links or []
         self.search_fields = appmodel.search_fields or []
-        self.appmodel = appmodel
-        self.model = model
-        self.setup()
-    
-    def get_model(self, model):
-        if inspect.isfunction(model):
-            model = model()
-        if inspect.isclass(model) and issubclass(model,ModelInterface):
-            model = model.modelclass()
-        return model
-    
-    def test(self, model):
+        
+    def getrepr(self, name, instance):
+        attr = getattr(instance,name,None)
+        if hasattr(attr,'__call__'):
+            return attr()
+        else:
+            return attr
+        
+    def totable(self, obj):
+        '''Render an object as definition list.'''
+        label_for_field = self.label_for_field
+        getrepr = self.getrepr
+        def data():
+            for field in self.object_display:
+                name = label_for_field(field)
+                yield {'name':name,'value':getrepr(field,obj)}
+        content = {'module_name':self.module_name,
+                   'id':self.get_object_id(obj),
+                   'data':data(),
+                   'item':obj}
+        return loader.render_to_string(['%s/%s_table.html' % (self.app_label,self.module_name),
+                                        'djpcms/components/object_definition.html'],
+                                        content)
+            
+    def model_to_dict(self, instance, fields = None, exclude = None):
         raise NotImplementedError
     
     def _label_for_field(self, name):
@@ -216,22 +221,5 @@ class ModelTypeWrapper(object):
     def get_object_id(self, obj):
         return '%s-%s' % (self.module_name,obj.id)
     
-    def totable(self, obj):
-        '''Render an object as definition list.'''
-        label_for_field = self.label_for_field
-        getrepr = self.getrepr
-        def data():
-            for field in self.object_display:
-                name = label_for_field(field)
-                yield {'name':name,'value':getrepr(field,obj)}
-        content = {'module_name':self.module_name,
-                   'id':self.get_object_id(obj),
-                   'data':data(),
-                   'item':obj}
-        return loader.render_to_string(['%s/%s_table.html' % (self.app_label,self.module_name),
-                                        'djpcms/components/object_definition.html'],
-                                        content)
-            
-    def model_to_dict(self, instance, fields = None, exclude = None):
+    def save(self, data, instance = None, commit = True):
         raise NotImplementedError
-        

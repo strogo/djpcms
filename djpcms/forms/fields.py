@@ -7,7 +7,8 @@ __all__ = ['Field',
            'CharField',
            'BooleanField',
            'DateField',
-           'ChoiceField']
+           'ChoiceField',
+           'ModelChoiceField']
 
 
 def standard_validation_error(field,value):
@@ -60,25 +61,26 @@ class Field(object):
         if f.name in form.initial:
             f.value = form.initial[self.name]
         else:
-            self.value = novalue
+            self.value = nodata
         return f
     
-    def clean(self, value):
+    def clean(self, value, form):
         if value == nodata or not value:
-            if not required:
+            if not self.required:
                 default = self.default
                 if hasattr(default,'__call__'):
-                    default = default()
+                    default = default(form)
                 return default
             else:
-                raise ValidationError(self.validation_error(self,novalue))
-        return self._clean(value)
+                raise ValidationError(self.validation_error(self,nodata))
+        return self._clean(value, form)
     
-    def _clean(self, value):
+    def _clean(self, value, form):
         return value
         
         
 class CharField(Field):
+    default = ''
     
     def _handle_params(self, max_length = 30, **kwargs):
         if not max_length:
@@ -126,6 +128,7 @@ class DateField(Field):
 class ChoiceField(Field):
     
     def _handle_params(self, choices = None, **kwargs):
+        '''Choices is an iterable or a callable which takes the form as only argument'''
         self.choices = choices
         self._raise_error(kwargs)
     

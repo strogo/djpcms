@@ -1,5 +1,5 @@
 from django import template
-from djpcms.core.models import nicerepr, table
+from djpcms.core.orms import nicerepr, table
 
 register = template.Library()
 
