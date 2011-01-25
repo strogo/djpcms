@@ -8,7 +8,7 @@ try:
 except ImportError:
     import zip
 
-from djpcms import models as CMS
+from djpcms.core import api
 from djpcms.utils.translation import ugettext as _
 from djpcms.template import loader, RequestContext
 from djpcms.forms import autocomplete
@@ -256,7 +256,7 @@ Usage::
         return False if not page else page.soft_root
         
     def get_page(self, djp):
-        pages = CMS.get_for_application(djp,self.code)
+        pages = api.get_for_application(djp,self.code)
         if pages:
             if len(pages) == 1:
                 return pages[0]

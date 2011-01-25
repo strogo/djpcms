@@ -7,7 +7,7 @@ from copy import deepcopy
 
 from djpcms import forms
 from djpcms.template import loader, mark_safe
-from djpcms.core.models import getmodel
+from djpcms.core.orms import getmodel
 from djpcms.core.urlresolvers import ResolverMixin
 from djpcms.core.exceptions import PermissionDenied, ApplicationUrlException
 from djpcms.utils import slugify
@@ -162,12 +162,16 @@ No reason to change this default unless you really don't want to see the views i
                        name  = view_name)
             urls.append(nurl)
         self._urls = tuple(urls)
+        self.registration_done()
     
     def __repr__(self):
         return '%s: %s' % (self.__class__.__name__,self.baseurl)
     
     def __str__(self):
         return self.__repr__()
+    
+    def registration_done(self):
+        pass
     
     def getview(self, code):
         '''Get an application view from the view code.'''

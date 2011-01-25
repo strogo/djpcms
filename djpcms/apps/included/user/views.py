@@ -2,7 +2,6 @@ from djpcms.contrib import messages
 from djpcms.views import appview
 from djpcms.utils.ajax import jredirect
 from djpcms.forms.utils import saveform
-from djpcms.apps.included.user.user import UserClass
 
 from forms import LoginForm, PasswordChangeForm
 
@@ -22,7 +21,7 @@ class LogoutView(appview.ModelView):
         url     = params.get('next',None) or '/'
         user    = request.user
         if user.is_authenticated():
-            UserClass().logout(request)
+            self.model.logout(request)
         return djp.http.HttpResponseRedirect(url)
 
 

@@ -5,7 +5,6 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth import authenticate, login
 
 from djpcms import forms
-from djpcms.apps.included.user import UserClass
 
 
 class LoginForm(forms.Form):

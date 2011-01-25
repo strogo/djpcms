@@ -2,7 +2,6 @@ import sys
 import logging
 
 from djpcms import sites
-from djpcms.core.models import ModelInterface
 from djpcms.template import escape
 from djpcms.core.exceptions import BlockOutOfBound
 from djpcms.core.permissions import has_permission, get_view_permission
@@ -15,7 +14,7 @@ def block_htmlid(pageid, block):
     return 'djpcms-block-{0}-{1}'.format(pageid,block)
 
 
-class PageInterface(ModelInterface):
+class PageInterface(object):
     '''Page object interface'''
     
     def numblocks(self):

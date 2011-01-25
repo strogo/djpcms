@@ -1,6 +1,18 @@
-from stdnet.orm import StdNetType
+from stdnet.orm import StdNetType, model_to_dict
 
-from .base import ModelTypeWrapper
+
+from .base import BaseOrmWrapper, ModelTypeWrapper
+
+
+class OrmWrapper(BaseOrmWrapper):
+    
+    def setup(self):
+        self.model_to_dict = model_to_dict
+        
+    def test(self):
+        if not isinstance(self.model,StdNetType):
+            raise ValueError
+        
 
 
 class ModelType(ModelTypeWrapper):

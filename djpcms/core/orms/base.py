@@ -8,12 +8,28 @@ from djpcms.utils import force_str, significant_format
 from djpcms.template import loader, mark_safe, escape, conditional_escape
 
 
-__all__ = ['ModelInterface',
+__all__ = ['BaseOrmWrapper',
+           'ModelInterface',
            'ModelTypeWrapper',
            'nicerepr',
            '_boolean_icon',
            'nicerepr',
            'table']
+
+
+
+class BaseOrmWrapper(object):
+    
+    def __init__(self, model):
+        self.model = model
+        self.test()
+        self.setup()
+        
+    def setup(self):
+        pass
+    
+    def test(self):
+        raise NotImplementedError
  
  
 class ModelInterface(object):
@@ -87,7 +103,9 @@ def table(headers, queryset_or_list, djp, model = None, nd = 3):
     
     return {'labels': labels,
             'items': items}
-        
+
+
+
 
 class ModelTypeWrapper(object):
     '''Base class for wrapping Object Relational Mapping models'''

@@ -1,8 +1,4 @@
-from djpcms import sites
-from djpcms.apps.included import archive, user
-from djpcms.apps.included.static import Static
-
-from stdnet.contrib.sessions.models import User
+from djpcms.apps.included import archive
 
 from .models import Issue
 
@@ -23,12 +19,7 @@ class IssueTraker(archive.ArchiveApplication):
                       (5, 'Low'),
                       )
     
-    
-appurls = (
-           Static(sites.settings.MEDIA_URL, show_indexes=True),
-           user.UserApplication(User, '/accounts/'),
-           IssueTraker('/',Issue),
-           )
+
     
 
     

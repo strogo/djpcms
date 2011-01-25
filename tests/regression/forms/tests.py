@@ -1,5 +1,6 @@
 from djpcms.test import TestCase
 from djpcms.apps.included.user import LoginForm
+from djpcms.forms.cms import PageForm
 
 
 class SimpleForm(TestCase):
@@ -19,3 +20,6 @@ class SimpleForm(TestCase):
         self.assertTrue(form.is_valid())
         self.assertEqual(form.data['username'],'pinco')
         self.assertEqual(form.data['password'],'blabla')
+        
+    def testvalidPageForm(self):
+        

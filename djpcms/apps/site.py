@@ -187,6 +187,7 @@ class ApplicationSites(ResolverMixin):
         site = self.get_site(url)
         if not site:
             return None
+        return site.get_url(model, view_name, instance = None, **kwargs)
         if not isinstance(model,type):
             instance = model
             model = instance.__class__

@@ -29,6 +29,7 @@ class ApplicationSite(ResolverMixin):
         self.choices = [('','-----------------')]
         self._request_middleware = None
         self._response_middleware = None
+        self.User = None
         self.ModelApplication = ModelApplication
         
     def __repr__(self):
@@ -50,6 +51,8 @@ to the site. If a model is already registered, this will raise AlreadyRegistered
         if name:
             app_module = import_module(name)
             appurls = app_module.appurls
+            if hasattr(appurls,'__call__'):
+                appurls = appurls()
         self.load_initial()
         for application in appurls:
             self.register(application)
@@ -121,6 +124,20 @@ returns the application handler. If the appname is not available, it raises a Ke
     def get_instanceurl(self, instance, view_name = 'view', **kwargs):
         '''Calculate a url given a instance'''
         app = self.for_model(instance.__class__)
+        if app:
+            view = app.getview(view_name)
+            if view:
+                try:
+                    return view.get_url(None, instance = instance, **kwargs)
+                except:
+                    return None
+        return None
+    
+    def get_url(self, model, view_name, instance = None, **kwargs):
+        if not isinstance(model,type):
+            instance = model
+            model = instance.__class__
+        app = self.for_model(model)
         if app:
             view = app.getview(view_name)
             if view:
