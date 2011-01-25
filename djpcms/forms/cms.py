@@ -77,6 +77,8 @@ def CalculatePageUrl(data, page):
 
 
 class PageForm(forms.Form):
+    link = forms.CharField(required = False)
+    
     
     def clean_application_view(self, app):
         '''If application type is specified, than it must be unique
@@ -329,7 +331,7 @@ def create_page(parent = None, user = None, inner_template = None, commit = True
         raise forms.ValidationError(err)
         
 
-ContentBlockHtmlForm = forms.FormFactory(
+ContentBlockHtmlForm = forms.HtmlForm(
     ContentBlockForm,
     model = BlockContent,
     layout = forms.UniForm(
@@ -338,5 +340,5 @@ ContentBlockHtmlForm = forms.FormFactory(
                                          ('requires_login',),
                                          css_class=forms.UniForm.inlineLabels3)
                            )
-    )
+)
     

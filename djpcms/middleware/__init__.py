@@ -1,10 +1,18 @@
-from djpcms.models import get_root
-from djpcms.forms.cms import create_page
+from djpcms.core.api import get_root, create_page
 
 
-class CreateRootPage(object):
+class CreateRootPageAndUser(object):
     
     def process_request(self, request):
+        site = request.site
+        User = site.User
         root = get_root(request)
         if not root:
             root = create_page()
+        if User:
+            users = User.objects.all()
+            if not users:
+                site = request.site
+                url = site.get_url(User,'create')
+                if url:
+                    return site.http.HttpRedirect(url)
