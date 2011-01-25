@@ -26,8 +26,7 @@ def create_page(parent = None, user = None,
                      'inner_template': getid(inner_template),
                      'site':getid(get_current_site())})
     else:
-        data = {'url':'/',
-                'site':get_current_site()}
+        data = {'site':get_current_site()}
         
     f = cms.PageForm(data = data, parent = parent, model = Page)
     if f.is_valid():

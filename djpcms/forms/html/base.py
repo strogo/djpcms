@@ -19,6 +19,7 @@ def flatatt(attrs):
 
 
 class HtmlWidget(BaseMedia):
+    is_hidden = False
     default_style = None
     attributes = {'id':None}
     

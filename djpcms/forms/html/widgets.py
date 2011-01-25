@@ -20,6 +20,7 @@ class SubmitInput(TextInput):
     
     
 class HiddenInput(TextInput):
+    is_hidden = True
     attributes = merge_dict(TextInput.attributes, {'type':'hidden'})
     
     

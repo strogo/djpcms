@@ -8,11 +8,11 @@ def siteapp_choices():
     return get_site().choices
 
 
-def CalculatePageUrl(data, page):
+def CalculatePageUrl(data, mapper, page):
     '''Calculate url for a page'''
     site = get_site()
-    application_view = data.get('application_view','')
-    url_pattern  = data.get('url_pattern','')
+    application_view = data['application_view']
+    url_pattern  = data['url_pattern']
     parent = data['parent']
     website = data['site']
     if application_view:
@@ -20,11 +20,11 @@ def CalculatePageUrl(data, page):
         if not app:
             raise ValueError("Application view %s not available on site." % application_view)
         data['application_view'] = app.code
-        page.application = app.appmodel.name
+        data['application'] = app.appmodel.name
         purl = app.urlbit.url
         if app.isroot():
             url  = app.baseurl
-            root = Page.objects.filter(site = website, level = 0)
+            root = mapper.filter(site = website, level = 0)
             if url == '/':
                 if root:
                     root = root[0]
@@ -75,21 +75,23 @@ def CalculatePageUrl(data, page):
     return url    
 
 
-def application_view_for_parent(form):
-    yield empty_choice
+def application_view_for_parent(bfield):
+    '''Generator of application view choices for a given page form'''
+    form = bfield.form
     parent = form.parent
     if parent:
         yield empty_choice
     else:
         # No parent, must be root page
-        app = sites.resolve('/')
-        if app:
-            yield (app.name,app.name)
-        else:
+        try:
+            site,view,kwargs = sites.resolve('')
+            yield (view.code,view.code)
+        except:
             yield empty_choice
 
 
 class PageForm(forms.Form):
+    '''Inline Editing Page form'''
     site = forms.ModelChoiceField(widget = forms.HiddenInput, required = False)
     link = forms.CharField(required = False)
     url_pattern = forms.CharField(required = False)
@@ -153,25 +155,6 @@ class PageForm(forms.Form):
             return Page.objects.get(id = int(pid))
         else:
             return None
-    
-    
-    def clean_site(self):
-        '''
-        Check for site.
-        If site not provided and the parent page is available, we return the parent page site.
-        Otherwise we return the currenct site.
-        '''
-        site   = self.cleaned_data.get('site',None)
-        parent = self.get_parent()
-        if not site:
-            if not parent:
-                return Site.objects.get_current()
-            else:
-                return parent.site
-        elif parent:
-            return parent.site
-        else:
-            return site
         
     def clean_url_pattern(self):
         '''
@@ -197,17 +180,10 @@ class PageForm(forms.Form):
         return value
         
     def clean(self):
+        '''Further cleaning'''
         cd = self.cleaned_data
-        if not self.parent:
-            url = '/'
-            pages = self.mapper.filter(url = '/')
-        else:
-            pages = Page.objects.filter(url = url, site = site)
-        if pages:
-            page = pages[0]
-            if self.instance != page:
-                raise forms.ValidationError('Page with url %s already in stitemap for site %s.' % (url,site))
-        self.instance.url = url
+        cd['parent'] = self.parent
+        cd['url'] = CalculatePageUrl(cd,self.mapper,self.instance)
         return cd
 
 

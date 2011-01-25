@@ -1,4 +1,5 @@
 from djpcms.views import appsite, appview
+from djpcms.forms import HtmlForm
 from djpcms.apps.included.user.views import *
 
 permission = lambda self, request, obj: False if not request else request.user.is_authenticated()
@@ -19,13 +20,15 @@ there is a common interface for common operations.'''
     logout = LogoutView(parent = 'home')
     change = appview.EditView(regex = 'change',
                               isplugin = True,
-                              parent = 'home')
-    #create = CreateAccountView(regex = 'create',
-    #                           isplugin = True,
-    #                           parent = 'home')
+                              parent = 'home',
+                              form = HtmlForm(PasswordChangeForm))
+    add = appview.AddView(regex = 'create',
+                          isplugin = True,
+                          parent = 'home',
+                          form = HtmlForm(RegisterForm))
     
     def registration_done(self):
-        self.application_site.User = self.model
+        self.application_site.User = self.opts
     
     def objectbits(self, obj):
         if self.userpage:

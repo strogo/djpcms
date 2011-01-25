@@ -97,7 +97,7 @@ class Page(TimeStamp, PageInterface):
                                    required  = False,
                                    related_name = 'redirected_from')
     title       = field.CharField()
-    url_pattern = field.SymbolField()
+    url_pattern = field.SymbolField(required = False)
     link        = field.CharField()
     inner_template = field.ForeignKey(InnerTemplate, required = False)
     template    = field.CharField()
@@ -105,7 +105,7 @@ class Page(TimeStamp, PageInterface):
     cssinfo     = field.ForeignKey(CssPageInfo, required = False)
     is_published = field.BooleanField(default=True)
     # Access
-    requires_login = field.BooleanField()
+    requires_login = field.BooleanField(default = False)
     soft_root = field.BooleanField(default=False)
     parent    = field.ForeignKey('self',
                                   required = False,
@@ -122,12 +122,13 @@ class Page(TimeStamp, PageInterface):
     class Meta:
         app_label = 'djpcms'
 
-    def __unicode__(self):
-        return u'%s%s' % (self.site.domain,self.url)
+    def __repr__(self):
+        return '{0}{1}'.format(self.site.domain,self.url)
+    __str__ = __repr__
     
-    def save(self, **kwargs):
+    def save(self, commit = True):
         self.level = self.get_level()
-        super(Page,self).save(**kwargs)
+        super(Page,self).save(commit = commit)
 
     def published(self):
         return self in Page.objects.published()
