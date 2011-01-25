@@ -8,3 +8,5 @@ def capfirst(x):
         return x
 
 nicename = lambda name : force_str(capfirst(name.replace('-',' ').replace('_',' ')))
+
+

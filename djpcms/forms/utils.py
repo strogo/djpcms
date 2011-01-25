@@ -128,16 +128,12 @@ def get_form(djp,
                       available form class as no inputs associated with it.
                       Default ``None``.
 '''
-    from djpcms.utils.uniforms import UniForm
     request  = djp.request
     own_view = djp.own_view()
-    
-    data = request.POST if request.method == 'POST' else request.GET
+    data = request.data_dict
     prefix = data.get('_prefixed',None)
-    
     save_as_new = data.has_key('_save_as_new')
-    initial  = update_initial(request, form_class, initial,
-                              own_view = own_view)
+    #initial  = update_initial(request, form_class, initial, own_view = own_view)
     
     inputs = getattr(form_class,'submits',None)
     if inputs:

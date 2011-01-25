@@ -40,5 +40,5 @@ class OrmWrapper(BaseOrmWrapper):
         else:
             for name,value in iteritems(data):
                 setattr(instance,name,value)
-        return instance.save(commit)
+        return instance.save(commit = commit)
     

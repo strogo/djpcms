@@ -2,9 +2,12 @@
 
 Several parts are originally from django
 '''
+from copy import deepcopy
+
 from djpcms.utils.collections import OrderedDict
 from djpcms.core.orms import mapper
 from djpcms.utils.py2py3 import iteritems
+from djpcms.utils.text import nicename
 
 from .globals import *
 from .fields import Field
@@ -54,14 +57,13 @@ BaseForm = DeclarativeFieldsMetaclass('BaseForm',(object,),{})
 
 
 class Form(BaseForm):
-    '''base class for forms. This class is created by instances
-of a :class:`Factory`'''
+    '''base class for forms.'''
     prefix_input = '_prefixed'
     
     def __init__(self, data = None, files = None,
                  initial = None, prefix = None,
                  factory = None, model = None,
-                 instance = None):
+                 instance = None, request = None):
         self.is_bound = data is not None or files is not None
         self.factory = factory
         self.rawdata = data
@@ -70,25 +72,31 @@ of a :class:`Factory`'''
         self.prefix = prefix or ''
         self.model = model
         self.instance = instance
+        self.request = request
+        if self.instance:
+            model = self.instance.__class__
+        self.model = model
+        if model:
+            self.mapper = mapper(model)            
     
     @property
     def data(self):
-        self._validate()
+        self._unwind()
         return self._data
     
     @property
     def cleaned_data(self):
-        self._validate()
+        self._unwind()
         return self._cleaned_data
         
     @property
     def errors(self):
-        self._validate()
+        self._unwind()
         return self._errors
     
     @property
     def fields(self):
-        self._validate()
+        self._unwind()
         return self._fields
     
     def get_prefix(self, prefix, data):
@@ -104,7 +112,8 @@ of a :class:`Factory`'''
     def additional_data(self):
         return None
         
-    def _validate(self):
+    def _unwind(self):
+        '''unwind the form by building bound fields and validating if it is bound.'''
         if hasattr(self,'_data'):
             return
         self._data = data = {}
@@ -121,11 +130,14 @@ of a :class:`Factory`'''
         initial = self.initial
         is_bound = self.is_bound
         
+        # Loop over form fields
         for name,field in iteritems(self.base_fields):
             key = name
             if prefix:
                 key = prefix+name
-            fields.append(BoundField(self,field,name,key))
+                
+            bfield = BoundField(self,field,name,key)
+            fields.append(bfield)
             
             if is_bound:
                 if key in rawdata:
@@ -133,7 +145,7 @@ of a :class:`Factory`'''
                 else:
                     value = nodata
                 try:
-                    value = field.clean(value, self)
+                    value = bfield.clean(value)
                     cleaned[name] = value
                 except ValidationError as e:
                     errors[name] = (field,e)
@@ -164,12 +176,7 @@ of a :class:`Factory`'''
     
     def save(self, commit = True):
         '''Save the form. This method works if an instance or a model is available'''
-        if self.instance or self.model:
-            if self.instance:
-                model = self.instance.__class__
-            else:
-                model = self.model
-            mapper(model).save(self.cleaned_data, self.instance)
+        self.mapper.save(self.cleaned_data, self.instance, commit)
                 
 
 class HtmlForm(object):
@@ -181,20 +188,25 @@ class HtmlForm(object):
     
         
 class BoundField(object):
-    "A Field plus data"
+    "A Wrapper containg a form, field and data"
     def __init__(self, form, field, name, html_name):
         self.form = form
-        self.field = field
+        self.field = field.copy(self)
         self.name = name
         self.html_name = html_name
+        self.value = None
         #self.html_initial_name = form.add_initial_prefix(name)
         #self.html_initial_id = form.add_initial_prefix(self.auto_id)
-        #if self.field.label is None:
-        #    self.label = pretty_name(name)
-        #else:
-        #    self.label = self.field.label
+        if field.label is None:
+            self.label = nicename(name)
+        else:
+            self.label = field.label
         self.help_text = field.help_text
-
+        
+    def clean(self, value):
+        self.value = self.field.clean(value, self)
+        return self.value
+        
     def __str__(self):
         return self.as_widget()
 

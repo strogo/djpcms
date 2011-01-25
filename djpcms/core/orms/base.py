@@ -102,6 +102,10 @@ class BaseOrmWrapper(object):
     def test(self):
         raise NotImplementedError
     
+    def __repr__(self):
+        return str(self.model)
+    __str__ = __repr__
+    
     def set_application(self, appmodel):
         self.appmodel = appmodel
         self.list_display = appmodel.list_display or []

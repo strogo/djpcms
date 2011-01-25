@@ -283,36 +283,25 @@ It can be overridden to twick its behaviour.
                      ``djp``. Default ``None``.
 '''
         template = self.form_template
-        if callable(template):
+        if hasattr(template,'__call__'):
             template = template(djp)
         
+        form_class = form_class or self.form
         if instance == False:
             instance = None
         else:
             instance = instance or djp.instance
+            
         if instance:
             model = instance.__class__
         else:
-            model    = kwargs.pop('model',None)
+            model = getattr(form_class,'model',None)
             if not model:
                 model = getattr(self,'model',None)
         request  = djp.request
-        form_withrequest = form_withrequest if form_withrequest is not None else self.form_withrequest
         form_ajax = form_ajax if form_ajax is not None else self.form_ajax
-        
-        form_class = form_class or self.form or forms.ModelForm
-        
-        if isinstance(form_class,type):
-            if forceform or not hasattr(form_class,'_meta'):
-                mform = form_class
-            else:
-                if form_class._meta.model == model:
-                    mform = form_class
-                else:
-                    mform = forms.modelform_factory(model, form_class)
-        
         return get_form(djp,
-                        mform,
+                        form_class,
                         instance = instance,
                         addinputs= self.submit if addinputs else None,
                         model=model,

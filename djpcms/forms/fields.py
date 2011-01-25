@@ -1,4 +1,5 @@
-from copy import deepcopy
+from copy import copy, deepcopy
+
 from djpcms import sites
 
 from .globals import *
@@ -54,29 +55,23 @@ class Field(object):
         keys = list(kwargs)
         if keys:
             raise ValueError('Parameter {0} not recognized'.format(keys[0]))
-        
-    def __call__(self, form):
-        f = deepcopy(self)
-        f.form = form
-        if f.name in form.initial:
-            f.value = form.initial[self.name]
-        else:
-            self.value = nodata
-        return f
     
-    def clean(self, value, form):
+    def clean(self, value, bfield):
+        '''Clean the field value'''
         if value == nodata or not value:
             if not self.required:
                 default = self.default
                 if hasattr(default,'__call__'):
-                    default = default(form)
+                    default = default(bfield)
                 return default
             else:
                 raise ValidationError(self.validation_error(self,nodata))
-        return self._clean(value, form)
-    
-    def _clean(self, value, form):
         return value
+    
+    def copy(self, bfield):
+        result = copy(self)
+        result.widget = deepcopy(self.widget)
+        return result
         
         
 class CharField(Field):
@@ -131,6 +126,28 @@ class ChoiceField(Field):
         '''Choices is an iterable or a callable which takes the form as only argument'''
         self.choices = choices
         self._raise_error(kwargs)
+        
+    def clean(self, value, bfield):
+        '''Clean the field value'''
+        if value == nodata:
+            ch = self.choices
+            if not hasattr(ch,'__getitem__'):
+                ch = list(ch)
+                self.choices = ch
+            if ch:
+                value = ch[0][0]
+                return value
+        return super(ChoiceField,self).clean(value, bfield)
+        
+    def copy(self, bfield):
+        ch = self.choices
+        self.choices = None
+        result = super(ChoiceField,self).copy(bfield)
+        self.choices = ch
+        if hasattr(ch,'__call__'):
+            ch = ch(bfield)
+        result.choices = ch
+        return result
     
     
 class BooleanField(Field):
@@ -145,10 +162,7 @@ class BooleanField(Field):
     
     
 class ModelChoiceField(ChoiceField):
-    
-    def _handle_params(self, query = None, **kwargs):
-        self.query = query
-        self._raise_error(kwargs)
+    pass
 
 
 

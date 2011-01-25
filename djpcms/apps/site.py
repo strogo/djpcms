@@ -226,7 +226,7 @@ class ApplicationSites(ResolverMixin):
                 for middleware_method in site.request_middleware():
                     response = middleware_method(request)
                     if response:
-                        http.finish_response(response, environ, start_response)
+                        return http.finish_response(response, environ, start_response)
                 response = djp.response()
                 # Response middleware
                 for middleware_method in site.response_middleware():

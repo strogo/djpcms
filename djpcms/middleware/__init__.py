@@ -10,9 +10,9 @@ class CreateRootPageAndUser(object):
         if not root:
             root = create_page()
         if User:
-            users = User.objects.all()
+            users = User.all()
             if not users:
                 site = request.site
-                url = site.get_url(User,'create')
-                if url:
-                    return site.http.HttpRedirect(url)
+                url = site.get_url(User.model,'add')
+                if url and url != request.path:
+                    return site.http.HttpResponseRedirect(url)
