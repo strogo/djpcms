@@ -180,7 +180,7 @@ Usage::
         self.headers   = headers or self.headers
         self.astable   = astable if astable is not None else self.astable
         if title:
-           self.title = title 
+            self.title = title 
         if table_generator:
             self.table_generator = table_generator
         if renderer:

@@ -1,9 +1,8 @@
 import json
 import unittest
-import signal
 
 import djpcms
-from djpcms import sites, get_site
+from djpcms import sites
 from djpcms.utils.importer import import_module
 from djpcms.plugins import SimpleWrap
 from djpcms.forms import fill_form_data, model_to_dict, cms
@@ -11,39 +10,52 @@ from djpcms.models import Page
 from djpcms.apps.included.user import UserClass
 from djpcms.core.exceptions import *
 
-from django import test
-from django.db.models import get_app, get_apps
-
 from BeautifulSoup import BeautifulSoup
 
-        
+from .client import Client
 
-    
-class DjpCmsTestHandle(test.TestCase):
+
+class TestCase(unittest.TestCase):
     '''Implements shortcut functions for testing djpcms.
 Must be used as a base class for TestCase classes'''
+    client_class = Client
     urlbase   = '/'
     Page = Page
     sites = sites
+    _env = None
     
     def _pre_setup(self):
         sites.settings.TESTING = True
-        super(DjpCmsTestHandle,self)._pre_setup()
-        
-    def _urlconf_setup(self):
-        sites.clear()
-        sett = sites.settings
-        appurls = getattr(self,'appurls',None)
-        self.site = sites.make(sett.SITE_DIRECTORY,
-                               'conf',
-                               route = self.urlbase,
-                               APPLICATION_URL_MODULE = appurls)
+        self.site = self.makesite()
         self.settings = self.site.settings
         sites.load()
-            
-    def _urlconf_teardown(self):
+        if self._env:
+            self._env.pre_setup()
+        
+    def makesite(self):
+        '''Setup the site'''
+        appurls = getattr(self,'appurls',None)
         sites.clear()
-        super(DjpCmsTestHandle,self)._urlconf_teardown()
+        sett = sites.settings
+        return sites.make(sett.SITE_DIRECTORY,
+                          'conf',
+                          route = self.urlbase,
+                          APPLICATION_URL_MODULE = appurls)
+        
+    def __call__(self, result=None):
+        """
+        Wrapper around default __call__ method to perform common Django test
+        set up. This means that user-defined Test Cases aren't required to
+        include a call to super().setUp().
+        """
+        self.client = self.client_class()
+        self._pre_setup()
+        super(TestCase, self).__call__(result)
+        self._post_teardown()
+            
+    def _post_teardown(self):
+        if self._env:
+            self._env.post_teardown()
     
     def clear(self, db = False):
         '''If db is set to True it clears the database pages'''
@@ -104,9 +116,10 @@ Must be used as a base class for TestCase classes'''
         return BeautifulSoup(doc)
         
         
-class TestCase(DjpCmsTestHandle):
+class TestCaseWithUser(TestCase):
         
-    def setUp(self):
+    def _pre_setup(self):
+        super(TestCaseWithUser,self)._pre_setup()
         p = self.get()['page']
         self.superuser = UserClass().create_super('testuser', 'test@testuser.com', 'testuser')
         self.user = UserClass().create('simpleuser', 'simple@testuser.com', 'simpleuser')
@@ -124,7 +137,7 @@ class TestCase(DjpCmsTestHandle):
             return self.client.login(username = username,password = password)
         
     
-class PluginTest(TestCase):
+class PluginTest(TestCaseWithUser):
     plugin = None
     
     def _pre_setup(self):

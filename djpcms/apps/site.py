@@ -95,12 +95,17 @@ class ApplicationSites(ResolverMixin):
         
         # Import settings
         settings = settings or 'settings'
-        sett = '{0}.py'.format(os.path.join(path,settings))
-        if os.path.isfile(sett):
-            settings_module_name = '{0}.{1}'.format(name,settings)
-            os.environ['DJANGO_SETTINGS_MODULE'] = settings_module_name
+        if '.' in settings:
+            settings_module_name = settings
+            os.environ['DJANGO_SETTINGS_MODULE'] = settings
         else:
-            settings_module_name = None
+            sett = '{0}.py'.format(os.path.join(path,settings))
+            if os.path.isfile(sett):
+                spath, settings = os.path.split(settings)
+                settings_module_name = '{0}.{1}'.format(name,settings)
+                os.environ['DJANGO_SETTINGS_MODULE'] = settings_module_name
+            else:
+                settings_module_name = None
         
         # IMPORTANT! NEED TO IMPORT HERE TO PREVENT DJANGO TO IMPORT FIRST
         settings = get_settings(settings_module_name,
