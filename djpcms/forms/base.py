@@ -16,15 +16,29 @@ from .html import media_property
 
 __all__ = ['Form',
            'HtmlForm',
-           'BoundField']
+           'BoundField',
+           'FormSet']
 
 
-def get_declared_fields(bases, attrs, with_base_fields=True):
-    """Adapted form djago
+class FormSet(object):
+    """A collection of instances of the same Form."""
+    creation_counter = 0
+    def __init__(self, form_class, prefix = ''):
+        self.form_class = form_class
+        self.prefix = ''
+        self.creation_counter = Field.creation_counter
+        FormSet.creation_counter += 1
+
+
+def get_form_meta_data(bases, attrs, with_base_fields=True):
+    """Adapted form django
     """
     fields = [(field_name, attrs.pop(field_name)) for field_name, obj in attrs.items() if isinstance(obj, Field)]
-    fields.sort(key=lambda x: x[1].creation_counter)
-
+    fields = sorted(fields, key=lambda x: x[1].creation_counter)
+    
+    inlines = [(name, attrs.pop(name)) for name, obj in attrs.items() if isinstance(obj, FormSet)]
+    inlines = sorted(inlines, key=lambda x: x[1].creation_counter)
+    
     # If this class is subclassing another Form, add that Form's fields.
     # Note that we loop over the bases in *reverse*. This is necessary in
     # order to preserve the correct order of fields.
@@ -37,7 +51,7 @@ def get_declared_fields(bases, attrs, with_base_fields=True):
             if hasattr(base, 'declared_fields'):
                 fields = base.declared_fields.items() + fields
 
-    return OrderedDict(fields)
+    return OrderedDict(fields),OrderedDict(inlines)
 
 
 class DeclarativeFieldsMetaclass(type):
@@ -46,7 +60,9 @@ class DeclarativeFieldsMetaclass(type):
     'base_fields', taking into account parent class 'base_fields' as well.
     """
     def __new__(cls, name, bases, attrs):
-        attrs['base_fields'] = get_declared_fields(bases, attrs)
+        fields,inlines = get_form_meta_data(bases, attrs)
+        attrs['base_fields'] = fields
+        attrs['base_inlines'] = inlines
         new_class = super(DeclarativeFieldsMetaclass,cls).__new__(cls, name, bases, attrs)
         if 'media' not in attrs:
             new_class.media = media_property(new_class)
@@ -73,6 +89,7 @@ class Form(BaseForm):
         self.model = model
         self.instance = instance
         self.request = request
+        
         if self.instance:
             model = self.instance.__class__
         self.model = model
@@ -180,11 +197,15 @@ class Form(BaseForm):
                 
 
 class HtmlForm(object):
-    
+    '''An HTML class Factory Form'''
     def __init__(self, form_class, layout = None, model = None):
         self.form_class = form_class
         self.layout = layout
         self.model = model
+        
+    def __call__(self, data = None, files = None,
+                 initial = None, prefix = None,
+                 instance = None, request = None,):
     
         
 class BoundField(object):

@@ -9,8 +9,7 @@ from djpcms.utils import force_str, gen_unique_id
 from djpcms.utils.dateformat import format
 from djpcms.utils.ajax import jredirect, jremove
 
-from .htmlold import input
-
+from .html import HiddenInput
 
 logger = logging.getLogger('djpcms.forms')
 
@@ -103,7 +102,7 @@ def update_initial(request, form_class, initial = None,
 
 
 def get_form(djp,
-             form_class,
+             form_factory,
              method = 'POST',
              initial = None,
              prefix = None,
@@ -114,12 +113,13 @@ def get_form(djp,
              form_withrequest = None,
              template = None,
              form_ajax = False,
-             withinputs = False):
+             withinputs = False,
+             force_prefix = False):
     '''Comprehensive method for building a
-:class:`djpcms.utils.uniforms.UniForm` instance:
+:class:`djpcms.forms.HtmlForm` instance:
     
 :parameter djp: instance of :class:`djpcms.views.DjpResponse`.
-:parameter form_class: required form class.
+:parameter form_factory: A required instance of :class:`djpcms.forms.HtmlForm`.
 :parameter method: optional string indicating submit method. Default ``POST``.
 :parameter initial: If not none, a dictionary of initial values.
 :parameter prefix: Optional prefix string to use in the form.
@@ -135,40 +135,35 @@ def get_form(djp,
     save_as_new = data.has_key('_save_as_new')
     #initial  = update_initial(request, form_class, initial, own_view = own_view)
     
-    inputs = getattr(form_class,'submits',None)
+    inputs = getattr(form_factory,'submits',None)
     if inputs:
         inputs = [input(value = val, name = nam) for val,nam in inputs]
     elif addinputs:
         inputs = addinputs(instance, own_view)
         
-    if not prefix:
-        prefix = gen_unique_id()
-        inputs.append(input(value = prefix, name = '_prefixed', type = 'hidden'))
-                
-    f     = form_class(**form_kwargs(request     = request,
-                                     initial     = initial,
-                                     instance    = instance,
-                                     prefix      = prefix,
-                                     withdata    = withdata,
-                                     withrequest = form_withrequest,
-                                     method      = method,
-                                     own_view    = own_view,
-                                     save_as_new = save_as_new,
-                                     inputs      = inputs if withinputs else None))
+    if not withinputs:
+        inputs = []
         
-    wrap = UniForm(f,
-                   request  = request,
-                   instance = instance,
-                   action   = djp.url,
-                   inputs   = inputs,
-                   template = template,
-                   save_as_new = save_as_new)
+    if not prefix and force_prefix:
+        prefix = gen_unique_id()
+        pinput = form_factory.prefixinput(gen_unique_id())
+        inputs.append(pinput)
+                
+    f     = form_factory(**form_kwargs(request     = request,
+                                       initial     = initial,
+                                       instance    = instance,
+                                       prefix      = prefix,
+                                       withdata    = withdata,
+                                       withrequest = form_withrequest,
+                                       method      = method,
+                                       own_view    = own_view,
+                                       save_as_new = save_as_new,
+                                       inputs      = inputs))
     if form_ajax:
-        wrap.addClass(djp.css.ajax)
-    wrap.is_ajax = request.is_ajax()
+        f.addClass(djp.css.ajax)
     if model:
-        wrap.addClass(str(model._meta).replace('.','-'))
-    return wrap
+        f.addClass(str(model._meta).replace('.','-'))
+    return f
 
     
 def saveform(djp, editing = False, force_redirect = False):
