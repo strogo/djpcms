@@ -17,6 +17,7 @@ __all__ = ['BaseOrmWrapper',
 
 
 modelwrappers = {}
+model_from_hash = {}
 
 
 def register_wrapper(name):
@@ -95,6 +96,8 @@ class BaseOrmWrapper(object):
         self.appmodel = None
         self.test()
         self.setup()
+        self.hash = self._hash()
+        model_from_hash[self.hash] = model
         
     def setup(self):
         pass
@@ -105,6 +108,9 @@ class BaseOrmWrapper(object):
     def __repr__(self):
         return str(self.model)
     __str__ = __repr__
+    
+    def _hash(self):
+        raise NotImplementedError
     
     def set_application(self, appmodel):
         self.appmodel = appmodel

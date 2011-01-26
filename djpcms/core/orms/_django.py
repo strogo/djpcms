@@ -1,3 +1,5 @@
+import hashlib
+
 from django.db.models.base import ModelBase
 from django.forms.models import model_to_dict
 from django.db import models
@@ -21,12 +23,17 @@ class OrmWrapper(BaseOrmWrapper):
     def setup(self):
         model_admin = site._registry.get(self.model,None)
         self.model_admin = model_admin
-        self.meta = self.model._meta
-        self.module_name = self.meta.module_name
-        self.app_label   = self.meta.app_label
+        self.meta = meta = self.model._meta
+        self.module_name = meta.module_name
+        self.app_label   = meta.app_label
         #
+        #Calculate the Hash id of metaclass `meta`
         self.model_to_dict = model_to_dict
         self._label_for_field = lambda name: label_for_field(name, self.model, self.model_admin)
+        
+    def _hash(self):
+        sha = hashlib.sha1('django({0})'.format(self.meta))
+        return sha.hexdigest()
         
     def test(self):
         if not isinstance(self.model,ModelBase):

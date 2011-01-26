@@ -6,12 +6,15 @@ from .base import BaseOrmWrapper
 
 
 class OrmWrapper(BaseOrmWrapper):
+    '''Djpcms ORM wrapper for stdnet
     
+    https://github.com/lsbardel/python-stdnet'''
     def setup(self):
-        self.meta = self.model._meta
+        self.meta = meta = self.model._meta
         self.objects     = self.model.objects
-        self.module_name = self.meta.name
-        self.app_label   = self.meta.app_label
+        self.module_name = meta.name
+        self.app_label   = meta.app_label
+        self.hash = meta.hash
         #
         self.model_to_dict = model_to_dict
         self.get = self.objects.get
@@ -22,6 +25,9 @@ class OrmWrapper(BaseOrmWrapper):
         if not isinstance(self.model,StdNetType):
             raise ValueError
             
+    def _hash(self):
+        return self.meta.hash
+    
     def get_view_permission(self):
         return '%s_view' % self.meta.basekey()
     

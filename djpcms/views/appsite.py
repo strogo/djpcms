@@ -5,7 +5,7 @@ The main object handle several subviews used for searching, adding and manipulat
 '''
 from copy import deepcopy
 
-from djpcms import forms
+from djpcms.forms import Form, HtmlForm
 from djpcms.template import loader, mark_safe
 from djpcms.core.orms import mapper
 from djpcms.core.urlresolvers import ResolverMixin
@@ -282,11 +282,14 @@ It can be overridden to twick its behaviour.
                      passed to the form constructor. If ``None`` the instance will be obtained from
                      ``djp``. Default ``None``.
 '''
-        template = self.form_template
-        if hasattr(template,'__call__'):
-            template = template(djp)
-        
+        # Check the Form Class
         form_class = form_class or self.form
+        if not form_class:
+            raise ValueError("Form class not defined in {0}".format(self))
+        elif isinstance(form_class,Form):
+            form_class = HtmlForm(Form)
+        
+        # Check instance and model    
         if instance == False:
             instance = None
         else:
@@ -298,7 +301,8 @@ It can be overridden to twick its behaviour.
             model = getattr(form_class,'model',None)
             if not model:
                 model = getattr(self,'model',None)
-        request  = djp.request
+        form_class.model = model
+        
         form_ajax = form_ajax if form_ajax is not None else self.form_ajax
         return get_form(djp,
                         form_class,
@@ -306,8 +310,6 @@ It can be overridden to twick its behaviour.
                         addinputs= self.submit if addinputs else None,
                         model=model,
                         form_ajax=form_ajax,
-                        form_withrequest=form_withrequest,
-                        template=template,
                         **kwargs)
         
     def submit(self, instance, own_view = False):

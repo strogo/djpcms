@@ -1,6 +1,9 @@
 import logging
 
+# List of installed application. These must be dotted python paths
 INSTALLED_APPS                  = []
+# Dictionary used to configure applications
+INSTALLED_APPS_CONF             = {}
 APPLICATION_URL_MODULE          = None
 LANGUAGE_REDIRECT               = False
 HTML_CLASSES                    = None
