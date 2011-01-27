@@ -3,12 +3,14 @@ from copy import copy, deepcopy
 from djpcms import sites, nodata
 
 from .globals import *
+from .html import TextInput
 
 __all__ = ['Field',
            'CharField',
            'BooleanField',
            'DateField',
            'ChoiceField',
+           'IntegerField',
            'ModelChoiceField']
 
 
@@ -21,6 +23,7 @@ def standard_validation_error(field,value):
 
 class Field(object):
     default = None
+    widget = None
     creation_counter = 0
     
     def __init__(self,
@@ -37,7 +40,7 @@ class Field(object):
         self.validation_error = validation_error or standard_validation_error
         self.help_text = help_text
         self.label = label
-        self.widget = widget
+        self.widget = widget or self.widget
         self._handle_params(**kwargs)
         # Increase the creation counter, and save our local copy.
         self.creation_counter = Field.creation_counter
@@ -60,13 +63,19 @@ class Field(object):
         '''Clean the field value'''
         if value == nodata or not value:
             if not self.required:
-                default = self.default
-                if hasattr(default,'__call__'):
-                    default = default(bfield)
-                return default
+                return self.get_default(bfield)
             else:
-                raise ValidationError(self.validation_error(self,nodata))
+                value = self.get_default(bfield)
+                if not value:
+                    raise ValidationError(self.validation_error(self,nodata))
+                return value
         return value
+    
+    def get_default(self, bfield):
+        default = self.default
+        if hasattr(default,'__call__'):
+            default = default(bfield)
+        return default
     
     def copy(self, bfield):
         result = copy(self)
@@ -76,6 +85,7 @@ class Field(object):
 
 class CharField(Field):
     default = ''
+    widget = TextInput
     
     def _handle_params(self, max_length = 30, **kwargs):
         if not max_length:
@@ -93,6 +103,7 @@ class CharField(Field):
 
 
 class IntegerField(Field):
+    widget = TextInput
     
     def _handle_params(self, validator = None, **kwargs):
         self.validator = validator
@@ -109,6 +120,7 @@ class IntegerField(Field):
         
         
 class DateField(Field):
+    widget = TextInput
     
     def _clean(self, value):
         try:
@@ -163,18 +175,4 @@ class BooleanField(Field):
     
 class ModelChoiceField(ChoiceField):
     pass
-
-
-
-to_implement = ['FloatField',
-           'DateTimeField',
-           'BooleanField',
-           'CharField',
-           'FileField',
-           'RegexField',
-           'EmailField',
-           'ChoiceField',
-           'LazyAjaxChoice',
-           'ModelCharField',
-           'SlugField']
 

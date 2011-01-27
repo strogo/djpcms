@@ -1,22 +1,21 @@
 from djpcms import test
-from djpcms.apps.included.user import LoginForm
+from .forms import SimpleForm
 
 
-class SimpleForm(test.TestCase):
+class TestSimpleForm(test.TestCase):
     
     def testSimpleFactory(self):
-        self.assertTrue(len(LoginForm.base_fields),2)
-        form = LoginForm()
+        self.assertTrue(len(SimpleForm.base_fields),2)
+        form = SimpleForm()
         self.assertFalse(form.is_bound)
         self.assertFalse(form.is_valid())
         
     def testValidSimpleBound(self):
         prefix = 'sjkdcbksdjcbdf-'
-        form = LoginForm(data = {prefix+'username':'pinco',
-                                 prefix+'password':'blabla'},
+        form = SimpleForm(data = {prefix+'name':'pinco'},
                          prefix = prefix)
         self.assertTrue(form.is_bound)
         self.assertTrue(form.is_valid())
-        self.assertEqual(form.data['username'],'pinco')
-        self.assertEqual(form.data['password'],'blabla')
+        self.assertEqual(form.data['name'],'pinco')
+        self.assertTrue(form.data['age'])
         

@@ -4,6 +4,7 @@ Several parts are originally from django
 '''
 from copy import deepcopy
 
+from djpcms import nodata
 from djpcms.utils.collections import OrderedDict
 from djpcms.core.orms import mapper
 from djpcms.utils.py2py3 import iteritems

@@ -78,6 +78,10 @@ On the top level directory type::
 
 	python runtests.py
 	
+For options in running tests type::
+
+    python runtests.py --help
+	
 To access coverage of tests you need to install the coverage_ package and run the tests using::
 
 	coverage run runtests.py

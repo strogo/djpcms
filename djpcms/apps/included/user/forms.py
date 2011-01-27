@@ -1,5 +1,4 @@
 from djpcms import sites, forms
-from djpcms.forms.util import ErrorList
 
 
 class LoginForm(forms.Form):
@@ -53,7 +52,8 @@ class RegisterForm(forms.Form):
         password = data.get("password")
         re_type  = data.get("re_type")
         if password != re_type:
-            self._errors["re_type"] = ErrorList(["Passwords don't match. Please try again."])
+            self._errors["re_type"] = forms.List(data=["Passwords don't match. Please try again."],
+                                                 cn=sites.settings.HTML_CLASSES.errorlist)
             try:
                 del data["re_type"]
             except:
