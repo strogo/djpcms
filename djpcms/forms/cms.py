@@ -319,4 +319,3 @@ ContentBlockHtmlForm = forms.HtmlForm(
                                            css_class=uniforms.inlineLabels3)
                            )
 )
-

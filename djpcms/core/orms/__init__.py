@@ -16,9 +16,7 @@ def getmodel(appmodel):
         except:
             continue
     raise ModelException('Model {0} not recognised'.format(appmodel))
-
-
-def mapper(model):
+def mapper(model):
     '''Return an instance of a ORM djpcms wrapper'''
     if not isinstance(model,type):
         instance = model

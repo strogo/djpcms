@@ -72,7 +72,6 @@ Must be used as a base class for TestCase classes'''
             page = create_page()
             self.assertTrue(page.pk)
             return page
-        
         #data = model_to_dict(form.instance, form._meta.fields, form._meta.exclude)
         data = {}
         data.update(**kwargs)

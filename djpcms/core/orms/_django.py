@@ -121,5 +121,3 @@ class OrmWrapper(BaseOrmWrapper):
                 else:
                     result_repr = display_for_field(value, f)
         return result_repr
-
-    

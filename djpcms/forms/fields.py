@@ -72,8 +72,8 @@ class Field(object):
         result = copy(self)
         result.widget = deepcopy(self.widget)
         return result
-        
-        
+
+
 class CharField(Field):
     default = ''
     

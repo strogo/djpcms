@@ -13,3 +13,12 @@ class FormException(DjpcmsException):
 
 class ValidationError(Exception):
     pass
+
+
+class NoData(object):
+    def __repr__(self):
+        return '<NoData>'
+    __str__ = __repr__
+
+
+nodata = NoData()
