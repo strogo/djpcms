@@ -1,9 +1,8 @@
-from djpcms.test import TestCase
+from djpcms import test
 from djpcms.apps.included.user import LoginForm
-from djpcms.forms.cms import PageForm
 
 
-class SimpleForm(TestCase):
+class SimpleForm(test.TestCase):
     
     def testSimpleFactory(self):
         self.assertTrue(len(LoginForm.base_fields),2)

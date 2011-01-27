@@ -3,6 +3,7 @@ import sys
 import copy
 import logging
 
+import djpcms
 from djpcms.conf import get_settings
 from djpcms.core.exceptions import AlreadyRegistered, PermissionDenied,\
                                    ImproperlyConfigured
@@ -49,6 +50,7 @@ of djpcms routes'''
         self.sites = OrderedDict()
         self.modelwrappers = {}
         self.model_from_hash = {}
+        self.User = None
 
     def register_orm(self, name):
         '''Register a new Object Relational Mapper to Djpcms. ``name`` is the
@@ -103,9 +105,7 @@ of djpcms routes'''
         return urls
     
     def make(self, name, settings = None, route = None, clearlog = True, **kwargs):
-        '''Initialise DjpCms from a directory or a file'''
-        import djpcms
-        #
+        '''Create a new DjpCms site from a directory or a file'''
         # if not a directory it may be a file
         if os.path.isdir(name):
             appdir = name
@@ -163,7 +163,7 @@ of djpcms routes'''
         site = self.get(url,None)
         if site:
             raise AlreadyRegistered('Site with url {0} already avalable "{1}"'.format(url,site))
-        site = appsites.ApplicationSite(url,settings)
+        site = appsites.ApplicationSite(self, url, settings)
         self.sites[site.route] = site
         self._urls = None
         return site

@@ -1,6 +1,7 @@
 from threading import Lock
 
-from djpcms.core.exceptions import DjpcmsException, AlreadyRegistered, ApplicationNotAvailable
+from djpcms.core.exceptions import DjpcmsException, AlreadyRegistered,\
+                                   ImproperlyConfigured, ApplicationNotAvailable
 from djpcms.views.appsite import Application, ModelApplication
 from djpcms.utils.collections import OrderedDict
 from djpcms.utils.importer import import_module, module_attribute
@@ -18,8 +19,9 @@ class ApplicationSite(ResolverMixin):
     An instance of this class is used to handle url of
     registered applications.
     '''
-    def __init__(self, url, config):
+    def __init__(self, root, url, config):
         self.lock = Lock()
+        self.root = root
         self.route = url
         self.url = url
         self.config = config
@@ -31,13 +33,21 @@ class ApplicationSite(ResolverMixin):
         self.choices = [('','-----------------')]
         self._request_middleware = None
         self._response_middleware = None
-        self.User = None
         self.ModelApplication = ModelApplication
         
     def __repr__(self):
         return '{0} - {1}'.format(self.route,'loaded' if self.isloaded else 'not loaded')
     __str__ = __repr__
-        
+    
+    def __get_User(self):
+        return self.root.User
+    def __set_User(self, User):
+        if not self.root.User:
+            self.root.User = User
+        elif User is not self.root.User:
+            raise ImproperlyConfigured('A different User class has been already registered')
+    User = property(__get_User,__set_User)
+    
     def load_initial(self):
         baseurl = self.config.CONTENT_INLINE_EDITING.get('pagecontent', '/content/')
         self.register(ContentSite(baseurl, BlockContent, editavailable = False))

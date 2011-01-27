@@ -11,8 +11,6 @@ __all__ = ['flatatt',
 def attrsiter(attrs):
     for k,v in attrs.items():
         if v:
-            if k == 'class':
-                v = ' '.join(v)
             yield ' {0}="{1}"'.format(k, conditional_escape(v))
                 
                 
@@ -29,8 +27,9 @@ is derived from this class. Any Operation on this class is similar to jQuery.'''
     inline = False
     attributes = {'id':None}
     
-    def __init__(self, cn = None, template = None, **kwargs):
+    def __init__(self, tag = None, cn = None, template = None, **kwargs):
         attrs = {}
+        self.tag = tag or self.tag
         self.template = template
         for attr,value in iteritems(self.attributes):
             if attr in kwargs:
@@ -55,32 +54,25 @@ is derived from this class. Any Operation on this class is similar to jQuery.'''
     def attrs(self):
         return self.__attrs
     
-    def addClasses(self, cn, splitter = ' '):
-        cns = cn.split(splitter)
-        for cn in cns:
-            self.addClass(cn)
-        return self
-    
     def addClass(self, cn):
         if cn:
-            cn = slugify(cn)
-        if cn:
-            self.__classes.add(cn)
+            add = self.__classes.add
+            for cn in cn.split():
+                cn = slugify(cn)
+                add(cn)
         return self
     
     def hasClass(self, cn):
         return cn in self.__classes
                 
     def removeClass(self, cn):
+        '''remove a class name from attributes
         '''
-        remove a class name from attributes
-        '''
-        css = self._attrs['class'].split(' ')
-        for i in range(0,len(css)):
-            if css[i] == cn:
-                css.pop(i)
-                break
-        self._attrs['class'] = ' '.join(css)
+        if cn:
+            ks = self.__classes
+            for cn in cn.split():
+                if cn in ks:
+                    ks.remove(cn)
         return self
     
     def render(self):

@@ -6,7 +6,8 @@ from .base import HtmlWidget
 __all__ = ['TextInput',
            'SubmitInput',
            'HiddenInput',
-           'PasswordInput']
+           'PasswordInput',
+           'List']
 
 class TextInput(HtmlWidget):
     tag = 'input'
@@ -28,3 +29,17 @@ class HiddenInput(TextInput):
     
 class PasswordInput(TextInput):
     attributes = merge_dict(TextInput.attributes, {'type':'password'})
+    
+
+class List(HtmlWidget,list):
+    tag = 'ul'
+    inline = False
+    def __init__(self, data = None, **kwargs):
+        HtmlWidget.__init__(self,**kwargs)
+        if data:
+            list.__init__(self, data)
+        else:
+            list.__init__(self)
+    
+    def inner(self):
+        return '\n'.join(('<li>' + elem + '</li>' for elem in self))

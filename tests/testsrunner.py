@@ -30,11 +30,13 @@ def get_tests(test_type):
 def import_tests(tags, test_type, can_fail):
     model_labels = []
     INSTALLED_APPS = sites.settings.INSTALLED_APPS
+    tried = 0
     for loc,app in get_tests(test_type):
         model_label = '{0}.{1}'.format(loc,app)
         if tags and app not in tags:
             logger.debug("Skipping model %s" % model_label)
             continue
+        tried += 1
         logger.info("Importing model {0}".format(model_label))
         if loc == 'contrib':
             model_label = 'djpcms.'+model_label
@@ -47,6 +49,10 @@ def import_tests(tags, test_type, can_fail):
         else:
             raise ValueError('Application {0} already in INSTALLED_APPS.'
                              .format(model_label))
+            
+    if not tried:
+        print('Could not find any tests. Aborting.')
+        exit()
         
     sites.setup_environment()
     # Now lets try to import the tests module them

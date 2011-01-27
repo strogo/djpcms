@@ -1,17 +1,12 @@
-
-from django.forms.util import ErrorList
-from django.contrib.auth import forms as authforms
-from django.utils.translation import ugettext_lazy as _
-from django.contrib.auth import authenticate, login
-
-from djpcms import forms
+from djpcms import sites, forms
+from djpcms.forms.util import ErrorList
 
 
 class LoginForm(forms.Form):
     '''The Standard login form
     '''
     username   = forms.CharField(max_length=30,
-                                 widget=forms.TextInput(attrs={'class':'autocomplete-off'}))
+                                 widget=forms.TextInput(cn = 'autocomplete-off'))
     password   = forms.CharField(max_length=60,widget=forms.PasswordInput)
 
     submits = (('Sign in','login_user'),)
@@ -24,33 +19,33 @@ class LoginForm(forms.Form):
         msg  = ''
         username = data.get('username',None)
         password = data.get('password',None)
-        if username and password:
-            user = UserClass().authenticate(username = username, password = password)
-            if user is not None and user.is_authenticated():
-                if user.is_active():
-                    user.login(request)
-                    try:
-                        request.session.delete_test_cookie()
-                    except:
-                        pass
-                    data['user'] = user
-                    return data
-                else:
-                    msg = '%s is not active' % username
+        User = sites.User
+        if not User:
+            raise forms.ValidationError('No user')
+        user = User.authenticate(username = username, password = password)
+        if user is not None and user.is_authenticated():
+            if user.is_active():
+                user.login(request)
+                try:
+                    request.session.delete_test_cookie()
+                except:
+                    pass
+                data['user'] = user
+                return data
             else:
-                msg = 'username or password not recognized'
+                msg = '%s is not active' % username
         else:
-            return data
+            msg = 'username or password not recognized'
         raise forms.ValidationError(msg)
     
 
 class RegisterForm(forms.Form):
     username = forms.CharField(max_length=32)
-    #username = NewUserName(min_length=5,
-    #                       max_length=32,
-    #                       help_text="Minimum of 6 characters in length")
-    password = forms.CharField(max_length=32, widget=forms.PasswordInput)
-    re_type  = forms.CharField(max_length=32, widget=forms.PasswordInput,label="Re-enter password")
+    password = forms.CharField(max_length=32,
+                               widget=forms.PasswordInput)
+    re_type  = forms.CharField(max_length=32,
+                               widget=forms.PasswordInput,
+                               label="Re-enter password")
     #email_address = UniqueEmail(help_text="This will be used for confirmation only.")
     
     def clean(self):

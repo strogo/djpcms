@@ -12,3 +12,7 @@ class TestSites(test.TestCase):
     def testLoadError(self):
         '''No sites created. Load should raise an error'''
         self.assertRaises(ImproperlyConfigured,self.sites.load)
+        
+    def testUser(self):
+        sites = self.sites
+        self.assertEqual(sites.User,None)

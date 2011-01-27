@@ -5,8 +5,6 @@ from djpcms.apps.included.user.views import *
 permission = lambda self, request, obj: False if not request else request.user.is_authenticated()
 
 
-
-
 class UserApplication(appsite.ModelApplication):
     '''This is a special Application since it deals with users and therefore is everywhere.
 No assamtion has been taken of which model it is used for storing user data as long as
