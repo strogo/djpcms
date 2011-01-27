@@ -11,7 +11,7 @@ from djpcms.utils.ajax import jservererror, jredirect
 from djpcms.utils.html import grid960, box
 from djpcms.forms.utils import saveform, get_form
 from djpcms.forms import cms
-from djpcms.utils import UnicodeObject, htmltype, logerror
+from djpcms.utils import htmltype, logerror
 from djpcms.utils.media import Media
 from djpcms.views.response import DjpResponse
 from djpcms.views.contentgenerator import BlockContentGen
@@ -32,9 +32,8 @@ and a Page instance, it calculates a new response object.'''
         return None
 
 
-# THE DJPCMS INTERFACE CLASS for handling views
-# the response method handle all the views in djpcms
-class djpcmsview(UnicodeObject):
+# THE DJPCMS BASE CLASS for handling views
+class djpcmsview(object):
     '''Base class for handling http requests.
     
     .. attribute:: _methods

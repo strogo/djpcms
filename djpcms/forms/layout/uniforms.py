@@ -3,16 +3,17 @@ from djpcms.contrib import messages
 from djpcms.template import loader, RequestContext, mark_safe
 from djpcms.utils.ajax import jhtmls
 
-from .media import BaseMedia
-from .base import FormWidget
+from .base import FormLayout, BaseMedia
 
 
-__all__ = ['UniFormElement',
-           'Fieldset',
-           'Row',
-           'Columns',
-           'Html',
-           'UniForm']
+inlineLabels   = 'inlineLabels'
+inlineLabels2  = 'inlineLabels fullwidth'
+inlineLabels3  = 'inlineLabels auto'
+blockLabels    = 'blockLabels'
+blockLabels2   = 'blockLabels2'
+inlineFormsets = 'blockLabels2'
+nolabel        = 'nolabel'
+default_style  = 'inlineLabels'
 
 
 def default_csrf():
@@ -56,7 +57,7 @@ def render_form_field(field, form, layout, css_class):
     return html
 
 
-class UniFormElement(BaseMedia):
+class UniFormElement(object):
     '''Base class for elements in a uniform :class:`FormLayout`.
     
     .. attribute:: css_class
@@ -173,18 +174,16 @@ class Html(UniFormElement):
     
 
 
-class UniForm(FormWidget):
+class Layout(FormLayout):
     '''Main class for defining the layout of a uniform.
 '''
-    inlineLabels   = 'inlineLabels'
-    inlineLabels2  = 'inlineLabels fullwidth'
-    inlineLabels3  = 'inlineLabels auto'
-    blockLabels    = 'blockLabels'
-    blockLabels2   = 'blockLabels2'
-    inlineFormsets = 'blockLabels2'
-    nolabel        = 'nolabel'
-    default_style  = 'inlineLabels'
-    
+    def __init__(self, *fields, **kwargs):
+        self.template = kwargs.get('template',None)
+        self.default_style = kwargs.get('default_style',default_style)
+        self._allfields = []
+        self.inlines    = []
+        self.add(*fields)
+        
     def add(self,*fields):
         '''Add *fields* to all fields. A field must be an instance of :class:`UniFormElement`.'''
         for field in fields:
