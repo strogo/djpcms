@@ -1,4 +1,5 @@
 from djpcms import sites, get_site, forms, empty_choice
+from djpcms.forms.layout import uniforms
 from djpcms.utils import force_str, slugify
 from djpcms.models import Page, BlockContent, ObjectPermission, Site
 from djpcms.plugins import get_plugin, plugingenerator, wrappergenerator
@@ -311,11 +312,11 @@ def _getid(obj):
 ContentBlockHtmlForm = forms.HtmlForm(
     ContentBlockForm,
     model = BlockContent,
-    layout = forms.UniForm(
-                           forms.Fieldset('plugin_name','container_type','title','view_permission'),
-                           forms.Columns(('for_not_authenticated',),
-                                         ('requires_login',),
-                                         css_class=forms.UniForm.inlineLabels3)
+    layout = uniforms.Layout(
+                          uniforms.Fieldset('plugin_name','container_type','title','view_permission'),
+                          uniforms.Columns(('for_not_authenticated',),
+                                           ('requires_login',),
+                                           css_class=uniforms.inlineLabels3)
                            )
 )
     

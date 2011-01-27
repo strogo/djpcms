@@ -135,13 +135,13 @@ def get_form(djp,
     save_as_new = data.has_key('_save_as_new')
     #initial  = update_initial(request, form_class, initial, own_view = own_view)
     
-    inputs = getattr(form_factory,'submits',None)
-    if inputs:
-        inputs = [input(value = val, name = nam) for val,nam in inputs]
-    elif addinputs:
-        inputs = addinputs(instance, own_view)
-        
-    if not withinputs:
+    if withinputs:
+        inputs = getattr(form_factory,'submits',None)
+        if inputs:
+            inputs = [input(value = val, name = nam) for val,nam in inputs]
+        elif addinputs:
+            inputs = addinputs(instance, own_view)
+    else:
         inputs = []
         
     if not prefix and force_prefix:
@@ -149,21 +149,26 @@ def get_form(djp,
         pinput = form_factory.prefixinput(gen_unique_id())
         inputs.append(pinput)
                 
-    f     = form_factory(**form_kwargs(request     = request,
+    # Create the form instance
+    form  = form_factory(**form_kwargs(request     = request,
                                        initial     = initial,
                                        instance    = instance,
                                        prefix      = prefix,
                                        withdata    = withdata,
-                                       withrequest = form_withrequest,
                                        method      = method,
-                                       own_view    = own_view,
-                                       save_as_new = save_as_new,
-                                       inputs      = inputs))
+                                       own_view    = own_view))
+    
+    # Get the form HTML Widget
+    widget = form_factory.widget(form,
+                                 inputs = inputs,
+                                 action = djp.url,
+                                 method = method)
+    
     if form_ajax:
-        f.addClass(djp.css.ajax)
+        widget.addClass(djp.css.ajax)
     if model:
-        f.addClass(str(model._meta).replace('.','-'))
-    return f
+        widget.addClass(str(model._meta).replace('.','-'))
+    return widget
 
     
 def saveform(djp, editing = False, force_redirect = False):

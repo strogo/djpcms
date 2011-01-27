@@ -10,6 +10,18 @@ from djpcms.template import Template, mark_safe
 ModelBase = orm.StdModel
 field = orm
 
+def create_new_content(user = None, **kwargs):
+    user_last = None
+    if user and user.is_authenticated():
+        user_last = user
+    ct = SiteContent(user_last = user_last, **kwargs)
+    ct.save()
+    return ct
+
+
+additional_where = ((1, 'head'),
+                    (2, 'body javascript'))
+
 
 class TimeStamp(ModelBase):
     '''Timestamp abstract model class.'''
@@ -199,19 +211,6 @@ class SiteContent(TimeStamp,MarkupMixin):
             user_last = user
         self.user_last = user_last
         self.save()
-        
-    
-def create_new_content(user = None, **kwargs):
-    user_last = None
-    if user and user.is_authenticated():
-        user_last = user
-    ct = SiteContent(user_last = user_last, **kwargs)
-    ct.save()
-    return ct
-
-
-additional_where = ((1, 'head'),
-                    (2, 'body javascript'))
 
 
 class AdditionalPageData(ModelBase):

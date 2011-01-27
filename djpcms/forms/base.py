@@ -11,7 +11,8 @@ from djpcms.utils.text import nicename
 
 from .globals import *
 from .fields import Field
-from .html import media_property
+from .html import media_property, FormWidget
+from .layout import uniforms
 
 
 __all__ = ['Form',
@@ -89,7 +90,6 @@ class Form(BaseForm):
         self.model = model
         self.instance = instance
         self.request = request
-        
         if self.instance:
             model = self.instance.__class__
         self.model = model
@@ -203,9 +203,15 @@ class HtmlForm(object):
         self.layout = layout
         self.model = model
         
-    def __call__(self, data = None, files = None,
-                 initial = None, prefix = None,
-                 instance = None, request = None,):
+    def __call__(self, model = None, **kwargs):
+        return self.form_class(model=model or self.model,**kwargs)
+    
+    def widget(self, form, **kwargs):
+        '''Create a rendable form widget'''
+        layout = self.layout
+        if not layout:
+            self.layout = layout = uniforms.Layout()
+        return FormWidget(form, layout = layout, **kwargs)
     
         
 class BoundField(object):
