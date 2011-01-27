@@ -7,7 +7,7 @@ import djpcms
 # Must be here
 site = djpcms.MakeSite('regression','conf')
 
-from djpcms.test import DjpcmsTestSuiteRunner
+from djpcms.test import TEST_TYPES
 import djpcms.contrib as contrib
 
 logger = logging.getLogger()
@@ -17,11 +17,6 @@ if CUR_DIR not in sys.path:
     sys.path.insert(0,CUR_DIR)
 CONTRIB_DIR = os.path.dirname(contrib.__file__)
 TESTS_DIR   = os.path.join(CUR_DIR,'regression')
-
-LOGGING_MAP = {1: 'CRITICAL',
-               2: 'INFO',
-               3: 'DEBUG'}
-
 ALL_TEST_PATHS = (TESTS_DIR,CONTRIB_DIR)
 
 
@@ -35,7 +30,7 @@ def get_tests():
                 yield (loc,d)
 
 
-def import_tests(tags, settings):
+def import_tests(tags, test_type):
     from django.db.models.loading import get_apps, load_app
     apps = settings.INSTALLED_APPS
     apptests = []
@@ -64,26 +59,28 @@ def import_tests(tags, settings):
                 apps.append(model_label)
     return apptests
 
-
-def setup_logging(verbosity, settings):
-    LOGGING = settings.LOGGING
-    LOGGING['loggers'] = {}
-    root = {}
-    LOGGING['root'] = root
-    level = LOGGING_MAP.get(verbosity,None)
-    if level is None:
-        root['handlers'] = ['silent']
-    else:
-        root['handlers'] = ['console']
-        root['level'] = level
-    djpcms.init_logging(True)
-
         
-def run(tags = None, verbosity = 1, interactive = True, failfast = False):
-    setup_logging(verbosity, site.settings)
-    apptests = import_tests(tags, site.settings)
+def run(tags = None, test_type = None,
+        verbosity = 1, can_fail = True,
+        show_list = False):
+    test_type = test_type or 'regression'
+    if test_type not in TEST_TYPES:
+        print(('Unknown test type {0}. Must be one of {1}.'.format(test_type, ', '.join(TEST_TYPES))))
+        exit()
     
-    test_runner = DjpcmsTestSuiteRunner(verbosity=verbosity,
-                                        interactive=True,
-                                        failfast=failfast)
-    test_runner.run_tests(apptests)
+    TestSuiteRunner = TEST_TYPES[test_type]
+    if not TestSuiteRunner:
+        print(('No test suite for {0}'.format(test_type)))
+        exit()
+    
+    if show_list:
+        n = 0
+        for name in get_tests(test_type):
+            n += 1
+            print(('{0}'.format(name)))
+        print(('\nYou can run {0} different test labels'.format(n)))
+    else:
+        modules = import_tests(tags, test_type, can_fail)
+        runner  = TestSuiteRunner(verbosity = verbosity)
+        runner.run_tests(modules)
+

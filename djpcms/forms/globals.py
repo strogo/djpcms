@@ -1,4 +1,5 @@
-from .html import UniForm as DefaultLayout
+# Uniforms Layout is the Default layout
+from .layout.uniforms import Layout as DefaultLayout
 
 __all__ = ['ValidationError',
            'DefaultLayout',

@@ -1,16 +1,21 @@
 import urllib
-from urlparse import urlparse, urlunparse, urlsplit
 import sys
 import os
 import re
 import mimetypes
 import warnings
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from StringIO import StringIO
 
-from django.conf import settings
+from djpcms.utils.py2py3 import ispy3k
+
+
+if ispy3k():
+    from io import StringIO
+    from urllib.parse import urlparse, urlunparse, urlsplit
+else:
+    from cStringIO import StringIO
+    from urlparse import urlparse, urlunparse, urlsplit
+
+
 from django.contrib.auth import authenticate, login
 from django.core.handlers.base import BaseHandler
 from django.core.handlers.wsgi import WSGIRequest

@@ -12,7 +12,6 @@ from djpcms.utils.text import nicename
 from .globals import *
 from .fields import Field
 from .html import media_property, FormWidget
-from .layout import uniforms
 
 
 __all__ = ['Form',
@@ -210,7 +209,7 @@ class HtmlForm(object):
         '''Create a rendable form widget'''
         layout = self.layout
         if not layout:
-            self.layout = layout = uniforms.Layout()
+            self.layout = layout = DefaultLayout()
         return FormWidget(form, layout = layout, **kwargs)
     
         
