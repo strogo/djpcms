@@ -1,4 +1,7 @@
+'''Media Classes
 
+Originally from django
+'''
 
 __all__ = ['MEDIA_TYPES',
            'Media',

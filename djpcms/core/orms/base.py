@@ -9,8 +9,6 @@ from djpcms.template import loader, mark_safe, conditional_escape
 __all__ = ['BaseOrmWrapper',
            'nicerepr',
            '_boolean_icon',
-           'register_wrapper',
-           'modelwrappers',
            'nicerepr',
            'table']
 
