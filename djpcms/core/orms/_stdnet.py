@@ -1,5 +1,7 @@
 from stdnet.orm import StdNetType, model_to_dict
+from stdnet.orm import register_applications
 
+from djpcms import sites
 from djpcms.utils.py2py3 import iteritems
 
 from .base import BaseOrmWrapper
@@ -47,4 +49,8 @@ class OrmWrapper(BaseOrmWrapper):
             for name,value in iteritems(data):
                 setattr(instance,name,value)
         return instance.save(commit = commit)
+    
+    @classmethod
+    def setup_environment(cls):
+        register_applications(sites.settings.INSTALLED_APPS)
     

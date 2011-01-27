@@ -9,13 +9,12 @@ from djpcms import sites
 from djpcms.core.permissions import inline_editing, get_view_permission, has_permission
 from djpcms.utils.ajax import jservererror, jredirect
 from djpcms.utils.html import grid960, box
+from djpcms.forms import Media
 from djpcms.forms.utils import saveform, get_form
-from djpcms.forms import cms
 from djpcms.utils import htmltype, logerror
-from djpcms.utils.media import Media
 from djpcms.views.response import DjpResponse
 from djpcms.views.contentgenerator import BlockContentGen
-from djpcms.template import mark_safe, Context, loader
+from djpcms.template import loader
 from djpcms.core.exceptions import PermissionDenied
 
 from .utils import view_edited_url
@@ -168,7 +167,7 @@ Hooks:
                 cb['content%s' % b] = BlockContentGen(djp, b)
             
             # Call the inner-template renderer
-            inner = page.inner_template.render(Context(cb, autoescape=False))
+            inner = page.inner_template.render(loader.context(cb, autoescape=False))
         else:
             # No page or no inner_template. Get the inner content directly
             inner = self.render(djp)
@@ -438,6 +437,7 @@ This view is never in navigation and it provides a hook for adding the edit page
             return False
         
     def extra_content(self, djp, c):
+        from djpcms.forms import cms
         page = djp.page
         request = djp.request
         page_url = self.page_url(djp.request)

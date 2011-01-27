@@ -1,6 +1,6 @@
 from copy import copy, deepcopy
 
-from djpcms import sites
+from djpcms import sites, nodata
 
 from .globals import *
 

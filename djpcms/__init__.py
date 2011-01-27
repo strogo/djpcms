@@ -22,11 +22,13 @@ import os
 import sys
 from .apps import *
 from .http import serve
+from .conf import nodata
 
 parent = lambda x : os.path.split(x)[0]
 this_dir = parent(os.path.abspath(__file__))
 path_dir = parent(this_dir)
 libs = []
+
 
 def install_lib(basepath, dirname, module_name):
     try:

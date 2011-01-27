@@ -1,17 +1,16 @@
 import os
-import djpcms_defaults
+
+from djpcms.conf import djpcms_defaults
 from djpcms.utils.importer import import_module
 from djpcms.ajaxhtml import ajaxhtml
 
 
-class NoValue(object):
-    
+class NoData(object):
     def __repr__(self):
-        return '<No Value>'
+        return '<NoData>'
     __str__ = __repr__
     
-    
-_novalue = NoValue()
+nodata = NoData()
 
 
 class DjpcmsConfig(object):
@@ -43,9 +42,9 @@ class DjpcmsConfig(object):
         v = self._values
         for sett in dir(mod):
             if sett == sett.upper():
-                default = v.get(sett, _novalue)
+                default = v.get(sett, nodata)
                 val     = getattr(mod, sett)
-                if default is _novalue or override:
+                if default is nodata or override:
                     v[sett] = val
                     
             

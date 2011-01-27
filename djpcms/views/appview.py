@@ -10,7 +10,7 @@ except ImportError:
 
 from djpcms.core import api
 from djpcms.utils.translation import ugettext as _
-from djpcms.template import loader, RequestContext
+from djpcms.template import loader
 from djpcms.forms import autocomplete
 from djpcms.forms.utils import saveform, deleteinstance
 from djpcms.utils.html import Paginator

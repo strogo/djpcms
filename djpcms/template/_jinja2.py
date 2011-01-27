@@ -3,10 +3,10 @@ from djpcms.core.exceptions import ImproperlyConfigured
 
 import jinja2
 
-from .base import BaseTemplateHandler
+from .base import LibraryTemplateHandler
 
 
-class TemplateHandler(BaseTemplateHandler):
+class TemplateHandler(LibraryTemplateHandler):
     
     def setup(self):
         self.template_class = jinja2.Template

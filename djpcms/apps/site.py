@@ -4,7 +4,8 @@ import copy
 import logging
 
 from djpcms.conf import get_settings
-from djpcms.core.exceptions import AlreadyRegistered, PermissionDenied
+from djpcms.core.exceptions import AlreadyRegistered, PermissionDenied,\
+                                   ImproperlyConfigured
 from djpcms.utils.importer import import_module, import_modules
 from djpcms.utils import logerror
 from djpcms.utils.collections import OrderedDict
@@ -38,13 +39,31 @@ class editHandler(ResolverMixin):
 
 
 class ApplicationSites(ResolverMixin):
-    '''This class is used as a singletone and holds information of djpcms routes'''
+    '''This class is used as a singletone and holds information
+of djpcms routes'''
     
     def __init__(self):
         self._settings = None
         self._default_settings = None
         self.route = None
         self.sites = OrderedDict()
+        self.modelwrappers = {}
+        self.model_from_hash = {}
+
+    def register_orm(self, name):
+        '''Register a new Object Relational Mapper to Djpcms. ``name`` is the
+    dotted path to a python module containing a class named ``OrmWrapper``
+    derived from :class:`BaseOrmWrapper`.'''
+        names = name.split('.')
+        if len(names) == 1:
+            mod_name = 'djpcms.core.orms._' + name
+        else:
+            mod_name = name
+        try:
+            mod = import_module(mod_name)
+        except ImportError:
+            return
+        self.modelwrappers[name] = mod.OrmWrapper
         
     def __get_settings(self):
         if not self._settings:
@@ -55,10 +74,16 @@ class ApplicationSites(ResolverMixin):
             return self._settings
     settings = property(__get_settings)
     
+    def setup_environment(self):
+        for wrapper in self.modelwrappers.values():
+            wrapper.setup_environment()
+        
     def _load(self):
         '''Load sites'''
         #from djpcms.apps.cache import PageCache
         #self.pagecache = PageCache()
+        if not self.sites:
+            raise ImproperlyConfigured('No sites registered.')
         settings = self.settings
         for site in self.sites.values():
             #site.pagecache = self.pagecache
@@ -101,13 +126,10 @@ class ApplicationSites(ResolverMixin):
         settings = settings or 'settings'
         if '.' in settings:
             settings_module_name = settings
-            os.environ['DJANGO_SETTINGS_MODULE'] = settings
         else:
             sett = '{0}.py'.format(os.path.join(path,settings))
             if os.path.isfile(sett):
-                spath, settings = os.path.split(settings)
                 settings_module_name = '{0}.{1}'.format(name,settings)
-                os.environ['DJANGO_SETTINGS_MODULE'] = settings_module_name
             else:
                 settings_module_name = None
         
@@ -141,7 +163,7 @@ class ApplicationSites(ResolverMixin):
         site = self.get(url,None)
         if site:
             raise AlreadyRegistered('Site with url {0} already avalable "{1}"'.format(url,site))
-        site = appsites.ApplicationSite(self.makeurl(url),settings)
+        site = appsites.ApplicationSite(url,settings)
         self.sites[site.route] = site
         self._urls = None
         return site

@@ -2,40 +2,38 @@ import json
 import unittest
 
 import djpcms
-from djpcms import sites
-from djpcms.utils.importer import import_module
-from djpcms.plugins import SimpleWrap
-from djpcms.forms import cms
+from djpcms import sites, forms
 from djpcms.forms.utils import fill_form_data
-from djpcms.core import api
 from djpcms.core.exceptions import *
 
 from BeautifulSoup import BeautifulSoup
 
-from .client import Client
+#from .client import Client
 
 
 class TestCase(unittest.TestCase):
     '''Implements shortcut functions for testing djpcms.
 Must be used as a base class for TestCase classes'''
-    client_class = Client
+    #client_class = Client
     urlbase   = '/'
-    api = api
     sites = sites
     _env = None
     
     def _pre_setup(self):
+        from djpcms.core import api
+        self.api = api
         sites.settings.TESTING = True
         self.site = self.makesite()
-        self.settings = self.site.settings
-        sites.load()
+        if self.site:
+            self.settings = self.site.settings
+            sites.load()
         if self._env:
             self._env.pre_setup()
         
     def makesite(self):
         '''Setup the site'''
         appurls = getattr(self,'appurls',None)
-        sites.clear()
+        self.sites.clear()
         sett = sites.settings
         return sites.make(sett.SITE_DIRECTORY,
                           'conf',
@@ -48,7 +46,9 @@ Must be used as a base class for TestCase classes'''
         set up. This means that user-defined Test Cases aren't required to
         include a call to super().setUp().
         """
-        self.client = self.client_class()
+        #self.client = self.client_class()
+        from .client import Client
+        self.client = Client()
         self._pre_setup()
         super(TestCase, self).__call__(result)
         self._post_teardown()
@@ -65,7 +65,14 @@ Must be used as a base class for TestCase classes'''
             sites.clear()
 
     def makepage(self, view = None, model = None, bit = '', parent = None, fail = False, **kwargs):
-        form = cms.PageForm()
+        create_page = self.api.create_page
+        if fail:
+            self.assertRaises(forms.ValidationError, create_page)
+        else:
+            page = create_page()
+            self.assertTrue(page.pk)
+            return page
+        
         #data = model_to_dict(form.instance, form._meta.fields, form._meta.exclude)
         data = {}
         data.update(**kwargs)
@@ -171,6 +178,7 @@ class PluginTest(TestCaseWithUser):
         self._simplePage()
     
     def testEdit(self):
+        from djpcms.plugins import SimpleWrap
         '''Test the editing view by getting a the view and the editing form
 and sending AJAX requests.'''
         c = self._simplePage()

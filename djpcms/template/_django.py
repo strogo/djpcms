@@ -3,10 +3,10 @@ from django.utils import html
 from django.template import loader, Context, Template
 from django.template import context
 
-from .base import BaseTemplateHandler
+from .base import LibraryTemplateHandler
 
 
-class TemplateHandler(BaseTemplateHandler):
+class TemplateHandler(LibraryTemplateHandler):
     
     def setup(self):
         self.mark_safe = safestring.mark_safe

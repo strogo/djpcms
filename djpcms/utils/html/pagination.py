@@ -1,10 +1,3 @@
-from django.utils.safestring import mark_safe
-from django.utils.http import urlquote
-
-from djpcms.utils.func import data2url
-
-from base import htmlbase
-
 __all__ = ['Paginator']
 
 
@@ -89,51 +82,3 @@ class Paginator(object):
         title = 'page %s from %s to %s' % (p,st,en)
         ul.addlistitem(c, self.url, title = title, cn = cn)
         
-        
-    def legacy_stuff(self):
-        self.addclass('search-pagination')
-        data = data or {}
-        wrap = htmlPlugin(tag = 'div').appendTo(self)
-        info = htmlPlugin(tag = 'p').appendTo(wrap)
-        ul   = linklist().appendTo(wrap)
-        ul.withspan = True
-        
-        infotemplate = infotemplate or 'Display <b>%s</b> - <b>%s</b> of <b>%s</b>' 
-        
-        hentries = max(int(maxentries/2),2)
-        entries  = 2*hentries + 1
-        
-        st1     = start - 1
-        retdata = {}
-        for k,v in data.items():
-            retdata[k] = v
-
-        leftpages = st1 / step
-        startpage = max(leftpages - hentries + 1,1)
-        endelem   =(startpage-1)*step
-        c         = 0
-        
-        # Add the left arrow
-        if startpage > 1:
-            prevend = endelem - step
-            _pagination_entry(ul, self.url, prevend, retdata, '', step, total, cn = 'pagination-left-link')
-        
-        # Add links to the left
-        while endelem < st1:
-            endelem = _pagination_entry(ul, self.url, endelem, retdata, c+startpage, step, total)
-            c += 1
-        
-        # Add current page without link
-        endelem = min(st1 + step,total)
-        ul.addlistitem(c+startpage)
-        c += 1
-        info.append(infotemplate % (start,endelem,total))
-        
-        # Add links to the right
-        while endelem < total and c < entries:
-            endelem = _pagination_entry(ul, self.url, endelem, retdata, c+startpage, step, total)
-            c += 1
-            
-        # Add the right arrow
-        if endelem < total:
-            _pagination_entry(ul, self.url, endelem, retdata, '', step, total, cn = 'pagination-right-link')

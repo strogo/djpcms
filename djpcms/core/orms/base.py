@@ -1,39 +1,16 @@
 from datetime import date, datetime
 
-from djpcms import sites
-from djpcms.utils.dateformat import format as date_format, time_format
+from djpcms import sites, nodata
+from djpcms.utils.dateformat import format as date_format
 from djpcms.utils import force_str, significant_format
-from djpcms.utils.importer import import_module
 from djpcms.template import loader, mark_safe, conditional_escape
 
 
 __all__ = ['BaseOrmWrapper',
            'nicerepr',
            '_boolean_icon',
-           'register_wrapper',
-           'modelwrappers',
            'nicerepr',
            'table']
-
-
-modelwrappers = {}
-model_from_hash = {}
-
-
-def register_wrapper(name):
-    '''Register a new Object Relational Mapper to Djpcms. ``name`` is the
-dotted path to a python module containing a class named ``OrmWrapper``
-derived from :class:`BaseOrmWrapper`.'''
-    names = name.split('.')
-    if len(names) == 1:
-        mod_name = 'djpcms.core.orms._' + name
-    else:
-        mod_name = name
-    try:
-        mod = import_module(mod_name)
-    except ImportError:
-        return
-    modelwrappers[name] = mod.OrmWrapper
 
 
 BOOLEAN_MAPPING = {True: {'icon':'ui-icon-check','name':'yes'},
@@ -97,7 +74,7 @@ class BaseOrmWrapper(object):
         self.test()
         self.setup()
         self.hash = self._hash()
-        model_from_hash[self.hash] = model
+        sites.model_from_hash[self.hash] = model
         
     def setup(self):
         pass
@@ -151,7 +128,8 @@ class BaseOrmWrapper(object):
     def appfuncname(self, name):
         return 'objectfunction__%s' % name
     
-    def get_value(self, instance, name, default = sites.settings.DJPCMS_EMPTY_VALUE):
+    def get_value(self, instance, name, default = nodata):
+        default = default if default is not nodata else sites.settings.DJPCMS_EMPTY_VALUE
         func = getattr(self.appmodel,self.appfuncname(name),None)
         if func:
             return func(instance)
@@ -233,3 +211,8 @@ class BaseOrmWrapper(object):
     
     def save(self, data, instance = None, commit = True):
         raise NotImplementedError
+
+    @classmethod
+    def setup_environment(cls):
+        pass
+    

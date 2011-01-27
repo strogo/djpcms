@@ -1,19 +1,17 @@
 import hashlib
 
-from django.db.models.base import ModelBase
-from django.forms.models import model_to_dict
-from django.db import models
-from django.core.exceptions import ObjectDoesNotExist
-from django.contrib.admin import site
-from django.contrib.admin.util import label_for_field, display_for_field, lookup_field
-from django.db.models import Q
-from django.db.models.query import QuerySet
-from django.utils.text import smart_split
+import django
+#from django.db import models
+#from django.core.exceptions import ObjectDoesNotExist
+#from django.contrib.admin.util import label_for_field, display_for_field, lookup_field
+#from django.db.models import Q
+#from django.db.models.query import QuerySet
+#from django.utils.text import smart_split
 
 from djpcms import sites
 from djpcms.core.permissions import has_permission
 from djpcms.utils import force_str
-from djpcms.template import mark_safe, escape, conditional_escape
+from djpcms.template import loader
 
 from .base import _boolean_icon, nicerepr, BaseOrmWrapper
 
@@ -21,6 +19,9 @@ from .base import _boolean_icon, nicerepr, BaseOrmWrapper
 class OrmWrapper(BaseOrmWrapper):
     
     def setup(self):
+        from django.forms.models import model_to_dict
+        from django.contrib.admin.util import label_for_field
+        from django.contrib.admin import site
         model_admin = site._registry.get(self.model,None)
         self.model_admin = model_admin
         self.meta = meta = self.model._meta
@@ -36,6 +37,7 @@ class OrmWrapper(BaseOrmWrapper):
         return sha.hexdigest()
         
     def test(self):
+        from django.db.models.base import ModelBase
         if not isinstance(self.model,ModelBase):
             raise ValueError
         
@@ -119,3 +121,5 @@ class OrmWrapper(BaseOrmWrapper):
                 else:
                     result_repr = display_for_field(value, f)
         return result_repr
+
+    

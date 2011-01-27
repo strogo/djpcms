@@ -9,6 +9,8 @@ __all__ = ['TextInput',
            'PasswordInput']
 
 class TextInput(HtmlWidget):
+    tag = 'input'
+    inline = True
     attributes = merge_dict(HtmlWidget.attributes, {
                                                     'type':'text',
                                                     'value': None,

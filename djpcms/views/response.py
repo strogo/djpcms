@@ -1,7 +1,6 @@
 from copy import copy
 
 from djpcms.utils.ajax import jredirect, jhtmls
-from djpcms.template import loader, Context, RequestContext
 from djpcms.utils import lazyattr
 from djpcms.utils.navigation import Navigator, Breadcrumbs
 
@@ -216,7 +215,7 @@ return the wrapper with the underlying view.'''
  
         """
         css = self.css
-        context  = RequestContext(self.request)
+        context  = loader.context(self.request)
         d = context.push()
         if more_context:
             d.update(more_context)

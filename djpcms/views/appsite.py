@@ -5,7 +5,7 @@ The main object handle several subviews used for searching, adding and manipulat
 '''
 from copy import deepcopy
 
-from djpcms.forms import Form, HtmlForm
+from djpcms.forms import Form, HtmlForm, SubmitInput, MediaDefiningClass
 from djpcms.template import loader, mark_safe
 from djpcms.core.orms import mapper
 from djpcms.core.urlresolvers import ResolverMixin
@@ -13,10 +13,8 @@ from djpcms.core.exceptions import PermissionDenied, ApplicationUrlException
 from djpcms.utils import slugify
 from djpcms.forms.utils import get_form
 from djpcms.plugins import register_application
-from djpcms.utils.html import input
 from djpcms.views.baseview import editview, response_from_page
 from djpcms.views.appview import View, ViewView
-from djpcms.utils.media import MediaDefiningClass
 from djpcms.utils.collections import OrderedDict
 from djpcms.utils.py2py3 import iteritems
 
@@ -316,16 +314,16 @@ It can be overridden to twick its behaviour.
         '''Generate the submits elements to be added to the model form.
         '''
         if instance:
-            sb = [input(value = self._form_save, name = '_save')]
+            sb = [SubmitInput(value = self._form_save, name = '_save')]
             if self._submit_as_new:
-                sb.append(input(value = self._submit_as_new, name = '_save_as_new'))
+                sb.append(SubmitInput(value = self._submit_as_new, name = '_save_as_new'))
         else:
-            sb = [input(value = self._form_add, name = '_save')]
+            sb = [SubmitInput(value = self._form_add, name = '_save')]
         if own_view:
             if self._form_continue:
-                sb.append(input(value = self._form_continue, name = '_save_and_continue'))
+                sb.append(SubmitInput(value = self._form_continue, name = '_save_and_continue'))
             if self._submit_cancel:
-                sb.append(input(value = self._submit_cancel, name = '_cancel'))
+                sb.append(SubmitInput(value = self._submit_cancel, name = '_cancel'))
         return sb
 
     def get_label_for_field(self, name):

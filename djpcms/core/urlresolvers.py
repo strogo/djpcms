@@ -46,6 +46,7 @@ class ResolverMixin(object):
 method'''
     
     def load(self):
+        '''Load urls and set-up sites'''
         if getattr(self,'_urls',None) is None:
             self._urls = self._load()
         

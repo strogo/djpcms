@@ -7,16 +7,12 @@ from djpcms import forms, sites
 from djpcms.core.page import block_htmlid
 from djpcms.utils.translation import ugettext_lazy as _
 from djpcms.core.exceptions import PermissionDenied
-from djpcms.models import BlockContent
-from djpcms.template import RequestContext, loader, mark_safe
-from djpcms.utils.func import isforminstance
-from djpcms.utils.ajax import jhtmls, jremove, dialog, jempty, jerror, jattribute, jcollection
-from djpcms.utils.html import input, htmlcomp
-#from djpcms.utils.uniforms import UniForm, FormLayout
+from djpcms.template import loader
+from djpcms.utils.ajax import jhtmls, jremove, dialog, jempty
+from djpcms.utils.ajax import jerror, jattribute, jcollection
 from djpcms.forms.cms import ContentBlockForm
-from djpcms.plugins import get_plugin
 from djpcms.plugins.extrawrappers import CollapsedWrapper
-from djpcms.views import appsite, appview, view_edited_url
+from djpcms.views import appsite, appview
 
 dummy_wrap = lambda d,b,x : x
 
@@ -94,7 +90,7 @@ class ChangeContentView(appview.EditView):
         except Exception, e:
             preview_html = u'%s' % e
         if wrapped:
-            return mark_safe('<div id="%s">%s</div>' % (instance.pluginid('preview'),preview_html))
+            return loader.mark_safe('<div id="%s">%s</div>' % (instance.pluginid('preview'),preview_html))
         else:
             return preview_html
     
@@ -124,7 +120,7 @@ class ChangeContentView(appview.EditView):
             else:
                 # No plugin
                 uni.add('<div id="%s"></div>' % id)
-            sub = input(value = "edit", name = 'edit_content').render()
+            sub = forms.SubmitInput(value = "edit", name = 'edit_content').render()
             id = instance.pluginid('edit')
             cl = '' if purl else ' class="djphide"'
             uni.inputs.append('<span id="{0}"{1}>{2}</span>'.format(id,cl,sub))

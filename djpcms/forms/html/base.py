@@ -34,8 +34,11 @@ is derived from this class. Any Operation on this class is similar to jQuery.'''
         self.template = template
         for attr,value in iteritems(self.attributes):
             if attr in kwargs:
-                value = kwargs[attr]
+                value = kwargs.pop(attr)
             attrs[attr] = value
+        if kwargs:
+            keys = list(kwargs.keys())
+            raise TypeError("__init__() got an unexpected keyword argument '{0}'".format(keys[0]))
         self.default_style = kwargs.get('default_style',self.default_style)
         self.__attrs = attrs
         self.__classes = set()

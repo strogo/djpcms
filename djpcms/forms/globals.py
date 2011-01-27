@@ -1,18 +1,15 @@
 # Uniforms Layout is the Default layout
+from djpcms.core.exceptions import DjpcmsException
 from .layout.uniforms import Layout as DefaultLayout
 
-__all__ = ['ValidationError',
-           'DefaultLayout',
-           'nodata']
+__all__ = ['FormException',
+           'ValidationError',
+           'DefaultLayout']
 
 
-class NoData(object):
-    def __repr__(self):
-        return '<NoData>'
-    __str__ = __repr__
+class FormException(DjpcmsException):
+    pass
 
 
 class ValidationError(Exception):
     pass
-
-nodata = NoData()

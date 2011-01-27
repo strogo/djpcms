@@ -1,10 +1,11 @@
+from djpcms import sites
 from djpcms.core.exceptions import ModelException
 from djpcms.utils.py2py3 import itervalues
  
 from .base import *
 
-register_wrapper('django')
-register_wrapper('stdnet')
+sites.register_orm('django')
+sites.register_orm('stdnet')
 
 
 def getmodel(appmodel):
@@ -24,7 +25,7 @@ def mapper(model):
         model = instance.__class__
     wrapper = getattr(model,'_djpcms_orm_wrapper',None)
     if not wrapper:
-        for wrapper in itervalues(modelwrappers):
+        for wrapper in itervalues(sites.modelwrappers):
             try:
                 wrapper = wrapper(model)
                 break

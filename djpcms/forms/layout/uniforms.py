@@ -1,6 +1,5 @@
-from djpcms import sites
 from djpcms.contrib import messages
-from djpcms.template import loader, RequestContext, mark_safe
+from djpcms.template import loader
 from djpcms.utils.ajax import jhtmls
 
 from .base import FormLayout, BaseMedia
@@ -20,7 +19,7 @@ def default_csrf():
     return 'django.middleware.csrf.CsrfViewMiddleware' in sites.settings.MIDDLEWARE_CLASSES
 
 #_required_tag = mark_safe('<em>*</em>')
-_required_tag = mark_safe('')
+_required_tag = lambda : loader.mark_safe('')
 
 #default renderer for forms
 def_renderer = lambda x: x
@@ -48,7 +47,7 @@ def render_form_field(field, form, layout, css_class):
     html = loader.render_to_string("djpcms/uniforms/field.html",
                                    {'field': bound_field,
                                     'label': label,
-                                    'required': _required_tag})
+                                    'required': _required_tag()})
     rendered_fields = get_rendered_fields(form)
     if not field in rendered_fields:
         rendered_fields.append(field)
@@ -118,7 +117,7 @@ class Fieldset(UniFormElement):
         for field in self.fields:
             html += render_field(field, form, layout, self.css)
         html += u'</fieldset>'
-        return mark_safe(html)
+        return loader.mark_safe(html)
 
 
 class Row(UniFormElement):
@@ -160,7 +159,7 @@ class Columns(UniFormElement):
             for field in column:
                 output += render_field(field, form, layout, self.css)
             output += u'</div>'
-            content['content%s' % i] = mark_safe(output)
+            content['content%s' % i] = loader.mark_safe(output)
         return loader.render_to_string(self.template, content)
 
 
@@ -217,13 +216,13 @@ class Layout(FormLayout):
                 
         if ctx:
             ctx['inputs'] = inputs
-            ctx['html'] = mark_safe(html)
+            ctx['html'] = loader.mark_safe(html)
             html = loader.render_to_string(self.template, ctx)
         else:
-            html = mark_safe(html)
+            html = loader.mark_safe(html)
         
         if self.id:
-            return mark_safe('<div id="%s">%s</div>' % (self.id,html))
+            return loader.mark_safe('<div id="%s">%s</div>' % (self.id,html))
         else:
             return html
     

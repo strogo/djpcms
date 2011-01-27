@@ -1,17 +1,17 @@
-from djpcms import sites, get_site, forms, empty_choice
+from djpcms import sites, forms, empty_choice
 from djpcms.forms.layout import uniforms
 from djpcms.utils import force_str, slugify
-from djpcms.models import Page, BlockContent, ObjectPermission, Site
+#from djpcms.models import Page, BlockContent, ObjectPermission, Site
 from djpcms.plugins import get_plugin, plugingenerator, wrappergenerator
 
 
 def siteapp_choices():
-    return get_site().choices
+    return sites.get_site().choices
 
 
 def CalculatePageUrl(data, mapper, page):
     '''Calculate url for a page'''
-    site = get_site()
+    site = sites.get_site()
     application_view = data['application_view']
     url_pattern  = data['url_pattern']
     parent = data['parent']
@@ -38,7 +38,7 @@ def CalculatePageUrl(data, mapper, page):
                 if len(urls) > 1:
                     url     = urls[-1]
                     parent_url = '/%s/' % '/'.join(urls[:-1])
-                    root    = Page.objects.filter(site = website, url = parent_url)
+                    root    = mapper.filter(site = website, url = parent_url)
                 else:
                     parent_url = '/'
                     
@@ -48,9 +48,9 @@ def CalculatePageUrl(data, mapper, page):
                     raise forms.ValidationError('Parent page "%s" not available, cannot set application %s' % (parent_url,application_view))
         else:
             if not parent:
-                pages = Page.objects.filter(application_view = app.parent.code,
-                                            site = website,
-                                            url_pattern = '')
+                pages = mapper.filter(application_view = app.parent.code,
+                                      site = website,
+                                      url_pattern = '')
                 if pages.count() == 1:
                     parent = pages[0]
                 else:
@@ -110,7 +110,7 @@ class PageForm(forms.Form):
     def clean_application_view(self, app):
         '''If application type is specified, than it must be unique
         '''
-        site = get_site()
+        site = sites.get_site()
         if app:
             try:
                 application_view = site.getapp(app)
@@ -133,7 +133,7 @@ class PageForm(forms.Form):
                 if parent.application_view == application_view.parent.code and parent.url_pattern:
                     bit = parent.url_pattern
                     data['url_pattern'] = bit
-            others = Page.objects.filter(application_view = application_view.code,
+            others = mapper.filter(application_view = application_view.code,
                                          site = self.clean_site(),
                                          url_pattern = bit)
             for other in others:
@@ -255,10 +255,10 @@ class ShortPageForm(forms.Form):
             ObjectPermission.objects.set_view_permission(page, groups = pe)
         return page
     
-    class Meta:
-        model = Page
-        fields = ['link','title','inner_template','cssinfo',
-                  'in_navigation','requires_login','soft_root']
+    #class Meta:
+    #    model = Page
+    #    fields = ['link','title','inner_template','cssinfo',
+    #              'in_navigation','requires_login','soft_root']
         
     submits = (('change', '_save'),)
 
@@ -270,9 +270,9 @@ class NewChildForm(forms.Form):
     
     submits = (('create', '_child'),)
     
-    class Meta:
-        model = Page
-        fields = ['soft_root','in_navigation','requires_login','inner_template']
+    #class Meta:
+    #    model = Page
+    #    fields = ['soft_root','in_navigation','requires_login','inner_template']
     
     def clean_url_pattern(self):
         parent = self.instance
@@ -311,12 +311,12 @@ def _getid(obj):
 
 ContentBlockHtmlForm = forms.HtmlForm(
     ContentBlockForm,
-    model = BlockContent,
     layout = uniforms.Layout(
-                          uniforms.Fieldset('plugin_name','container_type','title','view_permission'),
+                          uniforms.Fieldset('plugin_name','container_type','title',
+                                            'view_permission'),
                           uniforms.Columns(('for_not_authenticated',),
                                            ('requires_login',),
                                            css_class=uniforms.inlineLabels3)
                            )
 )
-    
+

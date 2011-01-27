@@ -2,11 +2,13 @@ from threading import Lock
 
 from djpcms.core.exceptions import DjpcmsException, AlreadyRegistered, ApplicationNotAvailable
 from djpcms.views.appsite import Application, ModelApplication
-from djpcms.apps.included.contentedit import ContentSite, BlockContent
 from djpcms.utils.collections import OrderedDict
 from djpcms.utils.importer import import_module, module_attribute
 from djpcms.core.urlresolvers import ResolverMixin
 from djpcms.http import make_wsgi
+
+from djpcms.models import BlockContent
+from djpcms.apps.included.contentedit import ContentSite
 
 
 

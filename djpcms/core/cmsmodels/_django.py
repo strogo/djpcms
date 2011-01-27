@@ -13,7 +13,7 @@ from django.contrib.sites.models import Site
 from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext_lazy as _
 
-from djpcms.template import Template, mark_safe
+from djpcms.template import loader
 from djpcms.core.page import PageInterface, BlockInterface
 from djpcms.core.permissions import has_permission, get_view_permission
 from djpcms.apps.djangosite.fields import SlugCode
@@ -56,7 +56,7 @@ class InnerTemplate(TimeStamp):
     def render(self, c):
         '''Render the inner template given the context ``c``.
         '''
-        return Template(self.template).render(c)
+        return loader.Template(self.template).render(c)
         
     def numblocks(self):
         '''Number of ``blocks`` within template.'''
