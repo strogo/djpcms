@@ -1,6 +1,4 @@
-import unittest
-
-from djpcms import test
+from djpcms import test, sites
 from djpcms.apps.included.user import LoginForm
         
         
@@ -35,5 +33,14 @@ class TestUserMixin(object):
         self.assertEqual(form.data['password'],'blabla')
         
 
-unittest.skip
+test.skipIf('django' not in sites.modelwrappers,
+            'django is not installed')
 class TestDjangoUser(test.TestCase,TestUserMixin):
+    appurls = 'regression.user.appurls_django'
+    
+    
+test.skipIf('stdnet' not in sites.modelwrappers,
+            'python-stdnet is not installed')
+class TestStdnetUser(test.TestCase,TestUserMixin):
+    appurls = 'regression.user.appurls_stdnet'
+    

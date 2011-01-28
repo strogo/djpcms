@@ -7,8 +7,7 @@ import djpcms
 from djpcms.utils.importer import import_module
 
 from .environment import TestEnvironment
-
-TextTestRunner = unittest.TextTestRunner
+from .test import TextTestRunner
 
 
 LOGGING_MAP = {1: 'CRITICAL',
@@ -84,33 +83,12 @@ class TestSuiteRunner(object):
     def setup_test_environment(self, **kwargs):
         self.environment = TestEnvironment(self)
         return self.environment
-
-    def _build_suite(self, test_labels, extra_tests=None, **kwargs):
-        suite = unittest.TestSuite()
-
-        if test_labels:
-            for label in test_labels:
-                if '.' in label:
-                    suite.addTest(build_test(label))
-                else:
-                    app = get_app(label)
-                    suite.addTest(build_suite(app))
-        else:
-            for app in get_apps():
-                suite.addTest(build_suite(app))
-
-        if extra_tests:
-            for test in extra_tests:
-                suite.addTest(test)
-
-        return suite
     
     def build_suite(self, modules):
         loader = self.Loader()
         return loader.loadTestsFromModules(modules)
     
     def run_suite(self, suite, **kwargs):
-        env = self.env
         for test in suite:
             test.set_env(self.env)
         return self.TextTestRunner(verbosity=self.verbosity).run(suite)

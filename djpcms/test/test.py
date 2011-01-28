@@ -8,10 +8,20 @@ from djpcms.core.exceptions import *
 
 from BeautifulSoup import BeautifulSoup
 
+try:
+    skip = unittest.skip
+    skipIf = unittest.skipIf
+    skipUnless = unittest.skipUnless
+    SkipTest = unittest.SkipTest
+    TestCaseBase = unittest.TestCase
+    TextTestRunner = unittest.TextTestRunner
+except AttributeError:
+    from .skiptests import *
+    
 #from .client import Client
 
 
-class TestCase(unittest.TestCase):
+class TestCase(TestCaseBase):
     '''Implements shortcut functions for testing djpcms.
 Must be used as a base class for TestCase classes'''
     #client_class = Client

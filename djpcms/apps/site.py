@@ -21,8 +21,8 @@ __all__ = ['MakeSite',
            'loadapps',
            'sites']
 
-logger = logging.getLogger('sites')
 
+logger = logging.getLogger('sites')
 
 
 class editHandler(ResolverMixin):
@@ -47,7 +47,8 @@ of djpcms routes'''
         self._settings = None
         self._default_settings = None
         self.route = None
-        self.sites = OrderedDict()
+        self._sites = {}
+        self._osites = None
         self.modelwrappers = {}
         self.model_from_hash = {}
         self.User = None
@@ -67,6 +68,24 @@ of djpcms routes'''
             return
         self.modelwrappers[name] = mod.OrmWrapper
         
+    def __len__(self):
+        return len(self._sites)
+    
+    def all(self):
+        s = self._osites
+        if s is None:
+            self._osites = s = OrderedDict(reversed(sorted(self._sites.items(),
+                                           key=lambda x : x[0]))).values()
+        return s                           
+                                           
+    def __iter__(self):
+        return self.all().__iter__()
+    
+    def __getitem__(self, index):
+        return self.all()[index]
+    def __setitem(self, index, val):
+        raise TypeError('Site object does not support item assignment')
+        
     def __get_settings(self):
         if not self._settings:
             if not self._default_settings:
@@ -84,11 +103,11 @@ of djpcms routes'''
         '''Load sites'''
         #from djpcms.apps.cache import PageCache
         #self.pagecache = PageCache()
-        if not self.sites:
+        if not self._sites:
             raise ImproperlyConfigured('No sites registered.')
         settings = self.settings
-        for site in self.sites.values():
-            #site.pagecache = self.pagecache
+        sites = self.all()
+        for site in sites:
             site.load()
         import_modules(settings.DJPCMS_PLUGINS)
         import_modules(settings.DJPCMS_WRAPPERS)
@@ -96,10 +115,10 @@ of djpcms routes'''
         urls = ()
         if settings.CONTENT_INLINE_EDITING['available']:
             edit = settings.CONTENT_INLINE_EDITING['preurl']
-            for u,site in self.sites.items():
+            for u,site in sites:
                 urls += url(r'^{0}/{1}(.*)'.format(edit,u[1:]),
                             editHandler(site)),
-        for u,site in self.sites.items():
+        for u,site in sites:
             urls += url(r'^{0}(.*)'.format(u[1:]),
                         site),
         return urls
@@ -164,12 +183,13 @@ of djpcms routes'''
         if site:
             raise AlreadyRegistered('Site with url {0} already avalable "{1}"'.format(url,site))
         site = appsites.ApplicationSite(self, url, settings)
-        self.sites[site.route] = site
+        self._sites[site.route] = site
+        self._osites = None
         self._urls = None
         return site
     
     def get(self, name, default = None):
-        return self.sites.get(name,default)
+        return self._sites.get(name,default)
     
     def get_or_create(self, name, settings = None, route = None):
         route = self.makeurl(route)
@@ -227,7 +247,8 @@ of djpcms routes'''
         site = self.get_site(page.url)
         
     def clear(self):
-        self.sites.clear()
+        self._sites.clear()
+        self._osites = None
         ResolverMixin.clear(self)
         
     def wsgi(self, environ, start_response):
