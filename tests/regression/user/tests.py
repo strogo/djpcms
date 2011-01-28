@@ -1,9 +1,10 @@
+import unittest
+
 from djpcms import test
 from djpcms.apps.included.user import LoginForm
         
         
-class TestUserViews(test.TestCase):
-    appurls  = 'regression.user.appurls'
+class TestUserMixin(object):
     
     def _testlogin(self, user, ajax = True):
         url = '/accounts/login/'
@@ -32,3 +33,7 @@ class TestUserViews(test.TestCase):
         self.assertTrue(form.is_valid())
         self.assertEqual(form.data['username'],'pinco')
         self.assertEqual(form.data['password'],'blabla')
+        
+
+unittest.skip
+class TestDjangoUser(test.TestCase,TestUserMixin):

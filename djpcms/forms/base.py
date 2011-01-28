@@ -200,18 +200,24 @@ class HtmlForm(object):
     '''An HTML class Factory Form'''
     def __init__(self, form_class, layout = None, model = None):
         self.form_class = form_class
-        self.layout = layout
+        self._layout = layout
         self.model = model
+        
+    def __get_layout(self):
+        layout = self._layout
+        if not layout:
+            self._layout = layout = DefaultLayout()
+        return layout
+    def __set_layout(self, lay):
+        self._layout = lay
+    layout = property(__get_layout,__set_layout)
         
     def __call__(self, model = None, **kwargs):
         return self.form_class(model=model or self.model,**kwargs)
     
     def widget(self, form, **kwargs):
         '''Create a rendable form widget'''
-        layout = self.layout
-        if not layout:
-            self.layout = layout = DefaultLayout()
-        return FormWidget(form, layout = layout, **kwargs)
+        return FormWidget(form, layout = self.layout, **kwargs)
     
         
 class BoundField(object):

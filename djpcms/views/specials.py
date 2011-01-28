@@ -1,6 +1,6 @@
 from djpcms import sites
 from djpcms.http import get_http
-from djpcms.template import RequestContext, loader
+from djpcms.template import loader
 from djpcms.views.baseview import djpcmsview
 
 
@@ -12,10 +12,10 @@ class badview(djpcmsview):
         super(badview,self).__init__()
         
     def response(self, request):
-        t = loader.get_template(self.template)
         c = {'request_path': request.path,
              'grid': self.grid960()}
-        return self.httphandler(t.render(RequestContext(request, c)))
+        ctx = loader.context(c, request)
+        return self.httphandler(loader.render_to_string(self.template,ctx))
 
 def http404view(request, *args, **kwargs):
     http = get_http(sites.settings.HTTP_LIBRARY)

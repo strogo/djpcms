@@ -31,8 +31,9 @@ class BaseTemplateHandler(object):
     def setup(self):
         raise NotImplementedError
     
-    def get_processors(self):
-        return []
+    def get_processors(self, request):
+        processors = request.site.settings.TEMPLATE_CONTEXT_PROCESSORS
+        return ()
     
     def context(self,
                 dict=None, request = None,
@@ -44,7 +45,7 @@ class BaseTemplateHandler(object):
                 processors = ()
             else:
                 processors = tuple(processors)
-            for processor in self.get_processors() + processors:
+            for processor in self.get_processors(request) + processors:
                 c.update(processor(request))
         return c
     
@@ -66,7 +67,9 @@ class BaseTemplateHandler(object):
         return handle().mark_safe(html)
     
     def render_to_string(self, template_name, dictionary=None, context_instance=None):
-        return handle().render_to_string(self, template_name, dictionary=None, context_instance=None)
+        return handle().render_to_string(template_name,
+                                         dictionary=dictionary,
+                                         context_instance=context_instance)
     
 
 class LibraryTemplateHandler(BaseTemplateHandler):

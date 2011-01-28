@@ -6,8 +6,6 @@ import mimetypes
 import warnings
 
 from djpcms.utils.py2py3 import ispy3k
-
-
 if ispy3k():
     from io import StringIO
     from urllib.parse import urlparse, urlunparse, urlsplit

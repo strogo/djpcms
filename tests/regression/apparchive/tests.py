@@ -1,11 +1,9 @@
 import datetime
 
-from djpcms.test import TestCase
-from djpcms.models import SiteContent
+from djpcms import test
 
 
-class CalendarViewTest(TestCase):
-    fixtures = ["sitecontent.json"]
+class CalendarViewTest(test.TestCase):
     appurls  = 'regression.apparchive.appurls'
         
     def callView(self, url):
