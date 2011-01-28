@@ -2,15 +2,15 @@
 Version 1.0.0 - Development
 =======================================
 * **BACKWARD INCOMPATIBLE CHANGES**
-* This is the first release not dependent on django.
+* This is the first release not dependent on ``django``.
 * Object Relational mapping can be done with ``django`` or ``python-stdnet`` or none of them.
 * Other ORMs can be registered to the library::
 
-    from djpcms.core.orms register_wrapper
+    from djpcms import sites
     
-    register_wrapper('path.to.my.ormwrapper')
+    sites.register_orm('path.to.my.ormwrapper')
     
-* Introduced a new Ajax decorator called ``rearrange`` which adds drag & drop
+* Introduced new Ajax decorator ``rearrange`` which adds drag & drop
   functionalities during page editing.
 * Added abstraction for ``User``, ``Request`` and ``Response`` classes.
 * Added ``save as new`` functionality to :class:`djpcms.views.appview.EditView`.

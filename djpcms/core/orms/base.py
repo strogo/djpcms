@@ -67,6 +67,7 @@ def table(headers, queryset_or_list, djp, model = None, nd = 3):
 
 
 class BaseOrmWrapper(object):
+    orm = None
     
     def __init__(self, model):
         self.model = model
@@ -81,6 +82,10 @@ class BaseOrmWrapper(object):
     
     def test(self):
         raise NotImplementedError
+    
+    @classmethod
+    def clear(cls):
+        pass
     
     def __repr__(self):
         return str(self.model)

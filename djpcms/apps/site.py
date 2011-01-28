@@ -44,15 +44,22 @@ class ApplicationSites(ResolverMixin):
 of djpcms routes'''
     
     def __init__(self):
+        self._sites = {}
+        self.modelwrappers = {}
+        self.clear()
+        
+    def clear(self):
+        self._sites.clear()
+        self._osites = None
         self._settings = None
         self._default_settings = None
         self.route = None
-        self._sites = {}
-        self._osites = None
-        self.modelwrappers = {}
         self.model_from_hash = {}
         self.User = None
-
+        ResolverMixin.clear(self)
+        for wrapper in self.modelwrappers.values():
+            wrapper.clear()
+        
     def register_orm(self, name):
         '''Register a new Object Relational Mapper to Djpcms. ``name`` is the
     dotted path to a python module containing a class named ``OrmWrapper``
@@ -105,6 +112,7 @@ of djpcms routes'''
         #self.pagecache = PageCache()
         if not self._sites:
             raise ImproperlyConfigured('No sites registered.')
+        self.setup_environment()
         settings = self.settings
         sites = self.all()
         for site in sites:
@@ -115,11 +123,11 @@ of djpcms routes'''
         urls = ()
         if settings.CONTENT_INLINE_EDITING['available']:
             edit = settings.CONTENT_INLINE_EDITING['preurl']
-            for u,site in sites:
-                urls += url(r'^{0}/{1}(.*)'.format(edit,u[1:]),
+            for site in sites:
+                urls += url(r'^{0}/{1}(.*)'.format(edit,site.route[1:]),
                             editHandler(site)),
-        for u,site in sites:
-            urls += url(r'^{0}(.*)'.format(u[1:]),
+        for site in sites:
+            urls += url(r'^{0}(.*)'.format(site.route[1:]),
                         site),
         return urls
     
@@ -245,11 +253,6 @@ of djpcms routes'''
     
     def view_from_page(self, page):
         site = self.get_site(page.url)
-        
-    def clear(self):
-        self._sites.clear()
-        self._osites = None
-        ResolverMixin.clear(self)
         
     def wsgi(self, environ, start_response):
         '''DJPCMS WSGI handler'''

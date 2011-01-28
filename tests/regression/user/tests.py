@@ -28,19 +28,22 @@ class TestUserMixin(object):
                                  prefix+'password':'blabla'},
                          prefix = prefix)
         self.assertTrue(form.is_bound)
-        self.assertTrue(form.is_valid())
+        self.assertFalse(form.is_valid())
         self.assertEqual(form.data['username'],'pinco')
         self.assertEqual(form.data['password'],'blabla')
         
 
-test.skipIf('django' not in sites.modelwrappers,
-            'django is not installed')
+@test.skipIf('django' not in sites.modelwrappers,
+             'django is not installed')
 class TestDjangoUser(test.TestCase,TestUserMixin):
     appurls = 'regression.user.appurls_django'
     
     
-test.skipIf('stdnet' not in sites.modelwrappers,
-            'python-stdnet is not installed')
+@test.skipIf('stdnet' not in sites.modelwrappers,
+             'python-stdnet is not installed')
 class TestStdnetUser(test.TestCase,TestUserMixin):
     appurls = 'regression.user.appurls_stdnet'
+    
+    def installed_apps(self):
+        return ['stdnet.contrib.sessions']
     

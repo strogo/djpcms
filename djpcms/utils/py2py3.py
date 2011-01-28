@@ -8,7 +8,9 @@ __all__ = ['string_type',
            'ispy3k',
            'is_string',
            'iteritems',
-           'itervalues']
+           'itervalues',
+           'zip',
+           'map']
 
 
 def ispy3k():
@@ -20,13 +22,15 @@ if ispy3k(): # Python 3
     itervalues = lambda d : d.values()
     iteritems = lambda d : d.items()
     is_string = lambda x : isinstance(x,str)
+    zip = zip
+    map = map
 else: # Python 2
     string_type = unicode
     itervalues = lambda d : d.itervalues()
     iteritems = lambda d : d.iteritems()
     is_string = lambda x : isinstance(x,basestring)
+    from itertools import izip as zip, imap as map
 
-    
 try:
     int_type = (types.IntType, types.LongType)
 except AttributeError:

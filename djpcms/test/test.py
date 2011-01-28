@@ -1,5 +1,6 @@
 import json
 import unittest
+from copy import copy
 
 import djpcms
 from djpcms import sites, forms
@@ -15,6 +16,7 @@ try:
     SkipTest = unittest.SkipTest
     TestCaseBase = unittest.TestCase
     TextTestRunner = unittest.TextTestRunner
+    TestSuiteBase = unittest.TestSuite
 except AttributeError:
     from .skiptests import *
     
@@ -33,6 +35,8 @@ Must be used as a base class for TestCase classes'''
         from djpcms.core import api
         self.api = api
         sites.settings.TESTING = True
+        self.SITE_DIRECTORY = sites.settings.SITE_DIRECTORY
+        self.INSTALLED_APPS = copy(sites.settings.INSTALLED_APPS)
         self.site = self.makesite()
         if self.site:
             self.settings = self.site.settings
@@ -43,13 +47,17 @@ Must be used as a base class for TestCase classes'''
     def makesite(self):
         '''Setup the site'''
         appurls = getattr(self,'appurls',None)
+        apps = sites.settings.INSTALLED_APPS + self.installed_apps()
         self.sites.clear()
-        sett = sites.settings
-        return sites.make(sett.SITE_DIRECTORY,
+        return sites.make(self.SITE_DIRECTORY,
                           'conf',
                           route = self.urlbase,
-                          APPLICATION_URL_MODULE = appurls)
+                          APPLICATION_URL_MODULE = appurls,
+                          INSTALLED_APPS = apps)
         
+    def installed_apps(self):
+        return []
+    
     def __call__(self, result=None):
         """
         Wrapper around default __call__ method to perform common Django test
@@ -59,13 +67,17 @@ Must be used as a base class for TestCase classes'''
         #self.client = self.client_class()
         from .client import Client
         self.client = Client()
-        self._pre_setup()
+        skipping = getattr(self.__class__, "__unittest_skip__", False)
+        if not skipping:
+            self._pre_setup()
         super(TestCase, self).__call__(result)
-        self._post_teardown()
+        if not skipping:
+            self._post_teardown()
             
     def _post_teardown(self):
         if self._env:
             self._env.post_teardown()
+        sites.settings.INSTALLED_APPS = self.INSTALLED_APPS
     
     def clear(self, db = False):
         '''If db is set to True it clears the database pages'''

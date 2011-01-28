@@ -10,6 +10,7 @@ __all__ = ['SkipTest',
            'TestCaseBase',
            'TextTestResult',
            'TextTestRunner',
+           'TestSuiteBase',
            'skip',
            'skipIf',
            'skipUnless']
@@ -98,6 +99,15 @@ class TestCaseBase(unittest.TestCase):
         if result is None:
             result = self.defaultTestResult()
         result.startTest(self)
+        
+        if getattr(self.__class__, "__unittest_skip__", False):
+            # If the whole class was skipped.
+            try:
+                result.addSkip(self, self.__class__.__unittest_skip_why__)
+            finally:
+                result.stopTest(self)
+            return
+        
         testMethod = getattr(self, self._testMethodName)
         try:
             try:
@@ -139,7 +149,7 @@ class TextTestRunner(unittest.TextTestRunner):
         return TextTestResult(self.stream, self.descriptions, self.verbosity)
     
     def run(self, test):
-        "Run the given test case or test suite."
+        "From Python 3.1"
         result = self._makeResult()
         startTime = time.time()
         test(result)
@@ -176,3 +186,7 @@ class TextTestRunner(unittest.TextTestRunner):
         else:
             self.stream.write("\n")
         return result
+    
+    
+class TestSuiteBase(unittest.TestSuite):
+    pass

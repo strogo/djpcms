@@ -12,13 +12,17 @@ DATABASES = {
     }
 }
 
+try:
+    import django
+    INSTALLED_APPS  = ['django.contrib.auth',
+                       'django.contrib.sessions',
+                       'django.contrib.sites',
+                       'django.contrib.contenttypes',
+                       'tagging']
+except ImportError:
+    INSTALLED_APPS = []
 
-INSTALLED_APPS  = ['django.contrib.auth',
-                   'django.contrib.sessions',
-                   'django.contrib.sites',
-                   'django.contrib.contenttypes',
-                   'djpcms',
-                   'tagging']
+INSTALLED_APPS.append('djpcms')
 
 MEDIA_ROOT = os.path.join(CUR_DIR, 'media')
 TEMPLATE_DIRS = os.path.join(CUR_DIR, 'templates'),

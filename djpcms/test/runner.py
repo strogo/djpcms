@@ -7,7 +7,7 @@ import djpcms
 from djpcms.utils.importer import import_module
 
 from .environment import TestEnvironment
-from .test import TextTestRunner
+from .test import TextTestRunner, TestSuiteBase
 
 
 LOGGING_MAP = {1: 'CRITICAL',
@@ -44,7 +44,7 @@ Look into the test module if it exists otherwise do nothing.'''
     return suite
 
 
-class TestSuite(unittest.TestSuite):
+class TestSuite(TestSuiteBase):
     
     def set_env(self, env):
         self._env = env

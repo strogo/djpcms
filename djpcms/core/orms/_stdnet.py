@@ -9,8 +9,10 @@ from .base import BaseOrmWrapper
 
 class OrmWrapper(BaseOrmWrapper):
     '''Djpcms ORM wrapper for stdnet
-    
+
     https://github.com/lsbardel/python-stdnet'''
+    orm = 'stdnet'
+    
     def setup(self):
         self.meta = meta = self.model._meta
         self.objects     = self.model.objects

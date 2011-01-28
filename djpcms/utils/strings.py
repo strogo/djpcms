@@ -2,14 +2,9 @@ import sys
 from datetime import datetime, date, time
 from decimal import Decimal
 
-__all__ = ['encode_str','force_str','stringtype']
+__all__ = ['encode_str','force_str']
 
-
-# Python 2.6 to Python 3 hack
-try:
-    stringtype = unicode
-except NameError:
-    stringtype = str
+from .py2py3 import string_type
 
 
 protected_types = (int, datetime, date, time, float, Decimal)
@@ -39,8 +34,8 @@ non-string-like objects."""
     if strings_only and (s is None or isinstance(s, protected_types)):
         return s
         
-    if not isinstance(s, stringtype):
-        s = stringtype(s)
+    if not isinstance(s, string_type):
+        s = string_type(s)
     
     return s.encode(encoding, errors)
     
@@ -52,12 +47,12 @@ def force_str(s, encoding='utf-8', strings_only=False, errors='strict'):
 
     If strings_only is True, don't convert (some) non-string-like objects.
     """
-    if isinstance(s, stringtype):
+    if isinstance(s, string_type):
         return s
     if strings_only and (s is None or isinstance(s, protected_types)):
         return s
     if isinstance(s,bytes):
         return s.decode(encoding,errors)
-    return stringtype(s)
+    return string_type(s)
 
 

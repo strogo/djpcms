@@ -3,6 +3,7 @@ from djpcms.core.exceptions import ModelException
 from djpcms.utils.py2py3 import itervalues
  
 from .base import *
+from .user import monkey_patch_user
 
 sites.register_orm('django')
 sites.register_orm('stdnet')

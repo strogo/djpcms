@@ -54,8 +54,8 @@ def import_tests(tags, test_type, can_fail):
         print('Could not find any tests. Aborting.')
         exit()
         
-    sites.setup_environment()
     # Now lets try to import the tests module them
+    # Tests should be able to load even if dependencies are not met
     for model_label in model_labels:
         tests = model_label + '.tests'
         try:
@@ -81,9 +81,6 @@ def run(tags = None, test_type = None,
     if not TestSuiteRunner:
         print(('No test suite for {0}'.format(test_type)))
         exit()
-    
-    # Create the testing Site    
-    MakeSite(test_type,'conf')
 
     if show_list:
         n = 0
@@ -92,6 +89,8 @@ def run(tags = None, test_type = None,
             print(("'{1}' (from {0})".format(*name)))
         print(('\nYou can run {0} different test labels'.format(n)))
     else:
+        # Create the testing Site   
+        MakeSite(test_type,'conf')
         modules = import_tests(tags, test_type, can_fail)
         runner  = TestSuiteRunner(verbosity = verbosity)
         runner.run_tests(modules)

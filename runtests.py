@@ -16,11 +16,11 @@ def makeoptions():
                       dest="show_list",
                       default=False,
                       help="Show the list of available test labels for a given test type")
-    parser.add_option("-f", "--fail",
+    parser.add_option("-f", "--skipfail",
                       action="store_false",
                       dest="can_fail",
-                      default=True,
-                      help="If set, the tests won't run if there is an import error in tests")
+                      default=False,
+                      help="If set, the tests will run even if there is an import error in tests")
     parser.add_option("-t", "--type",
                       action="store",
                       dest="test_type",

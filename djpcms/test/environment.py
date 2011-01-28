@@ -6,7 +6,6 @@ class TestEnvironment(object):
     '''Set up the test environment by checking which 3rd party
 package is available'''
     def __init__(self, suite):
-        sites.settings.DEBUG = False
         self.suite = suite
         self.libs = []
         self.check('django')
@@ -46,6 +45,7 @@ package is available'''
     # DJANGO RELATED STUFF
     def setup_django(self):
         from django.test.utils import setup_test_environment
+        INSTALLED_APPS = sites.settings.INSTALLED_APPS
         setup_test_environment()
         
     def pre_setup_django(self):

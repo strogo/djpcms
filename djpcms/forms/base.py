@@ -8,6 +8,7 @@ from djpcms import nodata
 from djpcms.utils.collections import OrderedDict
 from djpcms.core.orms import mapper
 from djpcms.utils.py2py3 import iteritems
+from djpcms.utils import force_str
 from djpcms.utils.text import nicename
 
 from .globals import *
@@ -165,7 +166,7 @@ class Form(BaseForm):
                     value = bfield.clean(value)
                     cleaned[name] = value
                 except ValidationError as e:
-                    errors[name] = (field,e)
+                    errors[name] = force_str(e)
                 data[name] = value
             
             elif name in initial:
@@ -174,9 +175,13 @@ class Form(BaseForm):
         if is_bound and not errors:
             self._cleaned_data = cleaned
         
-        # Invoke the form clean method. Usefull for last minute
-        # checking or cross field checking
-        self.clean()
+            # Invoke the form clean method. Usefull for last minute
+            # checking or cross field checking
+            try:
+                self.clean()
+            except ValidationError as e:
+                errors['__all__'] = force_str(e)
+                del self._cleaned_data
             
     def is_valid(self):
         return self.is_bound and not self.errors
@@ -282,22 +287,6 @@ class BoundField(object):
         else:
             name = self.html_initial_name
         return widget.render(name, data, attrs=attrs)
-
-    def as_text(self, attrs=None, **kwargs):
-        """
-        Returns a string of HTML for representing this as an <input type="text">.
-        """
-        return self.as_widget(TextInput(), attrs, **kwargs)
-
-    def as_textarea(self, attrs=None, **kwargs):
-        "Returns a string of HTML for representing this as a <textarea>."
-        return self.as_widget(Textarea(), attrs, **kwargs)
-
-    def as_hidden(self, attrs=None, **kwargs):
-        """
-        Returns a string of HTML for representing this as an <input type="hidden">.
-        """
-        return self.as_widget(self.field.hidden_widget(), attrs, **kwargs)
 
     def _data(self):
         """
